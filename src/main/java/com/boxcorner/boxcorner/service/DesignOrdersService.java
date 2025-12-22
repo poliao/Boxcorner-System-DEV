@@ -51,8 +51,8 @@ public class DesignOrdersService {
 
      public Page<DesignOrders> getAllRecipes(String job_details,String job_owner,String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate,int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        if (job_details != null && !job_details.isEmpty() || job_owner != null && !job_owner.isEmpty() || process_status != null && !process_status.isEmpty() || assignee != null && !assignee.isEmpty()) {
-            return repository.findByFilters( job_details, job_owner, process_status, confirm_status, assignee,startDate,endDate, paging);
+        if (job_details != null && !job_details.isEmpty() || job_owner != null && !job_owner.isEmpty() || process_status != null && !process_status.isEmpty() || assignee != null && !assignee.isEmpty() || startDate != null || endDate != null) {
+            return repository.findByFilters( job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, paging);
         } else {
             return repository.findAll(paging);
         }

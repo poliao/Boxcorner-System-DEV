@@ -27,7 +27,7 @@ public class RecipeController {
     private TokenService tokenService;
     
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody Map<String, Object> request ,HttpServletRequest httpRequest) {
+    public ResponseEntity<?> save(@RequestBody Map<String, Object> request, HttpServletRequest httpRequest) {
         try {
             Recipe recipe = new Recipe();
             recipe.setRecipeid((String) request.get("recipeid"));
@@ -59,11 +59,11 @@ public class RecipeController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getAllRecipes(
-            @RequestParam(required = false) String recipeid,
-            @RequestParam(required = false) String jobid,
-            @RequestParam(required = false) String jobName, // คำค้นหา (Optional)
-            @RequestParam(defaultValue = "0") int page,     // หน้าที่ต้องการ (เริ่มที่ 0)
-            @RequestParam(defaultValue = "10") int size     // จำนวนต่อหน้า
+            @RequestParam(value = "recipeid", required = false) String recipeid,
+            @RequestParam(value = "jobid", required = false) String jobid,
+            @RequestParam(value = "jobName", required = false) String jobName,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         try {
             Page<Recipe> pageRecipes = recipeService.getAllRecipes(recipeid, jobid, jobName, page, size);
@@ -75,7 +75,7 @@ public class RecipeController {
     
 
     @GetMapping("/detail")
-    public ResponseEntity<?> getRecipeById(@RequestParam String recipeId) {
+    public ResponseEntity<?> getRecipeById(@RequestParam("recipeId") String recipeId) {
         try {
             Map<String, Object> recipe = recipeService.getRecipeById(recipeId);
             return ResponseEntity.ok(recipe);
@@ -85,12 +85,12 @@ public class RecipeController {
     }
 
     @GetMapping("/dropdownrecipe")
-    public ResponseEntity<List<String>> getUniqueRecipeIds(@RequestParam(defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueRecipeIds(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(recipeService.findUniqueRecipeIds(query));
     }
 
     @GetMapping("/dropdownjobid")
-    public ResponseEntity<List<String>> getfindUniqueJobIds(@RequestParam(defaultValue = "") String query){
+    public ResponseEntity<List<String>> getfindUniqueJobIds(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(recipeService.findUniqueJobIds(query));
     }
 }

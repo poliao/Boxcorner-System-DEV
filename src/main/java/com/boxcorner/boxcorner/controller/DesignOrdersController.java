@@ -31,14 +31,14 @@ public class DesignOrdersController {
     private TokenService tokenService;
 
     @GetMapping("/getById")
-    public ResponseEntity<DesignOrders> getById(@RequestParam Integer id) {
+    public ResponseEntity<DesignOrders> getById(@RequestParam("id") Integer id) {
         return service.getDesignById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/save")
-    public ResponseEntity<DesignOrders> save(@RequestBody DesignOrders designOrder,HttpServletRequest httpRequest) {
+    public ResponseEntity<DesignOrders> save(@RequestBody DesignOrders designOrder, HttpServletRequest httpRequest) {
         String currentUser = tokenService.getCurrentUser(httpRequest);
         return ResponseEntity.ok(service.saveDesign(designOrder,currentUser));
     }
@@ -51,15 +51,15 @@ public class DesignOrdersController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getAllRecipes(
-            @RequestParam(required = false) String job_details,
-            @RequestParam(required = false) String job_owner,
-            @RequestParam(required = false) String process_status,
-            @RequestParam(required = false) String confirm_status,
-            @RequestParam(required = false) String assignee,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(value = "job_details", required = false) String job_details,
+            @RequestParam(value = "job_owner", required = false) String job_owner,
+            @RequestParam(value = "process_status", required = false) String process_status,
+            @RequestParam(value = "confirm_status", required = false) String confirm_status,
+            @RequestParam(value = "assignee", required = false) String assignee,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         try {
             Page<DesignOrders> pageDesignOrders = service.getAllRecipes(job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
@@ -70,27 +70,27 @@ public class DesignOrdersController {
     }
 
     @GetMapping("/dropdownjobdetails")
-    public ResponseEntity<List<String>> getUniqueJobDetails(@RequestParam(defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueJobDetails(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(service.findUniqueJobDetails(query));
     }
 
     @GetMapping("/dropdownjobowner")
-    public ResponseEntity<List<String>> getUniqueJobOwner(@RequestParam(defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueJobOwner(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(service.findUniqueJobOwner(query));
     }
 
     @GetMapping("/dropdownassignee")
-    public ResponseEntity<List<String>> getUniqueAssignee(@RequestParam(defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueAssignee(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(service.findUniqueAssignee(query));
     }
 
     @GetMapping("/dropdownprocess")
-    public ResponseEntity<List<String>> getUniqueProcess(@RequestParam(defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueProcess(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(service.findUniqueProcess(query));
     }
 
     @GetMapping("/dropdownconfirm")
-    public ResponseEntity<List<String>> getUniqueConfirm(@RequestParam(defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueConfirm(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(service.findUniqueConfirm(query));
     }
 }

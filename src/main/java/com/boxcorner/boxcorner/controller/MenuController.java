@@ -28,8 +28,8 @@ public class MenuController {
     private TokenService tokenService;
 
     @GetMapping("/getmenu")
-    public List<MenuResponse> getMenu(HttpServletRequest httpRequest) {
-        String currentUser = tokenService.getCurrentUser(httpRequest);
+    public List<MenuResponse> getMenu(HttpServletRequest request) {
+        String currentUser = tokenService.getCurrentUser(request);
         List<MenuResponse> flatMenus = menuRepository.findMenusByUsername(currentUser);
 
         return menuService.buildHierarchy(flatMenus);
