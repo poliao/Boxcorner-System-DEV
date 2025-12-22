@@ -1,0 +1,185 @@
+<form [formGroup]="docForm" (ngSubmit)="onSubmit()">
+  <div class="card-body">
+    <div class="card total-income-card warning overflow-hidden">
+      <div class="position">
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+      </div>
+      <div class="padding">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">รหัสสูตรตั้งต้น</label>
+            <input type="text" class="form-control" formControlName="recipeid" >
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">รหัสงาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="jobid" [class.is-invalid]="docForm.get('jobid')?.invalid && docForm.get('jobid')?.touched">            
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">ชื่องาน</label>
+            <input type="text" class="form-control" formControlName="jobname">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">วันที่อัพเดท</label>
+            <input type="text" class="form-control" formControlName="updatedate" placeholder="วว/ดด/ปปปป">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">พนักงานที่อัพเดตล่าสุด</label>
+            <input type="text" class="form-control" formControlName="updateby" placeholder="ชื่อพนักงาน">
+          </div>
+          <div class="col-md-6" *ngIf="isUpdateMode == true">
+            <label class="form-label">จำนวนสีที่ต้องการใช้ (กรัม)</label>
+            <input type="number" class="form-control" formControlName="reqtotalweight" placeholder="กรัม">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+  <form [formGroup]="docForm" (ngSubmit)="onSubmit()">
+    <div class="card-body">
+      <div class="card total-income-card warning overflow-hidden">
+        <div class="padding">
+
+          <h5 class="card-title mb-3">สูตรตั้งต้น</h5>
+
+          <div class="row bg-light p-2 fw-bold border border-bottom-0 d-none d-md-flex text-center">
+            <div class="col-md-5">สี <span style="color: red;">*</span></div>
+            <div class="col-md-3">น้ำหนัก (กรัม) <span style="color: red;">*</span></div>
+            <div class="col-md-3">Lot <span style="color: red;">*</span></div>
+            <div class="col-md-1">ลบ</div>
+          </div>
+
+          <div formArrayName="colors">
+            <div *ngFor="let item of colorForms.controls; let i = index" [formGroupName]="i"
+              class="row border p-3 mb-2 mb-md-0 align-items-center bg-white shadow-sm shadow-md-none rounded-3 rounded-md-0">
+
+              <div class="col-12 col-md-5 mb-2 mb-md-0">
+                <label class="d-md-none form-label text-muted small">สี <span style="color: red;">*</span></label> 
+                <input type="text" class="form-control" formControlName="color" placeholder="ระบุสี" [class.is-invalid]="item.get('color')?.invalid && (item.get('color')?.touched || item.get('color')?.dirty)">
+              </div>
+
+              <div class="col-6 col-md-3 mb-2 mb-md-0">
+                <label class="d-md-none form-label text-muted small">น้ำหนัก <span style="color: red;">*</span></label>
+                <input type="number" class="form-control" formControlName="weight" placeholder="0" [class.is-invalid]="item.get('weight')?.invalid && (item.get('weight')?.touched || item.get('weight')?.dirty)">
+              </div>
+
+              <div class="col-6 col-md-3 mb-2 mb-md-0">
+                <label class="d-md-none form-label text-muted small">Lot <span style="color: red;">*</span> </label>
+                <input type="text" class="form-control" formControlName="lot" placeholder="Lot" [class.is-invalid]="item.get('lot')?.invalid && (item.get('lot')?.touched || item.get('lot')?.dirty)">
+              </div>
+
+              <div class="col-12 col-md-1 text-end text-md-center">
+                <hr class="d-md-none my-2 text-muted">
+                <button type="button" class="btn btn-outline-danger w-100 d-md-inline-block px-3"
+                  (click)="removeColorItem(i)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    viewBox="0 0 16 16">
+                    <path
+                      d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                    <path
+                      d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                  </svg>
+
+                  <span class="d-md-none ms-2">ลบ</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+          <div class="row mt-3 justify-content-end">
+            <div class="col-12 col-md-5 d-flex align-items-center justify-content-md-end mb-2 mb-md-0">
+              <label class="fw-bold me-2">น้ำหนักรวมทั้งหมด:</label>
+            </div>
+            <div class="col-12 col-md-3">
+              <input type="number" class="form-control bg-light fw-bold text-end" [value]="totalWeight" readonly
+                placeholder="0">
+            </div>
+            <div class="col-md-1 d-none d-md-block"></div>
+          </div>
+
+          <div class="text-start mt-3">
+            <button type="button" class="btn btn-success w-100 w-md-auto" (click)="addColorItem()">
+              <i class="fa fa-plus"></i> เพิ่มรายการสี
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+ <div class="card-body mt-4">
+  <div class="card total-income-card warning overflow-hidden">
+    <div class="padding">
+      <h5 class="card-title mb-3">คำนวนสี (ตามน้ำหนักที่ต้องการ)</h5>
+
+      <div *ngFor="let item of calculatedColors; let i = index" 
+           class="row border p-3 mb-2 mb-md-0 align-items-center bg-white shadow-sm shadow-md-none rounded-3 rounded-md-0">
+
+        <div class="col-12 col-md-5 mb-2 mb-md-0">
+          <label class="d-md-none form-label text-muted small">สี</label>
+          <input type="text" class="form-control bg-light" [value]="item.color" readonly>
+        </div>
+
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+          <label class="d-md-none form-label text-muted small">น้ำหนัก (กรัม)</label>
+          <input type="number" class="form-control bg-light fw-bold text-primary" [value]="item.weight" readonly>
+        </div>
+
+        <div class="col-6 col-md-3 mb-2 mb-md-0">
+          <label class="d-md-none form-label text-muted small">Lot</label>
+          <input type="text" class="form-control bg-light" [value]="item.lot" readonly>
+        </div>
+      </div>
+
+      <div class="row mt-3 justify-content-end">
+        <div class="col-12 col-md-5 d-flex align-items-center justify-content-md-end mb-2 mb-md-0">
+          <label class="fw-bold me-2">รวมน้ำหนักสุทธิ:</label>
+        </div>
+        <div class="col-12 col-md-3">
+          <input type="number" class="form-control bg-secondary text-white fw-bold text-end" [value]="calculatedTotalWeight" readonly placeholder="0">
+        </div>
+        <div class="col-md-1 d-none d-md-block"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+ <div class="card-body">
+    <div class="card total-income-card warning overflow-hidden">
+      <div class="padding">
+        <h5 class="card-title mb-3">ค่าสี LAB และตัวอย่างสี</h5>
+        
+        <div class="row g-3 align-items-center">
+          
+          <div class="col-md-3">
+            <label class="form-label">ค่า L (Lightness)</label>
+            <input type="number" class="form-control" formControlName="lightness" placeholder="0 - 100">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">ค่า A (Green-Red)</label>
+            <input type="number" class="form-control" formControlName="greenred" placeholder="-128 ถึง 127">
+          </div>
+
+          <!-- ช่องกรอก B -->
+          <div class="col-md-3">
+            <label class="form-label">ค่า B (Blue-Yellow)</label>
+            <input type="number" class="form-control" formControlName="blueyellow" placeholder="-128 ถึง 127">
+          </div>
+
+          <!-- กล่องแสดงตัวอย่างสี -->
+          <div class="col-md-3 text-center">
+            <label class="form-label d-block">ตัวอย่างสี (Preview)</label>
+            <div class="color-preview-box shadow-sm border" 
+                 [style.background-color]="labColorString"
+                 style="height: 60px; width: 100%; border-radius: 8px; transition: background-color 0.3s;">
+            </div>
+            <!-- แสดงค่า Code สี -->
+            <small class="text-muted mt-1 d-block">{{ labColorString }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>

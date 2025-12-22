@@ -1,0 +1,10 @@
+<div *ngIf="isLoading$ | async" 
+     class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" 
+     style="z-index: 9999;"> <div class="text-center">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="mt-2 text-primary fw-bold">กรุณารอสักครู่...</div>
+  </div>
+
+</div>

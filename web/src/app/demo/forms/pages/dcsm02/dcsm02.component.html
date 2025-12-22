@@ -1,0 +1,104 @@
+<h2>ตารางสั่งงานออกแบบ</h2>
+<div class="card-body">
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body bg-light">
+      <div class="row g-3 align-items-center">
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>ค้นหารายละเอียดงาน...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterjobdetails" [matAutocomplete]="autoJob"
+              (input)="onJobSearch($event)" (keyup.enter)="onSearchChange()">
+            <mat-autocomplete #autoJob="matAutocomplete" (optionSelected)="onSearchChange()">
+              <mat-option value="">-- ทั้งหมด --</mat-option>
+              <mat-option *ngFor="let id of jobdetailsList" [value]="id">{{id}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>ค้นหาเจ้าของงาน...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterowner" [matAutocomplete]="autoOwner"
+              (input)="onOwnerSearch($event)" (keyup.enter)="onSearchChange()">
+            <mat-autocomplete #autoOwner="matAutocomplete" (optionSelected)="onSearchChange()">
+              <mat-option value="">-- ทั้งหมด --</mat-option>
+              <mat-option *ngFor="let id of OwnerList" [value]="id">{{id}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>ค้นหาผู้รับผิดชอบ...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterassignee" [matAutocomplete]="autoAssignee"
+              (input)="onAssigneeSearch($event)" (keyup.enter)="onSearchChange()">
+            <mat-autocomplete #autoAssignee="matAutocomplete" (optionSelected)="onSearchChange()">
+              <mat-option value="">-- ทั้งหมด --</mat-option>
+              <mat-option *ngFor="let id of Assignee" [value]="id">{{id}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>ค้นหาสถานะงาน...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterprocess" [matAutocomplete]="autoProcess"
+              (input)="onProcessSearch($event)" (keyup.enter)="onSearchChange()">
+            <mat-autocomplete #autoProcess="matAutocomplete" (optionSelected)="onSearchChange()">
+              <mat-option value="">-- ทั้งหมด --</mat-option>
+              <mat-option *ngFor="let id of Process" [value]="id">{{id}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>ค้นหาสถานะคอนเฟิร์ม...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterconfirm" [matAutocomplete]="autoConfirm"
+              (input)="onConfirmSearch($event)" (keyup.enter)="onSearchChange()">
+            <mat-autocomplete #autoConfirm="matAutocomplete" (optionSelected)="onSearchChange()">
+              <mat-option value="">-- ทั้งหมด --</mat-option>
+              <mat-option *ngFor="let id of Confirm" [value]="id">{{id}}</mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>วันที่เริ่มต้น</mat-label>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" (dateChange)="onStartDateChange()"
+              placeholder="วว/ดด/ปปปป">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label>วันที่สิ้นสุด</mat-label>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" [disabled]="!startDate" [min]="startDate"
+              placeholder="วว/ดด/ปปปป">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-12 d-flex justify-content-between align-items-center">
+            <button mat-flat-button color="accent" class="px-4">
+              <mat-icon>search</mat-icon> ค้นหา
+            </button>
+
+            <button mat-flat-button color="primary" (click)="add()">
+              <mat-icon>add_circle</mat-icon> เพิ่มข้อมูล
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
+    [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)">
+  </app-data-table>

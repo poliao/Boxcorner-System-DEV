@@ -1,0 +1,77 @@
+<div class="card-body">
+  <div class="card total-income-card warning overflow-hidden">
+    <div style="padding: 10px;">
+      <form [formGroup]="designForm" (ngSubmit)="onSubmit()" class="row g-3">
+       <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+        <button type="button" class="btn btn-outline-secondary px-4">ยกเลิก</button>
+        <button type="submit" class="btn text-white px-5 shadow-sm" [disabled]="designForm.invalid"
+          style="background-color: #1e1b4b;">
+          {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
+        </button>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">รหัสสั่งงาน</label>
+        <input type="text" formControlName="id" class="form-control">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">วันที่สั่งงาน *</label>
+        <input type="date" formControlName="orderDate" class="form-control"
+          [class.is-invalid]="designForm.get('order_date')?.invalid && designForm.get('order_date')?.touched">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน *</label>
+        <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
+          [class.is-invalid]="designForm.get('folder_name')?.invalid && designForm.get('folder_name')?.touched">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">รายละเอียดงาน</label>
+        <select formControlName="jobDetails" class="form-select" [ngClass]="getJobDetailsColor()">
+          <option value="ปรับไดคัท">ปรับไดคัท</option>
+          <option value="แก้ไขอาร์ต">แก้ไขอาร์ต</option>
+          <option value="รอลูกค้าแจ้งกลับ">รอลูกค้าแจ้งกลับ</option>
+          <option value="ออกแบบรายละเอียดใน Line">ออกแบบรายละเอียดใน Line</option>
+          <option value="เคลียร์ไฟล์ ส่งคอนเฟิร์ม">เคลียร์ไฟล์ ส่งคอนเฟิร์ม</option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">เจ้าของงาน *</label>
+        <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
+        <input type="text" formControlName="assignee" class="form-control" placeholder="ชื่อผู้ออกแบบ">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
+        <input type="date" formControlName="deadlineDate" class="form-control">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
+        <input type="time" formControlName="deadlineTime" class="form-control">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
+        <input type="text" formControlName="processStatus" class="form-control">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label font-weight-bold">สถานะคอนเฟิร์ม</label>
+        <input type="text" formControlName="confirmStatus" class="form-control">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label font-weight-bold">หมายเหตุ</label>
+        <input type="text" formControlName="remarks" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
+      </div>
+    </form>
+    </div>
+  </div>
+</div>

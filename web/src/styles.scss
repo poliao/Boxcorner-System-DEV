@@ -1,0 +1,84 @@
+/* You can add global styles to this file, and also import other style files */
+/**======================================================================
+=========================================================================
+Template Name: berry - Most Complete Angular Admin Template
+Author: CodedThemes
+Support: https://codedthemes.support-hub.io/
+File: style.css
+=========================================================================
+=================================================================================== */
+
+// main framework
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/variables-dark';
+
+@import 'scss/settings/color-variables';
+@import 'scss/settings/theme-variables';
+@import 'scss/settings/bootstrap-variables.scss';
+
+@import 'scss/bootstrap/bootstrap.scss';
+
+@import 'node_modules/bootstrap/scss/utilities';
+@import 'node_modules/bootstrap/scss/utilities/api';
+
+@import 'scss/themes/generic.scss';
+@import 'scss/themes/general.scss';
+
+// Layouts
+@import 'scss/themes/layouts/layouts';
+
+// Components
+@import 'scss/themes/components/components';
+
+// pages
+@import 'scss/themes/pages/page.scss';
+
+@import 'scss/themes/customizer';
+@import 'scss/style-preset.scss';
+
+// fonts
+@import url('scss/fonts/berry/berry-icons.css'); /** custom font icons - berry **/
+@import 'scss/fonts/tabler-icons.min.css';
+@import 'scss/fonts/phosphor/duotone/style.css';
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Custom Material Table Styles
+.mat-table {
+  border-collapse: collapse !important;
+  border: 2px solid #ddd !important;
+  background: white !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.mat-header-cell {
+  font-weight: bold !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  background: #1976d2 !important;
+  border-right: 1px solid #0d47a1 !important;
+  padding: 16px !important;
+  text-align: center !important;
+}
+
+.mat-cell {
+  border-right: 1px solid #e0e0e0 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  padding: 12px 16px !important;
+  text-align: center !important;
+}
+
+.mat-row:nth-child(even) {
+  background-color: #f8f9fa !important;
+}
+
+.mat-row:nth-child(odd) {
+  background-color: #ffffff !important;
+}
+
+.mat-row:hover {
+  background-color: #e3f2fd !important;
+}
