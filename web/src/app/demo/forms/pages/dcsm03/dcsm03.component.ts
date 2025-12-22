@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
-import { Dcsm02Service } from './dcsm02.service';
+import { Dcsm03Service } from './dcsm03.service';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -37,10 +37,10 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule, // เพิ่มเข้าในลิสต์
     MatNativeDateModule, // เพิ่มเข้าในลิสต์
   ],
-  templateUrl: './dcsm02.component.html',
-  styleUrl: './dcsm02.component.scss'
+  templateUrl: './dcsm03.component.html',
+  styleUrl: './dcsm03.component.scss'
 })
-export class Dcsm02Component implements OnInit {
+export class Dcsm03Component implements OnInit {
   process_status: string = '';
   assignee: string = '';
 
@@ -67,7 +67,7 @@ export class Dcsm02Component implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private http: HttpClient, private dcsm02Service: Dcsm02Service, private router: Router) { }
+  constructor(private http: HttpClient, private dcsm03Service: Dcsm03Service, private router: Router) { }
   tableColumns = [
     { key: 'id', label: 'ID' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
@@ -97,8 +97,7 @@ export class Dcsm02Component implements OnInit {
     // แปลงวันที่เป็น String format 'YYYY-MM-DD' เพื่อส่งให้ API
     const startDateStr = this.startDate ? this.formatDateForApi(this.startDate) : '';
     const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
-
-    this.dcsm02Service.getAllDesignOrders(
+    this.dcsm03Service.getAllDesignOrders(
       this.filterjobdetails,
       this.filterowner,
       this.filterprocess,
@@ -119,7 +118,6 @@ export class Dcsm02Component implements OnInit {
           this.totalElements = response.totalElements; // อย่าลืมอัปเดตจำนวนแถวทั้งหมดสำหรับ Pagination
         },
         error: (err) => {
-          console.error('Error loading data:', err);
         }
       });
   }
@@ -153,7 +151,7 @@ export class Dcsm02Component implements OnInit {
 
   onRowClick(row: any) {
     if (row && row.id) {
-      this.router.navigate(['/Dcsm02Detail', row.id]);
+      this.router.navigate(['/Dcsm03Detail', row.id]);
     }
   }
 
@@ -220,18 +218,17 @@ export class Dcsm02Component implements OnInit {
   }
 
   fetchJobDetailFromDB(query: string) {
-    this.dcsm02Service.getUniqueJobDetail(query).subscribe({
+    this.dcsm03Service.getUniqueJobDetail(query).subscribe({
       next: (data: string[]) => {
         this.jobdetailsList = data;
       },
       error: (err) => {
-        console.error('Error fetching jobdetails from DB:', err);
       }
     });
   }
 
   fetchOwnerListFromDB(query: string) {
-    this.dcsm02Service.getUniqueOwner(query).subscribe({
+    this.dcsm03Service.getUniqueOwner(query).subscribe({
       next: (data: string[]) => {
         this.OwnerList = data;
       },
@@ -242,7 +239,7 @@ export class Dcsm02Component implements OnInit {
   }
 
   fetchAssigneeFromDB(query: string) {
-    this.dcsm02Service.getUniqueAssignee(query).subscribe({
+    this.dcsm03Service.getUniqueAssignee(query).subscribe({
       next: (data: string[]) => {
         this.Assignee = data;
       },
@@ -253,7 +250,7 @@ export class Dcsm02Component implements OnInit {
   }
 
   fetchProcessFromDB(query: string) {
-    this.dcsm02Service.getUniqueProcess(query).subscribe({
+    this.dcsm03Service.getUniqueProcess(query).subscribe({
       next: (data: string[]) => {
         this.Process = data;
       },
@@ -264,7 +261,7 @@ export class Dcsm02Component implements OnInit {
   }
 
   fetchConfirmFromDB(query: string) {
-    this.dcsm02Service.getUniqueConfirm(query).subscribe({
+    this.dcsm03Service.getUniqueConfirm(query).subscribe({
       next: (data: string[]) => {
         this.Confirm = data;
       },
@@ -275,8 +272,6 @@ export class Dcsm02Component implements OnInit {
   }
 
   onStartDateChange() {
-    // ถ้าเลือกวันที่เริ่มต้น แล้วยังไม่มีวันที่สิ้นสุด หรือวันที่สิ้นสุดน้อยกว่าวันที่เริ่มต้น 
-    // ให้ตั้งค่าเริ่มต้นเป็นวันเดียวกัน (หรือปล่อยให้ผู้ใช้เลือกเองตามความเหมาะสม)
     if (this.startDate && (!this.endDate || this.endDate < this.startDate)) {
       this.endDate = this.startDate;
     }

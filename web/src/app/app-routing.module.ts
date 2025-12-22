@@ -57,6 +57,24 @@ const routes: Routes = [
         path: 'Dcsm02',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm02/dcsm02.component').then((c) => c.Dcsm02Component)
+      },
+      {
+        path: 'Dcsm03Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm03/dcsm03-detail.component').then((c) => c.Dcsm03DetailComponent),
+        resolve: { 
+          designOrder: Dcsm02DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm03Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm03/dcsm03-detail.component').then((c) => c.Dcsm03DetailComponent)
+      },
+      {
+        path: 'Dcsm03',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm03/dcsm03.component').then((c) => c.Dcsm03Component)
       }
     ]
   },

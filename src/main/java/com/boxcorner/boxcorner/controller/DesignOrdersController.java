@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -92,5 +93,31 @@ public class DesignOrdersController {
     @GetMapping("/dropdownconfirm")
     public ResponseEntity<List<String>> getUniqueConfirm(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(service.findUniqueConfirm(query));
+    }
+
+    @PutMapping("/updateStatus")
+    public ResponseEntity<DesignOrders> update(@RequestParam("id") Integer id, HttpServletRequest httpRequest) {
+        String currentUser = tokenService.getCurrentUser(httpRequest);
+        return ResponseEntity.ok(service.updateDesign(id,currentUser));
+    }
+
+    @PutMapping("/updateStatusWork")
+    public ResponseEntity<DesignOrders> updateWork(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(service.updateDesignWork(id));
+    }
+
+    @PutMapping("/updateStatusComplete")
+    public ResponseEntity<DesignOrders> updateComplete(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(service.updateDesignComplete(id));
+    }
+
+    @PutMapping("/updateStatusApprove")
+    public ResponseEntity<DesignOrders> updateApprove(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(service.updateDesignApprove(id));
+    }
+
+    @PutMapping("/updateStatusEdit")
+    public ResponseEntity<DesignOrders> updateEdit(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(service.updateDesignEdit(id));
     }
 }

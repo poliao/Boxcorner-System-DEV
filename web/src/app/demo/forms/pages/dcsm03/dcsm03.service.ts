@@ -6,25 +6,20 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class Dcsm02Service {
+export class Dcsm03Service {
 
-  // ใช้ค่า apiUrl จาก environment ตามที่คุณต้องการ
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
-  // ฟังก์ชันบันทึกข้อมูลตามรูปแบบที่คุณระบุ
   save(data: any): Observable<any> {
-    // ปรับ Path ให้ตรงกับ Backend ของคุณ (ตัวอย่างเช่น /designs/save)
     return this.http.post(`${this.apiUrl}/designs/save`, data);
   }
 
-  // ดึงข้อมูลทั้งหมด
   getDesigns(): Observable<any> {
     return this.http.get(`${this.apiUrl}/designs/list`);
   }
 
-  // ดึงข้อมูลตาม ID
   getById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/designs/getById?id=${id}`,);
   }
@@ -75,13 +70,15 @@ export class Dcsm02Service {
     return this.http.get(`${this.apiUrl}/designs/dropdownconfirm?query=${query}`);
   }
 
-  updateStatusApprove(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatusApprove?id=${id}`, {});
+  updateStatus(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/designs/updateStatus?id=${id}`, {});
   }
 
-  updateStatusEdit(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatusEdit?id=${id}`, {});
+  updateStatusWork(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/designs/updateStatusWork?id=${id}`, {});
   }
-  
 
+  updateStatusComplete(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/designs/updateStatusComplete?id=${id}`, {});
+  }
 }

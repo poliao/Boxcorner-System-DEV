@@ -40,7 +40,7 @@ public class DesignOrdersService {
                 throw new RuntimeException("Design order not found for update");
             }
         } else {
-            
+            designOrder.setAssignee("รอผู้รับผิดชอบยืนยัน");
             return repository.save(designOrder);
         }
     }
@@ -49,13 +49,18 @@ public class DesignOrdersService {
         repository.deleteById(id);
     }
 
-     public Page<DesignOrders> getAllRecipes(String job_details,String job_owner,String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate,int page, int size) {
+    public Page<DesignOrders> getAllRecipes(String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        if (job_details != null && !job_details.isEmpty() || job_owner != null && !job_owner.isEmpty() || process_status != null && !process_status.isEmpty() || assignee != null && !assignee.isEmpty() || startDate != null || endDate != null) {
-            return repository.findByFilters( job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, paging);
-        } else {
-            return repository.findAll(paging);
-        }
+        return repository.findByFilters(
+            job_details,    // 1. jobDetails
+            job_owner,      // 2. jobOwner
+            assignee,       // 3. assignee (สลับกลับมาตรงนี้)
+            process_status, // 4. processStatus (สลับกลับมาตรงนี้)
+            confirm_status, // 5. confirm
+            startDate,      // 6. startDate
+            endDate,        // 7. endDate
+            paging
+        );
     }
 
     @Transactional(readOnly = true)
@@ -86,5 +91,44 @@ public class DesignOrdersService {
     public List<String> findUniqueConfirm(String query) {
         String searchTerm = (query != null) ? query.trim() : "";
         return repository.ConfirmNative(searchTerm);
+    }
+
+   public DesignOrders updateDesign(int id, String currentUser) {
+
+        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+
+        if (currentUser != null && !currentUser.isEmpty()) {
+            existingOrder.setAssignee(currentUser);
+        }
+        existingOrder.setConfirmStatus("รอดำเนินการ");
+        return repository.save(existingOrder);
+    }
+
+    public DesignOrders updateDesignWork(int id) {
+        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setProcessStatus("กำลังดำเนินการ");
+        existingOrder.setConfirmStatus("กำลังดำเนินการ");
+        return repository.save(existingOrder);
+    }
+
+    public DesignOrders updateDesignComplete(int id) {
+        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setProcessStatus("เสร็จสิ้น");
+        existingOrder.setConfirmStatus("รอตรวจสอบ");
+        return repository.save(existingOrder);
+    }
+
+    public DesignOrders updateDesignApprove(int id) {
+        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setProcessStatus("เสร็จสิ้น");
+        existingOrder.setConfirmStatus("ผ่าน");
+        return repository.save(existingOrder);
+    }
+
+    public DesignOrders updateDesignEdit(int id) {
+        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setProcessStatus("รอดำเนินการแก้ไข");
+        existingOrder.setConfirmStatus("ไม่ผ่าน");
+        return repository.save(existingOrder);
     }
 }

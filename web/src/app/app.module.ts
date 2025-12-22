@@ -32,11 +32,16 @@ import { AuthService } from './services/auth.service';
 import { Dcsm01Service } from './demo/forms/pages/dcsm01/dcsm01.service';
 import { Dcsm02Service } from './demo/forms/pages/dcsm02/dcsm02.service';
 import { LoadingService } from './demo/loadingservice/loading';
+import { Dcsm03Service } from './demo/forms/pages/dcsm03/dcsm03.service';
+import { Dcsm02Component } from './demo/forms/pages/dcsm02/dcsm02.component';
+import { Dcsm03Component } from './demo/forms/pages/dcsm03/dcsm03.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    Dcsm01Component
+    Dcsm01Component,
+    Dcsm02Component,
+    Dcsm03Component,
   ],
   imports: [
     BrowserModule,
@@ -58,6 +63,7 @@ import { LoadingService } from './demo/loadingservice/loading';
     AuthService,
     Dcsm01Service,
     Dcsm02Service,
+    Dcsm03Service,
     LoadingService
   ],
   bootstrap: [AppComponent]
