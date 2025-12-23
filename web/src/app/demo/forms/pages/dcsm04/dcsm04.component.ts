@@ -74,8 +74,8 @@ export class Dcsm04Component implements OnInit {
       jobOwner: [''],
       responsiblePerson: [''],
       status: [''],
-      startDate: [''],
-      endDate: ['']
+      startDate: [null],
+      endDate: [{value: null, disabled: true}]
     });
   }
 
@@ -113,9 +113,10 @@ export class Dcsm04Component implements OnInit {
         jobOwner: '',
         responsiblePerson: '',
         status: '',
-        startDate: '',
-        endDate: ''
+        startDate: null,
+        endDate: null
     });
+    this.searchForm.get('endDate')?.disable();
     this.onSearch();
   }
 
@@ -125,17 +126,27 @@ export class Dcsm04Component implements OnInit {
     return startDate ? new Date(startDate) : null;
   }
 
+  get isEndDateDisabled(): boolean {
+    const startDate = this.searchForm.get('startDate')?.value;
+    return !startDate;
+  }
+
   onStartDateChange(): void {
     const startDate = this.searchForm.get('startDate')?.value;
     const endDate = this.searchForm.get('endDate')?.value;
     
-    // ถ้าไม่มีวันที่จาก ให้ลบวันที่ถึงด้วย
+    // ถ้าไม่มีวันที่จาก ให้ disable และลบวันที่ถึง
     if (!startDate) {
-      this.searchForm.patchValue({ endDate: '' });
+      this.searchForm.get('endDate')?.disable();
+      this.searchForm.patchValue({ endDate: null });
     }
-    // ถ้าวันที่ถึงน้อยกว่าวันที่จาก ให้ลบวันที่ถึง
-    else if (endDate && new Date(endDate) < new Date(startDate)) {
-      this.searchForm.patchValue({ endDate: '' });
+    // ถ้ามีวันที่จาก ให้ enable วันที่ถึง
+    else {
+      this.searchForm.get('endDate')?.enable();
+      // ถ้าวันที่ถึงน้อยกว่าวันที่จาก ให้ลบวันที่ถึง
+      if (endDate && new Date(endDate) < new Date(startDate)) {
+        this.searchForm.patchValue({ endDate: null });
+      }
     }
   }
 

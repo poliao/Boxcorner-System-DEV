@@ -37,7 +37,7 @@
 
           <div class="col-md-3">
             <label class="form-label fw-bold">ถึงวันที่</label>
-            <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'" [disabled]="!searchForm.get('startDate')?.value">
+            <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
           </div>
 
           <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
