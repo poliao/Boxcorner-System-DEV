@@ -43,10 +43,13 @@ export class DataTableComponent implements AfterViewInit {
   }
 
   getDisplayedColumns(): string[] {
-    if (window.innerWidth <= 900) {
-      return this.columns.slice(0, 3).map(col => col.key);
+    if (!this.columns || this.columns.length === 0) {
+      return [];
     }
-    return this.columns.map(col => col.key);
+    if (window.innerWidth <= 900) {
+      return this.columns.slice(0, 3).map(col => col.key).filter(key => key);
+    }
+    return this.columns.map(col => col.key).filter(key => key);
   }
 
   onRowClick(row: any, columnKey: string) {

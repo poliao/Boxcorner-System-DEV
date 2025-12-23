@@ -13,77 +13,33 @@ export class Dcsm04Service {
   constructor(private http: HttpClient) { }
 
   save(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/designs/save`, data);
+    return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
   }
-
-  getDesigns(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/list`);
-  }
-
   getById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/getById?id=${id}`,);
+    return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
   }
 
-  getAllDesignOrders(
-    job_details: string,
-    job_owner: string,
-    process_status: string,
-    assignee: string,
-    confirm_status: string, // เพิ่มตัวแปรนี้
-    startDate: string,
-    endDate: string,
-    page: number,
-    size: number
-  ): Observable<any> {
-    const params = {
-      job_details: job_details || '',
-      job_owner: job_owner || '',
-      process_status: process_status || '',
-      assignee: assignee || '',
-      confirm_status: confirm_status || '', // ส่งไปยัง backend
-      startDate: startDate || '',
-      endDate: endDate || '',
+  getOrdersWithSearch(page: number, size: number, filters: any): Observable<any> {
+    let params: any = {
       page: page.toString(),
-      size: size.toString()
+      size: size.toString(),
+      folderName: filters.folderName || '',           // เดิม job_details
+      jobOwner: filters.jobOwner || '',               // เดิม job_owner
+      responsiblePerson: filters.responsiblePerson || '', // เดิม assignee
+      status: filters.status || '',                   // เดิม process_status
+      startDate: filters.startDate || '',
+      endDate: filters.endDate || ''
     };
 
-    return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
-  }
+    Object.keys(params).forEach(key => {
+        if (params[key] === null || params[key] === '') {
+            delete params[key];
+        }
+    });
 
-  getUniqueJobDetail(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownjobdetails?query=${query}`);
+    return this.http.get(`${this.apiUrl}/sampleOrders/search`, { params: params });
   }
+  
 
-  getUniqueOwner(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownjobowner?query=${query}`);
-  }
-
-  getUniqueAssignee(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownassignee?query=${query}`);
-  }
-
-  getUniqueProcess(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownprocess?query=${query}`);
-  }
-
-  getUniqueConfirm(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownconfirm?query=${query}`);
-  }
-
-  updateStatus(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatus?id=${id}`, {});
-  }
-
-  updateStatusWork(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatusWork?id=${id}`, {});
-  }
-
-  updateStatusComplete(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatusComplete?id=${id}`, {});
-  }
-
-  countBacklog(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/countBacklog`);
-  }
 
 }

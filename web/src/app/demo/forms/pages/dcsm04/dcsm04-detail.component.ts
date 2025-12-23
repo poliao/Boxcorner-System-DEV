@@ -14,7 +14,7 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
   styleUrl: './dcsm04-detail.component.scss'
 })
 export class Dcsm04DetailComponent implements OnInit {
-  designForm!: FormGroup;
+  mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
   isBtnAccept = false
@@ -34,82 +34,44 @@ export class Dcsm04DetailComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     this.initForm();
-    
+
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
     }
-    this.checkButtonVisibility();
   }
 
   initForm(): void {
-    this.designForm = this.fb.group({
+    this.mainForm = this.fb.group({
       id: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
-      jobDetails: [''],
-      remarks: [''],
-      jobOwner: ['', Validators.required],
-      deadlineDate: [''],
-      deadlineTime: [''],
-      assignee: [''],
-      processStatus: ['', Validators.required],
-      confirmStatus: ['', Validators.required]
+      jobOwner: [''],
+      deliveryDate: [''],
+      deliveryTime: [''],
+      responsiblePerson: ['รอผู้รับผิดชอบอนุมัติ'],
+      quantity: ['', Validators.required],
+      unit: ['', Validators.required],
+      isCreateSample: [false],
+      status: ['รอผู้รับผิดชอบอนุมัติ'],
+      note: [''],
     });
-    this.designForm.controls['id'].disable({ emitEvent: false });
-    this.designForm.controls['orderDate'].disable({ emitEvent: false });
-    this.designForm.controls['folderName'].disable({ emitEvent: false });
-    this.designForm.controls['jobDetails'].disable({ emitEvent: false });
-    this.designForm.controls['remarks'].disable({ emitEvent: false });
-    this.designForm.controls['jobOwner'].disable({ emitEvent: false });
-    this.designForm.controls['deadlineDate'].disable({ emitEvent: false });
-    this.designForm.controls['deadlineTime'].disable({ emitEvent: false });
-    this.designForm.controls['assignee'].disable({ emitEvent: false });
-    this.designForm.controls['processStatus'].disable({ emitEvent: false });
-    this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
+    this.mainForm.controls['id'].disable({ emitEvent: false });
+    this.mainForm.controls['orderDate'].disable({ emitEvent: false });
+    this.mainForm.controls['jobOwner'].disable({ emitEvent: false });
+    this.mainForm.controls['responsiblePerson'].disable({ emitEvent: false });
+    this.mainForm.controls['status'].disable({ emitEvent: false });
+
   }
   patchFormData(data: any): void {
     const apiData = data as any;
-    this.designForm.patchValue(apiData);
-  }
-
-  getJobDetailsColor() {
-    const value = this.designForm.get('jobDetails')?.value;
-    switch (value) {
-      case 'ปรับไดคัท': return 'bg-primary text-white';
-      case 'แก้ไขอาร์ต': return 'bg-warning text-dark';
-      case 'รอลูกค้าแจ้งกลับ': return 'bg-danger text-white';
-      case 'ออกแบบรายละเอียดใน Line': return 'bg-info text-dark';
-      case 'เคลียร์ไฟล์ ส่งคอนเฟิร์ม': return 'bg-success text-white';
-      default: return 'bg-light text-dark';
-    }
-  }
-
-  checkButtonVisibility() {
-
-    if (this.designForm.getRawValue().assignee === 'รอผู้รับผิดชอบยืนยัน') {
-      this.isBtnAccept = true;
-      this.isBtnWorking = false;
-      this.isBtnComplete = false;
-    }else if ((this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value && this.designForm.get('processStatus')?.value === 'รอดำเนินการ') || (this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value && this.designForm.get('processStatus')?.value === 'รอดำเนินการแก้ไข')) {
-      this.isBtnWorking = true;
-      this.isBtnAccept = false;
-      this.isBtnComplete = false;
-    }else if (this.designForm.get('processStatus')?.value === 'กำลังดำเนินการ' && this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value) {
-      this.isBtnComplete = true;
-      this.isBtnWorking = false;
-      this.isBtnAccept = false;
-    }else if (this.designForm.get('confirmStatus')?.value === 'รอตรวจสอบ') {
-      this.isBtnComplete = false;
-      this.isBtnWorking = false;
-      this.isBtnAccept = false;
-    }
+    this.mainForm.patchValue(apiData);
   }
 
   private getCurrentUserFromToken(): string | null {
     const token = localStorage.getItem('token');
     if (!token) return null;
-    
+
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.username || payload.name || payload.sub;
@@ -118,34 +80,26 @@ export class Dcsm04DetailComponent implements OnInit {
     }
   }
 
-  updateStatus(){
-    this.loadingService.show();
-    this.dcsm04Service.updateStatus(this.designForm.getRawValue().id).subscribe((response) => {
-       this.designForm.patchValue(response);
-       this.checkButtonVisibility();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'ยอมรับงานสำเร็จ!');
-    })
-  }
+  onSubmit() {
+    if (this.mainForm.invalid) {
+      this.mainForm.markAllAsTouched();
+      this.sweetAlert.warning('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+      return;
+    }
 
-  updateStatusWorking(){
     this.loadingService.show();
-    this.dcsm04Service.updateStatusWork(this.designForm.getRawValue().id).subscribe((response) => {
-       this.designForm.patchValue(response);
-       this.checkButtonVisibility();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'กำลังดำเนินการ!');
-    })
-  }
-
-  updateStatusComplete(){
-    this.loadingService.show();
-    this.dcsm04Service.updateStatusComplete(this.designForm.getRawValue().id).subscribe((response) => {
-       this.designForm.patchValue(response);
-       this.checkButtonVisibility();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-    })
+    this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        this.patchFormData(response);
+        this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+        this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+      }
+    });
   }
 
 }

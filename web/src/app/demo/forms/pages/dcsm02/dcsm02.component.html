@@ -63,7 +63,7 @@
           </mat-form-field>
         </div>
 
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-2">
           <mat-form-field appearance="outline" class="w-100 hide-subscript">
             <mat-label>วันที่เริ่มต้น</mat-label>
             <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" (dateChange)="onStartDateChange()"
@@ -73,7 +73,7 @@
           </mat-form-field>
         </div>
 
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-2">
           <mat-form-field appearance="outline" class="w-100 hide-subscript">
             <mat-label>วันที่สิ้นสุด</mat-label>
             <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" [disabled]="!startDate" [min]="startDate"

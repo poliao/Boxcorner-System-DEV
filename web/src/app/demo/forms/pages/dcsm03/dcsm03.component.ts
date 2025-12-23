@@ -189,10 +189,6 @@ export class Dcsm03Component implements OnInit {
     }
   }
 
-  add() {
-    this.router.navigate(['/Dcsm02Detail']);
-  }
-
   onJobSearch(event: any) {
     const value = (event.target as HTMLInputElement).value;
     this.searchJobDetailsSubject.next(value);

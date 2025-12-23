@@ -26,9 +26,6 @@ public class SampleOrder {
     @Column(name = "folder_name", length = 255)
     private String folderName;
 
-    @Column(name = "details", columnDefinition = "TEXT")
-    private String details;
-
     @Column(name = "job_owner", length = 150)
     private String jobOwner;
 

@@ -13,7 +13,7 @@ export class Dcsm04DetailResolver implements Resolve<any> {
     if (id) {
       return this.service.getById(Number(id)).pipe(
         catchError(error => {
-          this.router.navigate(['/Dcsm01']); 
+          this.router.navigate(['/Dcsm04']); 
           return of(null);
         })
       );

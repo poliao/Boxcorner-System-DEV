@@ -4,8 +4,9 @@ import { AdminComponent } from './theme/layout/admin/admin.component';
 import { GuestComponent } from './theme/layout/guest/guest.component';
 import { AuthGuard } from './guards/auth.guard';
 import { MenuGuard } from './guards/menu.guard';
-import { Dcsm01DetailResolver } from './demo/forms/pages/dcsm01/dcsm01-detail.resolver'; // 1. Import Resolver
+import { Dcsm01DetailResolver } from './demo/forms/pages/dcsm01/dcsm01-detail.resolver';
 import { Dcsm02DetailResolver } from './demo/forms/pages/dcsm02/dcsm02-detail.resolver';
+import { Dcsm04DetailResolver } from './demo/forms/pages/dcsm04/dcsm04-detail.resolver';
 
 const routes: Routes = [
   {
@@ -81,7 +82,7 @@ const routes: Routes = [
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm04/dcsm04-detail.component').then((c) => c.Dcsm04DetailComponent),
         resolve: { 
-          designOrder: Dcsm02DetailResolver
+          designOrder: Dcsm04DetailResolver
         }
       },
       {
