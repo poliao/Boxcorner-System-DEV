@@ -131,4 +131,8 @@ public class DesignOrdersService {
         existingOrder.setConfirmStatus("ไม่ผ่าน");
         return repository.save(existingOrder);
     }
+
+    public Integer countBacklog() {
+        return repository.countBacklog();
+    }
 }

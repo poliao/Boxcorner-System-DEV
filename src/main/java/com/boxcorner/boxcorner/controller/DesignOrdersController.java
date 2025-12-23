@@ -120,4 +120,9 @@ public class DesignOrdersController {
     public ResponseEntity<DesignOrders> updateEdit(@RequestParam("id") Integer id) {
         return ResponseEntity.ok(service.updateDesignEdit(id));
     }
+
+    @GetMapping("/countBacklog")
+    public ResponseEntity<Integer> getUniqueStatus(){
+        return ResponseEntity.ok(service.countBacklog());
+    }
 }

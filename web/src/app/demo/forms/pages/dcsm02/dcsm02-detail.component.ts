@@ -46,11 +46,11 @@ export class Dcsm02DetailComponent implements OnInit {
       id: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
-      jobDetails: [''],
+      jobDetails: ['',Validators.required],
       remarks: [''],
       jobOwner: ['', Validators.required],
-      deadlineDate: [''],
-      deadlineTime: [''],
+      deadlineDate: ['',Validators.required],
+      deadlineTime: ['',Validators.required],
       assignee: [''],
       processStatus: ['รอดำเนินการ', Validators.required],
       confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required]
@@ -88,11 +88,11 @@ export class Dcsm02DetailComponent implements OnInit {
   getJobDetailsColor() {
     const value = this.designForm.get('jobDetails')?.value;
     switch (value) {
-      case 'ปรับไดคัท': return 'bg-primary text-white';
-      case 'แก้ไขอาร์ต': return 'bg-warning text-dark';
-      case 'รอลูกค้าแจ้งกลับ': return 'bg-danger text-white';
-      case 'ออกแบบรายละเอียดใน Line': return 'bg-info text-dark';
-      case 'เคลียร์ไฟล์ ส่งคอนเฟิร์ม': return 'bg-success text-white';
+      case 'ปรับไดคัท': return 'bg-warning text-white';
+      case 'แก้ไขอาร์ต': return 'bg-danger text-white';
+      case 'รอลูกค้าแจ้งกลับ': return 'bg-success text-white';
+      case 'ออกแบบรายละเอียดใน Line': return 'bg-info text-white';
+      case 'เคลียร์ไฟล์ ส่งคอนเฟิร์ม': return 'bg-danger text-white';
       default: return 'bg-light text-dark';
     }
   }

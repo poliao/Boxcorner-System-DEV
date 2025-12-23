@@ -15,52 +15,56 @@ import com.boxcorner.boxcorner.entity.DesignOrders;
 @Repository
 public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Integer> {
 
-    @Query(value = """
-            SELECT * FROM design_orders d
-            WHERE
-                (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
-                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
-                AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
-                AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(d.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
-                AND (:confirm IS NULL OR :confirm = '' OR UPPER(d.confirm_status) LIKE UPPER(CONCAT('%', :confirm, '%')))
-                /* ต้อง Cast Parameter วันที่ เพื่อให้ Postgres รู้ว่าเป็น Type อะไรเมื่อค่าเป็น NULL */
-                AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
-                AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
-            ORDER BY d.id DESC
-            """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
-    Page<DesignOrders> findByFilters(
-            @Param("jobDetails") String jobDetails,
-            @Param("jobOwner") String jobOwner,
-            @Param("assignee") String assignee,
-            @Param("processStatus") String processStatus,
-            @Param("confirm") String confirm,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
-            Pageable pageable);
+        @Query(value = """
+                        SELECT * FROM design_orders d
+                        WHERE
+                            (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
+                            AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                            AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(d.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                            AND (:confirm IS NULL OR :confirm = '' OR UPPER(d.confirm_status) LIKE UPPER(CONCAT('%', :confirm, '%')))
+                            /* ต้อง Cast Parameter วันที่ เพื่อให้ Postgres รู้ว่าเป็น Type อะไรเมื่อค่าเป็น NULL */
+                            AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
+                            AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                        ORDER BY d.id DESC
+                        """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
+        Page<DesignOrders> findByFilters(
+                        @Param("jobDetails") String jobDetails,
+                        @Param("jobOwner") String jobOwner,
+                        @Param("assignee") String assignee,
+                        @Param("processStatus") String processStatus,
+                        @Param("confirm") String confirm,
+                        @Param("startDate") LocalDate startDate,
+                        @Param("endDate") LocalDate endDate,
+                        Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT job_details FROM design_orders " +
-            "WHERE (:query IS NULL OR UPPER(job_details) LIKE CONCAT('%', UPPER(:query), '%')) " +
-            "ORDER BY job_details ASC LIMIT 20", nativeQuery = true)
-    List<String> JobDetailsNative(@Param("query") String query);
+        @Query(value = "SELECT DISTINCT job_details FROM design_orders " +
+                        "WHERE (:query IS NULL OR UPPER(job_details) LIKE CONCAT('%', UPPER(:query), '%')) " +
+                        "ORDER BY job_details ASC LIMIT 20", nativeQuery = true)
+        List<String> JobDetailsNative(@Param("query") String query);
 
-    @Query(value = "SELECT DISTINCT job_owner FROM design_orders " +
-            "WHERE job_owner IS NOT NULL AND job_owner != '' AND (:query IS NULL OR UPPER(job_owner) LIKE CONCAT('%', UPPER(:query), '%')) "
-            +
-            "ORDER BY job_owner ASC LIMIT 20", nativeQuery = true)
-    List<String> JobOwnerNative(@Param("query") String query);
+        @Query(value = "SELECT DISTINCT job_owner FROM design_orders " +
+                        "WHERE job_owner IS NOT NULL AND job_owner != '' AND (:query IS NULL OR UPPER(job_owner) LIKE CONCAT('%', UPPER(:query), '%')) "
+                        +
+                        "ORDER BY job_owner ASC LIMIT 20", nativeQuery = true)
+        List<String> JobOwnerNative(@Param("query") String query);
 
-    @Query(value = "SELECT DISTINCT assignee FROM design_orders " +
-            "WHERE (:query IS NULL OR UPPER(assignee) LIKE CONCAT('%', UPPER(:query), '%')) " +
-            "ORDER BY assignee ASC LIMIT 20", nativeQuery = true)
-    List<String> AssigneeNative(@Param("query") String query);
+        @Query(value = "SELECT DISTINCT assignee FROM design_orders " +
+                        "WHERE (:query IS NULL OR UPPER(assignee) LIKE CONCAT('%', UPPER(:query), '%')) " +
+                        "ORDER BY assignee ASC LIMIT 20", nativeQuery = true)
+        List<String> AssigneeNative(@Param("query") String query);
 
-    @Query(value = "SELECT DISTINCT process_status FROM design_orders " +
-            "WHERE (:query IS NULL OR UPPER(process_status) LIKE CONCAT('%', UPPER(:query), '%')) " +
-            "ORDER BY process_status ASC LIMIT 20", nativeQuery = true)
-    List<String> ProcessNative(@Param("query") String query);
+        @Query(value = "SELECT DISTINCT process_status FROM design_orders " +
+                        "WHERE (:query IS NULL OR UPPER(process_status) LIKE CONCAT('%', UPPER(:query), '%')) " +
+                        "ORDER BY process_status ASC LIMIT 20", nativeQuery = true)
+        List<String> ProcessNative(@Param("query") String query);
 
-    @Query(value = "SELECT DISTINCT confirm_status FROM design_orders " +
-            "WHERE (:query IS NULL OR UPPER(confirm_status) LIKE CONCAT('%', UPPER(:query), '%')) " +
-            "ORDER BY confirm_status ASC LIMIT 20", nativeQuery = true)
-    List<String> ConfirmNative(@Param("query") String query);
+        @Query(value = "SELECT DISTINCT confirm_status FROM design_orders " +
+                        "WHERE (:query IS NULL OR UPPER(confirm_status) LIKE CONCAT('%', UPPER(:query), '%')) " +
+                        "ORDER BY confirm_status ASC LIMIT 20", nativeQuery = true)
+        List<String> ConfirmNative(@Param("query") String query);
+
+        @Query(value = "select  count(id) as backlog from design_orders " +
+                        "where assignee='รอผู้รับผิดชอบยืนยัน'", nativeQuery = true)
+        Integer countBacklog();
 }

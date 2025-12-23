@@ -24,19 +24,19 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">วันที่สั่งงาน *</label>
+        <label class="form-label font-weight-bold">วันที่สั่งงาน<span style="color: red;">*</span></label>
         <input type="date" formControlName="orderDate" class="form-control"
           [class.is-invalid]="designForm.get('order_date')?.invalid && designForm.get('order_date')?.touched">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน *</label>
+        <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
         <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
           [class.is-invalid]="designForm.get('folder_name')?.invalid && designForm.get('folder_name')?.touched">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">รายละเอียดงาน</label>
+        <label class="form-label font-weight-bold">รายละเอียดงาน<span style="color: red;">*</span></label>
         <select formControlName="jobDetails" class="form-select" [ngClass]="getJobDetailsColor()">
           <option value="ปรับไดคัท">ปรับไดคัท</option>
           <option value="แก้ไขอาร์ต">แก้ไขอาร์ต</option>
@@ -47,22 +47,22 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">เจ้าของงาน *</label>
+        <label class="form-label font-weight-bold">เจ้าของงาน</label>
         <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
+        <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
         <input type="text" formControlName="assignee" class="form-control" placeholder="ชื่อผู้ออกแบบ">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
+        <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
         <input type="date" formControlName="deadlineDate" class="form-control">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
+        <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
         <input type="time" formControlName="deadlineTime" class="form-control">
       </div>
 
