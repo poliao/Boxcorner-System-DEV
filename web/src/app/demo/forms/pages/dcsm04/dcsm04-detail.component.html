@@ -2,20 +2,18 @@
   <div class="card total-income-card warning overflow-hidden">
     <div style="padding: 10px;">
       <form [formGroup]="designForm" class="row g-3">
-       <div class="col-12 d-flex  gap-2 mt-4">
-        <button *ngIf="isBtnApprove == true" (click)="updateStatusApprove()" class="btn text-white px-5 shadow-sm"
-          style="background-color: #16bd2c;">
-          อนุมัติ
-        </button>
-        <button *ngIf="isBtnApprove == true" (click)="updateStatusEdit()" class="btn text-white px-5 shadow-sm"
-          style="background-color: #b61a1a;">
-          แก้ไข
-        </button>
-      </div>
-      <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-        <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm" [disabled]="designForm.invalid"
+       <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+        <button *ngIf="isBtnAccept == true" (click)="updateStatus()" type="submit" class="btn text-white px-5 shadow-sm" 
           style="background-color: #1e1b4b;">
-          {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
+          ยอมรับงาน
+        </button>
+        <button *ngIf="isBtnWorking == true" (click)="updateStatusWorking()" type="submit" class="btn text-white px-5 shadow-sm" 
+          style="background-color: #1e1b4b;">
+          เริ่มทำงาน
+        </button>
+        <button *ngIf="isBtnComplete == true" (click)="updateStatusComplete()" type="submit" class="btn text-white px-5 shadow-sm" 
+          style="background-color: #1e1b4b;">
+          เสร็จสิ้น
         </button>
       </div>
       <div class="col-md-6">
@@ -24,19 +22,19 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
+        <label class="form-label font-weight-bold">วันที่สั่งงาน *</label>
         <input type="date" formControlName="orderDate" class="form-control"
           [class.is-invalid]="designForm.get('order_date')?.invalid && designForm.get('order_date')?.touched">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
+        <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน *</label>
         <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
           [class.is-invalid]="designForm.get('folder_name')?.invalid && designForm.get('folder_name')?.touched">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">รายละเอียดงาน<span style="color: red;">*</span></label>
+        <label class="form-label font-weight-bold">รายละเอียดงาน</label>
         <select formControlName="jobDetails" class="form-select" [ngClass]="getJobDetailsColor()">
           <option value="ปรับไดคัท">ปรับไดคัท</option>
           <option value="แก้ไขอาร์ต">แก้ไขอาร์ต</option>
@@ -47,22 +45,22 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">เจ้าของงาน</label>
+        <label class="form-label font-weight-bold">เจ้าของงาน *</label>
         <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
+        <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
         <input type="text" formControlName="assignee" class="form-control" placeholder="ชื่อผู้ออกแบบ">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
+        <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
         <input type="date" formControlName="deadlineDate" class="form-control">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
+        <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
         <input type="time" formControlName="deadlineTime" class="form-control">
       </div>
 

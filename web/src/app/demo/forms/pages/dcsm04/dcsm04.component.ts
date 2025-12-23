@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
-import { Dcsm03Service } from './dcsm03.service';
+import { Dcsm04Service } from './dcsm04.service';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -19,7 +19,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 
 @Component({
-  selector: 'app-dcsm03.component',
+  selector: 'app-dcsm04.component',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -38,10 +38,10 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
     MatDatepickerModule, // เพิ่มเข้าในลิสต์
     MatNativeDateModule, // เพิ่มเข้าในลิสต์
   ],
-  templateUrl: './dcsm03.component.html',
-  styleUrl: './dcsm03.component.scss'
+  templateUrl: './dcsm04.component.html',
+  styleUrl: './dcsm04.component.scss'
 })
-export class Dcsm03Component implements OnInit {
+export class Dcsm04Component implements OnInit {
   process_status: string = '';
   assignee: string = '';
 
@@ -71,7 +71,7 @@ export class Dcsm03Component implements OnInit {
 
   constructor(
     private http: HttpClient, 
-    private dcsm03Service: Dcsm03Service, 
+    private dcsm04Service: Dcsm04Service, 
     private router: Router,
     private loadingService: LoadingService) { }
 
@@ -108,7 +108,7 @@ export class Dcsm03Component implements OnInit {
     const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
 
     // เรียก API (สมมติว่า service มี method นี้ตามที่คุณแจ้ง)
-    this.dcsm03Service.getAllDesignOrders( // หรือ getAll() ถ้าใช้ service เดิม
+    this.dcsm04Service.getAllDesignOrders( // หรือ getAll() ถ้าใช้ service เดิม
       this.filterjobdetails,
       this.filterowner,
       this.filterprocess,
@@ -252,7 +252,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   fetchJobDetailFromDB(query: string) {
-    this.dcsm03Service.getUniqueJobDetail(query).subscribe({
+    this.dcsm04Service.getUniqueJobDetail(query).subscribe({
       next: (data: string[]) => {
         this.jobdetailsList = data;
       },
@@ -262,7 +262,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   fetchOwnerListFromDB(query: string) {
-    this.dcsm03Service.getUniqueOwner(query).subscribe({
+    this.dcsm04Service.getUniqueOwner(query).subscribe({
       next: (data: string[]) => {
         this.OwnerList = data;
       },
@@ -273,7 +273,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   fetchAssigneeFromDB(query: string) {
-    this.dcsm03Service.getUniqueAssignee(query).subscribe({
+    this.dcsm04Service.getUniqueAssignee(query).subscribe({
       next: (data: string[]) => {
         this.Assignee = data;
       },
@@ -284,7 +284,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   fetchProcessFromDB(query: string) {
-    this.dcsm03Service.getUniqueProcess(query).subscribe({
+    this.dcsm04Service.getUniqueProcess(query).subscribe({
       next: (data: string[]) => {
         this.Process = data;
       },
@@ -295,7 +295,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   fetchConfirmFromDB(query: string) {
-    this.dcsm03Service.getUniqueConfirm(query).subscribe({
+    this.dcsm04Service.getUniqueConfirm(query).subscribe({
       next: (data: string[]) => {
         this.Confirm = data;
       },
@@ -338,7 +338,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   Backlog(){
-    this.dcsm03Service.countBacklog().subscribe({
+    this.dcsm04Service.countBacklog().subscribe({
       next: (data: number) => {
         this.countBacklog = data;
       },

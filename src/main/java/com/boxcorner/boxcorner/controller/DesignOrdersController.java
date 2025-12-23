@@ -70,6 +70,26 @@ public class DesignOrdersController {
         }
     }
 
+    @GetMapping("/listDesign")
+    public ResponseEntity<?> getAllDesign(
+            @RequestParam(value = "job_details", required = false) String job_details,
+            @RequestParam(value = "job_owner", required = false) String job_owner,
+            @RequestParam(value = "process_status", required = false) String process_status,
+            @RequestParam(value = "confirm_status", required = false) String confirm_status,
+            @RequestParam(value = "assignee", required = false) String assignee,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        try {
+            Page<DesignOrders> pageDesignOrders = service.getAllRecipesDesign(job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+            return ResponseEntity.ok(pageDesignOrders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/dropdownjobdetails")
     public ResponseEntity<List<String>> getUniqueJobDetails(@RequestParam(value = "query", defaultValue = "") String query){
         return ResponseEntity.ok(service.findUniqueJobDetails(query));

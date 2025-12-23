@@ -63,6 +63,20 @@ public class DesignOrdersService {
         );
     }
 
+    public Page<DesignOrders> getAllRecipesDesign(String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return repository.findByAll(
+            job_details,    // 1. jobDetails
+            job_owner,      // 2. jobOwner
+            assignee,       // 3. assignee (สลับกลับมาตรงนี้)
+            process_status, // 4. processStatus (สลับกลับมาตรงนี้)
+            confirm_status, // 5. confirm
+            startDate,      // 6. startDate
+            endDate,        // 7. endDate
+            paging
+        );
+    }
+
     @Transactional(readOnly = true)
     public List<String> findUniqueJobDetails(String query) {
         String searchTerm = (query != null) ? query.trim() : "";

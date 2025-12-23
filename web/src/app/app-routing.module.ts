@@ -75,6 +75,24 @@ const routes: Routes = [
         path: 'Dcsm03',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm03/dcsm03.component').then((c) => c.Dcsm03Component)
+      },
+      {
+        path: 'Dcsm04Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm04/dcsm04-detail.component').then((c) => c.Dcsm04DetailComponent),
+        resolve: { 
+          designOrder: Dcsm02DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm04Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm04/dcsm04-detail.component').then((c) => c.Dcsm04DetailComponent)
+      },
+      {
+        path: 'Dcsm04',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm04/dcsm04.component').then((c) => c.Dcsm04Component)
       }
     ]
   },

@@ -23,12 +23,33 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
                             AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(d.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
                             AND (:confirm IS NULL OR :confirm = '' OR UPPER(d.confirm_status) LIKE UPPER(CONCAT('%', :confirm, '%')))
-                            /* ต้อง Cast Parameter วันที่ เพื่อให้ Postgres รู้ว่าเป็น Type อะไรเมื่อค่าเป็น NULL */
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
                         ORDER BY d.id DESC
                         """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
         Page<DesignOrders> findByFilters(
+                        @Param("jobDetails") String jobDetails,
+                        @Param("jobOwner") String jobOwner,
+                        @Param("assignee") String assignee,
+                        @Param("processStatus") String processStatus,
+                        @Param("confirm") String confirm,
+                        @Param("startDate") LocalDate startDate,
+                        @Param("endDate") LocalDate endDate,
+                        Pageable pageable);
+
+        @Query(value = """
+                        SELECT * FROM design_orders d
+                        WHERE
+                            (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
+                            AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                            AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(d.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                            AND (:confirm IS NULL OR :confirm = '' OR UPPER(d.confirm_status) LIKE UPPER(CONCAT('%', :confirm, '%')))
+                            AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
+                            AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                        ORDER BY d.deadline_date ASC, d.deadline_time ASC
+                        """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
+        Page<DesignOrders> findByAll(
                         @Param("jobDetails") String jobDetails,
                         @Param("jobOwner") String jobOwner,
                         @Param("assignee") String assignee,
