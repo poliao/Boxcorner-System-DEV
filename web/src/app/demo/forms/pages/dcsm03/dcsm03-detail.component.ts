@@ -125,6 +125,7 @@ export class Dcsm03DetailComponent implements OnInit {
        this.checkButtonVisibility();
       this.loadingService.hide();
       this.sweetAlert.success('Success', 'ยอมรับงานสำเร็จ!');
+      this.router.navigate(['/Dcsm03']);
     })
   }
 
@@ -135,6 +136,7 @@ export class Dcsm03DetailComponent implements OnInit {
        this.checkButtonVisibility();
       this.loadingService.hide();
       this.sweetAlert.success('Success', 'กำลังดำเนินการ!');
+      this.router.navigate(['/Dcsm03']);
     })
   }
 
@@ -145,6 +147,7 @@ export class Dcsm03DetailComponent implements OnInit {
        this.checkButtonVisibility();
       this.loadingService.hide();
       this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+      this.router.navigate(['/Dcsm03']);
     })
   }
 

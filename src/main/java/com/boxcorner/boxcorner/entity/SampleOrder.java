@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.checkerframework.checker.units.qual.C;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,4 +54,10 @@ public class SampleOrder {
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
+
+    @Column(name = "note_edit")
+    private String noteEdit;
+
+    @Column(name = "design_order_id", length = 150)
+    private Integer designOrderId;
 }

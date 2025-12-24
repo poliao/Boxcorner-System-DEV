@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +39,6 @@ public class SampleOrderController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<SampleOrder>> searchOrders(
-            // เพิ่ม value = "..." ให้ครบทุกตัวครับ
             @RequestParam(value = "folderName", required = false) String folderName,
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
@@ -61,11 +61,77 @@ public class SampleOrderController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/searchDetail")
+    public ResponseEntity<Page<SampleOrder>> searchOrdersDetail(
+            // เพิ่ม value = "..." ให้ครบทุกตัวครับ
+            @RequestParam(value = "folderName", required = false) String folderName,
+            @RequestParam(value = "jobOwner", required = false) String jobOwner,
+            @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
+            @RequestParam(value = "status", required = false) String status,
+
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<SampleOrder> result = sampleOrderService.getAllDetail(
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                page,
+                size);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/getById")
     public ResponseEntity<SampleOrder> getById(@RequestParam("id") Integer id) {
         return sampleOrderService.getSampleOrderById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/countBacklog")
+    public ResponseEntity<Integer> getUniqueStatus(){
+        return ResponseEntity.ok(sampleOrderService.countBacklog());
+    }
+
+    @PutMapping("/updateAssign")
+    public ResponseEntity<SampleOrder> updateAssign(@RequestParam("id") Integer id, HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "รอดำเนินการ",tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @PutMapping("/updateStatusDeliver")
+    public ResponseEntity<SampleOrder> updateDeliver(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "จัดส่งได้ รอเคลียร์ไฟล์", null));
+    }
+
+    @PutMapping("/updateStatusNotDeliver")
+    public ResponseEntity<SampleOrder> updateNotDeliver(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "จัดส่งไม่ทัน ขอเลื่อนเวลา", null));
+    }
+
+    @PutMapping("/updateStatusClearFile")
+    public ResponseEntity<SampleOrder> updateClearFile(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "เคลียร์ไฟล์แล้ว", null));
+    }
+
+    @PutMapping("/updateStatusInspection")
+    public ResponseEntity<SampleOrder> updateInspection(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ตรวจสอบแล้ว", null));
+    }
+
+    @PutMapping("/updateStatusSamples")
+    public ResponseEntity<SampleOrder> updateSamples(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ขึ้นตัวอย่างแล้ว", null));
+    }
+
+    @PutMapping("/updateStatusSucsess")
+    public ResponseEntity<SampleOrder> updateSucsess(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "สำเร็จ ส่งตรวจสอบ", null));
+    }
+
 
 }

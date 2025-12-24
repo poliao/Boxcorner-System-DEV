@@ -64,4 +64,32 @@ public class SampleOrderService {
     public Optional<SampleOrder> getSampleOrderById(Integer id) {
         return sampleOrderRepository.findById(id);
     }
+
+    public Integer countBacklog() {
+        return sampleOrderRepository.countBacklog();
+    }
+
+    @Transactional
+    public Page<SampleOrder> getAllDetail(String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return sampleOrderRepository.findByFiltersDetail(
+            folderName,
+            jobOwner,
+            responsiblePerson,
+            status, 
+            startDate,
+            endDate,
+            paging
+        );
+    }
+
+    public SampleOrder updatesampleOrderStatus(int id, String status, String assignee) {
+        SampleOrder sampleOrder = sampleOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        if (assignee != null) {
+            sampleOrder.setResponsiblePerson(assignee);
+        }
+        sampleOrder.setStatus(status);
+        return sampleOrderRepository.save(sampleOrder);
+    }
+
 }

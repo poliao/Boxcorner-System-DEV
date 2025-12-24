@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -20,6 +20,13 @@ export class Dcsm02DetailComponent implements OnInit {
   isBtnApprove = false;
   isBtnEdit = false;
 
+  showApproveModal = false;
+  approveDate = new FormControl('');      // วันที่
+  approveTime = new FormControl('');      // เวลา
+  approveQty = new FormControl('');       // จำนวน
+  approveUnit = new FormControl('');      // หน่วยนับ
+  isCreateSample = new FormControl(false); // Checkbox ขึ้นตัวอย่าง (ค่าเริ่มต้น false)
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -38,7 +45,7 @@ export class Dcsm02DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
     }
-      this.checkBtn();
+    this.checkBtn();
   }
 
   initForm(): void {
@@ -46,11 +53,11 @@ export class Dcsm02DetailComponent implements OnInit {
       id: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
-      jobDetails: ['',Validators.required],
+      jobDetails: ['', Validators.required],
       remarks: [''],
       jobOwner: ['', Validators.required],
-      deadlineDate: ['',Validators.required],
-      deadlineTime: ['',Validators.required],
+      deadlineDate: ['', Validators.required],
+      deadlineTime: ['', Validators.required],
       assignee: [''],
       processStatus: ['รอดำเนินการ', Validators.required],
       confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required]
@@ -61,6 +68,17 @@ export class Dcsm02DetailComponent implements OnInit {
     this.designForm.controls['assignee'].disable({ emitEvent: false });
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
+
+    console.log(this.designForm.getRawValue().processStatus);
+    
+
+    if (this.designForm.getRawValue().processStatus == 'รอดำเนินการ' || this.designForm.getRawValue().processStatus == 'เสร็จสิ้น') {
+      this.designForm.controls['folderName'].disable({ emitEvent: false });
+      this.designForm.controls['jobDetails'].disable({ emitEvent: false });
+      this.designForm.controls['remarks'].disable({ emitEvent: false });
+      this.designForm.controls['deadlineDate'].disable({ emitEvent: false });
+      this.designForm.controls['deadlineTime'].disable({ emitEvent: false });
+    }
   }
   patchFormData(data: any): void {
     const apiData = data as any;
@@ -101,7 +119,7 @@ export class Dcsm02DetailComponent implements OnInit {
     if (this.designForm.getRawValue().jobOwner === this.getCurrentUserFromToken() && this.designForm.getRawValue().confirmStatus === 'รอตรวจสอบ') {
       this.isBtnApprove = true;
       this.isBtnEdit = true;
-    }else{
+    } else {
       this.isBtnApprove = false;
       this.isBtnEdit = false;
     }
@@ -137,5 +155,47 @@ export class Dcsm02DetailComponent implements OnInit {
       this.sweetAlert.success('Success', 'ส่งแก้ไขสำเร็จ!');
     })
   }
+
+  openApproveModal() {
+    // กำหนดค่าเริ่มต้นตอนเปิด Modal
+    const now = new Date();
+    this.approveDate.setValue(now.toISOString().substring(0, 10)); // วันปัจจุบัน
+    this.approveTime.setValue(now.toTimeString().substring(0, 5)); // เวลาปัจจุบัน
+    this.approveQty.setValue('');
+    this.approveUnit.setValue('');
+    this.isCreateSample.setValue(false);
+
+    this.showApproveModal = true;
+  }
+
+  closeApproveModal() {
+    this.showApproveModal = false;
+  }
+
+  confirmApprove() {
+
+    const data = {
+      id: '', // ปล่อยว่าง หรือใส่ค่าตามต้องการ
+      orderDate: new Date().toISOString().substring(0, 10), // วันที่ปัจจุบัน
+      folderName: this.designForm.getRawValue().folderName,     // ดึงจากฟอร์มหลัก
+      jobOwner: this.designForm.getRawValue().jobOwner,         // ดึงจากฟอร์มหลัก
+      deliveryDate: this.approveDate.value,
+      deliveryTime: this.approveTime.value,
+      quantity: this.approveQty.value,
+      unit: this.approveUnit.value,
+      isCreateSample: this.isCreateSample.value,
+      responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
+      status: 'รอผู้รับผิดชอบอนุมัติ',
+      designOrderId: this.designForm.getRawValue().id // true/false
+    };
+    this.dcsm02Service.savesampleOrders(data).subscribe((response) => {
+      if (response) {
+        this.updateStatusApprove();
+        this.closeApproveModal();
+      }
+    });
+  }
+
+  
 
 }

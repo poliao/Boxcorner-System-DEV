@@ -1,0 +1,113 @@
+<div class="card-body">
+  <div class="card total-income-card warning overflow-hidden">
+    <div style="padding: 10px;">
+      <form [formGroup]="mainForm" class="row g-3">
+        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button *ngIf="confirm == true" type="submit" (click)="updateStatusComplete()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
+            ยืนยันรับงาน
+          </button>
+          <button *ngIf="confirmDeliver == true" type="submit" (click)="updateStatusDeliver()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
+            จัดส่งได้
+          </button>
+          <button *ngIf="notDeliver == true" type="button" (click)="openNotDeliverModal()" 
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            จัดส่งไม่ได้
+          </button>
+          <button *ngIf="clearFile == true" type="submit" (click)="updateStatusClearFile()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            เคลียร์ไฟล์
+          </button>
+          <button *ngIf="inspection == true" type="submit" (click)="updateStatusInspection()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ส่งตรวจ
+          </button>
+          <button *ngIf="samples == true" type="submit" (click)="updateStatusSamples()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ส่งขึ้นตัวอย่าง
+          </button>
+          <button *ngIf="deadline == true" type="submit" (click)="updateStatusSucsess()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            กำหนดส่งกลับ
+          </button>
+
+
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">รหัสสั่งผลิต</label>
+          <input type="text" formControlName="id" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
+          <input type="date" formControlName="orderDate" class="form-control"
+            [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
+          <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
+            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">เจ้าของงาน</label>
+          <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
+          <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
+          <input type="date" formControlName="deliveryDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
+          <input type="time" formControlName="deliveryTime" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">สถานะ</label>
+          <input type="text" formControlName="status" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">จำนวน</label>
+          <input type="number" formControlName="quantity" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">หน่วยนับ</label>
+          <input type="text" formControlName="unit" class="form-control">
+        </div>
+        <div class="col-12">
+          <label class="form-label font-weight-bold">หมายเหตุ</label>
+          <input type="text" formControlName="note" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
+        </div>
+        <div class="col-md-6">
+          <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
+              class="form-check-input" id="isCreateSampleSwitch">
+            <label class="form-check-label" for="isCreateSampleSwitch">ขึ้นตัวอย่าง</label>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showNotDeliverModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ระบุเวลาที่จัดส่งไม่ได้</h5>
+        <button type="button" class="btn-close" (click)="closeNotDeliverModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="failTime" class="form-label">วันที่</label>
+          <input type="date" class="form-control" [formControl]="notDeliverDate">
+        </div>
+        <div class="mb-3">
+          <label for="failTime" class="form-label">เวลา</label>
+          <input type="time" class="form-control" [formControl]="notDeliverTime">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeNotDeliverModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="confirmNotDeliver()" style="background-color: #1e1b4b;">ยืนยัน</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,7 +3,14 @@
     <div style="padding: 10px;">
       <form [formGroup]="designForm" class="row g-3">
        <div class="col-12 d-flex  gap-2 mt-4">
-      
+        <button *ngIf="isBtnApprove == true" (click)="openApproveModal()" class="btn text-white px-5 shadow-sm"
+          style="background-color: #16bd2c;">
+          อนุมัติ
+        </button>
+        <button *ngIf="isBtnApprove == true" (click)="updateStatusEdit()" class="btn text-white px-5 shadow-sm"
+          style="background-color: #b61a1a;">
+          แก้ไข
+        </button>
       </div>
       <div class="col-12 d-flex justify-content-end gap-2 mt-4">
         <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm" [disabled]="designForm.invalid"
@@ -74,6 +81,53 @@
         <input type="text" formControlName="remarks" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
       </div>
     </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showApproveModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">อนุมัติข้อมูลไปยัง ตารางสั่งงานตัวอย่าง</h5>
+        <button type="button" class="btn-close" (click)="closeApproveModal()"></button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">วันที่</label>
+            <input type="date" class="form-control" [formControl]="approveDate">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">เวลา</label>
+            <input type="time" class="form-control" [formControl]="approveTime">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">จำนวน</label>
+            <input type="number" class="form-control" [formControl]="approveQty" placeholder="0">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">หน่วยนับ</label>
+            <input type="text" class="form-control" [formControl]="approveUnit" placeholder="เช่น ชิ้น, กล่อง">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="sampleCheck" [formControl]="isCreateSample">
+            <label class="form-check-label font-weight-bold" for="sampleCheck">ขึ้นตัวอย่าง</label>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-success" (click)="confirmApprove()">ยืนยันอนุมัติ</button>
+      </div>
     </div>
   </div>
 </div>

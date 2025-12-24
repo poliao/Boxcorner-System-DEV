@@ -82,6 +82,8 @@ export class Dcsm02Service {
   updateStatusEdit(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/designs/updateStatusEdit?id=${id}`, {});
   }
-  
 
+  savesampleOrders(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
+  }
 }

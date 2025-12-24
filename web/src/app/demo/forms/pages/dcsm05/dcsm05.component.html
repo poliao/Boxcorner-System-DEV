@@ -1,0 +1,78 @@
+<h2>ตารางสั่งงานตัวอย่าง</h2>
+<div class="card-body">
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body bg-light">
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        <div class="row g-3">
+          
+          <div class="col-md-3">
+            <label class="form-label fw-bold">ชื่อโฟลเดอร์งาน</label>
+            <input type="text" class="form-control" formControlName="folderName" placeholder="ระบุชื่อโฟลเดอร์">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold">เจ้าของงาน</label>
+            <input type="text" class="form-control" formControlName="jobOwner" placeholder="ระบุเจ้าของงาน">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold">ผู้รับผิดชอบ</label>
+            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ระบุผู้รับผิดชอบ">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold">สถานะ</label>
+            <select class="form-select" formControlName="status">
+              <option value="">ทั้งหมด</option>
+              <option value="รอผู้รับผิดชอบอนุมัติ">รอผู้รับผิดชอบอนุมัติ</option>
+              <option value="In Progress">กำลังดำเนินการ (In Progress)</option>
+              <option value="Completed">เสร็จสิ้น (Completed)</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold">ตั้งแต่วันที่</label>
+            <input type="date" class="form-control" formControlName="startDate" (change)="onStartDateChange()">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold">ถึงวันที่</label>
+            <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
+          </div>
+
+          <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+            <button mat-flat-button color="primary" type="submit" class="px-4">
+              <mat-icon>search</mat-icon> ค้นหา
+            </button>
+            
+            <button mat-stroked-button color="warn" type="button" (click)="onClear()">
+              <mat-icon>refresh</mat-icon> ล้างค่า
+            </button>
+
+            <button mat-flat-button color="accent" class="px-4 me-2 position-relative" (click)="onFilterUnassigned()">
+                <mat-icon>search</mat-icon> งานที่ยังไม่มีผู้รับผิดชอบ
+                <span *ngIf="countBacklog > 0"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.75rem; border: 2px solid #fff;">
+                  {{ countBacklog }}
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+            </button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <app-data-table 
+    [columns]="tableColumns" 
+    [data]="tableData" 
+    [totalElements]="totalElements" 
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex" 
+    [clickableColumn]="'id'" 
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)">
+  </app-data-table>
+</div>
