@@ -3,13 +3,37 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
+          </button>
+          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ไฟล์ถูกต้อง
+          </button>
+          <button *ngIf="isBtnReject == true" (click)="updateEditFile()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            แก้ไขไฟล์
+          </button>
+
+          <button *ngIf="isBtnApproveSample == true" (click)="updateConfirmSample()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            อนุมัติ
+          </button>
+          <button *ngIf="isBtnRejectSample == true" (click)="updateEditConfirmSample()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            แก้ไข
+          </button>
+
+          <button *ngIf="isUpdateDelivery == true" (click)="updateDelivery()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            อนุมัติเลื่อนวันส่ง
+          </button>
+          <button *ngIf="isUpdateDelivery == true" (click)="updateNotDelivery()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ไม่อนุมัติเลื่อนวันส่ง
           </button>
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">รหัสสั่งผลิต</label>
           <input type="text" formControlName="id" class="form-control">
+        </div>
+        <div *ngIf="isDesign" class="col-md-6">
+          <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
+          <input type="text" formControlName="designOrderId" class="form-control">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
@@ -17,7 +41,7 @@
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
         </div>
         <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
+          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
@@ -30,11 +54,11 @@
           <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
+          <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
           <input type="date" formControlName="deliveryDate" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
+          <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
           <input type="time" formControlName="deliveryTime" class="form-control">
         </div>
          <div class="col-md-6">
@@ -42,12 +66,20 @@
           <input type="text" formControlName="status" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">จำนวน</label>
+          <label class="form-label font-weight-bold">จำนวน<span style="color: red;">*</span></label>
           <input type="number" formControlName="quantity" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">หน่วยนับ</label>
+          <label class="form-label font-weight-bold">หน่วยนับ<span style="color: red;">*</span></label>
           <input type="text" formControlName="unit" class="form-control">
+        </div>
+        <div class="col-md-3" *ngIf="isUpdateDelivery">
+          <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="date" formControlName="updateDateDelivery" class="form-control">
+        </div>
+        <div class="col-md-3" *ngIf="isUpdateDelivery">
+          <label class="form-label font-weight-bold">เวลาที่ขอเลื่อนส่ง</label>
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="time" formControlName="updateTimeDelivery" class="form-control">
         </div>
         <div class="col-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>

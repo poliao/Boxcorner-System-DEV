@@ -51,4 +51,7 @@ public class DesignOrders {
     @Column(name = "confirm_status")
     private String confirmStatus;
 
+    @Column(name = "note_edit")
+    private String noteEdit;
+
 }

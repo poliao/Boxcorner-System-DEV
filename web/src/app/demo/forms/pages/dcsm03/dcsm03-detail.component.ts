@@ -7,6 +7,7 @@ import { Dcsm03Service } from './dcsm03.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dcsm03-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -20,6 +21,7 @@ export class Dcsm03DetailComponent implements OnInit {
   isBtnAccept = false
   isBtnWorking = false
   isBtnComplete = false
+  isNoteEdit = false
 
   constructor(
     private fb: FormBuilder,
@@ -34,10 +36,13 @@ export class Dcsm03DetailComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     this.initForm();
-    
+
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
+      if (resolvedData.confirmStatus == 'ไม่ผ่าน') {
+        this.isNoteEdit = true
+      }
     }
     this.checkButtonVisibility();
   }
@@ -54,7 +59,8 @@ export class Dcsm03DetailComponent implements OnInit {
       deadlineTime: [''],
       assignee: [''],
       processStatus: ['', Validators.required],
-      confirmStatus: ['', Validators.required]
+      confirmStatus: ['', Validators.required],
+      noteEdit: [''],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -67,6 +73,7 @@ export class Dcsm03DetailComponent implements OnInit {
     this.designForm.controls['assignee'].disable({ emitEvent: false });
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
+    this.designForm.controls['noteEdit'].disable({ emitEvent: false });
   }
   patchFormData(data: any): void {
     const apiData = data as any;
@@ -91,15 +98,15 @@ export class Dcsm03DetailComponent implements OnInit {
       this.isBtnAccept = true;
       this.isBtnWorking = false;
       this.isBtnComplete = false;
-    }else if ((this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value && this.designForm.get('processStatus')?.value === 'รอดำเนินการ') || (this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value && this.designForm.get('processStatus')?.value === 'รอดำเนินการแก้ไข')) {
+    } else if ((this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value && this.designForm.get('processStatus')?.value === 'รอดำเนินการ') || (this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value && this.designForm.get('processStatus')?.value === 'รอดำเนินการแก้ไข')) {
       this.isBtnWorking = true;
       this.isBtnAccept = false;
       this.isBtnComplete = false;
-    }else if (this.designForm.get('processStatus')?.value === 'กำลังดำเนินการ' && this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value) {
+    } else if (this.designForm.get('processStatus')?.value === 'กำลังดำเนินการ' && this.getCurrentUserFromToken() === this.designForm.get('assignee')?.value) {
       this.isBtnComplete = true;
       this.isBtnWorking = false;
       this.isBtnAccept = false;
-    }else if (this.designForm.get('confirmStatus')?.value === 'รอตรวจสอบ') {
+    } else if (this.designForm.get('confirmStatus')?.value === 'รอตรวจสอบ') {
       this.isBtnComplete = false;
       this.isBtnWorking = false;
       this.isBtnAccept = false;
@@ -109,7 +116,6 @@ export class Dcsm03DetailComponent implements OnInit {
   private getCurrentUserFromToken(): string | null {
     const token = localStorage.getItem('token');
     if (!token) return null;
-    
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.username || payload.name || payload.sub;
@@ -118,37 +124,76 @@ export class Dcsm03DetailComponent implements OnInit {
     }
   }
 
-  updateStatus(){
-    this.loadingService.show();
-    this.dcsm03Service.updateStatus(this.designForm.getRawValue().id).subscribe((response) => {
-       this.designForm.patchValue(response);
-       this.checkButtonVisibility();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'ยอมรับงานสำเร็จ!');
-      this.router.navigate(['/Dcsm03']);
-    })
+  updateStatus() {
+    Swal.fire({
+      title: 'ยืนยันการยอมรับงาน',
+      text: "คุณต้องการยอมรับงาน ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm03Service.updateStatus(this.designForm.getRawValue().id).subscribe((response) => {
+          this.designForm.patchValue(response);
+          this.checkButtonVisibility();
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'ยอมรับงานสำเร็จ!');
+          this.router.navigate(['/Dcsm03']);
+        })
+      }
+    });
+
   }
 
-  updateStatusWorking(){
-    this.loadingService.show();
-    this.dcsm03Service.updateStatusWork(this.designForm.getRawValue().id).subscribe((response) => {
-       this.designForm.patchValue(response);
-       this.checkButtonVisibility();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'กำลังดำเนินการ!');
-      this.router.navigate(['/Dcsm03']);
-    })
+  updateStatusWorking() {
+    Swal.fire({
+      title: 'ยืนยันการเริ่มทำงาน',
+      text: "คุณต้องการเปลี่ยนสถานะเป็น 'กำลังดำเนินการ' ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm03Service.updateStatusWork(this.designForm.getRawValue().id).subscribe((response) => {
+          this.designForm.patchValue(response);
+          this.checkButtonVisibility();
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'กำลังดำเนินการ!');
+          this.router.navigate(['/Dcsm03']);
+        });
+      }
+    });
   }
 
-  updateStatusComplete(){
-    this.loadingService.show();
-    this.dcsm03Service.updateStatusComplete(this.designForm.getRawValue().id).subscribe((response) => {
-       this.designForm.patchValue(response);
-       this.checkButtonVisibility();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-      this.router.navigate(['/Dcsm03']);
-    })
+  updateStatusComplete() {
+    Swal.fire({
+      title: 'ยืนยันงานเสร็จสิ้น',
+      text: "คุณต้องการยืนยันงานเสร็จสิ้น ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm03Service.updateStatusComplete(this.designForm.getRawValue().id).subscribe((response) => {
+          this.designForm.patchValue(response);
+          this.checkButtonVisibility();
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm03']);
+        })
+      }
+    });
   }
-
 }

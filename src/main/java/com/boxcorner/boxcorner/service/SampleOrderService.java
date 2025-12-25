@@ -37,6 +37,8 @@ public class SampleOrderService {
                     existingOrder.setIsCreateSample(order.getIsCreateSample());
                     existingOrder.setStatus(order.getStatus());
                     existingOrder.setNote(order.getNote());
+                    existingOrder.setUpdateDateDelivery(order.getUpdateDateDelivery());
+                    existingOrder.setUpdateTimeDelivery(order.getUpdateTimeDelivery());
                     
                     return sampleOrderRepository.save(existingOrder);
                 })

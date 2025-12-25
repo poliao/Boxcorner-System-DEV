@@ -115,12 +115,12 @@ public class SampleOrderController {
 
     @PutMapping("/updateStatusClearFile")
     public ResponseEntity<SampleOrder> updateClearFile(@RequestParam("id") Integer id) {
-        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "เคลียร์ไฟล์แล้ว", null));
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "กำลังเคลียร์ไฟล์", null));
     }
 
     @PutMapping("/updateStatusInspection")
     public ResponseEntity<SampleOrder> updateInspection(@RequestParam("id") Integer id) {
-        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ตรวจสอบแล้ว", null));
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ไฟล์เสร็จ รอตรวจสอบไฟล์", null));
     }
 
     @PutMapping("/updateStatusSamples")
@@ -133,5 +133,23 @@ public class SampleOrderController {
         return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "สำเร็จ ส่งตรวจสอบ", null));
     }
 
+    @PutMapping("/updateFileChecked")
+    public ResponseEntity<SampleOrder> updateFileChecked(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ไฟล์ถูกต้อง", null));
+    }
 
+    @PutMapping("/updateEditFile")
+    public ResponseEntity<SampleOrder> updateEditFile(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "แก้ไขไฟล์", null));
+    }
+
+    @PutMapping("/updateConfirmSample")
+    public ResponseEntity<SampleOrder> updateConfirmSample(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ผ่าน", null));
+    }
+
+    @PutMapping("/updateEditConfirmSample")
+    public ResponseEntity<SampleOrder> updateEditConfirmSample(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "แก้ไข", null));
+    }
 }

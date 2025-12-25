@@ -16,7 +16,7 @@
             จัดส่งไม่ได้
           </button>
           <button *ngIf="clearFile == true" type="submit" (click)="updateStatusClearFile()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            เคลียร์ไฟล์
+            เริ่มเคลียร์ไฟล์
           </button>
           <button *ngIf="inspection == true" type="submit" (click)="updateStatusInspection()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ส่งตรวจ
@@ -91,7 +91,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">ระบุเวลาที่จัดส่งไม่ได้</h5>
+        <h5 class="modal-title">ระบุเวลาที่จัดส่งได้</h5>
         <button type="button" class="btn-close" (click)="closeNotDeliverModal()"></button>
       </div>
       <div class="modal-body">

@@ -7,6 +7,7 @@ import { Dcsm05Service } from './dcsm05.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dcsm05-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -26,7 +27,7 @@ export class Dcsm05DetailComponent implements OnInit {
   samples = false;
   deadline = false;
 
-  showNotDeliverModal = false; 
+  showNotDeliverModal = false;
   notDeliverTime = new FormControl('');
   notDeliverDate = new FormControl('');
 
@@ -43,14 +44,14 @@ export class Dcsm05DetailComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     this.initForm();
-    
+
 
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
       this.checkBtn();
     }
-    
+
   }
 
   initForm(): void {
@@ -95,7 +96,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = false;
-    }else if(this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') {
+    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') {
       this.confirm = false;
       this.confirmDeliver = true;
       this.notDeliver = true;
@@ -103,7 +104,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = false;
-    }else if(this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์') {
+    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์') {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -111,7 +112,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = false;
-    }else if(this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'เคลียร์ไฟล์แล้ว') {
+    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์') {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -119,7 +120,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = true;
       this.samples = false;
       this.deadline = false;
-    }else if(this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ตรวจสอบแล้ว' && this.mainForm.getRawValue().isCreateSample === true) {
+    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' && this.mainForm.getRawValue().isCreateSample === true) {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -127,7 +128,15 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = true;
       this.deadline = false;
-    }else if((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson) && (this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || (this.mainForm.getRawValue().status === 'ตรวจสอบแล้ว' && this.mainForm.getRawValue().isCreateSample === false))) {
+    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์') {
+      this.confirm = false;
+      this.confirmDeliver = false;
+      this.notDeliver = false;
+      this.clearFile = false;
+      this.inspection = false;
+      this.samples = false;
+      this.deadline = false;
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson) && (this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว')) {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -135,7 +144,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = true;
-    }else if(this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' ) {
+    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ') {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -157,71 +166,129 @@ export class Dcsm05DetailComponent implements OnInit {
     }
   }
 
-   updateStatusComplete(){
-    this.loadingService.show();
-    this.dcsm05Service.updateStatusConfirm(this.mainForm.getRawValue().id).subscribe((response) => {
-       this.patchFormData(response);
-       this.checkBtn();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'รับงานสำเร็จ!');
-    })
+  updateStatusComplete() {
+    Swal.fire({
+      title: 'ยืนยันรับงาน',
+      text: "ยืนยันรับงาน ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm05Service.updateStatusConfirm(this.mainForm.getRawValue().id).subscribe((response) => {
+          this.patchFormData(response);
+          this.checkBtn();
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'รับงานสำเร็จ!');
+          this.router.navigate(['/Dcsm05']);
+        })
+      }
+    });
   }
 
-  updateStatusDeliver(){
-    this.loadingService.show();
-    this.dcsm05Service.updateStatusDeliver(this.mainForm.getRawValue().id).subscribe((response) => {
-       this.patchFormData(response);
-       this.checkBtn();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'ยืนยันจัดส่งได้!');
-    })
+  updateStatusDeliver() {
+    Swal.fire({
+      title: 'ยืนยันจัดส่งได้',
+      text: "ยืนยันจัดส่งได้ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.loadingService.show();
+        this.dcsm05Service.updateStatusDeliver(this.mainForm.getRawValue().id).subscribe((response) => {
+          this.patchFormData(response);
+          this.checkBtn();
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'ยืนยันจัดส่งได้!');
+          this.router.navigate(['/Dcsm05']);
+        })
+      }
+    });
   }
 
-  updateStatusClearFile(){
-    this.loadingService.show();
-    this.dcsm05Service.updateStatusClearFile(this.mainForm.getRawValue().id).subscribe((response) => {
-       this.patchFormData(response);
-       this.checkBtn();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'เคลียร์ไฟล์แล้ว!');
-    })
+  updateStatusClearFile() {
+    Swal.fire({
+      title: 'ยืนยันเคลียร์ไฟล์แล้ว',
+      text: "ยืนยันเคลียร์ไฟล์แล้ว ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.loadingService.show();
+        this.dcsm05Service.updateStatusClearFile(this.mainForm.getRawValue().id).subscribe((response) => {
+          this.patchFormData(response);
+          this.checkBtn();
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'เคลียร์ไฟล์แล้ว!');
+          this.router.navigate(['/Dcsm05']);
+        })
+      }
+    });
   }
- updateStatusInspection(){
-    this.loadingService.show();
-    this.dcsm05Service.updateStatusInspection(this.mainForm.getRawValue().id).subscribe((response) => {
-       this.patchFormData(response);
-       this.checkBtn();
-      this.loadingService.hide();
-      this.sweetAlert.success('Success', 'ตรวจสอบไฟล์แล้ว!');
-    })
+  updateStatusInspection() {
+    Swal.fire({
+      title: 'ยืนยันเคลียร์ไฟล์แล้ว',
+      text: "ยืนยันเคลียร์ไฟล์แล้ว ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm05Service.updateStatusInspection(this.mainForm.getRawValue().id).subscribe((response) => {
+          this.patchFormData(response);
+          this.checkBtn();
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'ส่งตรวจสอบไฟล์!');
+          this.router.navigate(['/Dcsm05']);
+        })
+      }
+    });
   }
 
-  updateStatusSamples(){
+  updateStatusSamples() {
     this.loadingService.show();
     this.dcsm05Service.updateStatusSamples(this.mainForm.getRawValue().id).subscribe((response) => {
-       this.patchFormData(response);
-       this.checkBtn();
+      this.patchFormData(response);
+      this.checkBtn();
       this.loadingService.hide();
       this.sweetAlert.success('Success', 'ขึ้นตัวอย่างแล้ว!');
     })
   }
 
-  updateStatusSucsess(){
+  updateStatusSucsess() {
     this.loadingService.show();
     this.dcsm05Service.updateStatusSucsess(this.mainForm.getRawValue().id).subscribe((response) => {
-       this.patchFormData(response);
-       this.checkBtn();
+      this.patchFormData(response);
+      this.checkBtn();
       this.loadingService.hide();
       this.sweetAlert.success('Success', 'เสร็จสิ้น รอตรวจสอบ!');
     })
   }
 
   openNotDeliverModal() {
-    this.notDeliverTime.setValue(''); 
+    this.notDeliverTime.setValue('');
     this.notDeliverDate.setValue(new Date().toISOString().substring(0, 10));
     this.showNotDeliverModal = true;
   }
-  
+
 
   closeNotDeliverModal() {
     this.showNotDeliverModal = false;
@@ -229,10 +296,38 @@ export class Dcsm05DetailComponent implements OnInit {
 
   confirmNotDeliver() {
     const dateValue = this.notDeliverDate.value;
-    const timeValue = this.notDeliverTime.value; 
-     console.log('ยืนยันจัดส่งไม่ได้ เวลาที่ระบุ:', dateValue);
-     console.log('ยืนยันจัดส่งไม่ได้ เวลาที่ระบุ:', timeValue);
-    
+    const timeValue = this.notDeliverTime.value;
+
+    Swal.fire({
+      title: 'ขอเลื่อนวันส่ง',
+      text: "คุณต้องการขอเลื่อนวันส่ง ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#b61a1a',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const data = this.mainForm.getRawValue();
+        data.updateDateDelivery = dateValue;
+        data.updateTimeDelivery = timeValue
+        data.status = 'ขอเลื่อนวันส่ง';
+        this.loadingService.show();
+        this.dcsm05Service.save(data).subscribe((response) => {
+          try {
+            this.patchFormData(response);
+            this.loadingService.hide();
+            this.checkBtn();
+            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+            this.router.navigate(['/Dcsm05']);
+          } catch (error) {
+            this.loadingService.hide();
+            this.sweetAlert.error('Save', error);
+          }
+        });
+      }
+    });
     this.closeNotDeliverModal();
   }
 }

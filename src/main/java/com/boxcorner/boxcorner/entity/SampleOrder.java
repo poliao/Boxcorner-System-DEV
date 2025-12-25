@@ -1,14 +1,18 @@
 package com.boxcorner.boxcorner.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import org.checkerframework.checker.units.qual.C;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -60,4 +64,10 @@ public class SampleOrder {
 
     @Column(name = "design_order_id", length = 150)
     private Integer designOrderId;
+
+    @Column(name = "update_date_delivery")
+    private LocalDate updateDateDelivery;
+    
+    @Column(name = "update_time_delivery")
+    private LocalTime updateTimeDelivery;
 }
