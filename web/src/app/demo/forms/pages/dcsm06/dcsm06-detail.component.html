@@ -1,0 +1,86 @@
+<div class="card-body">
+  <div class="card total-income-card warning overflow-hidden">
+    <div style="padding: 10px;">
+      <form [formGroup]="mainForm" class="row g-3">
+        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
+            บันทึกข้อมูล
+          </button>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">รหัสสั่งผลิต</label>
+          <input type="text" formControlName="id" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
+          <input type="date" formControlName="orderDate" class="form-control"
+            [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
+          <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
+            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">ใช้ไฟล์</label>
+          <input type="text" formControlName="usedFile" class="form-control" placeholder="ชื่อผู้สั่งงาน">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">สีตัวอย่าง</label>
+          <input type="text" formControlName="colorSample" class="form-control" placeholder="ชื่อผู้ออกแบบ">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">เจ้าของงาน</label>
+          <input type="text" formControlName="jobOwner" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">วันที่ส่ง</label>
+          <input type="date" formControlName="deadlineDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">เวลาส่ง</label>
+          <input type="time" formControlName="deadlineTime" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
+          <input type="date" formControlName="deliveryDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">สถานะงาน</label>
+          <input type="text" formControlName="jobStatus" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
+          <input type="text" formControlName="processStatus" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">สถานะแม่พิมพ์</label>
+          <input type="text" formControlName="moldStatus" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
+          <input type="text" formControlName="operatorName" class="form-control" >
+        </div>
+        <div class="col-md-9">
+          <label class="form-label font-weight-bold">หมายเหตุ</label>
+          <input type="text" formControlName="remarks" class="form-control" >
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">วันที่ส่งงาน</label>
+          <input type="date" formControlName="inspectionDate" class="form-control" >
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="jobType" class="form-control" >
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
+          <input type="text" formControlName="updatedAt" class="form-control" >
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

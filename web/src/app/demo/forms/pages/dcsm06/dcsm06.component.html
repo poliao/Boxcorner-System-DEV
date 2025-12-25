@@ -1,0 +1,19 @@
+<h2>ตารางคอนเฟิร์มรอผลิต</h2>
+<div class="card-body">
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body bg-light">
+      
+    </div>
+  </div>
+
+  <app-data-table 
+    [columns]="tableColumns" 
+    [data]="tableData" 
+    [totalElements]="totalElements" 
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex" 
+    [clickableColumn]="'id'" 
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onRowClick($event)">
+  </app-data-table>
+</div>

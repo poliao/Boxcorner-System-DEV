@@ -1,0 +1,61 @@
+package com.boxcorner.boxcorner.repository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import com.boxcorner.boxcorner.entity.ProductionOrder;
+
+@Repository
+public interface ProductionOrderRepository extends JpaRepository<ProductionOrder, Integer> {
+
+    @Query(value = """
+            SELECT * FROM uat.production_orders p
+            WHERE
+                (:id IS NULL OR p.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR p.deadline_date <= :endDate)
+                AND (CAST(:deadlineTime AS time) IS NULL OR p.deadline_time = :deadlineTime)
+                AND (:jobStatus IS NULL OR :jobStatus = '' OR UPPER(p.job_status) LIKE UPPER(CONCAT('%', :jobStatus, '%')))
+                AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(p.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
+                AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
+                AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+            ORDER BY p.id DESC
+            """,
+            countQuery = """
+            SELECT count(*) FROM uat.production_orders p
+            WHERE
+                (:id IS NULL OR p.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR p.deadline_date <= :endDate)
+                AND (CAST(:deadlineTime AS time) IS NULL OR p.deadline_time = :deadlineTime)
+                AND (:jobStatus IS NULL OR :jobStatus = '' OR UPPER(p.job_status) LIKE UPPER(CONCAT('%', :jobStatus, '%')))
+                AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(p.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
+                AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
+                AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+            """,
+            nativeQuery = true)
+    Page<ProductionOrder> findByFilters(
+            @Param("id") Integer id,
+            @Param("folderName") String folderName,
+            @Param("jobOwner") String jobOwner,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("deadlineTime") LocalTime deadlineTime,
+            @Param("jobStatus") String jobStatus,
+            @Param("processStatus") String processStatus,
+            @Param("operatorName") String operatorName,
+            @Param("moldStatus") String moldStatus,
+            @Param("jobType") String jobType,
+            Pageable pageable);
+}
