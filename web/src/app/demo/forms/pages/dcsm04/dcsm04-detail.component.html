@@ -13,7 +13,7 @@
             แก้ไขไฟล์
           </button>
 
-          <button *ngIf="isBtnApproveSample == true" (click)="updateConfirmSample()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             อนุมัติ
           </button>
           <button *ngIf="isBtnRejectSample == true" (click)="updateEditConfirmSample()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
@@ -92,6 +92,60 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showApproveModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">อนุมัติข้อมูลไปยัง ตารางคอนเฟิร์มรอผลิต</h5>
+        <button type="button" class="btn-close" (click)="closeApproveModal()"></button>
+      </div>
+      <div class="modal-body">  
+      <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">ใช้ไฟล์ <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [formControl]="usedFile" placeholder="0"
+              [class.is-invalid]="usedFile.invalid && usedFile.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">ตัวอย่างสี <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [formControl]="colorSample" placeholder="เช่น ชิ้น, กล่อง"
+              [class.is-invalid]="colorSample.invalid && colorSample.touched">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" [formControl]="deadlineDate"
+              [class.is-invalid]="deadlineDate.invalid && deadlineDate.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า <span class="text-danger">*</span></label>
+            <input type="time" class="form-control" [formControl]="deadlineTime"
+              [class.is-invalid]="deadlineTime.invalid && deadlineTime.touched">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">หมายเหตุ <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [formControl]="remarks"
+              [class.is-invalid]="remarks.invalid && remarks.touched">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
+        
+        <button type="button" class="btn btn-success" (click)="confirmApprove()"
+          [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid">
+          ยืนยันอนุมัติ
+        </button>
+      </div>
     </div>
   </div>
 </div>

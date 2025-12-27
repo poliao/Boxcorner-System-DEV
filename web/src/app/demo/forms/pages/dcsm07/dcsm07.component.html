@@ -1,9 +1,6 @@
 <div class="container-fluid p-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="font-weight-bold text-dark m-0">ตารางคอนเฟิร์มรอผลิต</h2>
-    <button mat-flat-button style="background-color: #16bd2c; color: white;" (click)="add()">
-      <mat-icon>add</mat-icon> เพิ่มรายการ
-    </button>
   </div>
 
   <div class="card border-0 shadow-sm mb-4">
@@ -85,4 +82,5 @@
     [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
     (rowClick)="onRowClick($event)">
   </app-data-table>
+
 </div>

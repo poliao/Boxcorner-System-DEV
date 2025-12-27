@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class Dcsm06Service {
+export class Dcsm07Service {
 
   private apiUrl = environment.apiUrl;
 

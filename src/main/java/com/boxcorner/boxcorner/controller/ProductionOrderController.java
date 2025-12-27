@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boxcorner.boxcorner.entity.ProductionOrder;
+import com.boxcorner.boxcorner.security.jwt.TokenService;
 import com.boxcorner.boxcorner.service.ProductionOrderService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/production")
@@ -27,10 +30,13 @@ public class ProductionOrderController {
     @Autowired
     private ProductionOrderService productionOrderService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody ProductionOrder productionOrder) {
+    public ResponseEntity<?> save(@RequestBody ProductionOrder productionOrder, HttpServletRequest httpRequest) {
         try {
-            ProductionOrder savedData = productionOrderService.save(productionOrder);
+            ProductionOrder savedData = productionOrderService.save(productionOrder,tokenService.getCurrentUser(httpRequest));
             return ResponseEntity.ok(savedData);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -55,22 +61,46 @@ public class ProductionOrderController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<ProductionOrder>> search(
-            @RequestParam(required = false) Integer id,
-            @RequestParam(required = false) String folderName,
-            @RequestParam(required = false) String jobOwner,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime deadlineTime,
-            @RequestParam(required = false) String jobStatus,
-            @RequestParam(required = false) String processStatus,
-            @RequestParam(required = false) String operatorName,
-            @RequestParam(required = false) String moldStatus,
-            @RequestParam(required = false) String jobType,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false, name = "id") Integer id,
+            @RequestParam(required = false, name = "folderName") String folderName,
+            @RequestParam(required = false, name = "jobOwner") String jobOwner,
+            @RequestParam(required = false, name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false, name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false, name = "deadlineTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime deadlineTime,
+            @RequestParam(required = false, name = "jobStatus") String jobStatus,
+            @RequestParam(required = false, name = "processStatus") String processStatus,
+            @RequestParam(required = false, name = "operatorName") String operatorName,
+            @RequestParam(required = false, name = "moldStatus") String moldStatus,
+            @RequestParam(required = false, name = "jobType") String jobType,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProductionOrder> result = productionOrderService.findByFilters(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable
+        );
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/searchProduct")
+    public ResponseEntity<Page<ProductionOrder>> searchProduct(
+            @RequestParam(required = false, name = "id") Integer id,
+            @RequestParam(required = false, name = "folderName") String folderName,
+            @RequestParam(required = false, name = "jobOwner") String jobOwner,
+            @RequestParam(required = false, name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false, name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false, name = "deadlineTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime deadlineTime,
+            @RequestParam(required = false, name = "jobStatus") String jobStatus,
+            @RequestParam(required = false, name = "processStatus") String processStatus,
+            @RequestParam(required = false, name = "operatorName") String operatorName,
+            @RequestParam(required = false, name = "moldStatus") String moldStatus,
+            @RequestParam(required = false, name = "jobType") String jobType,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductionOrder> result = productionOrderService.findByProductionFilters(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable
         );

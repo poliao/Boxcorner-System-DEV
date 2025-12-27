@@ -1,26 +1,17 @@
-<div class="container-fluid p-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="font-weight-bold text-dark m-0">ตารางคอนเฟิร์มรอผลิต</h2>
-    <button mat-flat-button style="background-color: #16bd2c; color: white;" (click)="add()">
-      <mat-icon>add</mat-icon> เพิ่มรายการ
-    </button>
-  </div>
-
+<h2>ตารางคอนเฟิร์มรอผลิต</h2>
+<div class="card-body">
   <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body bg-light rounded">
+    <div class="card-body bg-light">
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
         <div class="row g-3">
-
           <div class="col-md-3">
             <label class="form-label fw-bold">รหัสสั่งผลิต (ID)</label>
             <input type="number" class="form-control" formControlName="id" placeholder="ระบุ ID">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">ชื่อโฟลเดอร์งาน</label>
             <input type="text" class="form-control" formControlName="folderName" placeholder="ระบุชื่อโฟลเดอร์">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">ประเภทงาน</label>
             <input type="text" class="form-control" formControlName="jobType" placeholder="เช่น กล่องฝาชน">
@@ -29,11 +20,6 @@
           <div class="col-md-3">
             <label class="form-label fw-bold">เจ้าของงาน</label>
             <input type="text" class="form-control" formControlName="jobOwner" placeholder="ระบุเจ้าของงาน">
-          </div>
-
-          <div class="col-md-3">
-            <label class="form-label fw-bold">ผู้รับผิดชอบ</label>
-            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ระบุผู้รับผิดชอบ">
           </div>
 
           <div class="col-md-3">
@@ -67,7 +53,7 @@
             <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
           </div>
 
-          <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+          <div class="col-md-9 d-flex align-items-end justify-content-end gap-2">
             <button type="button" class="btn btn-secondary px-4" (click)="onClear()">
               <i class="fa fa-refresh me-1"></i> ล้างค่า
             </button>
@@ -75,14 +61,14 @@
               <i class="fa fa-search me-1"></i> ค้นหา
             </button>
           </div>
-
         </div>
       </form>
     </div>
   </div>
 
-  <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
-    [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
-    (rowClick)="onRowClick($event)">
-  </app-data-table>
+   <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
+      [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
+      (rowClick)="onRowClick($event)">
+    </app-data-table>
 </div>
+

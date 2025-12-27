@@ -20,12 +20,22 @@ public class ProductionOrderService {
     private ProductionOrderRepository productionOrderRepository;
 
     @Transactional
-    public ProductionOrder save(ProductionOrder productionOrder) {
+    public ProductionOrder save(ProductionOrder productionOrder,String jobOwner) {
+        if (productionOrder.getId() == null) {
+            productionOrder.setJobOwner(jobOwner);
+            productionOrder.setCreatedAt(LocalDate.now());
+            productionOrder.setUpdatedAt(LocalDate.now());
+            productionOrder.setOperatorName("รอผู้รับผิดชอบยืนยัน");
+            productionOrder.setJobStatus("รอผู้รับผิดชอบยืนยัน");
+            productionOrder.setProcessStatus("รอผู้รับผิดชอบยืนยัน");
+            productionOrder.setMoldStatus("รอผู้รับผิดชอบยืนยัน");
+        }
         if (productionOrder.getId() != null) {
             Optional<ProductionOrder> existingOrderOpt = productionOrderRepository.findById(productionOrder.getId());
             if (existingOrderOpt.isPresent()) {
                 ProductionOrder existingOrder = existingOrderOpt.get();
                 productionOrder.setCreatedAt(existingOrder.getCreatedAt());
+                productionOrder.setUpdatedAt(LocalDate.now());
             }
         }
         return productionOrderRepository.save(productionOrder);
@@ -40,6 +50,15 @@ public class ProductionOrderService {
             String jobStatus, String processStatus, String operatorName,
             String moldStatus, String jobType, Pageable pageable) {
         return productionOrderRepository.findByFilters(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+    }
+
+    public Page<ProductionOrder> findByProductionFilters(Integer id, String folderName, String jobOwner,
+            LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
+            String jobStatus, String processStatus, String operatorName,
+            String moldStatus, String jobType, Pageable pageable) {
+        return productionOrderRepository.findByProductionFilters(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }

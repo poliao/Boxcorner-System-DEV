@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class Dcsm06Service {
+export class Dcsm09Service {
 
   private apiUrl = environment.apiUrl;
 
@@ -41,7 +41,32 @@ export class Dcsm06Service {
         }
     });
 
-    return this.http.get(`${this.apiUrl}/production/search`, { params: params });
+    return this.http.get(`${this.apiUrl}/production/searchProduct`, { params: params });
+  }
+
+   getOrdersProduction(apiFilters: any): Observable<any> {
+    let params: any = {
+      page: apiFilters.page.toString(),
+      size: apiFilters.size.toString(),
+      id: apiFilters.id,
+      folderName: apiFilters.folderName,
+      jobOwner: apiFilters.jobOwner,
+      jobStatus: apiFilters.jobStatus, 
+      operatorName: apiFilters.operatorName, 
+      processStatus: apiFilters.processStatus,
+      moldStatus: apiFilters.moldStatus,
+      jobType: apiFilters.jobType,
+      startDate: apiFilters.startDate,
+      endDate: apiFilters.endDate
+    };
+
+    Object.keys(params).forEach(key => {
+        if (params[key] === null || params[key] === '') {
+            delete params[key];
+        }
+    });
+
+    return this.http.get(`${this.apiUrl}/production/searchProduct`, { params: params });
   }
 
 }

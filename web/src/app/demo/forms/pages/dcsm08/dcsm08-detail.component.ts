@@ -3,18 +3,18 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Dcsm06Service } from './dcsm06.service';
+import { Dcsm08Service } from './dcsm08.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 @Component({
-  selector: 'app-dcsm06-detail.component',
+  selector: 'app-dcsm08-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
-  templateUrl: './dcsm06-detail.component.html',
-  styleUrl: './dcsm06-detail.component.scss'
+  templateUrl: './dcsm08-detail.component.html',
+  styleUrl: './dcsm08-detail.component.scss'
 })
-export class Dcsm06DetailComponent implements OnInit {
+export class Dcsm08DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
@@ -23,9 +23,9 @@ export class Dcsm06DetailComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private dcsm06Service: Dcsm06Service,
+    private dcsm08Service: Dcsm08Service,
     private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
   ) { }
 
   ngOnInit(): void {
@@ -59,14 +59,23 @@ export class Dcsm06DetailComponent implements OnInit {
       updatedAt: [''],
     });
     this.mainForm.get('id')?.disable();
+    this.mainForm.get('orderDate')?.disable();
+    this.mainForm.get('folderName')?.disable();
+    this.mainForm.get('usedFile')?.disable();
+    this.mainForm.get('colorSample')?.disable();
     this.mainForm.get('jobOwner')?.disable();
-    this.mainForm.get('deliveryDate')?.disable();
+    this.mainForm.get('deadlineDate')?.disable();
+    this.mainForm.get('deadlineTime')?.disable();
     this.mainForm.get('jobStatus')?.disable();
     this.mainForm.get('processStatus')?.disable();
-    this.mainForm.get('operatorName')?.disable();
     this.mainForm.get('inspectionDate')?.disable();
     this.mainForm.get('moldStatus')?.disable();
     this.mainForm.get('jobType')?.disable();
+    this.mainForm.get('createdAt')?.disable();
+    this.mainForm.get('updatedAt')?.disable();
+    this.mainForm.get('deliveryDate')?.disable();
+    this.mainForm.get('operatorName')?.disable();
+    this.mainForm.get('remarks')?.disable();
   }
 
   patchFormData(data: any): void {
@@ -76,17 +85,6 @@ export class Dcsm06DetailComponent implements OnInit {
 
   checkBtn() {
 
-  }
-
-  private getCurrentUserFromToken(): string | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.username || payload.name || payload.sub;
-    } catch (error) {
-      return null;
-    }
   }
 
   onSubmit() {
@@ -108,13 +106,17 @@ export class Dcsm06DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm06Service.save(this.mainForm.getRawValue()).subscribe({
+        const data = this.mainForm.getRawValue();
+        this.mainForm.get('jobStatus')?.setValue('รอดำเนินการ');
+        this.mainForm.get('processStatus')?.setValue('รอดำเนินการ');
+        this.mainForm.get('moldStatus')?.setValue('รอดำเนินการ');
+        this.dcsm08Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
             this.checkBtn();
             this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm06']);
+            this.router.navigate(['/Dcsm07']);
           },
           error: (error) => {
             this.loadingService.hide();
@@ -124,7 +126,6 @@ export class Dcsm06DetailComponent implements OnInit {
         });
       }
     });
-
-
   }
+  
 }

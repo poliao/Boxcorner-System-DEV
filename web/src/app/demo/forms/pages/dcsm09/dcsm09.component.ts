@@ -12,10 +12,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
-import { Dcsm06Service } from './dcsm06.service';
+import { Dcsm09Service } from './dcsm09.service';
+import { TokenService } from 'src/app/shared/token.service';
 
 @Component({
-  selector: 'app-dcsm06',
+  selector: 'app-dcsm09',
   standalone: true,
   imports: [
     CommonModule,
@@ -30,10 +31,10 @@ import { Dcsm06Service } from './dcsm06.service';
     MatNativeDateModule,
     DataTableComponent
   ],
-  templateUrl: './dcsm06.component.html',
-  styleUrls: ['./dcsm06.component.scss']
+  templateUrl: './dcsm09.component.html',
+  styleUrls: ['./dcsm09.component.scss']
 })
-export class Dcsm06Component implements OnInit {
+export class Dcsm09Component implements OnInit {
   searchForm!: FormGroup;
 
   tableData: any[] = [];
@@ -47,14 +48,15 @@ export class Dcsm06Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะงาน' },
+    { key: 'jobStatus', label: 'สถานะ' },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm06Service: Dcsm06Service
+    private dcsm09Service: Dcsm09Service,
+    private tokenService: TokenService,
   ) { }
 
   ngOnInit(): void {
@@ -79,15 +81,14 @@ export class Dcsm06Component implements OnInit {
   }
 
   loadData(): void {
-    const formValues = this.searchForm.getRawValue();
 
-    // Map ข้อมูลให้ตรงกับ Service ที่เตรียมไว้
+    const formValues = this.searchForm.getRawValue();
     const apiFilters = {
-      id: formValues.id,                   // ส่ง id
+      id: formValues.id,    
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: this.tokenService.getCurrentUserFromToken(), 
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: formValues.jobType,
@@ -97,7 +98,7 @@ export class Dcsm06Component implements OnInit {
       size: this.pageSize
     };
 
-    this.dcsm06Service.getOrdersWithSearch(apiFilters).subscribe({
+    this.dcsm09Service.getOrdersWithSearch(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
@@ -171,10 +172,10 @@ export class Dcsm06Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm06Detail']); 
+    this.router.navigate(['/Dcsm09Detail']); 
   }
 
   onRowClick(row: any): void {
-    this.router.navigate(['/Dcsm06Detail', row.id]);
+    this.router.navigate(['/Dcsm09Detail', row.id]);
   }
 }

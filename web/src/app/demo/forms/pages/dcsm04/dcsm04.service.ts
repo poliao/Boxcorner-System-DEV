@@ -56,5 +56,9 @@ export class Dcsm04Service {
     return this.http.put(`${this.apiUrl}/sampleOrders/updateEditConfirmSample?id=${id}`, {});
   }
 
+  saveProduction(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/production/save`, data);
+  }
+
 
 }

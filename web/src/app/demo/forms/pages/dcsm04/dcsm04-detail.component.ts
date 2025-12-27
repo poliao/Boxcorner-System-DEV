@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -25,6 +25,14 @@ export class Dcsm04DetailComponent implements OnInit {
   isBtnApproveSample = false
   isBtnRejectSample = false
   isUpdateDelivery = false
+
+  showApproveModal = false;
+  usedFile = new FormControl('', Validators.required);
+  colorSample = new FormControl('', Validators.required);
+  deadlineDate = new FormControl('', Validators.required);
+  deadlineTime = new FormControl('', Validators.required);
+  remarks = new FormControl('', Validators.required);
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -49,8 +57,8 @@ export class Dcsm04DetailComponent implements OnInit {
     this.checkBtn();
     if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
-      this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
-      this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
+      this.mainForm.controls['deadlineDate'].disable({ emitEvent: false });
+      this.mainForm.controls['deadlineTime'].disable({ emitEvent: false });
       this.mainForm.controls['quantity'].disable({ emitEvent: false });
       this.mainForm.controls['unit'].disable({ emitEvent: false });
       this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
@@ -248,6 +256,12 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnReject = false;
       this.isBtnApproveSample = true;
       this.isBtnRejectSample = true;
+    } else {
+      this.isBtnSave = false;
+      this.isBtnApprove = false;
+      this.isBtnReject = false;
+      this.isBtnApproveSample = false;
+      this.isBtnRejectSample = false;
     }
   }
 
@@ -274,7 +288,7 @@ export class Dcsm04DetailComponent implements OnInit {
           this.checkBtn();
           if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง') {
             this.isUpdateDelivery = true
-          }else {
+          } else {
             this.isUpdateDelivery = false
           }
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
@@ -304,13 +318,79 @@ export class Dcsm04DetailComponent implements OnInit {
           this.checkBtn();
           if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง') {
             this.isUpdateDelivery = true
-          }else {
+          } else {
             this.isUpdateDelivery = false
           }
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
         })
       }
     });
+  }
+
+  openApproveModal() {
+    const now = new Date();
+    this.deadlineDate.setValue(now.toISOString().substring(0, 10));
+    this.deadlineTime.setValue(now.toTimeString().substring(0, 5));
+    this.usedFile.setValue('');
+    this.colorSample.setValue('');
+    this.remarks.setValue('');
+    this.showApproveModal = true;
+  }
+
+  closeApproveModal() {
+    this.showApproveModal = false;
+  }
+
+  confirmApprove() {
+    const data = {
+      id: '',
+      orderDate: new Date().toISOString().substring(0, 10),
+      folderName: this.mainForm.getRawValue().folderName,
+      usedFile: this.usedFile.value,
+      colorSample: this.colorSample.value,
+      jobOwner: null,
+      deadlineDate: this.deadlineDate.value,
+      deadlineTime: this.deadlineTime.value,
+      deliveryDate: null,
+      jobStatus: null,
+      processStatus: null,
+      operatorName: null,
+      inspectionDate: null,
+      remarks: this.remarks.value,
+      moldStatus: null,
+      jobType: null,
+      createdAt: null,
+      updatedAt: null,
+      responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
+      status: 'รอผู้รับผิดชอบอนุมัติ',
+      designOrderId: this.mainForm.getRawValue().id
+    };
+    Swal.fire({
+      title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
+      text: "คุณต้องอนุมัติส่งไปตารางขึ้นตัวอย่าง ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm04Service.saveProduction(data).subscribe((response) => {
+          if (response) {
+            this.dcsm04Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
+              this.patchFormData(response);
+              this.loadingService.hide();
+              this.checkBtn();
+              this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+              this.router.navigate(['/Dcsm04']);
+            })
+          }
+        });
+      }
+    });
+
   }
 
 }
