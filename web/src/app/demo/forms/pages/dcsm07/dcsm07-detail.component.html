@@ -44,7 +44,7 @@
           <input type="time" formControlName="deadlineTime" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
+          <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง<span style="color: red;">*</span></label>
           <input type="date" formControlName="deliveryDate" class="form-control">
         </div>
         <div class="col-md-3">
@@ -60,23 +60,30 @@
           <input type="text" formControlName="moldStatus" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
-          <input type="text" formControlName="operatorName" class="form-control" >
+        <label class="form-label font-weight-bold">ผู้รับผิดชอบ <span style="color: red;">*</span></label>
+        <select formControlName="operatorName" class="form-control form-select">
+          <option value="" disabled selected>-- เลือกผู้รับผิดชอบ --</option>
+          <option *ngFor="let option of operatorOptions" [value]="option.value">
+            {{ option.text }}
+          </option>
+        </select>
+        <div class="invalid-feedback">
+          กรุณาเลือกผู้รับผิดชอบ
         </div>
+      </div>
         <div class="col-md-9">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control" >
+          <input type="text" formControlName="remarks" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <input type="text" formControlName="jobType" class="form-control" >
+          <label class="form-label font-weight-bold">ประเภทงาน<span style="color: red;">*</span></label >
+          <select formControlName="jobType" class="form-control form-select" >
+            <option value="" disabled selected>-- เลือกประเภทงาน --</option>
+            <option value="OD">OD</option>
+            <option value="OS">OS</option>
+          </select>
         </div>
-        <!-- <div class="col-md-3">
-          <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
-          <input type="text" formControlName="updatedAt" class="form-control" >
-        </div> -->
       </form>
     </div>
   </div>
 </div>
-

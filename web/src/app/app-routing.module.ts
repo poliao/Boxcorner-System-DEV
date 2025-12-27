@@ -12,6 +12,7 @@ import { Dcsm06DetailResolver } from './demo/forms/pages/dcsm06/dcsm06-detail.re
 import { Dcsm07DetailResolver } from './demo/forms/pages/dcsm07/dcsm07-detail.resolver';
 import { Dcsm08DetailResolver } from './demo/forms/pages/dcsm08/dcsm08-detail.resolver';
 import { Dcsm09DetailResolver } from './demo/forms/pages/dcsm09/dcsm09-detail.resolver';
+import { Dcsm10DetailResolver } from './demo/forms/pages/dcsm10/dcsm10-detail.resolver';
 
 const routes: Routes = [
   {
@@ -189,6 +190,25 @@ const routes: Routes = [
         path: 'Dcsm09',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm09/dcsm09.component').then((c) => c.Dcsm09Component)
+      }
+      ,
+      {
+        path: 'Dcsm10Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm10/dcsm10-detail.component').then((c) => c.Dcsm10DetailComponent),
+        resolve: { 
+          designOrder: Dcsm10DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm10Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm10/dcsm10-detail.component').then((c) => c.Dcsm10DetailComponent)
+      },
+      {
+        path: 'Dcsm10',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm10/dcsm10.component').then((c) => c.Dcsm10Component)
       }
     ]
   },

@@ -1,12 +1,12 @@
 package com.boxcorner.boxcorner.repository;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.boxcorner.boxcorner.entity.dto.MenuResponse;
-
-import java.util.List;
 
 @Repository
 public class MenuRepository {
@@ -15,7 +15,6 @@ public class MenuRepository {
     private JdbcTemplate jdbcTemplate;
 
     public List<MenuResponse> findMenusByUsername(String username) {
-        // SQL Query ที่เชื่อมโยง User -> Department Permission -> Menus
         String sql = "SELECT m.id, m.parent_id, m.title, m.type, m.icon, m.url, " +
                      "m.classes, m.target, m.external, m.breadcrumbs " +
                      "FROM menus m " +
@@ -44,4 +43,6 @@ public class MenuRepository {
             return menu;
         }, username);
     }
+
+   
 }

@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class Dcsm08Service {
+export class Dcsm10Service {
 
   private apiUrl = environment.apiUrl;
 
@@ -41,7 +41,7 @@ export class Dcsm08Service {
         }
     });
 
-    return this.http.get(`${this.apiUrl}/production/searchProduct`, { params: params });
+    return this.http.get(`${this.apiUrl}/production/search`, { params: params });
   }
 
    getOrdersProduction(apiFilters: any): Observable<any> {
@@ -66,7 +66,7 @@ export class Dcsm08Service {
         }
     });
 
-    return this.http.get(`${this.apiUrl}/production/searchProduct`, { params: params });
+    return this.http.get(`${this.apiUrl}/production/search`, { params: params });
   }
 
   updateProcessStatus(data: any): Observable<any> {
@@ -77,4 +77,11 @@ export class Dcsm08Service {
     return this.http.put(`${this.apiUrl}/production/updateJobStatus?id=${data.id}&jobStatus=${data.jobStatus}`, {});
   }
 
+  updateMoldStatus(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateMoldStatus?id=${data.id}&moldStatus=${data.moldStatus}`, {});
+  }
+
+  updateMoldMakerName(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateMoldMakerName?id=${data.id}`, {});
+  }
 }

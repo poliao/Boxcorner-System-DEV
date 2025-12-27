@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -106,4 +107,25 @@ public class ProductionOrderController {
         );
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("/updateProcessStatus")
+    public ResponseEntity<ProductionOrder> updateProcessStatus (@RequestParam("id") Integer id, @RequestParam("processStatus") String processStatus) {
+        return ResponseEntity.ok(productionOrderService.updateProcessStatus(id,processStatus));
+    }
+
+    @PutMapping("/updateJobStatus")
+    public ResponseEntity<ProductionOrder> updateJobStatus (@RequestParam("id") Integer id, @RequestParam("jobStatus") String jobStatus) {
+        return ResponseEntity.ok(productionOrderService.updateJobStatus(id,jobStatus));
+    }
+
+    @PutMapping("/updateMoldStatus")
+    public ResponseEntity<ProductionOrder> updateMoldStatus (@RequestParam("id") Integer id, @RequestParam("moldStatus") String moldStatus) {
+        return ResponseEntity.ok(productionOrderService.updateMoldStatus(id, moldStatus));
+    }
+
+    @PutMapping("/updateMoldMakerName")
+    public ResponseEntity<ProductionOrder> updateMoldMakerName (@RequestParam("id") Integer id, HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(productionOrderService.updateMoldMakerName(id, tokenService.getCurrentUser(httpRequest)));
+    }
+    
 }

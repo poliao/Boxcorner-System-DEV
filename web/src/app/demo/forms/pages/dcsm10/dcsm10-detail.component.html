@@ -3,21 +3,17 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isCheckMold == true" (click)="updateMoldStatus()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isMoldStart == true" (click)="updateMoldStart()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #2ace24;">
-            ตรวจไฟล์แม่พิมพ์แล้ว
+            เริ่มทำแม่พิมพ์
           </button>
-          <button *ngIf="isOrder == true" (click)="updateOrder()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isMoldSuccess == true" (click)="updateMoldSuccess()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #2ace24;">
-            ตรวจใบสั่งแล้ว
+            แม่พิมพ์เสร็จ
           </button>
-          <button *ngIf="isSendOrder == true" (click)="updateSendOrder()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isSendMold == true" (click)="updateSendMold()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #2ace24;">
-            ส่งใบสั่งผลิตแล้ว
-          </button>
-          <button *ngIf="isSendFile == true" (click)="updateSendFile()" type="submit" class="btn text-white px-5 shadow-sm"
-            style="background-color: #2ace24;">
-            ส่งไฟล์แล้ว
+            ส่งแม่พิมพ์
           </button>
         </div>
 
@@ -83,10 +79,6 @@
           <label class="form-label font-weight-bold">ประเภทงาน</label>
           <input type="text" formControlName="jobType" class="form-control" >
         </div>
-        <!-- <div class="col-md-3">
-          <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
-          <input type="text" formControlName="updatedAt" class="form-control" >
-        </div> -->
       </form>
     </div>
   </div>

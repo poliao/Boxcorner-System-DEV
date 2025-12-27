@@ -107,24 +107,24 @@
       <div class="row mb-3">
           <div class="col-6">
             <label class="form-label font-weight-bold">ใช้ไฟล์ <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [formControl]="usedFile" placeholder="0"
+            <input type="text" class="form-control" [formControl]="usedFile" 
               [class.is-invalid]="usedFile.invalid && usedFile.touched">
           </div>
           <div class="col-6">
             <label class="form-label font-weight-bold">ตัวอย่างสี <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [formControl]="colorSample" placeholder="เช่น ชิ้น, กล่อง"
+            <input type="text" class="form-control" [formControl]="colorSample"
               [class.is-invalid]="colorSample.invalid && colorSample.touched">
           </div>
         </div>
 
         <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า  <span style="color: red;">*</span></label>
             <input type="date" class="form-control" [formControl]="deadlineDate"
               [class.is-invalid]="deadlineDate.invalid && deadlineDate.touched">
           </div>
           <div class="col-6">
-            <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า <span style="color: red;">*</span></label>
             <input type="time" class="form-control" [formControl]="deadlineTime"
               [class.is-invalid]="deadlineTime.invalid && deadlineTime.touched">
           </div>
@@ -132,7 +132,7 @@
 
         <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">หมายเหตุ <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">หมายเหตุ </label>
             <input type="text" class="form-control" [formControl]="remarks"
               [class.is-invalid]="remarks.invalid && remarks.touched">
           </div>

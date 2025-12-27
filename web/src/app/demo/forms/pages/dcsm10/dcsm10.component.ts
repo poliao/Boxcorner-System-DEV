@@ -12,10 +12,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
-import { Dcsm07Service } from './dcsm07.service';
+import { Dcsm10Service } from './dcsm10.service';
+import { TokenService } from 'src/app/shared/token.service';
 
 @Component({
-  selector: 'app-dcsm07',
+  selector: 'app-dcsm10',
   standalone: true,
   imports: [
     CommonModule,
@@ -30,10 +31,10 @@ import { Dcsm07Service } from './dcsm07.service';
     MatNativeDateModule,
     DataTableComponent
   ],
-  templateUrl: './dcsm07.component.html',
-  styleUrls: ['./dcsm07.component.scss']
+  templateUrl: './dcsm10.component.html',
+  styleUrls: ['./dcsm10.component.scss']
 })
-export class Dcsm07Component implements OnInit {
+export class Dcsm10Component implements OnInit {
   searchForm!: FormGroup;
 
   tableData: any[] = [];
@@ -47,14 +48,16 @@ export class Dcsm07Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะ' },
+    { key: 'jobStatus', label: 'สถานะงาน' },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm07Service: Dcsm07Service
+    private dcsm10Service: Dcsm10Service,
+    private tokenService: TokenService,
   ) { }
 
   ngOnInit(): void {
@@ -64,39 +67,39 @@ export class Dcsm07Component implements OnInit {
 
   initSearchForm(): void {
     this.searchForm = this.fb.group({
-      id: [''],              // เพิ่ม id
+      id: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
       status: [''],
-      processStatus: [''],   // เพิ่ม processStatus
-      moldStatus: [''],      // เพิ่ม moldStatus
-      jobType: [''],         // เพิ่ม jobType
+      processStatus: [''],
+      moldStatus: [''],
+      jobType: [''],
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
+    
   }
 
   loadData(): void {
-    const formValues = this.searchForm.getRawValue();
 
-    // Map ข้อมูลให้ตรงกับ Service ที่เตรียมไว้
+    const formValues = this.searchForm.getRawValue();
     const apiFilters = {
-      id: formValues.id,                   // ส่ง id
+      id: formValues.id,    
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
       operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      jobStatus: 'เสร็จสิ้น',
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
-      jobType: formValues.jobType,
+      jobType: 'OS',
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       page: this.pageIndex,
       size: this.pageSize
     };
 
-    this.dcsm07Service.getOrdersWithSearch(apiFilters).subscribe({
+    this.dcsm10Service.getOrdersWithSearch(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
@@ -169,11 +172,7 @@ export class Dcsm07Component implements OnInit {
     this.loadData();
   }
 
-  add(): void {
-    this.router.navigate(['/Dcsm07Detail']); 
-  }
-
   onRowClick(row: any): void {
-    this.router.navigate(['/Dcsm07Detail', row.id]);
+    this.router.navigate(['/Dcsm10Detail', row.id]);
   }
 }

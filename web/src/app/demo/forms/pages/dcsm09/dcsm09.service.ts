@@ -69,4 +69,11 @@ export class Dcsm09Service {
     return this.http.get(`${this.apiUrl}/production/searchProduct`, { params: params });
   }
 
+  updateProcessStatus(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateProcessStatus?id=${data.id}&processStatus=${data.processStatus}`, {});
+  }
+
+  updateJobStatus(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateJobStatus?id=${data.id}&jobStatus=${data.jobStatus}`, {});
+  }
 }

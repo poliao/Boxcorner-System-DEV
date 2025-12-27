@@ -62,7 +62,7 @@ public class SampleOrder {
     @Column(name = "note_edit")
     private String noteEdit;
 
-    @Column(name = "design_order_id", length = 150)
+    @Column(name = "design_order_id")
     private Integer designOrderId;
 
     @Column(name = "update_date_delivery")

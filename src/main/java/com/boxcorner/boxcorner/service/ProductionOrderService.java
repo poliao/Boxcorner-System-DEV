@@ -1,5 +1,9 @@
 package com.boxcorner.boxcorner.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,10 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.boxcorner.boxcorner.entity.ProductionOrder;
 import com.boxcorner.boxcorner.repository.ProductionOrderRepository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Optional;
 
 @Service
 public class ProductionOrderService {
@@ -62,4 +62,30 @@ public class ProductionOrderService {
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }
+
+    public ProductionOrder updateProcessStatus (Integer id , String processStatus) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setProcessStatus(processStatus);
+        return productionOrderRepository.save(existingOrder);
+    }
+
+    public ProductionOrder updateJobStatus (Integer id , String jobStatus) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setJobStatus(jobStatus);
+        return productionOrderRepository.save(existingOrder);
+    }
+
+    public ProductionOrder updateMoldStatus (Integer id , String jobStatus) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setMoldStatus(jobStatus);
+        return productionOrderRepository.save(existingOrder);
+    }
+
+    public ProductionOrder updateMoldMakerName (Integer id, String name ) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setMoldMakerName(name);
+        return productionOrderRepository.save(existingOrder);
+    }
+
+
 }

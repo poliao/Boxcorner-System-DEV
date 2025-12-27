@@ -69,4 +69,14 @@ public class ProductionOrder {
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
+    @Column(name = "sample_order_id")
+    private Integer sampleOrderId;
+
+    @Column(name = "mold_maker_name")
+    private String moldMakerName;
+
+    @Column(name = "printing_machine")
+    private String printingMachine;
+
+
 }

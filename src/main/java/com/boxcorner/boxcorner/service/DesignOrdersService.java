@@ -20,8 +20,6 @@ public class DesignOrdersService {
     @Autowired
     private DesignOrdersRepository repository;
 
-    
-
     public List<DesignOrders> getAllDesigns() {
         return repository.findAll();
     }

@@ -3,11 +3,11 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isProsess == true" (click)="updateProcessStatus()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
             กำลังดำเนินการ
           </button>
-          <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isSuccess == true" (click)="updateSuccessStatus()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
             เสร็จสิ้น
           </button>

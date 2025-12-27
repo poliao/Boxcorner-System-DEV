@@ -18,6 +18,8 @@ export class Dcsm06DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
+  isSampleOrderId = false
+  isSave = false
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +36,22 @@ export class Dcsm06DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
       this.checkBtn();
+    }
+
+    if (this.mainForm.getRawValue().sampleOrderId != null && this.mainForm.getRawValue().sampleOrderId != '') {
+      this.isSampleOrderId = true
+    } else {
+      this.isSampleOrderId = false
+    }
+
+    if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน') {
+      this.mainForm.get('usedFile')?.enable();
+      this.mainForm.get('colorSample')?.enable();
+      this.mainForm.get('deadlineDate')?.enable();
+      this.mainForm.get('deadlineTime')?.enable();
+      this.mainForm.get('folderName')?.enable();
+      this.mainForm.get('remarks')?.enable();
+      this.isSave = true
     }
   }
 
@@ -57,16 +75,25 @@ export class Dcsm06DetailComponent implements OnInit {
       jobType: [''],
       createdAt: [''],
       updatedAt: [''],
+      sampleOrderId: [''],
     });
+    this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
+    this.mainForm.get('orderDate')?.disable();
+    this.mainForm.get('folderName')?.disable();
+    this.mainForm.get('usedFile')?.disable();
+    this.mainForm.get('colorSample')?.disable();
     this.mainForm.get('jobOwner')?.disable();
-    this.mainForm.get('deliveryDate')?.disable();
+    this.mainForm.get('deadlineDate')?.disable();
+    this.mainForm.get('deadlineTime')?.disable();
     this.mainForm.get('jobStatus')?.disable();
     this.mainForm.get('processStatus')?.disable();
-    this.mainForm.get('operatorName')?.disable();
     this.mainForm.get('inspectionDate')?.disable();
     this.mainForm.get('moldStatus')?.disable();
-    this.mainForm.get('jobType')?.disable();
+    this.mainForm.get('jobType')?.disable({ emitEvent: false });
+    this.mainForm.get('operatorName')?.disable({ emitEvent: false });
+    this.mainForm.get('deliveryDate')?.disable({ emitEvent: false });
+    this.mainForm.get('remarks')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -76,17 +103,6 @@ export class Dcsm06DetailComponent implements OnInit {
 
   checkBtn() {
 
-  }
-
-  private getCurrentUserFromToken(): string | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.username || payload.name || payload.sub;
-    } catch (error) {
-      return null;
-    }
   }
 
   onSubmit() {

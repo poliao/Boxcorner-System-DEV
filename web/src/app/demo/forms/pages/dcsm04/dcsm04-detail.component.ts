@@ -31,7 +31,7 @@ export class Dcsm04DetailComponent implements OnInit {
   colorSample = new FormControl('', Validators.required);
   deadlineDate = new FormControl('', Validators.required);
   deadlineTime = new FormControl('', Validators.required);
-  remarks = new FormControl('', Validators.required);
+  remarks = new FormControl('');
 
   constructor(
     private fb: FormBuilder,
@@ -363,7 +363,7 @@ export class Dcsm04DetailComponent implements OnInit {
       updatedAt: null,
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
-      designOrderId: this.mainForm.getRawValue().id
+      sampleOrderId: this.mainForm.getRawValue().id,
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',

@@ -48,7 +48,7 @@ export class Dcsm09Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะ' },
+    { key: 'jobStatus', label: 'สถานะงาน' },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];
 
@@ -87,7 +87,7 @@ export class Dcsm09Component implements OnInit {
       id: formValues.id,    
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: this.tokenService.getCurrentUserFromToken(), 
+      operatorName: formValues.responsiblePerson, 
       jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,

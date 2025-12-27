@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Dcsm07Service } from './dcsm07.service';
+import { Dcsm07Service, DropdownOption } from './dcsm07.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -18,6 +18,7 @@ export class Dcsm07DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
+  operatorOptions: DropdownOption[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +35,14 @@ export class Dcsm07DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
       this.checkBtn();
+      this.getDropdown();
+
+      if (this.mainForm.getRawValue().processStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().processStatus == 'รอดำเนินการ') {
+        this.mainForm.get('jobType')?.enable({ emitEvent: false });
+        this.mainForm.get('operatorName')?.enable({ emitEvent: false });
+        this.mainForm.get('deliveryDate')?.enable({ emitEvent: false });
+        this.mainForm.get('remarks')?.enable({ emitEvent: false });
+      }
     }
   }
 
@@ -47,14 +56,14 @@ export class Dcsm07DetailComponent implements OnInit {
       jobOwner: [''],
       deadlineDate: [''],
       deadlineTime: [''],
-      deliveryDate: [''],
+      deliveryDate: ['', Validators.required],
       jobStatus: [''],
       processStatus: [''],
-      operatorName: [''],
+      operatorName: ['', Validators.required],
       inspectionDate: [''],
       remarks: [''],
       moldStatus: [''],
-      jobType: [''],
+      jobType: ['', Validators.required],
       createdAt: [''],
       updatedAt: [''],
     });
@@ -70,6 +79,10 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('processStatus')?.disable();
     this.mainForm.get('inspectionDate')?.disable();
     this.mainForm.get('moldStatus')?.disable();
+    this.mainForm.get('jobType')?.disable({ emitEvent: false });
+    this.mainForm.get('operatorName')?.disable({ emitEvent: false });
+    this.mainForm.get('deliveryDate')?.disable({ emitEvent: false });
+    this.mainForm.get('remarks')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -132,5 +145,16 @@ export class Dcsm07DetailComponent implements OnInit {
       }
     });
   }
-  
+
+  getDropdown() {
+    this.dcsm07Service.getPlanningOperators().subscribe({
+      next: (data) => {
+        this.operatorOptions = data;
+      },
+      error: (err) => {
+        console.error('Error loading operators', err);
+      }
+    });
+  }
+
 }

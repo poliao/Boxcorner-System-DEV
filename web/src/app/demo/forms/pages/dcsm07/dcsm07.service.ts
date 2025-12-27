@@ -3,9 +3,15 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+export interface DropdownOption {
+  value: string;
+  text: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
+
 export class Dcsm07Service {
 
   private apiUrl = environment.apiUrl;
@@ -42,6 +48,10 @@ export class Dcsm07Service {
     });
 
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });
+  }
+
+  getPlanningOperators(): Observable<DropdownOption[]> {
+    return this.http.get<DropdownOption[]>(`${this.apiUrl}/user/planning`);
   }
 
 }

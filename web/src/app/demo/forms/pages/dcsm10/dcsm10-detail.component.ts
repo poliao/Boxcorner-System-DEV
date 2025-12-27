@@ -3,33 +3,34 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Dcsm09Service } from './dcsm09.service';
+import { Dcsm10Service } from './dcsm10.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { TokenService } from 'src/app/shared/token.service';
 @Component({
-  selector: 'app-dcsm09-detail.component',
+  selector: 'app-dcsm10-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
-  templateUrl: './dcsm09-detail.component.html',
-  styleUrl: './dcsm09-detail.component.scss'
+  templateUrl: './dcsm10-detail.component.html',
+  styleUrl: './dcsm10-detail.component.scss'
 })
-export class Dcsm09DetailComponent implements OnInit {
+export class Dcsm10DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
-  isCheckMold = false;
-  isOrder = false;
-  isSendOrder = false;
-  isSendFile = false;
+  isMoldStart = false;
+  isMoldSuccess = false;
+  isSendMold = false;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private dcsm09Service: Dcsm09Service,
+    private dcsm10Service: Dcsm10Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
+    private tokenService: TokenService,
   ) { }
 
   ngOnInit(): void {
@@ -37,8 +38,10 @@ export class Dcsm09DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
-      this.checkBtn();
     }
+    this.checkBtn();
+   
+    
   }
 
   initForm(): void {
@@ -61,6 +64,7 @@ export class Dcsm09DetailComponent implements OnInit {
       jobType: [''],
       createdAt: [''],
       updatedAt: [''],
+      moldMakerName: [''],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -88,26 +92,28 @@ export class Dcsm09DetailComponent implements OnInit {
   }
 
   checkBtn() {
-    if (this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น รอตรวจสอบ' && this.mainForm.getRawValue().jobType == 'OS') {
-      this.isCheckMold = true;
-    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจไฟล์แม่พิมพ์แล้ว' || this.mainForm.getRawValue().jobType == 'OD') {
-      this.isOrder = true;
-    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจใบสั่งผลิตแล้ว') {
-      this.isSendOrder = true;
-    } else if (this.mainForm.getRawValue().processStatus == 'ส่งใบสั่งผลิตแล้ว') {
-      this.isSendFile = true;
+    if ((this.mainForm.getRawValue().moldStatus == 'รอดำเนินการ') && (this.mainForm.getRawValue().jobType == 'OS')) {
+      this.isMoldStart = true;
+    } else if (this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().moldMakerName && this.mainForm.getRawValue().moldStatus == 'กำลังทำแม่พิมพ์') {
+      this.isMoldSuccess = true;
+    } else if (this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().moldMakerName && this.mainForm.getRawValue().moldStatus == 'แม่พิมพ์เสร็จแล้ว') {
+      this.isSendMold = true;
+    } else {
+      this.isMoldStart = false;
+      this.isMoldSuccess = false;
+      this.isSendMold = false;
     }
   }
 
-  updateMoldStatus() {
+  updateMoldStart() {
     const apiFilters = {
       id: this.mainForm.getRawValue().id,
-      processStatus: 'ตรวจไฟล์แม่พิมพ์แล้ว',
+      moldStatus: 'กำลังทำแม่พิมพ์',
     };
 
     Swal.fire({
-      title: 'ยืนยันตรวจไฟล์แม่พิมพ์แล้ว',
-      text: "ยืนยันตรวจไฟล์แม่พิมพ์แล้ว ใช่หรือไม่?",
+      title: 'ยืนยันกำลังทำแม่พิมพ์',
+      text: "ยืนยันกำลังทำแม่พิมพ์ ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',
@@ -117,128 +123,15 @@ export class Dcsm09DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
-          next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm09']);
-          },
-          error: (error) => {
-            this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-          }
-        });
-      }
-    });
-  }
-
-  updateOrder() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      processStatus: 'ตรวจใบสั่งผลิตแล้ว',
-    };
-
-    Swal.fire({
-      title: 'ยืนยันตรวจใบสั่งผลิตแล้ว',
-      text: "ยืนยันตรวจใบสั่งผลิตแล้ว ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
-          next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm09']);
-          },
-          error: (error) => {
-            this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-          }
-        });
-      }
-    });
-  }
-
-  updateSendOrder() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      processStatus: 'ส่งใบสั่งผลิตแล้ว',
-    };
-
-    Swal.fire({
-      title: 'ยืนยันส่งใบสั่งผลิตแล้ว',
-      text: "ยืนยันส่งใบสั่งผลิตแล้ว ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
-          next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm09']);
-          },
-          error: (error) => {
-            this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-          }
-        });
-      }
-    });
-  }
-
-  updateSendFile() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      processStatus: 'ส่งไฟล์แล้ว',
-    };
-
-    const data = {
-      id: this.mainForm.getRawValue().id,
-      jobStatus: 'เสร็จสิ้น',
-    };
-
-    Swal.fire({
-      title: 'ยืนยันส่งไฟล์แล้ว',
-      text: "ยืนยันส่งไฟล์แล้ว ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
+        this.dcsm10Service.updateMoldStatus(apiFilters).subscribe({
           next: () => {
-            this.dcsm09Service.updateJobStatus(data).subscribe({
+            this.dcsm10Service.updateMoldMakerName(apiFilters).subscribe({
               next: (response) => {
                 this.patchFormData(response);
                 this.checkBtn();
                 this.loadingService.hide();
                 this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-                this.router.navigate(['/Dcsm09']);
+                this.router.navigate(['/Dcsm10']);
               },
               error: (error) => {
                 this.loadingService.hide();
@@ -252,9 +145,87 @@ export class Dcsm09DetailComponent implements OnInit {
             const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
+        })
+      }
+    });
+  }
+
+  updateMoldSuccess() {
+    const apiFilters = {
+      id: this.mainForm.getRawValue().id,
+      moldStatus: 'แม่พิมพ์เสร็จแล้ว',
+    };
+
+    const data = {
+      id: this.mainForm.getRawValue().id,
+
+    }
+
+    Swal.fire({
+      title: 'ยืนยันแม่พิมพ์เสร็จแล้ว',
+      text: "ยืนยันแม่พิมพ์เสร็จแล้ว ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm10Service.updateMoldStatus(apiFilters).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+            this.router.navigate(['/Dcsm10']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
         });
       }
     });
   }
+
+  updateSendMold() {
+    const apiFilters = {
+      id: this.mainForm.getRawValue().id,
+      moldStatus: 'ส่งแม่พิมพ์',
+    };
+
+    Swal.fire({
+      title: 'ยืนยันส่งแม่พิมพ์',
+      text: "ยืนยันส่งแม่พิมพ์ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm10Service.updateMoldStatus(apiFilters).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+            this.router.navigate(['/Dcsm10']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
+      }
+    });
+  }
+
 
 }
