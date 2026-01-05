@@ -42,13 +42,15 @@ export class Dcsm06Component implements OnInit {
   pageIndex = 0;
 
   tableColumns = [
-    { key: 'id', label: 'รหัสสั่งผลิต' },
+    { key: 'id', label: 'ID' },
     { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
     { key: 'jobStatus', label: 'สถานะงาน' },
-    { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
+    { key: 'processStatus', label: 'สถานะดำเนินการ' },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
+    { key: 'jobType', label: 'ประเภทงาน' }
   ];
 
   constructor(

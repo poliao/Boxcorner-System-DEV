@@ -289,7 +289,7 @@ export class Dcsm05DetailComponent implements OnInit {
   updateStatusSucsess() {
     Swal.fire({
       title: 'ยืนยันเสร็จสิ้น รอตรวจสอบ',
-      text: "ยืนยันเคลียร์ไฟล์แล้ว ใช่หรือไม่?",
+      text: "ยืนยันเสร็จสิ้น ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',

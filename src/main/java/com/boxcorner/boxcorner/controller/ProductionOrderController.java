@@ -122,10 +122,19 @@ public class ProductionOrderController {
     public ResponseEntity<ProductionOrder> updateMoldStatus (@RequestParam("id") Integer id, @RequestParam("moldStatus") String moldStatus) {
         return ResponseEntity.ok(productionOrderService.updateMoldStatus(id, moldStatus));
     }
+    @PutMapping("/updatePrintingMachine")
+    public ResponseEntity<ProductionOrder> updatePrintingMachine (@RequestParam("id") Integer id, @RequestParam("printingMachine") String printingMachine) {
+        return ResponseEntity.ok(productionOrderService.updatePrintingMachine(id, printingMachine));
+    }
 
     @PutMapping("/updateMoldMakerName")
     public ResponseEntity<ProductionOrder> updateMoldMakerName (@RequestParam("id") Integer id, HttpServletRequest httpRequest) {
         return ResponseEntity.ok(productionOrderService.updateMoldMakerName(id, tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countBacklog")
+    public ResponseEntity<Integer> getUniqueStatus(HttpServletRequest httpRequest){
+        return ResponseEntity.ok(productionOrderService.countBacklog(tokenService.getCurrentUser(httpRequest)));
     }
     
 }

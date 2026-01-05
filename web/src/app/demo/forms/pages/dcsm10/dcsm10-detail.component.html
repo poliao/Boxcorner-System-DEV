@@ -3,16 +3,16 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isMoldStart == true" (click)="updateMoldStart()" type="submit" class="btn text-white px-5 shadow-sm"
-            style="background-color: #2ace24;">
+          <button *ngIf="isMoldStart == true" (click)="updateMoldStart()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #2ace24;">
             เริ่มทำแม่พิมพ์
           </button>
-          <button *ngIf="isMoldSuccess == true" (click)="updateMoldSuccess()" type="submit" class="btn text-white px-5 shadow-sm"
-            style="background-color: #2ace24;">
+          <button *ngIf="isMoldSuccess == true" (click)="updateMoldSuccess()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #2ace24;">
             แม่พิมพ์เสร็จ
           </button>
-          <button *ngIf="isSendMold == true" (click)="updateSendMold()" type="submit" class="btn text-white px-5 shadow-sm"
-            style="background-color: #2ace24;">
+          <button *ngIf="isSendMold == true" (click)="updateSendMold()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #2ace24;">
             ส่งแม่พิมพ์
           </button>
         </div>
@@ -69,18 +69,26 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
-          <input type="text" formControlName="operatorName" class="form-control" >
+          <input type="text" formControlName="operatorName" class="form-control">
         </div>
         <div class="col-md-9">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control" >
+          <input type="text" formControlName="remarks" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">เครื่องพิมพ์ <span style="color: red;">*</span></label>
+          <select class="form-select" formControlName="printingMachine">
+            <option value="Canon" style="color: rgb(0, 183, 255);">Canon</option>
+            <option value="Ricoh" style="color: rgb(0, 183, 255);">Ricoh</option>
+            <option value="CD074" style="color: rgb(0, 81, 255);">CD074</option>
+            <option value="SM74" style="color: rgb(0, 81, 255);">SM74</option>
+          </select>
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <input type="text" formControlName="jobType" class="form-control" >
+          <input type="text" formControlName="jobType" class="form-control">
         </div>
       </form>
     </div>
   </div>
 </div>
-

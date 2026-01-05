@@ -101,4 +101,8 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             @Param("jobType") String jobType,
             Pageable pageable);
 
+    @Query(value = "select count(id) as backlog from production_orders po  " +
+            "where po.operator_name = :operatorName and po.process_status = 'รอดำเนินการ'", nativeQuery = true)
+    Integer countBacklog(@Param("operatorName") String operatorName);
+
 }

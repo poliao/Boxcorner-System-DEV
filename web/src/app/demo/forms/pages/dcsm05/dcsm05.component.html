@@ -4,7 +4,7 @@
     <div class="card-body bg-light">
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
         <div class="row g-3">
-          
+
           <div class="col-md-3">
             <label class="form-label fw-bold">ชื่อโฟลเดอร์งาน</label>
             <input type="text" class="form-control" formControlName="folderName" placeholder="ระบุชื่อโฟลเดอร์">
@@ -25,8 +25,16 @@
             <select class="form-select" formControlName="status">
               <option value="">ทั้งหมด</option>
               <option value="รอผู้รับผิดชอบอนุมัติ">รอผู้รับผิดชอบอนุมัติ</option>
-              <option value="In Progress">กำลังดำเนินการ (In Progress)</option>
-              <option value="Completed">เสร็จสิ้น (Completed)</option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="ขอเลื่อนวันส่ง">ขอเลื่อนวันส่ง</option>
+              <option value="ไม่อนุมัติเลื่อนส่ง">ไม่อนุมัติเลื่อนส่ง</option>
+              <option value="จัดส่งได้ รอเคลียร์ไฟล์">จัดส่งได้ รอเคลียร์ไฟล์</option>
+              <option value="กำลังเคลียร์ไฟล์">กำลังเคลียร์ไฟล์</option>
+              <option value="ไฟล์เสร็จ รอตรวจสอบไฟล์">ไฟล์เสร็จ รอตรวจสอบไฟล์</option>
+              <option value="แก้ไขไฟล์">แก้ไขไฟล์</option>
+              <option value="ไฟล์ถูกต้อง">ไฟล์ถูกต้อง</option>
+              <option value="แก้ไข">แก้ไข</option>
+              <option value="ผ่าน">ผ่าน</option>
             </select>
           </div>
 
@@ -41,22 +49,22 @@
           </div>
 
           <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
-            <button mat-flat-button color="primary" type="submit" class="px-4">
+            <button mat-flat-button color="primary" type="submit" class="px-4" style="background-color: #9366c4;">
               <mat-icon>search</mat-icon> ค้นหา
             </button>
-            
-            <button mat-stroked-button color="warn" type="button" (click)="onClear()">
+
+            <button mat-stroked-button color="warn" type="button" (click)="onClear()" >
               <mat-icon>refresh</mat-icon> ล้างค่า
             </button>
 
-            <button mat-flat-button color="accent" class="px-4 me-2 position-relative" (click)="onFilterUnassigned()">
-                <mat-icon>search</mat-icon> งานที่ยังไม่มีผู้รับผิดชอบ
-                <span *ngIf="countBacklog > 0"
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ countBacklog }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
+            <button mat-flat-button color="accent" class="px-4 me-2 position-relative" (click)="onFilterUnassigned()" style="background-color: #823acf;">
+              <mat-icon>search</mat-icon> งานที่ยังไม่มีผู้รับผิดชอบ
+              <span *ngIf="countBacklog > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.75rem; border: 2px solid #fff;">
+                {{ countBacklog }}
+                <span class="visually-hidden">unread messages</span>
+              </span>
             </button>
           </div>
 
@@ -65,14 +73,8 @@
     </div>
   </div>
 
-  <app-data-table 
-    [columns]="tableColumns" 
-    [data]="tableData" 
-    [totalElements]="totalElements" 
-    [pageSize]="pageSize"
-    [pageIndex]="pageIndex" 
-    [clickableColumn]="'id'" 
-    (pageChange)="onPageChange($event)"
-    (rowClick)="onRowClick($event)">
+  <app-data-table [headerStyle]="'background: #823acf; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
+    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
 </div>

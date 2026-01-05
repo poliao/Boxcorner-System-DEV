@@ -77,4 +77,8 @@ export class Dcsm08Service {
     return this.http.put(`${this.apiUrl}/production/updateJobStatus?id=${data.id}&jobStatus=${data.jobStatus}`, {});
   }
 
+  countBacklog(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklog`);
+  }
+
 }

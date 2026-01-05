@@ -44,11 +44,13 @@ export class Dcsm09Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
     { key: 'jobStatus', label: 'สถานะงาน' },
+    { key: 'processStatus', label: 'สถานะดำเนินการ' },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];
 
@@ -77,17 +79,17 @@ export class Dcsm09Component implements OnInit {
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
-    
+
   }
 
   loadData(): void {
 
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
-      id: formValues.id,    
+      id: formValues.id,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
+      operatorName: formValues.responsiblePerson,
       jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
@@ -172,7 +174,7 @@ export class Dcsm09Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm09Detail']); 
+    this.router.navigate(['/Dcsm09Detail']);
   }
 
   onRowClick(row: any): void {

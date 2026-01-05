@@ -50,7 +50,7 @@ export class Dcsm04Component implements OnInit {
 
   
   tableColumns = [
-    { key: 'id', label: 'รหัสสั่งผลิต' },
+    { key: 'id', label: 'ID' },
     { key: 'orderDate', label: 'วันที่สั่ง' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },

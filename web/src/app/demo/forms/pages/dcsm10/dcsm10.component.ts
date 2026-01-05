@@ -49,6 +49,7 @@ export class Dcsm10Component implements OnInit {
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
     { key: 'jobStatus', label: 'สถานะงาน' },
+    { key: 'processStatus', label: 'สถานะดำเนินการ' },
     { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];

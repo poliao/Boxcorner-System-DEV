@@ -85,11 +85,11 @@
 
         <div class="row mt-3">
           <div class="col-12 d-flex justify-content-between align-items-center">
-            <button mat-flat-button color="accent" class="px-4 me-2" (click)="onSearchChange()">
+            <button mat-flat-button color="accent" class="px-4 me-2" (click)="onSearchChange()" style="background: #a54259;">
               <mat-icon>search</mat-icon> ค้นหา
             </button>
             <div>
-              <button mat-flat-button color="accent" class="px-4 me-2 position-relative" (click)="onFilterUnassigned()">
+              <button mat-flat-button color="accent" class="px-4 me-2 position-relative" (click)="onFilterUnassigned()" style="background: #8a0b29;">
                 <mat-icon>search</mat-icon> งานที่ยังไม่มีผู้รับผิดชอบ
                 <span *ngIf="countBacklog > 0"
                   class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -105,7 +105,7 @@
     </div>
   </div>
 
-  <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
+  <app-data-table [headerStyle]="'background: #8a0b29; color: #ffffff;'" [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
     [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
     (rowClick)="onRowClick($event)">
   </app-data-table>

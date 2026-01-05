@@ -26,21 +26,38 @@
             <label class="form-label fw-bold">สถานะงาน (Job Status)</label>
             <select class="form-select" formControlName="status">
               <option value="">ทั้งหมด</option>
-              <option value="รอผลิต">รอผลิต</option>
-              <option value="กำลังผลิต">กำลังผลิต</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
               <option value="เสร็จสิ้น">เสร็จสิ้น</option>
             </select>
           </div>
 
           <div class="col-md-3">
             <label class="form-label fw-bold">สถานะดำเนินการ (Process)</label>
-            <input type="text" class="form-control" formControlName="processStatus"
-              placeholder="เช่น รอไฟล์, กำลังพิมพ์">
+            <select class="form-select" formControlName="processStatus">
+              <option value="">ทั้งหมด</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+              <option value="เสร็จสิ้น รอตรวจสอบ">เสร็จสิ้น รอตรวจสอบ</option>
+              <option value="ตรวจไฟล์แม่พิมพ์แล้ว">ตรวจไฟล์แม่พิมพ์แล้ว</option>
+              <option value="ตรวจใบสั่งผลิตแล้ว">ตรวจใบสั่งผลิตแล้ว</option>
+              <option value="ส่งใบสั่งผลิตแล้ว">ส่งใบสั่งผลิตแล้ว</option>
+              <option value="ส่งไฟล์แล้ว">ส่งไฟล์แล้ว</option>
+            </select>
           </div>
 
           <div class="col-md-3">
             <label class="form-label fw-bold">สถานะแม่พิมพ์ (Mold)</label>
-            <input type="text" class="form-control" formControlName="moldStatus" placeholder="เช่น ใหม่, เก่า">
+            <select class="form-select" formControlName="moldStatus">
+              <option value="">ทั้งหมด</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="กำลังทำแม่พิมพ์">กำลังทำแม่พิมพ์</option>
+              <option value="แม่พิมพ์เสร็จแล้ว">แม่พิมพ์เสร็จแล้ว</option>
+              <option value="ส่งแม่พิมพ์">ส่งแม่พิมพ์</option>
+            </select>
           </div>
 
           <div class="col-md-3">
@@ -54,21 +71,31 @@
           </div>
 
           <div class="col-md-9 d-flex align-items-end justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary px-4" (click)="onClear()">
+            <button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #a481ca;">
               <i class="fa fa-refresh me-1"></i> ล้างค่า
             </button>
-            <button type="submit" class="btn text-white px-4" style="background-color: #1e1b4b;">
+            <button type="submit" class="btn text-white px-4" style="background-color: #823acf;">
               <i class="fa fa-search me-1"></i> ค้นหา
             </button>
+            <div class="position-relative">
+              <button class="btn text-white px-4" (click)="onFilterUnassigned()" style="background-color: #823acf;">
+                <span *ngIf="countBacklog > 0"
+                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.75rem; border: 2px solid #fff;">
+                  {{ countBacklog }}
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+                <i class="fa fa-search me-1"></i> งานที่ยังไม่เริ่มดำเนินการ
+              </button>
+            </div>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-   <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
-      [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
-      (rowClick)="onRowClick($event)">
-    </app-data-table>
+  <app-data-table [headerStyle]="'background: #823acf; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
+    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
+  </app-data-table>
 </div>
-

@@ -17,6 +17,7 @@ export class DataTableComponent implements AfterViewInit {
   @Input() pageIndex = 0;
   @Input() pageSizeOptions = [5, 10, 20, 50];
   @Input() clickableColumn = '';
+  @Input() headerStyle = 'background: #171851; color: white;';
   
   @Output() pageChange = new EventEmitter<{pageIndex: number, pageSize: number}>();
   @Output() rowClick = new EventEmitter<any>();

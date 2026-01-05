@@ -41,14 +41,17 @@ export class Dcsm08Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
+  countBacklog = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะ' },
+    { key: 'jobStatus', label: 'สถานะงาน' },
+    { key: 'processStatus', label: 'สถานะดำเนินการ' },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];
 
@@ -62,18 +65,19 @@ export class Dcsm08Component implements OnInit {
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
+    this.Backlog();
   }
 
   initSearchForm(): void {
     this.searchForm = this.fb.group({
-      id: [''],              // เพิ่ม id
+      id: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
       status: [''],
-      processStatus: [''],   // เพิ่ม processStatus
-      moldStatus: [''],      // เพิ่ม moldStatus
-      jobType: [''],         // เพิ่ม jobType
+      processStatus: [''],
+      moldStatus: [''],
+      jobType: [''],
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
@@ -177,5 +181,22 @@ export class Dcsm08Component implements OnInit {
 
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm08Detail', row.id]);
+  }
+
+  Backlog(){
+    this.dcsm08Service.countBacklog().subscribe({
+      next: (data: number) => {
+        this.countBacklog = data;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  onFilterUnassigned() {
+    this.searchForm.patchValue({
+      status: 'รอดำเนินการ',
+    });
+    this.onSearch();
   }
 }

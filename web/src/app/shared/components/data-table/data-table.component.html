@@ -6,7 +6,7 @@
 
       <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
         <th mat-header-cell *matHeaderCellDef
-          style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
+          [style]="headerStyle + ' font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;'">
           {{ col.label }}
         </th>
         <td mat-cell *matCellDef="let row" 

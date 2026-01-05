@@ -88,14 +88,31 @@ export class Dcsm09DetailComponent implements OnInit {
   }
 
   checkBtn() {
-    if (this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น รอตรวจสอบ' && this.mainForm.getRawValue().jobType == 'OS') {
+    if (this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น รอตรวจสอบ' ) {
       this.isCheckMold = true;
-    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจไฟล์แม่พิมพ์แล้ว' || this.mainForm.getRawValue().jobType == 'OD') {
+      this.isOrder = false;
+      this.isSendOrder = false;
+      this.isSendFile = false;
+    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจไฟล์แม่พิมพ์แล้ว') {
       this.isOrder = true;
+      this.isCheckMold = false;
+      this.isSendOrder = false;
+      this.isSendFile = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ตรวจใบสั่งผลิตแล้ว') {
       this.isSendOrder = true;
+      this.isSendFile = false;
+      this.isOrder = false;
+      this.isCheckMold = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ส่งใบสั่งผลิตแล้ว') {
       this.isSendFile = true;
+      this.isSendOrder = false;
+      this.isOrder = false;
+      this.isCheckMold = false;
+    }else{
+      this.isCheckMold = false;
+      this.isOrder = false;
+      this.isSendOrder = false;
+      this.isSendFile = false;
     }
   }
 

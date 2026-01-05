@@ -54,16 +54,17 @@ export class Dcsm04DetailComponent implements OnInit {
         this.isDesign = true
       }
     }
-    this.checkBtn();
+
     if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
-      this.mainForm.controls['deadlineDate'].disable({ emitEvent: false });
-      this.mainForm.controls['deadlineTime'].disable({ emitEvent: false });
+      this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
+      this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
       this.mainForm.controls['quantity'].disable({ emitEvent: false });
       this.mainForm.controls['unit'].disable({ emitEvent: false });
       this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
       this.mainForm.controls['note'].disable({ emitEvent: false });
     }
+    this.checkBtn();
     if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง') {
       this.isUpdateDelivery = true
     }
@@ -342,8 +343,8 @@ export class Dcsm04DetailComponent implements OnInit {
   }
 
   confirmApprove() {
+
     const data = {
-      id: '',
       orderDate: new Date().toISOString().substring(0, 10),
       folderName: this.mainForm.getRawValue().folderName,
       usedFile: this.usedFile.value,
@@ -390,7 +391,6 @@ export class Dcsm04DetailComponent implements OnInit {
         });
       }
     });
-
   }
 
 }

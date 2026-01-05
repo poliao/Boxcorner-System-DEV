@@ -81,6 +81,10 @@ export class Dcsm10Service {
     return this.http.put(`${this.apiUrl}/production/updateMoldStatus?id=${data.id}&moldStatus=${data.moldStatus}`, {});
   }
 
+  updatePrintingMachine(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updatePrintingMachine?id=${data.id}&printingMachine=${data.printingMachine}`, {});
+  }
+
   updateMoldMakerName(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateMoldMakerName?id=${data.id}`, {});
   }

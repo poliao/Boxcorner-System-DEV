@@ -81,11 +81,20 @@ public class ProductionOrderService {
         return productionOrderRepository.save(existingOrder);
     }
 
+    public ProductionOrder updatePrintingMachine (Integer id , String printingMachine) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setPrintingMachine(printingMachine);
+        return productionOrderRepository.save(existingOrder);
+    }
+
     public ProductionOrder updateMoldMakerName (Integer id, String name ) {
         ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setMoldMakerName(name);
         return productionOrderRepository.save(existingOrder);
     }
 
+    public Integer countBacklog(String operatorName) {
+        return productionOrderRepository.countBacklog(operatorName);
+    }
 
 }
