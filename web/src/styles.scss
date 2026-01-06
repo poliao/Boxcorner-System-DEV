@@ -1,4 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* -------------------------------------------------------------------------
+   1. เพิ่ม Import Font Prompt ตรงนี้ (บรรทัดบนสุด)
+   ------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 /**======================================================================
 =========================================================================
 Template Name: berry - Most Complete Angular Admin Template
@@ -42,8 +49,23 @@ File: style.css
 @import 'scss/fonts/tabler-icons.min.css';
 @import 'scss/fonts/phosphor/duotone/style.css';
 
+
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* -------------------------------------------------------------------------
+   2. แก้ไข font-family ตรงนี้ให้เป็น Prompt และใส่ !important ทับ Template
+   ------------------------------------------------------------------------- */
+body { 
+    margin: 0; 
+    font-family: 'Prompt', sans-serif !important; 
+}
+
+/* 3. เพิ่มส่วนนี้เพื่อให้ Input, Button และหัวข้อต่างๆ เปลี่ยนฟอนต์ตามด้วย */
+h1, h2, h3, h4, h5, h6,
+input, button, select, textarea, .form-control {
+    font-family: 'Prompt', sans-serif !important;
+}
+
 // Custom Material Table Styles
 .mat-table {
   border-collapse: collapse !important;
@@ -52,9 +74,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
+  font-family: 'Prompt', sans-serif !important; /* เพิ่มตรงนี้ 1 */
 }
 
 .mat-header-cell {
+  font-family: 'Prompt', sans-serif !important; /* เพิ่มตรงนี้ 2 (สำคัญมากสำหรับหัวตาราง) */
   font-weight: bold !important;
   color: #ffffff !important;
   font-size: 14px !important;
@@ -65,6 +89,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .mat-cell {
+  font-family: 'Prompt', sans-serif !important; 
   border-right: 1px solid #e0e0e0 !important;
   border-bottom: 1px solid #e0e0e0 !important;
   padding: 12px 16px !important;

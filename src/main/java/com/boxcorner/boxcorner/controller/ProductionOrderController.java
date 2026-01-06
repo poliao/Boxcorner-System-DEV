@@ -108,6 +108,30 @@ public class ProductionOrderController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/searchProductCheck")
+    public ResponseEntity<Page<ProductionOrder>> searchProductCheck(
+            @RequestParam(required = false, name = "id") Integer id,
+            @RequestParam(required = false, name = "folderName") String folderName,
+            @RequestParam(required = false, name = "jobOwner") String jobOwner,
+            @RequestParam(required = false, name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false, name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false, name = "deadlineTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime deadlineTime,
+            @RequestParam(required = false, name = "jobStatus") String jobStatus,
+            @RequestParam(required = false, name = "processStatus") String processStatus,
+            @RequestParam(required = false, name = "operatorName") String operatorName,
+            @RequestParam(required = false, name = "moldStatus") String moldStatus,
+            @RequestParam(required = false, name = "jobType") String jobType,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductionOrder> result = productionOrderService.findByProductionCheck(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable
+        );
+        return ResponseEntity.ok(result);
+    }
+
     @PutMapping("/updateProcessStatus")
     public ResponseEntity<ProductionOrder> updateProcessStatus (@RequestParam("id") Integer id, @RequestParam("processStatus") String processStatus) {
         return ResponseEntity.ok(productionOrderService.updateProcessStatus(id,processStatus));
@@ -136,5 +160,19 @@ public class ProductionOrderController {
     public ResponseEntity<Integer> getUniqueStatus(HttpServletRequest httpRequest){
         return ResponseEntity.ok(productionOrderService.countBacklog(tokenService.getCurrentUser(httpRequest)));
     }
-    
+
+    @GetMapping("/countBacklogHPlanning")
+    public ResponseEntity<Integer> getUniqueStatusHPlanning(){
+        return ResponseEntity.ok(productionOrderService.countBacklogHPlanning());
+    }
+
+    @GetMapping("/countBacklogCheck")
+    public ResponseEntity<Integer> getUniqueStatusCheck(){
+        return ResponseEntity.ok(productionOrderService.countBacklogCheck());
+    }
+
+    @GetMapping("/countBacklogMold")
+    public ResponseEntity<Integer> getUniqueStatusMold(){
+        return ResponseEntity.ok(productionOrderService.countBacklogMold());
+    }
 }

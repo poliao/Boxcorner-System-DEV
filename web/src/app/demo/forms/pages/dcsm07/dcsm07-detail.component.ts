@@ -127,7 +127,12 @@ export class Dcsm07DetailComponent implements OnInit {
         const data = this.mainForm.getRawValue();
         this.mainForm.get('jobStatus')?.setValue('รอดำเนินการ');
         this.mainForm.get('processStatus')?.setValue('รอดำเนินการ');
-        this.mainForm.get('moldStatus')?.setValue('รอดำเนินการ');
+        if (this.mainForm.getRawValue().jobType == 'OD') {
+          this.mainForm.get('moldStatus')?.setValue('งานดิจิทัล');
+        }else{
+          this.mainForm.get('moldStatus')?.setValue('รอดำเนินการ');
+        }
+        
         this.dcsm07Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();

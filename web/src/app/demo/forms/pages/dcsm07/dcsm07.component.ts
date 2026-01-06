@@ -40,6 +40,7 @@ export class Dcsm07Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
+  countBacklog = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -62,6 +63,7 @@ export class Dcsm07Component implements OnInit {
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
+    this.Backlog();
   }
 
   initSearchForm(): void {
@@ -82,9 +84,8 @@ export class Dcsm07Component implements OnInit {
   loadData(): void {
     const formValues = this.searchForm.getRawValue();
 
-    // Map ข้อมูลให้ตรงกับ Service ที่เตรียมไว้
     const apiFilters = {
-      id: formValues.id,                   // ส่ง id
+      id: formValues.id,                  
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
       operatorName: formValues.responsiblePerson, 
@@ -171,11 +172,24 @@ export class Dcsm07Component implements OnInit {
     this.loadData();
   }
 
-  add(): void {
-    this.router.navigate(['/Dcsm07Detail']); 
-  }
-
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm07Detail', row.id]);
+  }
+
+  Backlog(){
+    this.dcsm07Service.countBacklog().subscribe({
+      next: (data: number) => {
+        this.countBacklog = data;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  onFilterUnassigned() {
+    this.searchForm.patchValue({
+      status: 'รอผู้รับผิดชอบยืนยัน',
+    });
+    this.onSearch();
   }
 }

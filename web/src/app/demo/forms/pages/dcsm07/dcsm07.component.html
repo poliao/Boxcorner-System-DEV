@@ -82,12 +82,23 @@
           </div>
 
           <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
-            <button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #b894df;">
-              <i class="fa fa-refresh me-1"></i> ล้างค่า
+            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #b894df;">
+              <mat-icon>clear_all</mat-icon> ล้างค่า
             </button>
-            <button type="submit" class="btn text-white px-4" style="background-color: #823acf;">
-              <i class="fa fa-search me-1"></i> ค้นหา
+            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #823acf;">
+             <mat-icon>search</mat-icon> ค้นหา
             </button>
+            <div class="position-relative">
+              <button mat-flat-button class="btn text-white px-4" (click)="onFilterUnassigned()" style="background-color: #823acf;">
+                <span *ngIf="countBacklog > 0"
+                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.75rem; border: 2px solid #fff;">
+                  {{ countBacklog }}
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+                <mat-icon>search</mat-icon> งานที่ยังไม่มีผู้รับผิดชอบ
+              </button>
+            </div>
           </div>
 
         </div>

@@ -1,9 +1,7 @@
 <div class="container-fluid p-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="font-weight-bold text-dark m-0">ตารางคอนเฟิร์มรอผลิต</h2>
-    <button mat-flat-button style="background-color: #00e5ff; color: white;" (click)="add()">
-      <mat-icon>add</mat-icon> เพิ่มรายการ
-    </button>
+
   </div>
 
   <div class="card border-0 shadow-sm mb-4">
@@ -40,7 +38,7 @@
             <label class="form-label fw-bold">สถานะงาน (Job Status)</label>
             <select class="form-select" formControlName="status">
               <option value="">ทั้งหมด</option>
-              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน	</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
               <option value="เสร็จสิ้น">เสร็จสิ้น</option>
@@ -51,7 +49,7 @@
             <label class="form-label fw-bold">สถานะดำเนินการ (Process)</label>
             <select class="form-select" formControlName="processStatus">
               <option value="">ทั้งหมด</option>
-              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน	</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
               <option value="เสร็จสิ้น รอตรวจสอบ">เสร็จสิ้น รอตรวจสอบ</option>
@@ -66,7 +64,7 @@
             <label class="form-label fw-bold">สถานะแม่พิมพ์ (Mold)</label>
             <select class="form-select" formControlName="moldStatus">
               <option value="">ทั้งหมด</option>
-              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน	</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังทำแม่พิมพ์">กำลังทำแม่พิมพ์</option>
               <option value="แม่พิมพ์เสร็จแล้ว">แม่พิมพ์เสร็จแล้ว</option>
@@ -85,11 +83,15 @@
           </div>
 
           <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
-            <button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #63d5e2;">
-              <i class="fa fa-refresh me-1"></i> ล้างค่า
+            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()"
+              style="background-color: #63d5e2;">
+              <mat-icon>clear_all</mat-icon> ล้างค่า
             </button>
-            <button type="submit" class="btn text-white px-4" style="background-color: #1bd0e4;">
-              <i class="fa fa-search me-1"></i> ค้นหา
+            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #1bd0e4;">
+              <mat-icon>search</mat-icon> ค้นหา
+            </button>
+            <button mat-flat-button style="background-color: #00e5ff; color: white;" (click)="add()">
+              <mat-icon>add</mat-icon> เพิ่มรายการ
             </button>
           </div>
 

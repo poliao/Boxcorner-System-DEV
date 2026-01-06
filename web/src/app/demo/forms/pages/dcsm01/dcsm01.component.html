@@ -1,46 +1,46 @@
-<h2>ตารางสี</h2>
-<div class="card-body">
-  <div class="card border-0 shadow-sm mb-4">
+<h2 style="font-family: 'Prompt', sans-serif;">ตารางสี</h2>
+<div class="card-body" style="font-family: 'Prompt', sans-serif;">
+  <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-body bg-light">
       <div class="row g-3 align-items-center">
         <div class="col-12 col-md-4">
           <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label>ค้นหารหัสสี...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterRecipeId" [matAutocomplete]="autoRecipe" (input)="onRecipeSearch($event)" (keyup.enter)="onSearchChange()">
+            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหารหัสสี...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterRecipeId" [matAutocomplete]="autoRecipe" (input)="onRecipeSearch($event)" (keyup.enter)="onSearchChange()" style="font-family: 'Prompt', sans-serif;">
             <mat-autocomplete #autoRecipe="matAutocomplete" (optionSelected)="onSearchChange()">
-              <mat-option value="">-- ทั้งหมด --</mat-option>
-              <mat-option *ngFor="let id of recipeIdList" [value]="id">{{id}}</mat-option>
+              <mat-option value="" style="font-family: 'Prompt', sans-serif;">-- ทั้งหมด --</mat-option>
+              <mat-option *ngFor="let id of recipeIdList" [value]="id" style="font-family: 'Prompt', sans-serif;">{{id}}</mat-option>
             </mat-autocomplete>
           </mat-form-field>
         </div>
 
         <div class="col-12 col-md-4">
           <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label>ค้นหารหัสงาน...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterJobId" [matAutocomplete]="autoJob" (input)="onJobSearch($event)" (keyup.enter)="onSearchChange()">
+            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหารหัสงาน...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterJobId" [matAutocomplete]="autoJob" (input)="onJobSearch($event)" (keyup.enter)="onSearchChange()" style="font-family: 'Prompt', sans-serif;">
             <mat-autocomplete #autoJob="matAutocomplete" (optionSelected)="onSearchChange()">
-              <mat-option value="">-- ทั้งหมด --</mat-option>
-              <mat-option *ngFor="let id of jobIdList" [value]="id">{{id}}</mat-option>
+              <mat-option value="" style="font-family: 'Prompt', sans-serif;">-- ทั้งหมด --</mat-option>
+              <mat-option *ngFor="let id of jobIdList" [value]="id" style="font-family: 'Prompt', sans-serif;">{{id}}</mat-option>
             </mat-autocomplete>
           </mat-form-field>
         </div>
 
         <div class="col-12 col-md-4">
           <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label>ค้นหาชื่องาน...</mat-label>
+            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหาชื่องาน...</mat-label>
             <mat-icon matPrefix>search</mat-icon>
-            <input matInput [(ngModel)]="filterJobName" placeholder="พิมพ์ชื่อชื่องาน" (keyup.enter)="onSearchChange()">
+            <input matInput [(ngModel)]="filterJobName" placeholder="พิมพ์ชื่อชื่องาน" (keyup.enter)="onSearchChange()" style="font-family: 'Prompt', sans-serif;">
           </mat-form-field>
         </div>
       </div>
 
       <div class="row mt-3">
         <div class="col-12 d-flex justify-content-between align-items-center">
-          <button mat-flat-button color="accent" (click)="onSearchChange()" class="px-4">
+          <button mat-flat-button color="accent" (click)="onSearchChange()" class="px-4" style="font-family: 'Prompt', sans-serif;">
             <mat-icon>search</mat-icon> ค้นหา
           </button>
           
-          <button (click)="add()" mat-flat-button color="primary">
+          <button (click)="add()" mat-flat-button color="primary" style="font-family: 'Prompt', sans-serif;">
             <mat-icon>add_circle</mat-icon> เพิ่มข้อมูล
           </button>
         </div>
@@ -49,49 +49,44 @@
   </div>
 </div>
 
-<div class="mat-elevation-z2">
-  <!-- Desktop Table -->
+<div class="mat-elevation-z2" style="font-family: 'Prompt', sans-serif;">
   <div class="desktop-table card total-income-card warning overflow-hidden">
     <table mat-table [dataSource]="dataSource"
       style="border-collapse: collapse; border: 2px solid #ddd; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
 
-      <!-- Column: รหัสสี -->
       <ng-container matColumnDef="recipeid">
         <th mat-header-cell *matHeaderCellDef
-          style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
+          style="font-family: 'Prompt', sans-serif; background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
           รหัสสี </th>
         <td mat-cell *matCellDef="let row" class="col-id"
-          style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center; cursor: pointer; color: #171851; text-decoration: underline;"
+          style="font-family: 'Prompt', sans-serif; border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center; cursor: pointer; color: #171851; text-decoration: underline;"
           (click)="goToDetail(row.recipeid)"> {{row.recipeid}} </td>
       </ng-container>
 
-      <!-- Column: รหัสงาน -->
       <ng-container matColumnDef="jobid">
         <th mat-header-cell *matHeaderCellDef
-          style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
+          style="font-family: 'Prompt', sans-serif; background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
           รหัสงาน </th>
         <td mat-cell *matCellDef="let row"
-          style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;">
+          style="font-family: 'Prompt', sans-serif; border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;">
           {{row.jobid}} </td>
       </ng-container>
 
-      <!-- Column: ชื่องาน -->
       <ng-container matColumnDef="jobname">
         <th mat-header-cell *matHeaderCellDef
-          style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
+          style="font-family: 'Prompt', sans-serif; background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
           ชื่องาน </th>
         <td mat-cell *matCellDef="let row"
-          style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;">
+          style="font-family: 'Prompt', sans-serif; border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;">
           {{row.jobname}} </td>
       </ng-container>
 
-      <!-- Column: พนักงาน -->
       <ng-container matColumnDef="updateby">
         <th mat-header-cell *matHeaderCellDef
-          style="background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
+          style="font-family: 'Prompt', sans-serif; background: #171851; color: white; font-weight: bold; padding: 16px; text-align: center; border-right: 1px solid white;">
           พนักงานที่อัพเดตล่าสุด </th>
         <td mat-cell *matCellDef="let row"
-          style="border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;">
+          style="font-family: 'Prompt', sans-serif; border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;">
           {{row.updateby}} </td>
       </ng-container>
 
@@ -99,15 +94,14 @@
       <tr mat-row *matRowDef="let row; columns: getDisplayedColumns();"></tr>
 
       <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" [attr.colspan]="getDisplayedColumns().length" style="padding: 20px; text-align: center;">
+        <td class="mat-cell" [attr.colspan]="getDisplayedColumns().length" style="padding: 20px; text-align: center; font-family: 'Prompt', sans-serif;">
           ไม่พบข้อมูลที่ค้นหา
         </td>
       </tr>
     </table>
   </div>
 
-  <!-- Mobile Cards -->
-  <div class="mobile-cards">
+  <div class="mobile-cards" style="font-family: 'Prompt', sans-serif;">
     <div class="recipe-card" *ngFor="let row of dataSource.data">
       <div class="card-header">
         <span class="recipe-id" (click)="goToDetail(row.recipeid)">{{row.recipeid}}</span>
@@ -134,8 +128,7 @@
     </div>
   </div>
 
-  <!-- Paginator -->
   <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex"
-    [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons aria-label="Select page">
+    [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons aria-label="Select page" style="font-family: 'Prompt', sans-serif;">
   </mat-paginator>
 </div>

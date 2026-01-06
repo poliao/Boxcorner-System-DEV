@@ -1,6 +1,6 @@
-<h2>ตารางคอนเฟิร์มรอผลิต</h2>
+<h2>จัดการสถานะแม่พิมพ์</h2>
 <div class="card-body">
-  <div class="card border-0 shadow-sm mb-4">
+  <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-body bg-light">
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
         <div class="row g-3">
@@ -27,7 +27,7 @@
             <label class="form-label fw-bold">สถานะดำเนินการ (Process)</label>
             <select class="form-select" formControlName="processStatus">
               <option value="">ทั้งหมด</option>
-              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน	</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
               <option value="เสร็จสิ้น รอตรวจสอบ">เสร็จสิ้น รอตรวจสอบ</option>
@@ -42,7 +42,7 @@
             <label class="form-label fw-bold">สถานะแม่พิมพ์ (Mold)</label>
             <select class="form-select" formControlName="moldStatus">
               <option value="">ทั้งหมด</option>
-              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน	</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังทำแม่พิมพ์">กำลังทำแม่พิมพ์</option>
               <option value="แม่พิมพ์เสร็จแล้ว">แม่พิมพ์เสร็จแล้ว</option>
@@ -61,20 +61,32 @@
           </div>
 
           <div class="col-md-12 d-flex align-items-end justify-content-end gap-2">
-            <button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #73bb7a;">
-              <i class="fa fa-refresh me-1"></i> ล้างค่า
+            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()"
+              style="background-color: #73bb7a;">
+              <mat-icon>clear_all</mat-icon> ล้างค่า
             </button>
-            <button type="submit" class="btn text-white px-4" style="background-color: #33a33e;">
-              <i class="fa fa-search me-1"></i> ค้นหา
+            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #33a33e;">
+              <mat-icon>search</mat-icon> ค้นหา
             </button>
+            <div class="position-relative">
+              <button mat-flat-button class="btn text-white px-4" (click)="onFilterUnassigned()" style="background-color: #33a33e;">
+                <span *ngIf="countBacklog > 0"
+                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.75rem; border: 2px solid #fff;">
+                  {{ countBacklog }}
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+                <mat-icon>search</mat-icon> งานที่ยังไม่เริ่มตรวจสอบ
+              </button>
+            </div>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <app-data-table [headerStyle]="'background: #33a33e; color: #ffffff;'" [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
-    [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
-    (rowClick)="onRowClick($event)">
+  <app-data-table [headerStyle]="'background: #33a33e; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
+    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
 </div>

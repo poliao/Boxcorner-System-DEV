@@ -95,7 +95,8 @@ export class Dcsm05Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
-          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : ''
+          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : '',
+          deliveryDate: item.deliveryDate ? new Date(item.deliveryDate).toLocaleDateString('th-TH') : ''
         }));
         this.totalElements = res.totalElements;
       },

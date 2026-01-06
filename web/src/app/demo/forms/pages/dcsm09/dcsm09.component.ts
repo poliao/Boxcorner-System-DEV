@@ -41,6 +41,7 @@ export class Dcsm09Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
+  countBacklog = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -64,6 +65,7 @@ export class Dcsm09Component implements OnInit {
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
+    this.Backlog();
   }
 
   initSearchForm(): void {
@@ -179,5 +181,22 @@ export class Dcsm09Component implements OnInit {
 
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm09Detail', row.id]);
+  }
+
+   Backlog(){
+    this.dcsm09Service.countBacklog().subscribe({
+      next: (data: number) => {
+        this.countBacklog = data;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  onFilterUnassigned() {
+    this.searchForm.patchValue({
+      processStatus: 'เสร็จสิ้น รอตรวจสอบ',
+    });
+    this.onSearch();
   }
 }

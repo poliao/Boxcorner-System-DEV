@@ -20,6 +20,7 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
 
 @Component({
   selector: 'app-dcsm03.component',
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -31,12 +32,10 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
     MatPaginatorModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule,
-    MatButtonModule,
     MatSelectModule,
     MatAutocompleteModule,
-    MatDatepickerModule, // เพิ่มเข้าในลิสต์
-    MatNativeDateModule, // เพิ่มเข้าในลิสต์
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './dcsm03.component.html',
   styleUrl: './dcsm03.component.scss'
@@ -70,8 +69,8 @@ export class Dcsm03Component implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
-    private http: HttpClient, 
-    private dcsm03Service: Dcsm03Service, 
+    private http: HttpClient,
+    private dcsm03Service: Dcsm03Service,
     private router: Router,
     private loadingService: LoadingService) { }
 
@@ -107,8 +106,7 @@ export class Dcsm03Component implements OnInit {
     const startDateStr = this.startDate ? this.formatDateForApi(this.startDate) : '';
     const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
 
-    // เรียก API (สมมติว่า service มี method นี้ตามที่คุณแจ้ง)
-    this.dcsm03Service.getAllDesignOrders( // หรือ getAll() ถ้าใช้ service เดิม
+    this.dcsm03Service.getAllDesignOrders(
       this.filterjobdetails,
       this.filterowner,
       this.filterprocess,
@@ -122,38 +120,45 @@ export class Dcsm03Component implements OnInit {
       .subscribe({
         next: (response: any) => {
           let content = response.content || [];
-          content.sort((a: any, b: any) => {
-            const dateStrA = a.sendDate || a.deadlineDate;
-            const dateStrB = b.sendDate || b.deadlineDate;
-            if (!dateStrA) return 1;
-            if (!dateStrB) return -1;
-            const dateA = new Date(dateStrA).getTime();
-            const dateB = new Date(dateStrB).getTime();
-            if (dateA !== dateB) {
-              return dateA - dateB;
-            }
-            if (a.sendTime && b.sendTime) {
-              const timeA = parseInt(a.sendTime.replace(':', '') || '0');
-              const timeB = parseInt(b.sendTime.replace(':', '') || '0');
-              return timeA - timeB;
-            }
-            return 0;
-          });
 
           this.tableData = content.map((item: any) => ({
             ...item,
+           
+            _sortDate: item.sendDate || item.deadlineDate,
+
             orderDate: this.formatDate(item.orderDate),
             deadlineDate: this.formatDate(item.deadlineDate),
-            sendDate: this.formatDate(item.sendDate) 
+            sendDate: this.formatDate(item.sendDate)
           }));
           
           this.totalElements = response.totalElements;
-          this.loadingService.hide(); 
+          this.loadingService.hide();
         },
         error: (err) => {
-        this.loadingService.hide(); 
+          this.loadingService.hide();
         }
       });
+  }
+
+  sortByClosestDate() {
+      const sortedData = [...this.tableData].sort((a: any, b: any) => {
+      const dateA = a._sortDate ? new Date(a._sortDate).getTime() : 9999999999999;
+      const dateB = b._sortDate ? new Date(b._sortDate).getTime() : 9999999999999;
+
+      if (dateA !== dateB) {
+        return dateA - dateB;
+      }
+
+      if (a.deadlineTime && b.deadlineTime) {
+        const timeA = parseInt(a.deadlineTime.toString().replace(/:/g, '') || '0');
+        const timeB = parseInt(b.deadlineTime.toString().replace(/:/g, '') || '0');
+        return timeA - timeB;
+      }
+
+      return 0;
+    });
+
+    this.tableData = sortedData;
   }
 
   formatDateForApi(date: Date): string {
@@ -215,28 +220,23 @@ export class Dcsm03Component implements OnInit {
   }
 
   prepareDropdownData() {
-    this.searchJobDetailsSubject.pipe(
-    ).subscribe(searchValue => {
+    this.searchJobDetailsSubject.subscribe(searchValue => {
       this.fetchJobDetailFromDB(searchValue);
     });
 
-    this.searchOwnerListSubject.pipe(
-    ).subscribe(searchValue => {
+    this.searchOwnerListSubject.subscribe(searchValue => {
       this.fetchOwnerListFromDB(searchValue);
     });
 
-    this.searchAssigneeListSubject.pipe(
-    ).subscribe(searchValue => {
+    this.searchAssigneeListSubject.subscribe(searchValue => {
       this.fetchAssigneeFromDB(searchValue);
     });
 
-    this.searchProcessListSubject.pipe(
-    ).subscribe(searchValue => {
+    this.searchProcessListSubject.subscribe(searchValue => {
       this.fetchProcessFromDB(searchValue);
     });
 
-    this.searchConfirmListSubject.pipe(
-    ).subscribe(searchValue => {
+    this.searchConfirmListSubject.subscribe(searchValue => {
       this.fetchConfirmFromDB(searchValue);
     });
 
@@ -252,8 +252,7 @@ export class Dcsm03Component implements OnInit {
       next: (data: string[]) => {
         this.jobdetailsList = data;
       },
-      error: (err) => {
-      }
+      error: (err) => { }
     });
   }
 
@@ -262,9 +261,7 @@ export class Dcsm03Component implements OnInit {
       next: (data: string[]) => {
         this.OwnerList = data;
       },
-      error: (err) => {
-        console.error('Error fetching OwnerList from DB:', err);
-      }
+      error: (err) => { }
     });
   }
 
@@ -273,9 +270,7 @@ export class Dcsm03Component implements OnInit {
       next: (data: string[]) => {
         this.Assignee = data;
       },
-      error: (err) => {
-        console.error('Error fetching Assignee from DB:', err);
-      }
+      error: (err) => { }
     });
   }
 
@@ -284,9 +279,7 @@ export class Dcsm03Component implements OnInit {
       next: (data: string[]) => {
         this.Process = data;
       },
-      error: (err) => {
-        console.error('Error fetching Process from DB:', err);
-      }
+      error: (err) => { }
     });
   }
 
@@ -295,9 +288,7 @@ export class Dcsm03Component implements OnInit {
       next: (data: string[]) => {
         this.Confirm = data;
       },
-      error: (err) => {
-        console.error('Error fetching Process from DB:', err);
-      }
+      error: (err) => { }
     });
   }
 
@@ -311,6 +302,7 @@ export class Dcsm03Component implements OnInit {
   onEndDateChange() {
     this.onSearchChange();
   }
+  
   clearStartDate() {
     this.startDate = null;
     this.endDate = null;
@@ -333,18 +325,17 @@ export class Dcsm03Component implements OnInit {
     this.onSearchChange();
   }
 
-  Backlog(){
+  Backlog() {
     this.dcsm03Service.countBacklog().subscribe({
       next: (data: number) => {
         this.countBacklog = data;
       },
-      error: (err) => {
-      }
+      error: (err) => { }
     });
   }
 
   onFilterUnassigned() {
-    this.filterassignee = 'รอผู้รับผิดชอบยืนยัน'; 
+    this.filterassignee = 'รอผู้รับผิดชอบยืนยัน';
     this.onSearchChange();
   }
 }

@@ -33,6 +33,9 @@ export class LoginComponent implements OnInit {
   }
 
   onPasswordKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.which === 13) {
+      return;
+    }
     const char = String.fromCharCode(event.which);
     if (!/[A-Za-z0-9]/.test(char)) {
       event.preventDefault();

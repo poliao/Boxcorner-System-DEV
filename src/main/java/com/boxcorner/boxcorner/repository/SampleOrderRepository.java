@@ -41,7 +41,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                 AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
                 AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
-            ORDER BY s.delivery_date asc, s.delivery_time asc
+            ORDER BY s.id desc
             """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
     Page<SampleOrder> findByFiltersDetail(
             @Param("folderName") String folderName,

@@ -54,4 +54,9 @@ export class Dcsm07Service {
     return this.http.get<DropdownOption[]>(`${this.apiUrl}/user/planning`);
   }
 
+  countBacklog(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogHPlanning`);
+  }
+
+
 }

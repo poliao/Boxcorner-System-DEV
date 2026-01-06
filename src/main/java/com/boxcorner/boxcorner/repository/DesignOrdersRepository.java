@@ -47,7 +47,7 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (:confirm IS NULL OR :confirm = '' OR UPPER(d.confirm_status) LIKE UPPER(CONCAT('%', :confirm, '%')))
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
-                        ORDER BY d.deadline_date ASC, d.deadline_time ASC
+                        ORDER BY d.id DESC
                         """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
         Page<DesignOrders> findByAll(
                         @Param("jobDetails") String jobDetails,

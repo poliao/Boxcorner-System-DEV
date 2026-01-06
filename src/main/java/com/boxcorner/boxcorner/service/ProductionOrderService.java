@@ -63,6 +63,15 @@ public class ProductionOrderService {
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }
 
+    public Page<ProductionOrder> findByProductionCheck(Integer id, String folderName, String jobOwner,
+            LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
+            String jobStatus, String processStatus, String operatorName,
+            String moldStatus, String jobType, Pageable pageable) {
+        return productionOrderRepository.findProductionCheck(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+    }
+
     public ProductionOrder updateProcessStatus (Integer id , String processStatus) {
         ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus(processStatus);
@@ -95,6 +104,18 @@ public class ProductionOrderService {
 
     public Integer countBacklog(String operatorName) {
         return productionOrderRepository.countBacklog(operatorName);
+    }
+
+    public Integer countBacklogHPlanning() {
+        return productionOrderRepository.countBacklogHPlanning();
+    }
+
+    public Integer countBacklogCheck() {
+        return productionOrderRepository.countBacklogCheck();
+    }
+
+    public Integer countBacklogMold() {
+        return productionOrderRepository.countBacklogMold();
     }
 
 }

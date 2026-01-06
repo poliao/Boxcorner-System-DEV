@@ -88,4 +88,8 @@ export class Dcsm10Service {
   updateMoldMakerName(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateMoldMakerName?id=${data.id}`, {});
   }
+
+  countBacklog(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogMold`);
+  }
 }
