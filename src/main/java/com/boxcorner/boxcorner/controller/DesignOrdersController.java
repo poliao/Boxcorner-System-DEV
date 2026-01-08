@@ -72,6 +72,7 @@ public class DesignOrdersController {
 
     @GetMapping("/listDesign")
     public ResponseEntity<?> getAllDesign(
+            @RequestParam(value = "id", required = false) String id,
             @RequestParam(value = "job_details", required = false) String job_details,
             @RequestParam(value = "job_owner", required = false) String job_owner,
             @RequestParam(value = "process_status", required = false) String process_status,
@@ -80,10 +81,16 @@ public class DesignOrdersController {
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline
     ) {
         try {
-            Page<DesignOrders> pageDesignOrders = service.getAllRecipesDesign(job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+            Page<DesignOrders> pageDesignOrders;
+            if (Boolean.TRUE.equals(sortByDeadline)) {
+                pageDesignOrders = service.getAllRecipesDesignSorted(id, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+            } else {
+                pageDesignOrders = service.getAllRecipesDesign(id, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+            }
             return ResponseEntity.ok(pageDesignOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());

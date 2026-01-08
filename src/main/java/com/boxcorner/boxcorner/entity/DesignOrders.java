@@ -54,4 +54,7 @@ public class DesignOrders {
     @Column(name = "note_edit")
     private String noteEdit;
 
+    @Column(name = "confirm_date")
+    private LocalDate confirmDate;
+
 }

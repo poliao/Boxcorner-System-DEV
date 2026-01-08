@@ -59,6 +59,7 @@ export class Dcsm03Component implements OnInit {
   private searchProcessListSubject = new Subject<string>();
   private searchConfirmListSubject = new Subject<string>();
 
+  filterId: string = '';
   filterjobdetails: string = '';
   filterowner: string = '';
   filterassignee: string = '';
@@ -112,6 +113,7 @@ export class Dcsm03Component implements OnInit {
     const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
 
     this.dcsm03Service.getAllDesignOrders(
+      this.filterId,
       this.filterjobdetails,
       this.filterowner,
       this.filterprocess,
@@ -146,24 +148,50 @@ export class Dcsm03Component implements OnInit {
   }
 
   sortByClosestDate() {
-    const sortedData = [...this.tableData].sort((a: any, b: any) => {
-      const dateA = a._sortDate ? new Date(a._sortDate).getTime() : 9999999999999;
-      const dateB = b._sortDate ? new Date(b._sortDate).getTime() : 9999999999999;
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
+    this.loadDataSorted();
+  }
 
-      if (dateA !== dateB) {
-        return dateA - dateB;
-      }
+  loadDataSorted() {
+    this.loadingService.show();
 
-      if (a.deadlineTime && b.deadlineTime) {
-        const timeA = parseInt(a.deadlineTime.toString().replace(/:/g, '') || '0');
-        const timeB = parseInt(b.deadlineTime.toString().replace(/:/g, '') || '0');
-        return timeA - timeB;
-      }
+    const startDateStr = this.startDate ? this.formatDateForApi(this.startDate) : '';
+    const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
 
-      return 0;
-    });
+    this.dcsm03Service.getAllDesignOrdersSorted(
+      this.filterId,
+      this.filterjobdetails,
+      this.filterowner,
+      this.filterprocess,
+      this.filterassignee,
+      this.filterconfirm,
+      startDateStr,
+      endDateStr,
+      this.pageIndex,
+      this.pageSize,
+    )
+      .subscribe({
+        next: (response: any) => {
+          let content = response.content || [];
 
-    this.tableData = sortedData;
+          this.tableData = content.map((item: any) => ({
+            ...item,
+            _sortDate: item.sendDate || item.deadlineDate,
+            orderDate: this.formatDate(item.orderDate),
+            deadlineDate: this.formatDate(item.deadlineDate),
+            sendDate: this.formatDate(item.sendDate)
+          }));
+
+          this.totalElements = response.totalElements;
+          this.loadingService.hide();
+        },
+        error: (err) => {
+          this.loadingService.hide();
+        }
+      });
   }
 
   formatDateForApi(date: Date): string {

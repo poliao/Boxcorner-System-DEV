@@ -61,16 +61,32 @@ public class DesignOrdersService {
         );
     }
 
-    public Page<DesignOrders> getAllRecipesDesign(String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignOrders> getAllRecipesDesign(String id, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByAll(
-            job_details,    // 1. jobDetails
-            job_owner,      // 2. jobOwner
-            assignee,       // 3. assignee (สลับกลับมาตรงนี้)
-            process_status, // 4. processStatus (สลับกลับมาตรงนี้)
-            confirm_status, // 5. confirm
-            startDate,      // 6. startDate
-            endDate,        // 7. endDate
+            id,             // 1. id
+            job_details,    // 2. jobDetails
+            job_owner,      // 3. jobOwner
+            assignee,       // 4. assignee
+            process_status, // 5. processStatus
+            confirm_status, // 6. confirm
+            startDate,      // 7. startDate
+            endDate,        // 8. endDate
+            paging
+        );
+    }
+
+    public Page<DesignOrders> getAllRecipesDesignSorted(String id, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size);
+        return repository.findByAllSorted(
+            id,             // 1. id
+            job_details,    // 2. jobDetails
+            job_owner,      // 3. jobOwner
+            assignee,       // 4. assignee
+            process_status, // 5. processStatus
+            confirm_status, // 6. confirm
+            startDate,      // 7. startDate
+            endDate,        // 8. endDate
             paging
         );
     }
@@ -136,6 +152,7 @@ public class DesignOrdersService {
         DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("ผ่าน");
+        existingOrder.setConfirmDate(LocalDate.now());
         return repository.save(existingOrder);
     }
 

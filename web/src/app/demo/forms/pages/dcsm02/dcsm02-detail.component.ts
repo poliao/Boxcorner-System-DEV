@@ -203,7 +203,6 @@ export class Dcsm02DetailComponent implements OnInit {
   }
 
   confirmApprove() {
-    
     const data = {
       id: '',
       orderDate: new Date().toISOString().substring(0, 10),
@@ -216,7 +215,8 @@ export class Dcsm02DetailComponent implements OnInit {
       isCreateSample: this.isCreateSample.value,
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
-      designOrderId: this.designForm.getRawValue().id
+      designOrderId: this.designForm.getRawValue().id,
+    
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
@@ -244,16 +244,14 @@ export class Dcsm02DetailComponent implements OnInit {
         });
       }
     });
-
   }
 
   openEditModal() {
-    this.editNote.setValue(''); // เคลียร์ค่าเก่า
-    this.editNote.markAsUntouched(); // รีเซ็ตสถานะ error
+    this.editNote.setValue('');
+    this.editNote.markAsUntouched();
     this.showEditModal = true;
   }
 
-  // 2. ปิด Modal แก้ไข
   closeEditModal() {
     this.showEditModal = false;
   }

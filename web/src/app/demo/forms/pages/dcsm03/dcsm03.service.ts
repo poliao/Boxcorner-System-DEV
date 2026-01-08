@@ -25,22 +25,24 @@ export class Dcsm03Service {
   }
 
   getAllDesignOrders(
+    id: string,
     job_details: string,
     job_owner: string,
     process_status: string,
     assignee: string,
-    confirm_status: string, // เพิ่มตัวแปรนี้
+    confirm_status: string,
     startDate: string,
     endDate: string,
     page: number,
     size: number
   ): Observable<any> {
     const params = {
+      id: id || '',
       job_details: job_details || '',
       job_owner: job_owner || '',
       process_status: process_status || '',
       assignee: assignee || '',
-      confirm_status: confirm_status || '', // ส่งไปยัง backend
+      confirm_status: confirm_status || '',
       startDate: startDate || '',
       endDate: endDate || '',
       page: page.toString(),
@@ -80,6 +82,35 @@ export class Dcsm03Service {
 
   updateStatusComplete(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/designs/updateStatusComplete?id=${id}`, {});
+  }
+
+  getAllDesignOrdersSorted(
+    id: string,
+    job_details: string,
+    job_owner: string,
+    process_status: string,
+    assignee: string,
+    confirm_status: string,
+    startDate: string,
+    endDate: string,
+    page: number,
+    size: number
+  ): Observable<any> {
+    const params = {
+      id: id || '',
+      job_details: job_details || '',
+      job_owner: job_owner || '',
+      process_status: process_status || '',
+      assignee: assignee || '',
+      confirm_status: confirm_status || '',
+      startDate: startDate || '',
+      endDate: endDate || '',
+      page: page.toString(),
+      size: size.toString(),
+      sortByDeadline: 'true'
+    };
+
+    return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
   }
 
   countBacklog(): Observable<any> {
