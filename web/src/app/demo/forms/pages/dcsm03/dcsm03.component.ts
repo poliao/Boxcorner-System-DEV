@@ -89,8 +89,8 @@ export class Dcsm03Component implements OnInit {
     { key: 'deadlineDate', label: 'วันที่ต้องส่ง' },
     { key: 'deadlineTime', label: 'ภายในเวลา' },
     { key: 'remarks', label: 'หมายเหตุ' },
-    { key: 'processStatus', label: 'สถานะงาน' },
-    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม' },
+    { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.getProcessStatusColor.bind(this) },
+    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.getConfirmStatusColor.bind(this) },
   ];
 
   tableData: any[] = [];
@@ -306,6 +306,29 @@ export class Dcsm03Component implements OnInit {
 
   onEndDateChange() {
     this.onSearchChange();
+  }
+
+  getProcessStatusColor(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'รอดำเนินการ': return '#ffa600ff';
+      case 'กำลังดำเนินการ': return '#ffd900ff';
+      case 'เสร็จสิ้น': return '#66bb6a';
+      case 'รอผู้รับผิดชอบยืนยัน' : return '#9e9e9e';
+      case 'รอดำเนินการแก้ไข' : return '#ef5350';
+      default: return '#9e9e9e';
+    }
+  }
+
+  getConfirmStatusColor(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'ผ่าน': return '#66bb6a';
+      case 'รอดำเนินการ': return '#ffa600ff';
+      case 'กำลังดำเนินการ': return '#ffd900ff';
+      case 'รอตรวจสอบ': return '#aee76c';
+      case 'ไม่ผ่าน': return '#ef5350';
+      case 'รอผู้รับผิดชอบยืนยัน' : return '#9e9e9e';
+      default: return '#9e9e9e';
+    }
   }
 
   clearStartDate() {

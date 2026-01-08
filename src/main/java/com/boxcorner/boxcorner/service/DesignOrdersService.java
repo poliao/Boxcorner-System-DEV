@@ -112,6 +112,8 @@ public class DesignOrdersService {
         if (currentUser != null && !currentUser.isEmpty()) {
             existingOrder.setAssignee(currentUser);
         }
+
+        existingOrder.setProcessStatus("รอดำเนินการ");
         existingOrder.setConfirmStatus("รอดำเนินการ");
         return repository.save(existingOrder);
     }

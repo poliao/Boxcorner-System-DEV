@@ -73,7 +73,7 @@ export class Dcsm02DetailComponent implements OnInit {
       deadlineDate: ['', Validators.required],
       deadlineTime: ['', Validators.required],
       assignee: [''],
-      processStatus: ['รอดำเนินการ', Validators.required],
+      processStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
       confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required]
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
