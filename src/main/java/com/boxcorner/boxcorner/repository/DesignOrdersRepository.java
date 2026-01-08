@@ -106,7 +106,7 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
         Integer countBacklogEdit();
         
         @Query(value = "select count(t.id) from design_orders t " +
-                        "where t.confirm_status  = 'ผ่าน'", nativeQuery = true)
+                        "where t.confirm_status  = 'ผ่าน' AND date_trunc('month', t.confirm_date) = date_trunc('month', CURRENT_DATE)", nativeQuery = true)
         Integer countBacklogComplete();
 
 }
