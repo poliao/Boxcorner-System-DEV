@@ -40,7 +40,7 @@ export class Dcsm03DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
-      if (resolvedData.confirmStatus == 'ไม่ผ่าน') {
+      if (resolvedData.confirmStatus !== null && resolvedData.confirmStatus !== '') {
         this.isNoteEdit = true
       }
     }

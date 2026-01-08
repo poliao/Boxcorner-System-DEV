@@ -70,6 +70,11 @@
             <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
           </div>
 
+          <div class="col-md-3">
+            <label class="form-label fw-bold">ผู้ตรวจ</label>
+            <input type="text" class="form-control" formControlName="inspector" placeholder="ระบุผู้ตรวจ">
+          </div>
+
           <div class="col-md-9 d-flex align-items-end justify-content-end gap-2 ">
             <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #f0c83a;">
               <mat-icon>clear_all</mat-icon> ล้างค่า

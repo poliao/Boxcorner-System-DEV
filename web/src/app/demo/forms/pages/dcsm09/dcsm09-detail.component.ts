@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-dcsm09-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -30,6 +31,7 @@ export class Dcsm09DetailComponent implements OnInit {
     private dcsm09Service: Dcsm09Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -59,8 +61,10 @@ export class Dcsm09DetailComponent implements OnInit {
       remarks: [''],
       moldStatus: [''],
       jobType: [''],
+      inspector: [''],
       createdAt: [''],
       updatedAt: [''],
+
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -80,6 +84,7 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.get('deliveryDate')?.disable();
     this.mainForm.get('operatorName')?.disable();
     this.mainForm.get('remarks')?.disable();
+    this.mainForm.get('inspector')?.disable();
   }
 
   patchFormData(data: any): void {
@@ -93,17 +98,17 @@ export class Dcsm09DetailComponent implements OnInit {
       this.isOrder = false;
       this.isSendOrder = false;
       this.isSendFile = false;
-    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจไฟล์แม่พิมพ์แล้ว') {
+    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจไฟล์แม่พิมพ์แล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isOrder = true;
       this.isCheckMold = false;
       this.isSendOrder = false;
       this.isSendFile = false;
-    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจใบสั่งผลิตแล้ว') {
+    } else if (this.mainForm.getRawValue().processStatus == 'ตรวจใบสั่งผลิตแล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isSendOrder = true;
       this.isSendFile = false;
       this.isOrder = false;
       this.isCheckMold = false;
-    } else if (this.mainForm.getRawValue().processStatus == 'ส่งใบสั่งผลิตแล้ว') {
+    } else if (this.mainForm.getRawValue().processStatus == 'ส่งใบสั่งผลิตแล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isSendFile = true;
       this.isSendOrder = false;
       this.isOrder = false;
@@ -122,6 +127,11 @@ export class Dcsm09DetailComponent implements OnInit {
       processStatus: 'ตรวจไฟล์แม่พิมพ์แล้ว',
     };
 
+    const formData = {
+      id: this.mainForm.getRawValue().id,
+      inspector: this.authService.getUserFromToken().sub,
+    }
+
     Swal.fire({
       title: 'ยืนยันตรวจไฟล์แม่พิมพ์แล้ว',
       text: "ยืนยันตรวจไฟล์แม่พิมพ์แล้ว ใช่หรือไม่?",
@@ -136,11 +146,20 @@ export class Dcsm09DetailComponent implements OnInit {
         this.loadingService.show();
         this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
           next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm09']);
+            this.dcsm09Service.updateInspector(formData).subscribe({
+              next: (response) => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+                this.router.navigate(['/Dcsm09']);
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+                this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+              }
+            });
           },
           error: (error) => {
             this.loadingService.hide();

@@ -66,15 +66,21 @@ public class ProductionOrderService {
     public Page<ProductionOrder> findByProductionCheck(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType, Pageable pageable) {
+            String moldStatus, String jobType,String inspector, Pageable pageable) {
         return productionOrderRepository.findProductionCheck(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType,inspector, pageable);
     }
 
     public ProductionOrder updateProcessStatus (Integer id , String processStatus) {
         ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus(processStatus);
+        return productionOrderRepository.save(existingOrder);
+    }
+
+    public ProductionOrder updateInspector (Integer id , String inspector) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setInspector(inspector);
         return productionOrderRepository.save(existingOrder);
     }
 

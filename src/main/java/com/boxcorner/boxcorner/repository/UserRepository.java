@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
      @Query(value = "SELECT u.username as value, u.username as text " +
-                   "FROM uat.users u " +
+                   "FROM users u " +
                    "WHERE u.role = 'planning'", 
            nativeQuery = true)
     List<OptionDTO> findPlanningUsers();

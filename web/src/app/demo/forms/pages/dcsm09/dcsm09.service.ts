@@ -32,7 +32,8 @@ export class Dcsm09Service {
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
-      endDate: apiFilters.endDate
+      endDate: apiFilters.endDate,
+      inspector: apiFilters.inspector
     };
 
     Object.keys(params).forEach(key => {
@@ -54,6 +55,10 @@ export class Dcsm09Service {
 
   countBacklog(): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countBacklogCheck`);
+  }
+
+  updateInspector(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateInspector?id=${data.id}&inspector=${data.inspector}`, {});
   }
   
 }

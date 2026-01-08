@@ -14,6 +14,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 import { Dcsm09Service } from './dcsm09.service';
 import { TokenService } from 'src/app/shared/token.service';
+import { LoadingService } from 'src/app/demo/loadingservice/loading';
 
 @Component({
   selector: 'app-dcsm09',
@@ -52,14 +53,14 @@ export class Dcsm09Component implements OnInit {
     { key: 'jobStatus', label: 'สถานะงาน' },
     { key: 'processStatus', label: 'สถานะดำเนินการ' },
     { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
-    { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
+    { key: 'inspector', label: 'ผู้ตรวจ' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private dcsm09Service: Dcsm09Service,
-    private tokenService: TokenService,
+    private loadingService: LoadingService,
   ) { }
 
   ngOnInit(): void {
@@ -79,13 +80,13 @@ export class Dcsm09Component implements OnInit {
       moldStatus: [''],      // เพิ่ม moldStatus
       jobType: [''],         // เพิ่ม jobType
       startDate: [null],
+      inspector: [''],
       endDate: [{ value: null, disabled: true }]
     });
-
   }
 
   loadData(): void {
-
+    this.loadingService.show();
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
       id: formValues.id,
@@ -98,10 +99,11 @@ export class Dcsm09Component implements OnInit {
       jobType: formValues.jobType,
       startDate: formValues.startDate,
       endDate: formValues.endDate,
+      inspector: formValues.inspector,
       page: this.pageIndex,
       size: this.pageSize
     };
-
+   
     this.dcsm09Service.getOrdersWithSearch(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
@@ -110,8 +112,10 @@ export class Dcsm09Component implements OnInit {
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
         this.totalElements = res.totalElements;
+        this.loadingService.hide();
       },
       error: (err) => {
+        this.loadingService.hide();
         console.error('Error loading data:', err);
       }
     });
@@ -180,6 +184,8 @@ export class Dcsm09Component implements OnInit {
   }
 
   onRowClick(row: any): void {
+    console.log(row.id);
+    
     this.router.navigate(['/Dcsm09Detail', row.id]);
   }
 

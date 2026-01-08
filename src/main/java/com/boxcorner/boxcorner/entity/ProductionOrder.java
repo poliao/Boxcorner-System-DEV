@@ -78,5 +78,7 @@ public class ProductionOrder {
     @Column(name = "printing_machine")
     private String printingMachine;
 
+    @Column(name = "inspector")
+    private String inspector;
 
 }

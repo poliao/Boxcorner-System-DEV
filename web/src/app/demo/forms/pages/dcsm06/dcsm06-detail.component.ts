@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-dcsm06-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -27,7 +28,8 @@ export class Dcsm06DetailComponent implements OnInit {
     private router: Router,
     private dcsm06Service: Dcsm06Service,
     private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit(): void {
@@ -35,7 +37,6 @@ export class Dcsm06DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
-      this.checkBtn();
     }
 
     if (this.mainForm.getRawValue().sampleOrderId != null && this.mainForm.getRawValue().sampleOrderId != '') {
@@ -44,7 +45,7 @@ export class Dcsm06DetailComponent implements OnInit {
       this.isSampleOrderId = false
     }
 
-    if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน') {
+    if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || (this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().jobOwner)) {
       this.mainForm.get('usedFile')?.enable();
       this.mainForm.get('colorSample')?.enable();
       this.mainForm.get('deadlineDate')?.enable();
@@ -101,10 +102,6 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.patchValue(apiData);
   }
 
-  checkBtn() {
-
-  }
-
   onSubmit() {
     if (this.mainForm.invalid) {
       this.mainForm.markAllAsTouched();
@@ -128,7 +125,6 @@ export class Dcsm06DetailComponent implements OnInit {
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
-            this.checkBtn();
             this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
             this.router.navigate(['/Dcsm06']);
           },
@@ -140,7 +136,5 @@ export class Dcsm06DetailComponent implements OnInit {
         });
       }
     });
-
-
   }
 }

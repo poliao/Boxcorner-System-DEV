@@ -121,13 +121,14 @@ public class ProductionOrderController {
             @RequestParam(required = false, name = "operatorName") String operatorName,
             @RequestParam(required = false, name = "moldStatus") String moldStatus,
             @RequestParam(required = false, name = "jobType") String jobType,
+            @RequestParam(required = false, name = "inspector") String inspector,
             @RequestParam(defaultValue = "0", name = "page") int page,
             @RequestParam(defaultValue = "10", name = "size") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProductionOrder> result = productionOrderService.findByProductionCheck(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable
+                jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, pageable
         );
         return ResponseEntity.ok(result);
     }
@@ -135,6 +136,11 @@ public class ProductionOrderController {
     @PutMapping("/updateProcessStatus")
     public ResponseEntity<ProductionOrder> updateProcessStatus (@RequestParam("id") Integer id, @RequestParam("processStatus") String processStatus) {
         return ResponseEntity.ok(productionOrderService.updateProcessStatus(id,processStatus));
+    }
+
+    @PutMapping("/updateInspector")
+    public ResponseEntity<ProductionOrder> updateInspector (@RequestParam("id") Integer id, @RequestParam("inspector") String inspector) {
+        return ResponseEntity.ok(productionOrderService.updateInspector(id,inspector));
     }
 
     @PutMapping("/updateJobStatus")
