@@ -21,8 +21,8 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
-                            AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(d.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
-                            AND (:confirm IS NULL OR :confirm = '' OR UPPER(d.confirm_status) LIKE UPPER(CONCAT('%', :confirm, '%')))
+                            AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
+                            AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
                         ORDER BY d.id DESC
@@ -43,8 +43,8 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
-                            AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(d.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
-                            AND (:confirm IS NULL OR :confirm = '' OR UPPER(d.confirm_status) LIKE UPPER(CONCAT('%', :confirm, '%')))
+                            AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
+                            AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
                         ORDER BY d.id DESC
@@ -88,4 +88,25 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
         @Query(value = "select  count(id) as backlog from design_orders " +
                         "where assignee='รอผู้รับผิดชอบยืนยัน'", nativeQuery = true)
         Integer countBacklog();
+
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.process_status = 'รอดำเนินการ'", nativeQuery = true)
+        Integer countBacklogPending();
+
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.process_status = 'กำลังดำเนินการ'", nativeQuery = true)
+        Integer countBacklogInProgress();
+
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.confirm_status  = 'รอตรวจสอบ'", nativeQuery = true)
+        Integer countBacklogCheck();
+
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.process_status  = 'รอดำเนินการแก้ไข'", nativeQuery = true)
+        Integer countBacklogEdit();
+        
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.confirm_status  = 'ผ่าน'", nativeQuery = true)
+        Integer countBacklogComplete();
+
 }

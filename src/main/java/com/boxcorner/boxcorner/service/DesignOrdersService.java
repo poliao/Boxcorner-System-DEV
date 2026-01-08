@@ -147,4 +147,24 @@ public class DesignOrdersService {
     public Integer countBacklog() {
         return repository.countBacklog();
     }
+
+    public Integer countBacklogPending(){
+        return repository.countBacklogPending();
+    }
+
+    public Integer countBacklogInProgress() {
+        return repository.countBacklogInProgress();
+    }
+
+    public Integer countBacklogCheck(){
+        return repository.countBacklogCheck();
+    }
+    
+    public Integer countBacklogEdit(){
+        return repository.countBacklogEdit();
+    }
+
+    public Integer countBacklogComplete(){
+        return repository.countBacklogComplete();
+    }
 }

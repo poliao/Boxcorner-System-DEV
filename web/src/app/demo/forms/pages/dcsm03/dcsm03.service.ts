@@ -86,4 +86,23 @@ export class Dcsm03Service {
     return this.http.get(`${this.apiUrl}/designs/countBacklog`);
   }
 
+  countBacklogPending(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countBacklogPending`);
+  }
+
+  countBacklogInProgress(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countBacklogInProgress`);
+  }
+
+  countBacklogCheck(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countBacklogCheck`);
+  }
+
+  countBacklogEdit(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countBacklogEdit`);
+  }
+
+  countBacklogComplete(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countBacklogComplete`);
+  }
 }

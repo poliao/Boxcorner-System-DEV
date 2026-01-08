@@ -144,5 +144,30 @@ public class DesignOrdersController {
     @GetMapping("/countBacklog")
     public ResponseEntity<Integer> getUniqueStatus(){
         return ResponseEntity.ok(service.countBacklog());
+    } 
+
+    @GetMapping("/countBacklogPending")
+    public ResponseEntity<Integer> countBacklogPending(){
+        return ResponseEntity.ok(service.countBacklogPending());
+    } 
+
+    @GetMapping("/countBacklogInProgress")
+    public ResponseEntity<Integer> countBacklogInProgress(){
+        return ResponseEntity.ok(service.countBacklogInProgress());
+    }
+
+    @GetMapping("/countBacklogCheck")
+    public ResponseEntity<Integer> countBacklogCheck(){
+        return ResponseEntity.ok(service.countBacklogCheck());
+    }
+
+    @GetMapping("/countBacklogEdit")
+    public ResponseEntity<Integer> countBacklogEdit(){
+        return ResponseEntity.ok(service.countBacklogEdit());
+    }
+
+    @GetMapping("/countBacklogComplete")
+    public ResponseEntity<Integer> countBacklogComplete(){
+        return ResponseEntity.ok(service.countBacklogComplete());
     }
 }

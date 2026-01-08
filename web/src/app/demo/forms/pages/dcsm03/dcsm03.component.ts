@@ -8,7 +8,7 @@ import { Dcsm03Service } from './dcsm03.service';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { Subject } from 'rxjs';
+import { delay, Subject } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -47,6 +47,11 @@ export class Dcsm03Component implements OnInit {
   startDate: Date | null = null;
   endDate: Date | null = null;
   countBacklog: number = 0;
+  countInProgress: number = 0;
+  pending: number = 0;
+  checked: number = 0;
+  edited: number = 0;
+  completed: number = 0;
 
   private searchJobDetailsSubject = new Subject<string>();
   private searchOwnerListSubject = new Subject<string>();
@@ -97,7 +102,7 @@ export class Dcsm03Component implements OnInit {
   ngOnInit() {
     this.loadData();
     this.prepareDropdownData();
-    this.Backlog();
+    this.useBacklog();
   }
 
   loadData() {
@@ -123,14 +128,14 @@ export class Dcsm03Component implements OnInit {
 
           this.tableData = content.map((item: any) => ({
             ...item,
-           
+
             _sortDate: item.sendDate || item.deadlineDate,
 
             orderDate: this.formatDate(item.orderDate),
             deadlineDate: this.formatDate(item.deadlineDate),
             sendDate: this.formatDate(item.sendDate)
           }));
-          
+
           this.totalElements = response.totalElements;
           this.loadingService.hide();
         },
@@ -141,7 +146,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   sortByClosestDate() {
-      const sortedData = [...this.tableData].sort((a: any, b: any) => {
+    const sortedData = [...this.tableData].sort((a: any, b: any) => {
       const dateA = a._sortDate ? new Date(a._sortDate).getTime() : 9999999999999;
       const dateB = b._sortDate ? new Date(b._sortDate).getTime() : 9999999999999;
 
@@ -302,7 +307,7 @@ export class Dcsm03Component implements OnInit {
   onEndDateChange() {
     this.onSearchChange();
   }
-  
+
   clearStartDate() {
     this.startDate = null;
     this.endDate = null;
@@ -325,6 +330,15 @@ export class Dcsm03Component implements OnInit {
     this.onSearchChange();
   }
 
+  useBacklog() {
+    this.Backlog();
+    this.countBacklogInProgress();
+    this.countBacklogPending();
+    this.countBacklogCheck();
+    this.countBacklogEdit();
+    this.countBacklogComplete();
+  }
+
   Backlog() {
     this.dcsm03Service.countBacklog().subscribe({
       next: (data: number) => {
@@ -335,7 +349,95 @@ export class Dcsm03Component implements OnInit {
   }
 
   onFilterUnassigned() {
+    this.clearAllFilters();
     this.filterassignee = 'รอผู้รับผิดชอบยืนยัน';
-    this.onSearchChange();
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
+  }
+
+  countBacklogInProgress() {
+    this.dcsm03Service.countBacklogInProgress().subscribe({
+      next: (data: number) => {
+        this.countInProgress = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+  onFilterInProgress() {
+    this.clearAllFilters();
+    this.filterprocess = 'กำลังดำเนินการ';
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
+  }
+
+  countBacklogPending() {
+    this.dcsm03Service.countBacklogPending().subscribe({
+      next: (data: number) => {
+        this.pending = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+  onFilterPending() {
+    this.clearAllFilters();
+    this.filterprocess = 'รอดำเนินการ';
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
+  }
+
+  countBacklogCheck() {
+    this.dcsm03Service.countBacklogCheck().subscribe({
+      next: (data: number) => {
+        this.checked = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+   onFilterCheck() {
+    this.clearAllFilters();
+    this.filterconfirm = 'รอตรวจสอบ';
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
+  }
+
+  countBacklogEdit() {
+    this.dcsm03Service.countBacklogEdit().subscribe({
+      next: (data: number) => {
+        this.edited = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+   onFilterEdit() {
+    this.clearAllFilters();
+    this.filterprocess = 'รอดำเนินการแก้ไข';
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
+  }
+
+  countBacklogComplete() {
+    this.dcsm03Service.countBacklogComplete().subscribe({
+      next: (data: number) => {
+        this.completed = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+   onFilterComplete() {
+    this.clearAllFilters();
+    this.filterconfirm = 'ผ่าน';
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
   }
 }
