@@ -1,17 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { Dcsm07Service } from './dcsm07.service';
 
 @Component({
@@ -48,16 +49,17 @@ export class Dcsm07Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะงาน' },
-    { key: 'processStatus', label: 'สถานะดำเนินการ' },
-    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
+    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm07Service: Dcsm07Service
+    private dcsm07Service: Dcsm07Service,
+    private statusColorService: StatusColorService
   ) { }
 
   ngOnInit(): void {
@@ -185,7 +187,7 @@ export class Dcsm07Component implements OnInit {
       }
     });
   }
-
+  
   onFilterUnassigned() {
     this.searchForm.patchValue({
       status: 'รอผู้รับผิดชอบยืนยัน',

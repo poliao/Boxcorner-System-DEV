@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Dcsm04Service } from './dcsm04.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -57,7 +58,7 @@ export class Dcsm04Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'responsiblePerson', label: 'ผู้รับผิดชอบ' },
-    { key: 'status', label: 'สถานะ' },
+    { key: 'status', label: 'สถานะ', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'deliveryDate', label: 'วันที่ส่ง' },
     { key: 'deliveryTime', label: 'เวลาส่ง' }
   ];
@@ -65,7 +66,8 @@ export class Dcsm04Component implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm04Service: Dcsm04Service
+    private dcsm04Service: Dcsm04Service,
+    private statusColorService: StatusColorService
   ) {}
 
   ngOnInit(): void {

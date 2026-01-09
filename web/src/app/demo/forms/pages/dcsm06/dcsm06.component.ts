@@ -1,17 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { Dcsm06Service } from './dcsm06.service';
 
 @Component({
@@ -35,7 +36,6 @@ import { Dcsm06Service } from './dcsm06.service';
 })
 export class Dcsm06Component implements OnInit {
   searchForm!: FormGroup;
-
   tableData: any[] = [];
   totalElements = 0;
   pageSize = 10;
@@ -47,16 +47,17 @@ export class Dcsm06Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะงาน' },
-    { key: 'processStatus', label: 'สถานะดำเนินการ' },
-    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
+    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'jobType', label: 'ประเภทงาน' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm06Service: Dcsm06Service
+    private dcsm06Service: Dcsm06Service,
+    private statusColorService: StatusColorService
   ) { }
 
   ngOnInit(): void {

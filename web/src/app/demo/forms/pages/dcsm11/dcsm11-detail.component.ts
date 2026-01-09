@@ -160,58 +160,12 @@ export class Dcsm11DetailComponent implements OnInit {
           this.loadingService.hide();
           this.checkBtn();
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-        })
-      }
-    });
-  }
-
-  updateConfirmSample() {
-    Swal.fire({
-      title: 'อนุมัติการขึ้นตัวอย่าง',
-      text: "ยื่นยันการขึ้นตัวอย่าง ผ่าน ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm11Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
           this.router.navigate(['/dcsm11']);
         })
       }
     });
   }
 
-  updateEditConfirmSample() {
-    Swal.fire({
-      title: 'อนุมัติการขึ้นตัวอย่าง',
-      text: "ยื่นยันการขึ้นตัวอย่าง ไม่ผ่าน ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm11Service.updateEditConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-          this.router.navigate(['/dcsm11']);
-        })
-      }
-    })
-  }
 
   checkBtn() {
     const formValue = this.mainForm.getRawValue();

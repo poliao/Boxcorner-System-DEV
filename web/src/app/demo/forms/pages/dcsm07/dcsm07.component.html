@@ -99,17 +99,6 @@
                 <mat-icon>search</mat-icon> งานที่ยังไม่มีผู้รับผิดชอบ
               </button>
             </div>
-            <div class="position-relative">
-              <button mat-flat-button class="btn text-white px-4" (click)="onFilterUnassigned()" style="background-color: #350142;">
-                <span *ngIf="countBacklog > 0"
-                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ countBacklog }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-                <mat-icon>search</mat-icon>รอดำเนินการ
-              </button>
-            </div>
           </div>
         </div>
       </form>

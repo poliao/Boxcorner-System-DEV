@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 import { Dcsm09Service } from './dcsm09.service';
 import { TokenService } from 'src/app/shared/token.service';
@@ -53,9 +54,9 @@ export class Dcsm09Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะงาน' },
-    { key: 'processStatus', label: 'สถานะดำเนินการ' },
-    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
+    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'inspector', label: 'ผู้ตรวจ' }
   ];
 
@@ -64,6 +65,7 @@ export class Dcsm09Component implements OnInit {
     private router: Router,
     private dcsm09Service: Dcsm09Service,
     private loadingService: LoadingService,
+    private statusColorService: StatusColorService
   ) { }
 
   ngOnInit(): void {
@@ -140,7 +142,7 @@ export class Dcsm09Component implements OnInit {
     this.pageIndex = 0;
     this.loadData();
   }
-
+  
   onClear(): void {
     this.searchForm.reset({
       id: '',

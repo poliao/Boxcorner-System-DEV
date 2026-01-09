@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 import { Dcsm08Service } from './dcsm08.service';
 import { TokenService } from 'src/app/shared/token.service';
@@ -51,9 +52,9 @@ export class Dcsm08Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
-    { key: 'jobStatus', label: 'สถานะงาน' },
-    { key: 'processStatus', label: 'สถานะดำเนินการ' },
-    { key: 'moldStatus', label: 'สถานะแม่พิมพ์' },
+    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
+    { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
   ];
 
@@ -62,6 +63,7 @@ export class Dcsm08Component implements OnInit {
     private router: Router,
     private dcsm08Service: Dcsm08Service,
     private tokenService: TokenService,
+    private statusColorService: StatusColorService
   ) { }
 
   ngOnInit(): void {

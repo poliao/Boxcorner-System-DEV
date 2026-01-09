@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
+import { StatusColorService } from '../../../../shared/services/status-color.service';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { Dcsm02Service } from './dcsm02.service';
 import { Router } from '@angular/router';
@@ -68,7 +69,7 @@ export class Dcsm02Component implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private http: HttpClient, private dcsm02Service: Dcsm02Service, private router: Router) { }
+  constructor(private http: HttpClient, private dcsm02Service: Dcsm02Service, private router: Router, private statusColorService: StatusColorService) { }
   tableColumns = [
     { key: 'id', label: 'ID' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
@@ -79,8 +80,8 @@ export class Dcsm02Component implements OnInit {
     { key: 'deadlineDate', label: 'วันที่ต้องส่ง' },
     { key: 'deadlineTime', label: 'ภายในเวลา' },
     { key: 'remarks', label: 'หมายเหตุ' },
-    { key: 'processStatus', label: 'สถานะงาน' },
-    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม' },
+    { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
   ];
 
   tableData: any[] = [];

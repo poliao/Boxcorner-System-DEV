@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 
@@ -64,7 +65,7 @@ export class Dcsm05Component implements OnInit {
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'responsiblePerson', label: 'ผู้รับผิดชอบ' },
-    { key: 'status', label: 'สถานะ' },
+    { key: 'status', label: 'สถานะ', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'deliveryDate', label: 'วันที่ส่ง' },
     { key: 'deliveryTime', label: 'เวลาส่ง' }
   ];
@@ -73,7 +74,7 @@ export class Dcsm05Component implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private dcsm05Service: Dcsm05Service,
-
+    private statusColorService: StatusColorService
   ) { }
 
   ngOnInit(): void {

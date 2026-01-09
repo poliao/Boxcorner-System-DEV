@@ -62,7 +62,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
         @Query(value = """
                         SELECT * FROM sample_orders s
                         WHERE
-                            s.status IN ('ไฟล์เสร็จ รอตรวจสอบไฟล์', 'แก้ไขไฟล์', 'ไฟล์ถูกต้อง', 'สำเร็จ รออนุมัติไปตารางรอผลิต')
+                            s.status IN ('ไฟล์เสร็จ รอตรวจสอบไฟล์', 'แก้ไขไฟล์', 'สำเร็จ รออนุมัติไปตารางรอผลิต','ไฟล์ถูกต้อง รอขึ้นตัวอย่าง', 'ผ่าน', 'ขึ้นตัวอย่างแล้ว')
                             AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
@@ -73,7 +73,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                         """, countQuery = """
                         SELECT count(*) FROM sample_orders s
                         WHERE
-                            s.status IN ('ไฟล์เสร็จ รอตรวจสอบไฟล์', 'แก้ไขไฟล์', 'ไฟล์ถูกต้อง')
+                            s.status IN ('ไฟล์เสร็จ รอตรวจสอบไฟล์', 'แก้ไขไฟล์', 'สำเร็จ รออนุมัติไปตารางรอผลิต', 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง', 'ผ่าน', 'ขึ้นตัวอย่างแล้ว')
                             AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
