@@ -13,6 +13,7 @@ import { Dcsm07DetailResolver } from './demo/forms/pages/dcsm07/dcsm07-detail.re
 import { Dcsm08DetailResolver } from './demo/forms/pages/dcsm08/dcsm08-detail.resolver';
 import { Dcsm09DetailResolver } from './demo/forms/pages/dcsm09/dcsm09-detail.resolver';
 import { Dcsm10DetailResolver } from './demo/forms/pages/dcsm10/dcsm10-detail.resolver';
+import { Dcsm11DetailResolver } from './demo/forms/pages/dcsm11/dcsm11-detail.resolver';
 
 const routes: Routes = [
   {
@@ -33,7 +34,7 @@ const routes: Routes = [
         path: 'Dcsm01Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm01/dcsm01-detail.component').then((c) => c.Dcsm01DetailComponent),
-        resolve: { 
+        resolve: {
           recipeData: Dcsm01DetailResolver
         }
       },
@@ -51,7 +52,7 @@ const routes: Routes = [
         path: 'Dcsm02Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm02/dcsm02-detail.component').then((c) => c.Dcsm02DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm02DetailResolver
         }
       },
@@ -69,7 +70,7 @@ const routes: Routes = [
         path: 'Dcsm03Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm03/dcsm03-detail.component').then((c) => c.Dcsm03DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm02DetailResolver
         }
       },
@@ -87,7 +88,7 @@ const routes: Routes = [
         path: 'Dcsm04Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm04/dcsm04-detail.component').then((c) => c.Dcsm04DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm04DetailResolver
         }
       },
@@ -105,7 +106,7 @@ const routes: Routes = [
         path: 'Dcsm05Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm05/dcsm05-detail.component').then((c) => c.Dcsm05DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm05DetailResolver
         }
       },
@@ -123,7 +124,7 @@ const routes: Routes = [
         path: 'Dcsm06Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm06/dcsm06-detail.component').then((c) => c.Dcsm06DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm06DetailResolver
         }
       },
@@ -141,7 +142,7 @@ const routes: Routes = [
         path: 'Dcsm07Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm07/dcsm07-detail.component').then((c) => c.Dcsm07DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm07DetailResolver
         }
       },
@@ -159,7 +160,7 @@ const routes: Routes = [
         path: 'Dcsm08Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm08/dcsm08-detail.component').then((c) => c.Dcsm08DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm08DetailResolver
         }
       },
@@ -177,7 +178,7 @@ const routes: Routes = [
         path: 'Dcsm09Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm09/dcsm09-detail.component').then((c) => c.Dcsm09DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm09DetailResolver
         }
       },
@@ -196,7 +197,7 @@ const routes: Routes = [
         path: 'Dcsm10Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm10/dcsm10-detail.component').then((c) => c.Dcsm10DetailComponent),
-        resolve: { 
+        resolve: {
           designOrder: Dcsm10DetailResolver
         }
       },
@@ -209,6 +210,24 @@ const routes: Routes = [
         path: 'Dcsm10',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm10/dcsm10.component').then((c) => c.Dcsm10Component)
+      },
+      {
+        path: 'Dcsm11Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm11/dcsm11-detail.component').then((c) => c.Dcsm11DetailComponent),
+        resolve: {
+          designOrder: Dcsm11DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm11Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm11/dcsm11-detail.component').then((c) => c.Dcsm11DetailComponent)
+      },
+      {
+        path: 'Dcsm11',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm11/dcsm11.component').then((c) => c.Dcsm11Component)
       }
     ]
   },
@@ -228,4 +247,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

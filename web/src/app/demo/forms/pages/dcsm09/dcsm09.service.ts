@@ -61,4 +61,7 @@ export class Dcsm09Service {
     return this.http.put(`${this.apiUrl}/production/updateInspector?id=${data.id}&inspector=${data.inspector}`, {});
   }
   
+  countProcessStatus(status: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countProcessStatusAll?processStatus=${status}`);
+  }
 }

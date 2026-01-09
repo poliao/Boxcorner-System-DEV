@@ -92,4 +92,8 @@ export class Dcsm10Service {
   countBacklog(): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countBacklogMold`);
   }
+
+  countMoldStatus(status: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogMoldStatus?moldStatus=${status}`);
+  }
 }

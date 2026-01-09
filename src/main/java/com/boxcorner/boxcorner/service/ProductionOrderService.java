@@ -124,4 +124,16 @@ public class ProductionOrderService {
         return productionOrderRepository.countBacklogMold();
     }
 
+    public Integer countBacklogProcessStatus(String processStatus, String operatorName) {
+        return productionOrderRepository.countBacklogProcessStatus(processStatus,operatorName);
+    }
+
+    public Integer countBacklogProcessStatus(String processStatus) {
+        return productionOrderRepository.countBacklogProcessStatus(processStatus);
+    }
+
+    public Integer countBacklogMoldStatus(String moldStatus) {
+        return productionOrderRepository.countBacklogMoldStatus(moldStatus);
+    }
+
 }

@@ -26,8 +26,8 @@ export class Dcsm08Service {
       id: apiFilters.id,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
+      jobStatus: apiFilters.jobStatus,
+      operatorName: apiFilters.operatorName,
       processStatus: apiFilters.processStatus,
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
@@ -36,34 +36,9 @@ export class Dcsm08Service {
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
-    });
-
-    return this.http.get(`${this.apiUrl}/production/searchProduct`, { params: params });
-  }
-
-   getOrdersProduction(apiFilters: any): Observable<any> {
-    let params: any = {
-      page: apiFilters.page.toString(),
-      size: apiFilters.size.toString(),
-      id: apiFilters.id,
-      folderName: apiFilters.folderName,
-      jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
-      processStatus: apiFilters.processStatus,
-      moldStatus: apiFilters.moldStatus,
-      jobType: apiFilters.jobType,
-      startDate: apiFilters.startDate,
-      endDate: apiFilters.endDate
-    };
-
-    Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production/searchProduct`, { params: params });
@@ -80,5 +55,7 @@ export class Dcsm08Service {
   countBacklog(): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countBacklog`);
   }
-
+  countProcessStatus(status: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countProcessStatus?processStatus=${status}`);
+  }
 }

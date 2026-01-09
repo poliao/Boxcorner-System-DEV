@@ -3,18 +3,19 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Dcsm04Service } from './dcsm04.service';
+import { Dcsm11Service } from './dcsm11.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 @Component({
-  selector: 'app-dcsm04-detail.component',
+  selector: 'app-dcsm11-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
-  templateUrl: './dcsm04-detail.component.html',
-  styleUrl: './dcsm04-detail.component.scss'
+  providers: [Dcsm11Service],
+  templateUrl: './dcsm11-detail.component.html',
+  styleUrl: './dcsm11-detail.component.scss'
 })
-export class Dcsm04DetailComponent implements OnInit {
+export class Dcsm11DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
@@ -25,10 +26,14 @@ export class Dcsm04DetailComponent implements OnInit {
   isBtnApproveSample = false
   isBtnRejectSample = false
   isUpdateDelivery = false
+  isNoteEdit = false
+
+  showEditFileModal = false;
+  editFileNote = new FormControl('', Validators.required);
 
   showApproveModal = false;
   usedFile = new FormControl('', Validators.required);
-  colorSample = new FormControl('');
+  colorSample = new FormControl('', Validators.required);
   deadlineDate = new FormControl('', Validators.required);
   deadlineTime = new FormControl('', Validators.required);
   remarks = new FormControl('');
@@ -37,7 +42,7 @@ export class Dcsm04DetailComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private dcsm04Service: Dcsm04Service,
+    private dcsm11Service: Dcsm11Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService
   ) { }
@@ -54,19 +59,9 @@ export class Dcsm04DetailComponent implements OnInit {
         this.isDesign = true
       }
     }
-
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน') {
-      this.mainForm.controls['folderName'].disable({ emitEvent: false });
-      this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
-      this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
-      this.mainForm.controls['quantity'].disable({ emitEvent: false });
-      this.mainForm.controls['unit'].disable({ emitEvent: false });
-      this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
-      this.mainForm.controls['note'].disable({ emitEvent: false });
-    }
-    this.checkBtn();
-    if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง') {
-      this.isUpdateDelivery = true
+    this.checkBtn()
+    if (this.mainForm.getRawValue().noteEdit) {
+      this.isNoteEdit = true
     }
   }
 
@@ -81,12 +76,13 @@ export class Dcsm04DetailComponent implements OnInit {
       responsiblePerson: ['รอผู้รับผิดชอบอนุมัติ'],
       quantity: ['', Validators.required],
       unit: ['', Validators.required],
-      isCreateSample: [true],
+      isCreateSample: [false],
       status: ['รอผู้รับผิดชอบอนุมัติ'],
       note: [''],
       designOrderId: [''],
       updateDateDelivery: [new Date().toISOString().substring(0, 10)],
-      updateTimeDelivery: ['']
+      updateTimeDelivery: [''],
+      noteEdit: [''],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -96,6 +92,14 @@ export class Dcsm04DetailComponent implements OnInit {
     this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
     this.mainForm.controls['updateDateDelivery'].disable({ emitEvent: false });
     this.mainForm.controls['updateTimeDelivery'].disable({ emitEvent: false });
+    this.mainForm.controls['folderName'].disable({ emitEvent: false });
+    this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
+    this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
+    this.mainForm.controls['quantity'].disable({ emitEvent: false });
+    this.mainForm.controls['unit'].disable({ emitEvent: false });
+    this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
+    this.mainForm.controls['note'].disable({ emitEvent: false });
+    this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -123,7 +127,7 @@ export class Dcsm04DetailComponent implements OnInit {
     }
 
     this.loadingService.show();
-    this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+    this.dcsm11Service.save(this.mainForm.getRawValue()).subscribe({
       next: (response) => {
         this.loadingService.hide();
         this.patchFormData(response);
@@ -151,30 +155,7 @@ export class Dcsm04DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm04Service.updateFileChecked(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-        })
-      }
-    });
-  }
-
-  updateEditFile() {
-    Swal.fire({
-      title: 'ตรวจสอบไฟล์',
-      text: "ยื่นยันตรวจสอบไฟล์ ไม่ผ่าน ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm04Service.updateEditFile(this.mainForm.getRawValue().id).subscribe((response) => {
+        this.dcsm11Service.updateFileChecked(this.mainForm.getRawValue().id).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
@@ -197,29 +178,48 @@ export class Dcsm04DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm04Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
+        this.dcsm11Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-          this.router.navigate(['/Dcsm04']);
+          this.router.navigate(['/dcsm11']);
         })
       }
     });
   }
 
+  updateEditConfirmSample() {
+    Swal.fire({
+      title: 'อนุมัติการขึ้นตัวอย่าง',
+      text: "ยื่นยันการขึ้นตัวอย่าง ไม่ผ่าน ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm11Service.updateEditConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
+          this.patchFormData(response);
+          this.loadingService.hide();
+          this.checkBtn();
+          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/dcsm11']);
+        })
+      }
+    })
+  }
+
   checkBtn() {
     const formValue = this.mainForm.getRawValue();
     const currentUser = this.getCurrentUserFromToken();
-    if (
-      !formValue.id || (currentUser === formValue.jobOwner && formValue.status === 'รอผู้รับผิดชอบอนุมัติ') || (currentUser === formValue.jobOwner && formValue.status === 'รอดำเนินการ')
-    ) {
-      this.isBtnSave = true;
-      this.isBtnApprove = false;
-      this.isBtnReject = false;
-      this.isBtnApproveSample = false;
-      this.isBtnRejectSample = false;
-    } else if (currentUser === formValue.jobOwner && formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต') {
+    if (formValue.status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์') {
+      this.isBtnApprove = true;
+      this.isBtnReject = true;
+    } else if (currentUser === formValue.jobOwner && formValue.status === 'สำเร็จ ส่งตรวจสอบ') {
       this.isBtnSave = false;
       this.isBtnApprove = false;
       this.isBtnReject = false;
@@ -251,7 +251,7 @@ export class Dcsm04DetailComponent implements OnInit {
         data.deliveryTime = this.mainForm.getRawValue().updateTimeDelivery
         data.status = 'อนุมัติขอเลื่อนส่ง';
         this.loadingService.show();
-        this.dcsm04Service.save(data).subscribe((response) => {
+        this.dcsm11Service.save(data).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
@@ -281,7 +281,7 @@ export class Dcsm04DetailComponent implements OnInit {
         const data = this.mainForm.getRawValue();
         data.status = 'ไม่อนุมัติเลื่อนส่ง';
         this.loadingService.show();
-        this.dcsm04Service.save(data).subscribe((response) => {
+        this.dcsm11Service.save(data).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
@@ -311,6 +311,7 @@ export class Dcsm04DetailComponent implements OnInit {
   }
 
   confirmApprove() {
+
     const data = {
       orderDate: new Date().toISOString().substring(0, 10),
       folderName: this.mainForm.getRawValue().folderName,
@@ -345,15 +346,63 @@ export class Dcsm04DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm04Service.saveProduction(data).subscribe((response) => {
+        this.dcsm11Service.saveProduction(data).subscribe((response) => {
           if (response) {
-            this.dcsm04Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
+            this.dcsm11Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
               this.patchFormData(response);
               this.loadingService.hide();
               this.checkBtn();
               this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-              this.router.navigate(['/Dcsm04']);
+              this.router.navigate(['/dcsm11']);
             })
+          }
+        });
+      }
+    });
+  }
+
+  openEditFileModal() {
+    this.editFileNote.setValue(''); // เคลียร์ค่าเก่า
+    this.showEditFileModal = true;  // เปิด Modal
+  }
+
+  // 3. ฟังก์ชันปิด Modal
+  closeEditFileModal() {
+    this.showEditFileModal = false;
+  }
+
+  confirmEditFile() {
+    if (this.editFileNote.invalid) {
+      this.editFileNote.markAsTouched();
+      return;
+    }
+    Swal.fire({
+      title: 'ยืนยันการแก้ไขไฟล์',
+      text: "คุณต้องการส่งคำขอแก้ไขไฟล์ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        const data ={
+          id: this.mainForm.getRawValue().id,
+          noteEdit: this.editFileNote.value
+        }
+        this.dcsm11Service.updateEditFile(data).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.closeEditFileModal();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'บันทึกข้อมูลเรียบร้อย!');
+          },
+          error: (err) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาด');
           }
         });
       }

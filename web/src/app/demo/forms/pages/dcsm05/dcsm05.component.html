@@ -1,4 +1,4 @@
-<h2>ตารางสั่งงานตัวอย่าง</h2>
+<h2>ตารางรับงานตัวอย่าง</h2>
 <div class="card-body">
   <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-body bg-light ">
@@ -52,7 +52,8 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="primary" type="submit" class="w-100 px-3" style="background-color: #350142;">
+                <button mat-flat-button color="primary" type="submit" class="w-100 px-3"
+                  style="background-color: #350142;">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>
@@ -62,18 +63,8 @@
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterUnassigned()" style="background-color: #350142;">
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่มีผู้รับผิดชอบ</span>
-                  <span *ngIf="countBacklog > 0"
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                    style="font-size: 0.75rem; border: 2px solid #fff;">
-                    {{ countBacklog }}
-                    <span class="visually-hidden">unread messages</span>
-                  </span>
-                </button>
-              </div>
-              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterApproveShif()" style="background-color: #350142; color: #00d111;">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterApproveShif()" style="background-color: #350142; color: #81f58a;">
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่อนุมัติเลื่อนส่ง</span>
                   <span *ngIf="approveShif > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -84,18 +75,44 @@
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterNotApproveShif()" style="background-color: #350142; color: #ff0000;">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterNotApproveShif()" style="background-color: #350142; color: #ff5a5a;">
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ไม่อนุมัติเลื่อนส่ง</span>
-                  <span *ngIf="approveShif > 0"
+                  <span *ngIf="notApproveShif > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
-                    {{ approveShif }}
+                    {{ notApproveShif }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterClearFile()" style="background-color: #350142; color: #ffffff;">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterUnassigned()" style="background-color: #350142;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่มีผู้รับผิดชอบ</span>
+                  <span *ngIf="countBacklog > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ countBacklog }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterwaitProcess()" style="background-color: #350142;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอดำเนินการ</span>
+                  <span *ngIf="waitProcess > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ waitProcess }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterClearFile()" style="background-color: #350142; color: #ffffff;">
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอเคลียร์ไฟล์</span>
                   <span *ngIf="clearFile > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -105,9 +122,68 @@
                   </span>
                 </button>
               </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterInClearFile()" style="background-color: #350142; color: #ffffff;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่กำลังเคลียร์ไฟล์</span>
+                  <span *ngIf="inClearFile > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ inClearFile }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterWaitSample()" style="background-color: #350142; color: #ffffff;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานรอขึ้นตัวอย่าง</span>
+                  <span *ngIf="waitSample > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ waitSample }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterBackSample()" style="background-color: #350142; color: #ffffff;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานขึ้นตัวอย่างรอส่งกลับ</span>
+                  <span *ngIf="backSample > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ backSample }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterSample()" style="background-color: #350142; color: #ffffff;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานไม่ขึ้นตัวอย่างรอส่งกลับ</span>
+                  <span *ngIf="back > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ back }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterCheckFile()" style="background-color: #350142; color: #ffbb00;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจไฟล์</span>
+                  <span *ngIf="checkFile > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ checkFile }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-
         </div>
       </form>
     </div>

@@ -1,39 +1,29 @@
+<h2 class="font-weight-bold text-dark m-0">ตารางคอนเฟิร์มรอผลิต</h2>
 <div class="container-fluid p-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="font-weight-bold text-dark m-0">ตารางคอนเฟิร์มรอผลิต</h2>
-
-  </div>
-
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body bg-light rounded">
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
         <div class="row g-3">
-
           <div class="col-md-3">
             <label class="form-label fw-bold">รหัสสั่งผลิต (ID)</label>
             <input type="number" class="form-control" formControlName="id" placeholder="ระบุ ID">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">ชื่อโฟลเดอร์งาน</label>
             <input type="text" class="form-control" formControlName="folderName" placeholder="ระบุชื่อโฟลเดอร์">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">ประเภทงาน</label>
             <input type="text" class="form-control" formControlName="jobType" placeholder="เช่น กล่องฝาชน">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">เจ้าของงาน</label>
             <input type="text" class="form-control" formControlName="jobOwner" placeholder="ระบุเจ้าของงาน">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">ผู้รับผิดชอบ</label>
             <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ระบุผู้รับผิดชอบ">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">สถานะงาน (Job Status)</label>
             <select class="form-select" formControlName="status">
@@ -44,7 +34,6 @@
               <option value="เสร็จสิ้น">เสร็จสิ้น</option>
             </select>
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">สถานะดำเนินการ (Process)</label>
             <select class="form-select" formControlName="processStatus">
@@ -59,7 +48,6 @@
               <option value="ส่งไฟล์แล้ว">ส่งไฟล์แล้ว</option>
             </select>
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">สถานะแม่พิมพ์ (Mold)</label>
             <select class="form-select" formControlName="moldStatus">
@@ -71,36 +59,32 @@
               <option value="ส่งแม่พิมพ์">ส่งแม่พิมพ์</option>
             </select>
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">ตั้งแต่วันที่</label>
             <input type="date" class="form-control" formControlName="startDate" (change)="onStartDateChange()">
           </div>
-
           <div class="col-md-3">
             <label class="form-label fw-bold">ถึงวันที่</label>
             <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
           </div>
-
           <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
             <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()"
-              style="background-color: #63d5e2;">
+              style="background-color: #003747;">
               <mat-icon>clear_all</mat-icon> ล้างค่า
             </button>
-            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #1bd0e4;">
+            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #003747;">
               <mat-icon>search</mat-icon> ค้นหา
             </button>
-            <button mat-flat-button style="background-color: #00e5ff; color: white;" (click)="add()">
+            <button mat-flat-button style="background-color: #003747; color: white;" (click)="add()">
               <mat-icon>add</mat-icon> เพิ่มรายการ
             </button>
           </div>
-
         </div>
       </form>
     </div>
   </div>
 
-  <app-data-table [headerStyle]="'background: #69e2f0; color: #000000;'" [columns]="tableColumns" [data]="tableData"
+  <app-data-table [headerStyle]="'background: #003747; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
     [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
     (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>

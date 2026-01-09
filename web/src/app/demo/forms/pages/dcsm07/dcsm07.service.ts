@@ -58,5 +58,8 @@ export class Dcsm07Service {
     return this.http.get(`${this.apiUrl}/production/countBacklogHPlanning`);
   }
 
+  countProcessStatus(status: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countProcessStatus?processStatus=${status}`);
+  }
 
 }

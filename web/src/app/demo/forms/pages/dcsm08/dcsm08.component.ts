@@ -42,6 +42,8 @@ export class Dcsm08Component implements OnInit {
   pageSize = 10;
   pageIndex = 0;
   countBacklog = 0;
+  inProcess = 0;
+  finished = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -66,6 +68,8 @@ export class Dcsm08Component implements OnInit {
     this.initSearchForm();
     this.loadData();
     this.Backlog();
+    this.BacklogInProcess();
+    this.BacklogFinished()
   }
 
   initSearchForm(): void {
@@ -194,9 +198,57 @@ export class Dcsm08Component implements OnInit {
   }
 
   onFilterUnassigned() {
+    this.onClearAll()
     this.searchForm.patchValue({
       status: 'รอดำเนินการ',
     });
     this.onSearch();
+  }
+
+  BacklogInProcess(){
+    this.dcsm08Service.countProcessStatus('กำลังดำเนินการ').subscribe({
+      next: (data: number) => {
+        this.inProcess = data;
+      },
+    });
+  }
+
+  onFilterInProcess() {
+    this.onClearAll()
+    this.searchForm.patchValue({
+      processStatus: 'กำลังดำเนินการ',
+    });
+    this.onSearch();
+  }
+
+  BacklogFinished(){
+    this.dcsm08Service.countProcessStatus('เสร็จสิ้น รอตรวจสอบ').subscribe({
+      next: (data: number) => {
+        this.finished = data;
+      },
+    });
+  }
+
+  onFilterFinished() {
+    this.onClearAll()
+    this.searchForm.patchValue({
+      processStatus: 'เสร็จสิ้น รอตรวจสอบ',
+    });
+    this.onSearch();
+  }
+
+  onClearAll(): void {
+    this.searchForm.reset({
+      id: '',
+      folderName: '',
+      jobOwner: '',
+      responsiblePerson: '',
+      status: '',
+      processStatus: '',
+      moldStatus: '',
+      jobType: '',
+      startDate: null,
+      endDate: null
+    });
   }
 }

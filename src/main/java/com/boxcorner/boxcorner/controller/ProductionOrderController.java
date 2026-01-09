@@ -181,4 +181,19 @@ public class ProductionOrderController {
     public ResponseEntity<Integer> getUniqueStatusMold(){
         return ResponseEntity.ok(productionOrderService.countBacklogMold());
     }
+
+    @GetMapping("/countProcessStatus")
+    public ResponseEntity<Integer> countBacklogProcessStatus(@RequestParam("processStatus") String processStatus,HttpServletRequest httpRequest){
+        return ResponseEntity.ok(productionOrderService.countBacklogProcessStatus(processStatus,tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countProcessStatusAll")
+    public ResponseEntity<Integer> countBacklogProcessStatus(@RequestParam("processStatus") String processStatus){
+        return ResponseEntity.ok(productionOrderService.countBacklogProcessStatus(processStatus));
+    }
+
+    @GetMapping("/countBacklogMoldStatus")
+    public ResponseEntity<Integer> countBacklogMoldStatus(@RequestParam("moldStatus") String moldStatus){
+        return ResponseEntity.ok(productionOrderService.countBacklogMoldStatus(moldStatus));
+    }
 }

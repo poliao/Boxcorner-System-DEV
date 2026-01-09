@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boxcorner.boxcorner.entity.SampleOrder;
+import com.boxcorner.boxcorner.entity.dto.SampleReqDTO;
+import com.boxcorner.boxcorner.repository.SampleOrderRepository;
 import com.boxcorner.boxcorner.security.jwt.TokenService;
 import com.boxcorner.boxcorner.service.SampleOrderService;
 
@@ -30,6 +32,9 @@ public class SampleOrderController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private SampleOrderRepository sampleOrderRepository; ;
 
     @PostMapping("/create")
     public ResponseEntity<SampleOrder> createOrder(@RequestBody SampleOrder sampleOrder , HttpServletRequest httpRequest) {
@@ -86,6 +91,31 @@ public class SampleOrderController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/searchVerify")
+    public ResponseEntity<Page<SampleOrder>> getAllVerify(
+            // เพิ่ม value = "..." ให้ครบทุกตัวครับ
+            @RequestParam(value = "folderName", required = false) String folderName,
+            @RequestParam(value = "jobOwner", required = false) String jobOwner,
+            @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
+            @RequestParam(value = "status", required = false) String status,
+
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<SampleOrder> result = sampleOrderService.getAllVerify(
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                page,
+                size);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/getById")
     public ResponseEntity<SampleOrder> getById(@RequestParam("id") Integer id) {
         return sampleOrderService.getSampleOrderById(id)
@@ -130,17 +160,25 @@ public class SampleOrderController {
 
     @PutMapping("/updateStatusSucsess")
     public ResponseEntity<SampleOrder> updateSucsess(@RequestParam("id") Integer id) {
-        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "สำเร็จ ส่งตรวจสอบ", null));
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "สำเร็จ รออนุมัติไปตารางรอผลิต", null));
     }
 
     @PutMapping("/updateFileChecked")
     public ResponseEntity<SampleOrder> updateFileChecked(@RequestParam("id") Integer id) {
-        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ไฟล์ถูกต้อง", null));
+        String status = null;
+        SampleOrder sampleOrder = sampleOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        if (sampleOrder.getIsCreateSample() == true) {
+            status = "ไฟล์ถูกต้อง รอขึ้นตัวอย่าง";
+        }else{
+            status = "ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง";
+        }
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, status, null));
     }
 
     @PutMapping("/updateEditFile")
-    public ResponseEntity<SampleOrder> updateEditFile(@RequestParam("id") Integer id) {
-        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "แก้ไขไฟล์", null));
+    public ResponseEntity<SampleOrder> updateEditFile(@RequestBody SampleReqDTO jsonBody) {
+        sampleOrderService.updatesampleOrderNoteEdit(jsonBody.getId(), jsonBody.getNoteEdit());
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(jsonBody.getId(), "แก้ไขไฟล์", null));
     }
 
     @PutMapping("/updateConfirmSample")
@@ -151,6 +189,11 @@ public class SampleOrderController {
     @PutMapping("/updateEditConfirmSample")
     public ResponseEntity<SampleOrder> updateEditConfirmSample(@RequestParam("id") Integer id) {
         return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "แก้ไข", null));
+    }
+
+    @GetMapping("/countBacklogWaitProcess")
+    public ResponseEntity<Integer> getUniqueStatusWaitProcess(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอดำเนินการ"));
     }
 
     @GetMapping("/countBacklogShif")
@@ -173,5 +216,38 @@ public class SampleOrderController {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("จัดส่งได้ รอเคลียร์ไฟล์"));
     }
 
+    @GetMapping("/countBacklogInClearFile")
+    public ResponseEntity<Integer> countBacklogInClearFile(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("กำลังเคลียร์ไฟล์"));
+    }
 
+    @GetMapping("/countBacklogCheckFile")
+    public ResponseEntity<Integer> countBacklogCheckFile(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์เสร็จ รอตรวจสอบไฟล์"));
+    }
+
+    @GetMapping("/countBacklogFileComplete")
+    public ResponseEntity<Integer> countBacklogFileComplete(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง"));
+    }
+
+    @GetMapping("/countBacklogWaitSample")
+    public ResponseEntity<Integer> countBacklogWaitSample(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง รอขึ้นตัวอย่าง"));
+    }
+
+    @GetMapping("/countBacklogSendBackSample")
+    public ResponseEntity<Integer> countBacklogSendBackSample(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขึ้นตัวอย่างแล้ว"));
+    }
+
+    @GetMapping("/countBacklogSendBack")
+    public ResponseEntity<Integer> countBacklogSendBack(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง"));
+    }
+
+    @GetMapping("/countBacklogApproveSample")
+    public ResponseEntity<Integer> countBacklogApproveSample(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("สำเร็จ รออนุมัติไปตารางรอผลิต"));
+    }
 }

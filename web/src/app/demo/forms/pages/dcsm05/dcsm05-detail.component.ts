@@ -18,6 +18,7 @@ export class Dcsm05DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
+  isNoteEdit = false
 
   confirm = false;
   confirmDeliver = false;
@@ -49,6 +50,9 @@ export class Dcsm05DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
       this.checkBtn();
+      if (this.mainForm.getRawValue().noteEdit) {
+        this.isNoteEdit = true
+      }
     }
   }
 
@@ -66,6 +70,7 @@ export class Dcsm05DetailComponent implements OnInit {
       isCreateSample: [false],
       status: ['รอผู้รับผิดชอบอนุมัติ'],
       note: [''],
+      noteEdit: [''],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -79,6 +84,7 @@ export class Dcsm05DetailComponent implements OnInit {
     this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
     this.mainForm.controls['status'].disable({ emitEvent: false });
     this.mainForm.controls['note'].disable({ emitEvent: false });
+    this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -119,7 +125,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = true;
       this.samples = false;
       this.deadline = false;
-    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' && this.mainForm.getRawValue().isCreateSample === true) {
+    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' && this.mainForm.getRawValue().isCreateSample === true) {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -127,15 +133,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = true;
       this.deadline = false;
-    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์') {
-      this.confirm = false;
-      this.confirmDeliver = false;
-      this.notDeliver = false;
-      this.clearFile = false;
-      this.inspection = false;
-      this.samples = false;
-      this.deadline = false;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson) && (this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'แก้ไข')) {
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson) && (this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว')) {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -143,7 +141,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = true;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ') ) {
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต') ) {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;

@@ -43,6 +43,9 @@ export class Dcsm09Component implements OnInit {
   pageSize = 10;
   pageIndex = 0;
   countBacklog = 0;
+  waitCheckFile = 0;
+  waitSend = 0;
+  waitSendFile = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -67,18 +70,21 @@ export class Dcsm09Component implements OnInit {
     this.initSearchForm();
     this.loadData();
     this.Backlog();
+    this.BacklogWaitCheckFile();
+    this.BacklogWaitSend();
+    this.BacklogWaitSendFile();
   }
 
   initSearchForm(): void {
     this.searchForm = this.fb.group({
-      id: [''],              // เพิ่ม id
+      id: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
       status: [''],
-      processStatus: [''],   // เพิ่ม processStatus
-      moldStatus: [''],      // เพิ่ม moldStatus
-      jobType: [''],         // เพิ่ม jobType
+      processStatus: [''],
+      moldStatus: [''],
+      jobType: [''],
       startDate: [null],
       inspector: [''],
       endDate: [{ value: null, disabled: true }]
@@ -202,6 +208,55 @@ export class Dcsm09Component implements OnInit {
   onFilterUnassigned() {
     this.searchForm.patchValue({
       processStatus: 'เสร็จสิ้น รอตรวจสอบ',
+    });
+    this.onSearch();
+  }
+
+  BacklogWaitCheckFile(){
+    this.dcsm09Service.countProcessStatus('ตรวจไฟล์แม่พิมพ์แล้ว').subscribe({
+      next: (data: number) => {
+        this.waitCheckFile = data;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  onFilterProcessStatus() {
+    this.searchForm.patchValue({
+      processStatus: 'ตรวจไฟล์แม่พิมพ์แล้ว',
+    });
+    this.onSearch();
+  }
+
+  BacklogWaitSend(){
+    this.dcsm09Service.countProcessStatus('ตรวจใบสั่งผลิตแล้ว').subscribe({
+      next: (data: number) => {
+        this.waitSend = data;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  onFilterWaitSend() {
+    this.searchForm.patchValue({
+      processStatus: 'ตรวจใบสั่งผลิตแล้ว',
+    });
+    this.onSearch();
+  }
+
+  BacklogWaitSendFile(){
+    this.dcsm09Service.countProcessStatus('ส่งใบสั่งผลิตแล้ว').subscribe({
+      next: (data: number) => {
+        this.waitSendFile = data;
+      },
+    });
+  }
+
+  onFilterWaitSendFile() {
+    this.searchForm.patchValue({
+      processStatus: 'ส่งใบสั่งผลิตแล้ว',
     });
     this.onSearch();
   }

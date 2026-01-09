@@ -51,6 +51,12 @@ export class Dcsm05Component implements OnInit {
   approveShif = 0;
   notApproveShif = 0;
   clearFile = 0;
+  inClearFile = 0;
+  checkFile = 0;
+  waitSample = 0;
+  waitProcess = 0;
+  backSample = 0;
+  back = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -77,6 +83,12 @@ export class Dcsm05Component implements OnInit {
     this.BacklogApproveShif();
     this.countBacklogNotApproveShif();
     this.countBacklogClearFile();
+    this.countBacklogInClearFile();
+    this.countBacklogCheckFile();
+    this.countBacklogWaitSample();
+    this.countBacklogWaitProcess();
+    this.countBacklogBackSample();
+    this.countBacklogSendBack();
   }
 
   initSearchForm(): void {
@@ -179,6 +191,19 @@ export class Dcsm05Component implements OnInit {
       endDate: null
     });
   }
+  countBacklogWaitProcess() {
+    this.dcsm05Service.countBacklogWaitProcess().subscribe({
+      next: (data: number) => {
+        this.waitProcess = data;
+      },
+    });
+  }
+
+  onFilterwaitProcess() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('รอดำเนินการ');
+    this.onSearch();
+  }
 
   Backlog() {
     this.dcsm05Service.countBacklog().subscribe({
@@ -235,6 +260,76 @@ export class Dcsm05Component implements OnInit {
   onFilterClearFile() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('จัดส่งได้ รอเคลียร์ไฟล์');
+    this.onSearch();
+  }
+
+  countBacklogInClearFile() {
+    this.dcsm05Service.countBacklogInClearFile().subscribe({
+      next: (data: number) => {
+        this.inClearFile = data;
+      },
+    });
+  }
+
+  onFilterInClearFile() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('กำลังเคลียร์ไฟล์');
+    this.onSearch();
+  }
+
+  countBacklogCheckFile() {
+    this.dcsm05Service.countBacklogCheckFile().subscribe({
+      next: (data: number) => {
+        this.checkFile = data;
+      },
+    });
+  }
+
+  onFilterCheckFile() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('ไฟล์เสร็จ รอตรวจสอบไฟล์');
+    this.onSearch();
+  }
+
+  countBacklogWaitSample() {
+    this.dcsm05Service.countBacklogWaitSample().subscribe({
+      next: (data: number) => {
+        this.waitSample = data;
+      },
+    });
+  }
+
+  onFilterWaitSample() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('ไฟล์ถูกต้อง รอขึ้นตัวอย่าง');
+    this.onSearch();
+  }
+
+  countBacklogBackSample() {
+    this.dcsm05Service.countBacklogSendBackSample().subscribe({
+      next: (data: number) => {
+        this.backSample = data;
+      },
+    });
+  }
+
+  onFilterBackSample() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('ขึ้นตัวอย่างแล้ว');
+    this.onSearch();
+  }
+
+  countBacklogSendBack() {
+    this.dcsm05Service.countBacklogSendBack().subscribe({
+      next: (data: number) => {
+        this.back = data;
+      },
+    });
+  }
+
+  onFilterSample() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง');
     this.onSearch();
   }
 }

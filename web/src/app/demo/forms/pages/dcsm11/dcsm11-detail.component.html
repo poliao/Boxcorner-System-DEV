@@ -3,17 +3,11 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
+          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ไฟล์ถูกต้อง
           </button>
-          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            อนุมัติ
-          </button>
-          <button *ngIf="isUpdateDelivery == true" (click)="updateDelivery()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            อนุมัติเลื่อนวันส่ง
-          </button>
-          <button *ngIf="isUpdateDelivery == true" (click)="updateNotDelivery()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            ไม่อนุมัติเลื่อนวันส่ง
+          <button *ngIf="isBtnReject == true" (click)="openEditFileModal()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            แก้ไขไฟล์
           </button>
         </div>
         <div class="col-md-6">
@@ -74,6 +68,11 @@
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="note" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
         </div>
+        <div class="col-12" *ngIf="isNoteEdit == true">
+          <label class="form-label font-weight-bold">รายละเอียดแก้ไข</label>
+          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="noteEdit"
+            class="form-control">
+        </div>
         <div class="col-md-6">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
               class="form-check-input" id="isCreateSampleSwitch">
@@ -100,7 +99,7 @@
               [class.is-invalid]="usedFile.invalid && usedFile.touched">
           </div>
           <div class="col-6">
-            <label class="form-label font-weight-bold">ตัวอย่างสี</label>
+            <label class="form-label font-weight-bold">ตัวอย่างสี <span class="text-danger">*</span></label>
             <input type="text" class="form-control" [formControl]="colorSample"
               [class.is-invalid]="colorSample.invalid && colorSample.touched">
           </div>
@@ -133,6 +132,37 @@
         <button type="button" class="btn btn-success" (click)="confirmApprove()"
           [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid">
           ยืนยันอนุมัติ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showEditFileModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ระบุสาเหตุการแก้ไขไฟล์</h5>
+        <button type="button" class="btn-close" (click)="closeEditFileModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">หมายเหตุ / สาเหตุ <span class="text-danger">*</span></label>
+            <textarea class="form-control" [formControl]="editFileNote" rows="3"
+              [class.is-invalid]="editFileNote.invalid && editFileNote.touched"
+              placeholder="กรุณาระบุสิ่งที่ต้องการแก้ไข..."></textarea>
+            <div *ngIf="editFileNote.invalid && editFileNote.touched" class="text-danger mt-1">
+              กรุณากรอกหมายเหตุ
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditFileModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="confirmEditFile()"
+          [disabled]="editFileNote.invalid">
+          ยืนยันส่งแก้ไข
         </button>
       </div>
     </div>

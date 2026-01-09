@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class Dcsm04Service {
+export class Dcsm11Service {
 
   private apiUrl = environment.apiUrl;
 
@@ -37,15 +37,15 @@ export class Dcsm04Service {
         }
     });
 
-    return this.http.get(`${this.apiUrl}/sampleOrders/search`, { params: params });
+    return this.http.get(`${this.apiUrl}/sampleOrders/searchVerify`, { params: params });
   }
   
   updateFileChecked(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/sampleOrders/updateFileChecked?id=${id}`, {});
   }
 
-  updateEditFile(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditFile?id=${id}`, {});
+  updateEditFile(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditFile`,data);
   }
 
   updateConfirmSample(id: number): Observable<any> {
@@ -60,15 +60,11 @@ export class Dcsm04Service {
     return this.http.post(`${this.apiUrl}/production/save`, data);
   }
 
-  countBacklogShif(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogShif`);
+  countBacklogInspection(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogCheckFile`);
   }
 
   countBacklogApproveShif(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShif`);
-  }
-
-  countBacklogApproveSample(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveSample`);
   }
 }

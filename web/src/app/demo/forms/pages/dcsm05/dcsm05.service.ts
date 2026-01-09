@@ -72,6 +72,10 @@ export class Dcsm05Service {
     return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusSucsess?id=${id}`, {});
   }
 
+  countBacklogWaitProcess(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogWaitProcess`);
+  }
+
   countBacklogApproveShif(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShif`);
   }
@@ -82,5 +86,28 @@ export class Dcsm05Service {
 
   countBacklogClearFile(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogClearFile`);
+  }
+  countBacklogInClearFile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogInClearFile`);
+  }
+
+  countBacklogCheckFile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogCheckFile`);
+  }
+
+  countBacklogFileComplete(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogFileComplete`);
+  }
+
+  countBacklogWaitSample(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogWaitSample`);
+  }
+
+  countBacklogSendBackSample(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSendBackSample`);
+  }
+
+  countBacklogSendBack(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSendBack`);
   }
 }

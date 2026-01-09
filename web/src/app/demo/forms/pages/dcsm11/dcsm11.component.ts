@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'; // อย่าลืม import
 import { Router } from '@angular/router';
-import { Dcsm04Service } from './dcsm04.service';
+import { Dcsm11Service } from './dcsm11.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
@@ -16,7 +16,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
-  selector: 'app-dcsm04',
+  selector: 'app-dcsm11',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -35,10 +35,10 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule, // เพิ่มเข้าในลิสต์
     MatNativeDateModule, // เพิ่มเข้าในลิสต์
   ],
-  templateUrl: './dcsm04.component.html',
-  styleUrls: ['./dcsm04.component.scss']
+  templateUrl: './dcsm11.component.html',
+  styleUrls: ['./dcsm11.component.scss']
 })
-export class Dcsm04Component implements OnInit {
+export class Dcsm11Component implements OnInit {
   
   searchForm!: FormGroup;
 
@@ -46,8 +46,7 @@ export class Dcsm04Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
-  shif = 0;
-  approveSample = 0;
+  inspection = 0;
 
 
   
@@ -65,14 +64,13 @@ export class Dcsm04Component implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm04Service: Dcsm04Service
+    private dcsm11Service: Dcsm11Service
   ) {}
 
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
-    this.BacklogShif();
-    this.BacklogApproveSample();
+    this.Inspection();
   }
 
   // 1. สร้าง Form
@@ -90,7 +88,7 @@ export class Dcsm04Component implements OnInit {
   loadData(): void {
     const filters = this.searchForm.value;
 
-    this.dcsm04Service.getOrdersWithSearch(
+    this.dcsm11Service.getOrdersWithSearch(
       this.pageIndex,
       this.pageSize,
       filters 
@@ -158,38 +156,23 @@ export class Dcsm04Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm04Detail']); 
+    this.router.navigate(['/Dcsm11Detail']); 
   }
 
   onRowClick(row: any): void {
-    this.router.navigate(['/Dcsm04Detail', row.id]);
+    this.router.navigate(['/Dcsm11Detail', row.id]);
   }
 
-  BacklogShif() {
-    this.dcsm04Service.countBacklogShif().subscribe({
+  Inspection() {
+    this.dcsm11Service.countBacklogInspection().subscribe({
       next: (data: number) => {
-        this.shif = data;
+        this.inspection = data;
       },
     });
   }
 
   onFilterUnassigned() {
-    this.searchForm.get('status')?.setValue('ขอเลื่อนวันส่ง');
+    this.searchForm.get('status')?.setValue('ไฟล์เสร็จ รอตรวจสอบไฟล์');
     this.onSearch();
   }
-
-  BacklogApproveSample() {
-    this.dcsm04Service.countBacklogApproveSample().subscribe({
-      next: (data: number) => {
-        this.approveSample = data;
-      },
-    });
-  }
-
-  onFilterApproveSample() {
-    this.searchForm.get('status')?.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
-    this.onSearch();
-  }
-
-
 }

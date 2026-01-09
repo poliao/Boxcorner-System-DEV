@@ -180,4 +180,16 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
         @Query(value = "select count(id) as backlog from production_orders po  " +
                         "where po.job_status = 'เสร็จสิ้น' and po.process_status = 'ส่งไฟล์แล้ว' and po.mold_status = 'รอดำเนินการ'  and po.job_type = 'OS'", nativeQuery = true)
         Integer countBacklogMold();
+
+        @Query(value = "select count(id) as backlog from production_orders po  " +
+                        "where po.process_status = :processStatus and operator_name = :operatorName", nativeQuery = true)
+        Integer countBacklogProcessStatus(@Param("processStatus") String processStatus, @Param("operatorName") String operatorName);
+
+        @Query(value = "select count(id) as backlog from production_orders po  " +
+                        "where po.process_status = :processStatus", nativeQuery = true)
+        Integer countBacklogProcessStatus(@Param("processStatus") String processStatus);
+
+        @Query(value = "select count(id) as backlog from production_orders po  " +
+                        "where po.mold_status = :moldStatus", nativeQuery = true)
+        Integer countBacklogMoldStatus(@Param("moldStatus") String moldStatus);
 }

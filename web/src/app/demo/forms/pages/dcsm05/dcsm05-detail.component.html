@@ -3,28 +3,32 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="confirm == true" type="submit" (click)="updateStatusComplete()" class="btn text-white px-5 shadow-sm"
-            style="background-color: #1e1b4b;">
+          <button *ngIf="confirm == true" type="submit" (click)="updateStatusComplete()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ยืนยันรับงาน
           </button>
-          <button *ngIf="confirmDeliver == true" type="submit" (click)="updateStatusDeliver()" class="btn text-white px-5 shadow-sm"
-            style="background-color: #1e1b4b;">
+          <button *ngIf="confirmDeliver == true" type="submit" (click)="updateStatusDeliver()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             จัดส่งได้
           </button>
-          <button *ngIf="notDeliver == true" type="button" (click)="openNotDeliverModal()" 
+          <button *ngIf="notDeliver == true" type="button" (click)="openNotDeliverModal()"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             จัดส่งไม่ได้
           </button>
-          <button *ngIf="clearFile == true" type="submit" (click)="updateStatusClearFile()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="clearFile == true" type="submit" (click)="updateStatusClearFile()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             เริ่มเคลียร์ไฟล์
           </button>
-          <button *ngIf="inspection == true" type="submit" (click)="updateStatusInspection()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="inspection == true" type="submit" (click)="updateStatusInspection()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ส่งตรวจ
           </button>
-          <button *ngIf="samples == true" type="submit" (click)="updateStatusSamples()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="samples == true" type="submit" (click)="updateStatusSamples()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ส่งขึ้นตัวอย่าง
           </button>
-          <button *ngIf="deadline == true" type="submit" (click)="updateStatusSucsess()" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="deadline == true" type="submit" (click)="updateStatusSucsess()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             กำหนดส่งกลับ
           </button>
 
@@ -76,6 +80,11 @@
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="note" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
         </div>
+        <div class="col-12" *ngIf="isNoteEdit == true">
+          <label class="form-label font-weight-bold">รายละเอียดแก้ไข</label>
+          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="noteEdit"
+            class="form-control">
+        </div>
         <div class="col-md-6">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
               class="form-check-input" id="isCreateSampleSwitch">
@@ -87,7 +96,8 @@
   </div>
 </div>
 
-<div class="modal fade show d-block" tabindex="-1" *ngIf="showNotDeliverModal" style="background-color: rgba(0,0,0,0.5);">
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showNotDeliverModal"
+  style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -106,7 +116,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeNotDeliverModal()">ยกเลิก</button>
-        <button type="button" class="btn btn-primary" (click)="confirmNotDeliver()" style="background-color: #1e1b4b;">ยืนยัน</button>
+        <button type="button" class="btn btn-primary" (click)="confirmNotDeliver()"
+          style="background-color: #1e1b4b;">ยืนยัน</button>
       </div>
     </div>
   </div>

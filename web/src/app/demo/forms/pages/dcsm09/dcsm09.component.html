@@ -75,23 +75,62 @@
             <input type="text" class="form-control" formControlName="inspector" placeholder="ระบุผู้ตรวจ">
           </div>
 
-          <div class="col-md-9 d-flex align-items-end justify-content-end gap-2 ">
-            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #f0c83a;">
-              <mat-icon>clear_all</mat-icon> ล้างค่า
-            </button>
-            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #ffc800;">
-              <mat-icon>search</mat-icon> ค้นหา
-            </button>
-            <div class="position-relative">
-              <button mat-flat-button class="btn text-white px-4" (click)="onFilterUnassigned()" style="background-color: #ffc800;">
-                <span *ngIf="countBacklog > 0"
-                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ countBacklog }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-                <mat-icon>search</mat-icon> งานที่ยังไม่เริ่มตรวจสอบ
-              </button>
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 text-white" (click)="onClear()" style="background-color: #bb3500;">
+                  <mat-icon>clear_all</mat-icon> ล้างค่า
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="submit" class="w-100 px-3 text-white" style="background-color: #9e2d00;">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterUnassigned()" style="background-color: #9e2d00;">
+                  <span *ngIf="countBacklog > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ countBacklog }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจไฟล์แม่พิมพ์</span><span class="d-lg-none">รอตรวจไฟล์แม่พิมพ์</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterProcessStatus()" style="background-color: #9e2d00;">
+                  <span *ngIf="waitCheckFile > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ waitCheckFile }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจใบสั่ง</span><span class="d-lg-none">รอตรวจใบสั่ง</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterWaitSend()" style="background-color: #9e2d00;">
+                  <span *ngIf="waitSend > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ waitSend }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอส่งใบสั่งผลิต</span><span class="d-lg-none">รอส่งใบสั่งผลิต</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterWaitSendFile()" style="background-color: #9e2d00;">
+                  <span *ngIf="waitSendFile > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ waitSendFile }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอส่งไฟล์</span><span class="d-lg-none">รอส่งใบสั่งผลิต</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -99,7 +138,7 @@
     </div>
   </div>
 
-  <app-data-table [headerStyle]="'background: #e8b705; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+  <app-data-table [headerStyle]="'background: #9e2d00; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
     [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
     (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>

@@ -42,6 +42,8 @@ export class Dcsm10Component implements OnInit {
   pageSize = 10;
   pageIndex = 0;
   countBacklog = 0;
+  inProcessMold = 0;
+  sendMold = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -66,6 +68,8 @@ export class Dcsm10Component implements OnInit {
     this.initSearchForm();
     this.loadData();
     this.Backlog();
+    this.BackloginProcessMold();
+    this.BackloginSendMold();
   }
 
   initSearchForm(): void {
@@ -192,6 +196,36 @@ export class Dcsm10Component implements OnInit {
   onFilterUnassigned() {
     this.searchForm.patchValue({
       moldStatus: 'รอดำเนินการ',
+    });
+    this.onSearch();
+  }
+
+  BackloginProcessMold(){
+    this.dcsm10Service.countMoldStatus('กำลังทำแม่พิมพ์').subscribe({
+      next: (data: number) => {
+        this.inProcessMold = data;
+      },
+    });
+  }
+
+  onFilterinProcessMold() {
+    this.searchForm.patchValue({
+      moldStatus: 'กำลังทำแม่พิมพ์',
+    });
+    this.onSearch();
+  }
+
+  BackloginSendMold(){
+    this.dcsm10Service.countMoldStatus('แม่พิมพ์เสร็จแล้ว').subscribe({
+      next: (data: number) => {
+        this.sendMold = data;
+      },
+    });
+  }
+
+  onFilterinSendMold() {
+    this.searchForm.patchValue({
+      moldStatus: 'แม่พิมพ์เสร็จแล้ว',
     });
     this.onSearch();
   }

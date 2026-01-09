@@ -90,8 +90,27 @@ public class SampleOrderService {
         return sampleOrderRepository.save(sampleOrder);
     }
 
+    public SampleOrder updatesampleOrderNoteEdit(Integer id, String note) {
+        SampleOrder sampleOrder = sampleOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        sampleOrder.setNoteEdit(note);
+        return sampleOrderRepository.save(sampleOrder);
+    }
+
     public Integer countBacklogStatus(String status) {
         return sampleOrderRepository.countBacklogStatus(status);
     }
 
+    @Transactional
+    public Page<SampleOrder> getAllVerify(String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return sampleOrderRepository.findByFiltersVerify(
+            folderName,
+            jobOwner,
+            responsiblePerson,
+            status, 
+            startDate,
+            endDate,
+            paging
+        );
+    }
 }
