@@ -32,6 +32,9 @@
               <option value="จัดส่งได้ รอเคลียร์ไฟล์">จัดส่งได้ รอเคลียร์ไฟล์</option>
               <option value="กำลังเคลียร์ไฟล์">กำลังเคลียร์ไฟล์</option>
               <option value="ไฟล์เสร็จ รอตรวจสอบไฟล์">ไฟล์เสร็จ รอตรวจสอบไฟล์</option>
+              <option value="ไฟล์ถูกต้อง รอขึ้นตัวอย่าง">ไฟล์ถูกต้อง รอขึ้นตัวอย่าง</option>
+              <option value="ขึ้นตัวอย่างแล้ว">ขึ้นตัวอย่างแล้ว</option>
+              <option value="ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง">ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง</option>
               <option value="แก้ไขไฟล์">แก้ไขไฟล์</option>
               <option value="ไฟล์ถูกต้อง">ไฟล์ถูกต้อง</option>
               <option value="แก้ไข">แก้ไข</option>
@@ -139,7 +142,7 @@
                   (click)="onFilterWaitSample()" style="background-color: #350142; color: #ffffff;">
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานรอขึ้นตัวอย่าง</span>
                   <span *ngIf="waitSample > 0"
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ waitSample }}
                     <span class="visually-hidden">unread messages</span>
@@ -151,7 +154,7 @@
                   (click)="onFilterBackSample()" style="background-color: #350142; color: #ffffff;">
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานขึ้นตัวอย่างรอส่งกลับ</span>
                   <span *ngIf="backSample > 0"
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ backSample }}
                     <span class="visually-hidden">unread messages</span>
@@ -163,7 +166,7 @@
                   (click)="onFilterSample()" style="background-color: #350142; color: #ffffff;">
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานไม่ขึ้นตัวอย่างรอส่งกลับ</span>
                   <span *ngIf="back > 0"
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ back }}
                     <span class="visually-hidden">unread messages</span>
