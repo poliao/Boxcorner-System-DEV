@@ -47,7 +47,10 @@ export class Dcsm05Component implements OnInit {
   tableData: any[] = [];
   totalElements = 0;
   pageSize = 10;
-  pageIndex = 0; // Angular Material Paginator เริ่มที่ 0
+  pageIndex = 0;
+  approveShif = 0;
+  notApproveShif = 0;
+  clearFile = 0;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -71,6 +74,9 @@ export class Dcsm05Component implements OnInit {
     this.initSearchForm();
     this.loadData();
     this.Backlog();
+    this.BacklogApproveShif();
+    this.countBacklogNotApproveShif();
+    this.countBacklogClearFile();
   }
 
   initSearchForm(): void {
@@ -163,6 +169,17 @@ export class Dcsm05Component implements OnInit {
     this.router.navigate(['/Dcsm05Detail', row.id]);
   }
 
+  onClearAll(): void {
+    this.searchForm.reset({
+      folderName: '',
+      jobOwner: '',
+      responsiblePerson: '',
+      status: '',
+      startDate: null,
+      endDate: null
+    });
+  }
+
   Backlog() {
     this.dcsm05Service.countBacklog().subscribe({
       next: (data: number) => {
@@ -174,8 +191,50 @@ export class Dcsm05Component implements OnInit {
   }
 
   onFilterUnassigned() {
+    this.onClearAll()
     this.searchForm.get('status')?.setValue('รอผู้รับผิดชอบอนุมัติ');
     this.onSearch();
   }
 
+  BacklogApproveShif() {
+    this.dcsm05Service.countBacklogApproveShif().subscribe({
+      next: (data: number) => {
+        this.approveShif = data;
+      },
+    });
+  }
+
+  onFilterApproveShif() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('อนุมัติขอเลื่อนส่ง');
+    this.onSearch();
+  }
+
+  countBacklogNotApproveShif() {
+    this.dcsm05Service.countBacklogNotApproveShif().subscribe({
+      next: (data: number) => {
+        this.notApproveShif = data;
+      },
+    });
+  }
+
+  onFilterNotApproveShif() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('ไม่อนุมัติเลื่อนส่ง');
+    this.onSearch();
+  }
+
+  countBacklogClearFile() {
+    this.dcsm05Service.countBacklogClearFile().subscribe({
+      next: (data: number) => {
+        this.clearFile = data;
+      },
+    });
+  }
+
+  onFilterClearFile() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('จัดส่งได้ รอเคลียร์ไฟล์');
+    this.onSearch();
+  }
 }

@@ -67,10 +67,6 @@ public class SampleOrderService {
         return sampleOrderRepository.findById(id);
     }
 
-    public Integer countBacklog() {
-        return sampleOrderRepository.countBacklog();
-    }
-
     @Transactional
     public Page<SampleOrder> getAllDetail(String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
@@ -92,6 +88,10 @@ public class SampleOrderService {
         }
         sampleOrder.setStatus(status);
         return sampleOrderRepository.save(sampleOrder);
+    }
+
+    public Integer countBacklogStatus(String status) {
+        return sampleOrderRepository.countBacklogStatus(status);
     }
 
 }

@@ -55,8 +55,8 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
     @Query(value = """
             select count(id)
             from sample_orders so
-            where so.status = 'รอผู้รับผิดชอบอนุมัติ';
+            where so.status =  :status;
                         """, nativeQuery = true)
-    Integer countBacklog();
+    Integer countBacklogStatus(@Param("status") String status);
 
 }

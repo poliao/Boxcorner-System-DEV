@@ -281,7 +281,7 @@ export class Dcsm04DetailComponent implements OnInit {
         const data = this.mainForm.getRawValue();
         data.deliveryDate = this.mainForm.getRawValue().updateDateDelivery
         data.deliveryTime = this.mainForm.getRawValue().updateTimeDelivery
-        data.status = 'จัดส่งได้ รอเคลียร์ไฟล์';
+        data.status = 'อนุมัติขอเลื่อนส่ง';
         this.loadingService.show();
         this.dcsm04Service.save(data).subscribe((response) => {
           this.patchFormData(response);

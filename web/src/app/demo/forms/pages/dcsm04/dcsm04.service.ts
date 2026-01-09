@@ -60,5 +60,11 @@ export class Dcsm04Service {
     return this.http.post(`${this.apiUrl}/production/save`, data);
   }
 
+  countBacklogShif(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogShif`);
+  }
 
+  countBacklogApproveShif(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShif`);
+  }
 }

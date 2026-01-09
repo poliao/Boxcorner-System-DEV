@@ -46,6 +46,7 @@ export class Dcsm02Component implements OnInit {
 
   startDate: Date | null = null;
   endDate: Date | null = null;
+  checked: number = 0;
 
   private searchJobDetailsSubject = new Subject<string>();
   private searchOwnerListSubject = new Subject<string>();
@@ -91,10 +92,10 @@ export class Dcsm02Component implements OnInit {
   ngOnInit() {
     this.loadData();
     this.prepareDropdownData();
+    this.countBacklogCheck();
   }
 
   loadData() {
-    // แปลงวันที่เป็น String format 'YYYY-MM-DD' เพื่อส่งให้ API
     const startDateStr = this.startDate ? this.formatDateForApi(this.startDate) : '';
     const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
 
@@ -103,7 +104,7 @@ export class Dcsm02Component implements OnInit {
       this.filterowner,
       this.filterprocess,
       this.filterassignee,
-      this.filterconfirm, // เพิ่ม filterconfirm ให้ตรงกับจำนวน Parameter ของ Service
+      this.filterconfirm,
       startDateStr,
       endDateStr,
       this.pageIndex,
@@ -116,7 +117,7 @@ export class Dcsm02Component implements OnInit {
             orderDate: this.formatDate(item.orderDate),
             deadlineDate: this.formatDate(item.deadlineDate)
           }));
-          this.totalElements = response.totalElements; // อย่าลืมอัปเดตจำนวนแถวทั้งหมดสำหรับ Pagination
+          this.totalElements = response.totalElements;
         },
         error: (err) => {
           console.error('Error loading data:', err);
@@ -275,8 +276,6 @@ export class Dcsm02Component implements OnInit {
   }
 
   onStartDateChange() {
-    // ถ้าเลือกวันที่เริ่มต้น แล้วยังไม่มีวันที่สิ้นสุด หรือวันที่สิ้นสุดน้อยกว่าวันที่เริ่มต้น 
-    // ให้ตั้งค่าเริ่มต้นเป็นวันเดียวกัน (หรือปล่อยให้ผู้ใช้เลือกเองตามความเหมาะสม)
     if (this.startDate && (!this.endDate || this.endDate < this.startDate)) {
       this.endDate = this.startDate;
     }
@@ -306,6 +305,23 @@ export class Dcsm02Component implements OnInit {
     this.startDate = null;
     this.endDate = null;
     this.onSearchChange();
+  }
+
+  countBacklogCheck() {
+    this.dcsm02Service.countBacklogCheck().subscribe({
+      next: (data: number) => {
+        this.checked = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+   onFilterCheck() {
+    this.clearAllFilters();
+    this.filterconfirm = 'รอตรวจสอบ';
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
   }
 
 }

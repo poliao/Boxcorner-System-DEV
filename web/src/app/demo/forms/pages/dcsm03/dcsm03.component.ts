@@ -400,7 +400,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   onFilterUnassigned() {
-    this.clearAllFilters();
+    this.clearAll();
     this.filterassignee = 'รอผู้รับผิดชอบยืนยัน';
     setTimeout(() => {
       this.onSearchChange();
@@ -417,7 +417,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   onFilterInProgress() {
-    this.clearAllFilters();
+    this.clearAll();
     this.filterprocess = 'กำลังดำเนินการ';
     setTimeout(() => {
       this.onSearchChange();
@@ -434,7 +434,7 @@ export class Dcsm03Component implements OnInit {
   }
 
   onFilterPending() {
-    this.clearAllFilters();
+    this.clearAll();
     this.filterprocess = 'รอดำเนินการ';
     setTimeout(() => {
       this.onSearchChange();
@@ -451,7 +451,7 @@ export class Dcsm03Component implements OnInit {
   }
 
    onFilterCheck() {
-    this.clearAllFilters();
+    this.clearAll();
     this.filterconfirm = 'รอตรวจสอบ';
     setTimeout(() => {
       this.onSearchChange();
@@ -468,7 +468,7 @@ export class Dcsm03Component implements OnInit {
   }
 
    onFilterEdit() {
-    this.clearAllFilters();
+    this.clearAll();
     this.filterprocess = 'รอดำเนินการแก้ไข';
     setTimeout(() => {
       this.onSearchChange();
@@ -485,10 +485,20 @@ export class Dcsm03Component implements OnInit {
   }
 
    onFilterComplete() {
-    this.clearAllFilters();
+    this.clearAll();
     this.filterconfirm = 'ผ่าน';
     setTimeout(() => {
       this.onSearchChange();
     }, 0);
+  }
+
+  clearAll() {
+    this.filterjobdetails = '';
+    this.filterowner = '';
+    this.filterassignee = '';
+    this.filterprocess = '';
+    this.filterconfirm = '';
+    this.startDate = null;
+    this.endDate = null;
   }
 }

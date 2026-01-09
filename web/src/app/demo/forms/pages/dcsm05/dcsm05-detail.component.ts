@@ -95,7 +95,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = false;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') || this.mainForm.getRawValue().status === 'ไม่อนุมัติเลื่อนส่ง') {
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') || this.mainForm.getRawValue().status === 'ไม่อนุมัติเลื่อนส่ง' || this.mainForm.getRawValue().status === 'อนุมัติขอเลื่อนส่ง') {
       this.confirm = false;
       this.confirmDeliver = true;
       this.notDeliver = true;

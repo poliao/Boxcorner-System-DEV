@@ -86,4 +86,8 @@ export class Dcsm02Service {
   savesampleOrders(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
   }
+
+  countBacklogCheck(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countBacklogCheck`);
+  }
 }

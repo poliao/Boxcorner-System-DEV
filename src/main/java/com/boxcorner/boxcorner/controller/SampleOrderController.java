@@ -95,7 +95,7 @@ public class SampleOrderController {
 
     @GetMapping("/countBacklog")
     public ResponseEntity<Integer> getUniqueStatus(){
-        return ResponseEntity.ok(sampleOrderService.countBacklog());
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอผู้รับผิดชอบอนุมัติ"));
     }
 
     @PutMapping("/updateAssign")
@@ -152,4 +152,26 @@ public class SampleOrderController {
     public ResponseEntity<SampleOrder> updateEditConfirmSample(@RequestParam("id") Integer id) {
         return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "แก้ไข", null));
     }
+
+    @GetMapping("/countBacklogShif")
+    public ResponseEntity<Integer> getUniqueStatusShif(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขอเลื่อนวันส่ง"));
+    }
+
+    @GetMapping("/countBacklogApproveShif")
+    public ResponseEntity<Integer> getUniqueStatusCheck(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("อนุมัติเลื่อนวันส่ง"));
+    }
+
+    @GetMapping("/countBacklogNotApproveShif")
+    public ResponseEntity<Integer> countBacklogNotApproveShif(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไม่อนุมัติเลื่อนส่ง"));
+    }
+
+    @GetMapping("/countBacklogClearFile")
+    public ResponseEntity<Integer> countBacklogClearFile(){
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("จัดส่งได้ รอเคลียร์ไฟล์"));
+    }
+
+
 }

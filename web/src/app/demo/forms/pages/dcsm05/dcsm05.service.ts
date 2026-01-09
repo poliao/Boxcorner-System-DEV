@@ -44,6 +44,10 @@ export class Dcsm05Service {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklog`);
   }
 
+  countBacklogShif(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogShif`);
+  }
+
   updateStatusConfirm(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/sampleOrders/updateAssign?id=${id}`, {});
   }
@@ -66,5 +70,17 @@ export class Dcsm05Service {
 
   updateStatusSucsess(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusSucsess?id=${id}`, {});
+  }
+
+  countBacklogApproveShif(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShif`);
+  }
+
+  countBacklogNotApproveShif(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogNotApproveShif`);
+  }
+
+  countBacklogClearFile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogClearFile`);
   }
 }

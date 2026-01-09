@@ -45,7 +45,8 @@ export class Dcsm04Component implements OnInit {
   tableData: any[] = [];
   totalElements = 0;
   pageSize = 10;
-  pageIndex = 0; // Angular Material Paginator เริ่มที่ 0
+  pageIndex = 0;
+  shif = 0;
 
 
   
@@ -69,6 +70,7 @@ export class Dcsm04Component implements OnInit {
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
+    this.BacklogShif();
   }
 
   // 1. สร้าง Form
@@ -83,7 +85,6 @@ export class Dcsm04Component implements OnInit {
     });
   }
 
-  // 2. ฟังก์ชันโหลดข้อมูล (หัวใจหลัก)
   loadData(): void {
     const filters = this.searchForm.value;
 
@@ -122,7 +123,6 @@ export class Dcsm04Component implements OnInit {
     this.onSearch();
   }
 
-  // ฟังก์ชันควบคุมการเลือกวันที่
   get minEndDate(): Date | null {
     const startDate = this.searchForm.get('startDate')?.value;
     return startDate ? new Date(startDate) : null;
@@ -137,15 +137,12 @@ export class Dcsm04Component implements OnInit {
     const startDate = this.searchForm.get('startDate')?.value;
     const endDate = this.searchForm.get('endDate')?.value;
     
-    // ถ้าไม่มีวันที่จาก ให้ disable และลบวันที่ถึง
     if (!startDate) {
       this.searchForm.get('endDate')?.disable();
       this.searchForm.patchValue({ endDate: null });
     }
-    // ถ้ามีวันที่จาก ให้ enable วันที่ถึง
     else {
       this.searchForm.get('endDate')?.enable();
-      // ถ้าวันที่ถึงน้อยกว่าวันที่จาก ให้ลบวันที่ถึง
       if (endDate && new Date(endDate) < new Date(startDate)) {
         this.searchForm.patchValue({ endDate: null });
       }
@@ -158,15 +155,24 @@ export class Dcsm04Component implements OnInit {
     this.loadData();
   }
 
-  // 6. กดปุ่มเพิ่ม
   add(): void {
-    this.router.navigate(['/Dcsm04Detail']); // ปรับ Path ตามจริง
+    this.router.navigate(['/Dcsm04Detail']); 
   }
 
-  // 7. กดที่แถวเพื่อแก้ไข
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm04Detail', row.id]);
   }
 
+  BacklogShif() {
+    this.dcsm04Service.countBacklogShif().subscribe({
+      next: (data: number) => {
+        this.shif = data;
+      },
+    });
+  }
 
+  onFilterUnassigned() {
+    this.searchForm.get('status')?.setValue('ขอเลื่อนวันส่ง');
+    this.onSearch();
+  }
 }
