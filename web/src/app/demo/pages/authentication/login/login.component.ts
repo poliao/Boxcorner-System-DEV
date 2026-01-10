@@ -1,6 +1,6 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { AuthService } from 'src/app/services/auth.service';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -8,61 +8,81 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  standalone: true, // หรือลบออกถ้าใช้แบบ Module
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
- loginForm: FormGroup;
-  loginState: 'IDLE' | 'AUTHENTICATING' | 'SUCCESS' = 'IDLE';
+export class LoginComponent implements OnInit, OnDestroy {
+  @ViewChild('card') cardRef!: ElementRef;
   
-  tiltX = 0;
-  tiltY = 0;
+  loginForm: FormGroup;
+  status: 'IDLE' | 'LOADING' | 'SUCCESS' = 'IDLE';
+  
+  // Text Animation
+  titleText = 'System';
+  displayTitle = '';
+  private chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
+  private intervalId: any;
+  
+  focusedField: string | null = null;
 
-  constructor(private fb: FormBuilder, private loadingService : LoadingService, private authService: AuthService, private sweetAlert: SweetAlertService, private router: Router) {
+  constructor(private fb: FormBuilder, private loadingService: LoadingService, private authService: AuthService,private sweetAlert: SweetAlertService, private router: Router) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
   }
 
-  ngOnInit(){
-     if (!this.authService.isTokenValid()) {
+  ngOnInit(): void {
+    if (!this.authService.isTokenValid()) {
       this.authService.logout();
     }
+    this.animateText();
   }
 
-  onPasswordKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter' || event.which === 13) {
-      return;
-    }
-    const char = String.fromCharCode(event.which);
-    if (!/[A-Za-z0-9]/.test(char)) {
-      event.preventDefault();
-    }
+  ngOnDestroy(): void {
+    if (this.intervalId) clearInterval(this.intervalId);
   }
 
-  // ฟังก์ชันคำนวณการเอียงแบบ 3D ตามเมาส์
+  animateText() {
+    let iteration = 0;
+    this.intervalId = setInterval(() => {
+      this.displayTitle = this.titleText
+        .split('')
+        .map((letter, index) => {
+          if (index < iteration) return this.titleText[index];
+          return this.chars[Math.floor(Math.random() * this.chars.length)];
+        })
+        .join('');
+
+      if (iteration >= this.titleText.length) clearInterval(this.intervalId);
+      iteration += 1 / 3;
+    }, 50);
+  }
+
   onMouseMove(e: MouseEvent) {
-    const card = e.currentTarget as HTMLElement;
+    const card = this.cardRef.nativeElement;
     const rect = card.getBoundingClientRect();
-    
-    // หาจุดกึ่งกลางการ์ด
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -3; 
+    const rotateY = ((x - centerX) / centerX) * 3;  
 
-    // คำนวณองศา (จำกัดไว้ที่ 10 องศาเพื่อให้ดูนุ่มนวล)
-    this.tiltX = ((y - centerY) / centerY) * -10; 
-    this.tiltY = ((x - centerX) / centerX) * 10;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   }
 
-  // รีเซ็ตค่าเมื่อเมาส์ออก
   onMouseLeave() {
-    this.tiltX = 0;
-    this.tiltY = 0;
+    const card = this.cardRef.nativeElement;
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+    card.style.setProperty('--mouse-x', `-1000px`);
+    card.style.setProperty('--mouse-y', `-1000px`);
   }
 
   onSubmit() {
@@ -84,5 +104,22 @@ export class LoginComponent implements OnInit {
       });
     }
   }
-  
+
+  setFocus(fieldName: string) {
+    this.focusedField = fieldName;
+  }
+
+  removeFocus() {
+    this.focusedField = null;
+  }
+
+  onPasswordKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.which === 13) {
+      return;
+    }
+    const char = String.fromCharCode(event.which);
+    if (!/[A-Za-z0-9]/.test(char)) {
+      event.preventDefault();
+    }
+  }
 }

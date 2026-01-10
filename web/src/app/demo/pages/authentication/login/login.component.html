@@ -1,58 +1,96 @@
-<div class="space-container">
+<div class="bg-wrapper">
 
-  <div class="card-wrapper" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave()"
-    [style.transform]="'perspective(1000px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg)'">
+  <div class="circuit-texture"></div>
 
-    <div class="holo-card">
+  <div class="tech-grid"></div>
 
-      <div class="scan-line"></div>
+  <div class="particles layer-1"></div>
+  <div class="particles layer-2"></div>
+  <div class="particles layer-3"></div>
 
-      <div class="card-header">
-        <i class="fas fa-microchip chip-icon"></i>
-        <div class="sys-text">SYS.SEC.L5</div>
-      </div>
+  <div class="glow-orb top-left"></div>
+  <div class="glow-orb bottom-right"></div>
 
-      <div class="content">
-        <div class="title-section">
-          <h1 class="nebula-title">BCA SYSTEM</h1>
-          <p class="subtitle">SECURE ACCESS GATEWAY</p>
+  <div class="center-hud-ring"></div>
+
+  <div class="scanline-bar"></div>
+  <div class="hud-text top-left">
+    <div class="line"></div>
+    <div>SYS.V.99 // STABLE</div>
+    <div>SECURE_CONN: TRUE</div>
+    <div>DATA_STREAM: ACTIVE</div>
+  </div>
+  <div class="hud-circle bottom-right"></div>
+</div>
+
+<div class="login-container" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave()">
+
+  <div #card class="login-card">
+
+    <div class="rgb-border"></div>
+
+    <div class="glass-panel"></div>
+
+    <div class="card-content">
+      <div class="corner-dot top-right"></div>
+      <div class="corner-dot bottom-left"></div>
+
+      <div class="header">
+        <div class="status-pill">
+          <i class="fas fa-circle-notch fa-spin text-blue"></i>
+          <span>SYSTEM_READY</span>
         </div>
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <h1 class="title">
+          <span class="text-dark">BCA</span>
+          <span class="text-decrypt">{{ displayTitle }}</span>
+        </h1>
 
-          <div class="input-group">
-            <label>USERNAME</label>
-            <div class="input-box">
-              <i class="fas fa-user icon"></i>
-              <input type="text" formControlName="username" placeholder="ENTER USERNAME" autocomplete="off">
-              <div class="glow-bar"></div>
-            </div>
-          </div>
-
-          <div class="input-group">
-            <label>PASSWORD</label>
-            <div class="input-box">
-              <i class="fas fa-lock icon"></i>
-              <input type="password" formControlName="password" placeholder="ENTER PASSWORD" pattern="[A-Za-z0-9]*" (keypress)="onPasswordKeyPress($event)">
-              <div class="glow-bar"></div>
-            </div>
-          </div>
-
-          <button type="submit" class="cyber-btn">
-            <div class="btn-content">
-              <ng-container>
-                <span>LOGIN</span>
-                <i class="fas fa-arrow-right"></i>
-              </ng-container>
-            </div>
-          </button>
-        </form>
+        <p class="subtitle">
+          <span class="dot-pulse"></span>
+          SECURE ENVIRONMENT V.0.5.5
+        </p>
       </div>
 
-      <div class="grid-overlay"></div>
-    </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-    <div class="ring-bg ring-cyan"></div>
-    <div class="ring-bg ring-purple"></div>
+        <div class="input-group" [class.focused]="focusedField === 'username' || loginForm.get('username')?.value">
+          <label>USERNAME</label>
+          <div class="input-box">
+            <div class="bracket tl"></div>
+            <div class="bracket tr"></div>
+            <div class="bracket bl"></div>
+            <div class="bracket br"></div>
+
+            <i class="fas fa-envelope icon"></i>
+            <input type="username" formControlName="username" (focus)="setFocus('username')" (blur)="removeFocus()"
+              placeholder="USERNAME" autocomplete="off">
+
+            <div class="scan-bg"></div>
+          </div>
+        </div>
+
+        <div class="input-group" [class.focused]="focusedField === 'password' || loginForm.get('password')?.value">
+          <label>PASSWORD</label>
+          <div class="input-box">
+            <div class="bracket tl"></div>
+            <div class="bracket tr"></div>
+            <div class="bracket bl"></div>
+            <div class="bracket br"></div>
+            <i class="fas fa-lock icon"></i>
+            <input type="password" formControlName="password" (focus)="setFocus('password')" (blur)="removeFocus()"
+              placeholder="PASSWORD" pattern="[A-Za-z0-9]*" (keypress)="onPasswordKeyPress($event)">
+            <div class="scan-bg"></div>
+          </div>
+        </div>
+
+        <button type="submit">
+          <ng-container>
+            <span>INITIATE_SESSION</span>
+            <i class="fas fa-arrow-right"></i>
+          </ng-container>
+        </button>
+      </form>
+    </div>
   </div>
 </div>

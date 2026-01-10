@@ -1,332 +1,470 @@
-// Variables
-$cyan: #06b6d4;
-$cyan-glow: #22d3ee;
-$purple: #a855f7;
-$dark-bg: #000000;
-$card-bg: rgba(0, 0, 0, 0.65); // เพิ่มความทึบแสงนิดหน่อยให้อ่านง่ายบนมือถือ
+// --- Variables ---
+$bg-color: #f1f5f9;   // พื้นหลังเทาอ่อน (Slate-100)
+$text-main: #1e293b;  // ตัวหนังสือสีเข้ม
+$text-muted: #94a3b8; // ตัวหนังสือสีจาง
+$blue: #00ccff;       // สีฟ้าหลัก
+$emerald: #0011ff;    // สีเขียว (Success)
+$font-main: 'Inter', sans-serif;
+$font-mono: 'JetBrains Mono', monospace;
 
 :host {
   display: block;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: darken($bg-color, 2%);
+  font-family: $font-main;
+  position: relative;
 }
 
-.space-container {
-  min-height: 100vh;
-  /* ใช้ dvh เพื่อแก้ปัญหา Address bar ใน mobile browser */
-  min-height: 100dvh; 
-  background-color: $dark-bg;
+// --- Background Elements ---
+.bg-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+// 1. Circuit Texture (ลายวงจร)
+.circuit-texture {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h80v80h-80z' fill='none' stroke='rgba(59,130,246,0.05)' stroke-width='1'/%3E%3Cpath d='M30 10v20m0 40v20m40-80v20m0 40v20m-60-60h20m40 0h20m-80 40h20m40 0h20' stroke='rgba(59,130,246,0.05)' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='2' fill='rgba(59,130,246,0.05)'/%3E%3Ccircle cx='70' cy='30' r='2' fill='rgba(59,130,246,0.05)'/%3E%3Ccircle cx='30' cy='70' r='2' fill='rgba(59,130,246,0.05)'/%3E%3Ccircle cx='70' cy='70' r='2' fill='rgba(59,130,246,0.05)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.6;
+  z-index: -2;
+}
+
+// 2. Tech Grid
+.tech-grid {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
   background-image: 
-    radial-gradient(circle at 20% 30%, rgba($cyan, 0.15), transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba($purple, 0.15), transparent 40%);
+    linear-gradient(rgba($blue, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba($blue, 0.08) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(500px) rotateX(60deg);
+  animation: gridFlow 20s linear infinite;
+  opacity: 0.7;
+}
+
+// 3. Floating Particles
+.particles {
+  position: absolute;
+  inset: -20%;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba($blue, 0.4) 1px, transparent 1px),
+    radial-gradient(circle at 20% 80%, rgba($blue, 0.4) 1px, transparent 1px),
+    radial-gradient(circle at 80% 20%, rgba($blue, 0.4) 1px, transparent 1px);
+  background-size: 200px 200px;
+  animation: particleFloat linear infinite;
+  opacity: 0.5;
+
+  &.layer-1 { background-size: 300px 300px; animation-duration: 30s; opacity: 0.3; }
+  &.layer-2 { background-size: 150px 150px; animation-duration: 20s; opacity: 0.5; }
+  &.layer-3 { background-size: 100px 100px; animation-duration: 15s; opacity: 0.7; }
+}
+
+// 4. Glow Orbs
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  z-index: -1;
+  
+  &.top-left {
+    top: -20%; left: -10%; width: 80vw; height: 80vw;
+    background: linear-gradient(to bottom right, #dbeafe, #e0e7ff);
+    animation: float 10s ease-in-out infinite;
+  }
+  
+  &.bottom-right {
+    bottom: -20%; right: -10%; width: 60vw; height: 60vw;
+    background: linear-gradient(to top left, #cffafe, #ffffff);
+    animation: float 12s ease-in-out infinite reverse;
+  }
+}
+
+// 5. Central HUD Ring
+.center-hud-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 600px; height: 600px;
+  margin-top: -300px; margin-left: -300px;
+  border: 1px dashed rgba($blue, 0.2);
+  border-radius: 50%;
+  animation: spin 60s linear infinite reverse;
+  z-index: -1;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 50px;
+    border: 1px dotted rgba($blue, 0.15);
+    border-radius: 50%;
+    animation: spin 40s linear infinite;
+  }
+}
+
+// 6. HUD Elements
+.scanline-bar {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 2px;
+  background: rgba($blue, 0.3);
+  box-shadow: 0 0 15px rgba($blue, 0.4);
+  animation: scan 4s linear infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hud-text {
+  position: absolute;
+  font-family: $font-mono;
+  font-size: 10px;
+  color: $text-muted;
+  opacity: 0.8;
+  pointer-events: none;
+  &.top-left { top: 40px; left: 40px; }
+  .line { width: 40px; height: 1px; background: rgba($blue, 0.5); margin-bottom: 8px; }
+}
+
+.hud-circle {
+  position: absolute;
+  bottom: 40px; right: 40px;
+  width: 80px; height: 80px;
+  border: 1px dashed $text-muted;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: spin 20s linear infinite;
+  pointer-events: none;
+}
+
+// --- Login Container ---
+.login-container {
+  position: relative;
+  z-index: 10;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-x: hidden; // ป้องกัน scroll แนวนอน
-  font-family: 'Rajdhani', sans-serif;
   perspective: 1000px;
-  padding: 20px; // เพิ่ม padding รอบนอกไม่ให้การ์ดชิดขอบจอเกินไป
+  padding: 20px;
 }
 
-// --- 3D Wrapper ---
-.card-wrapper {
+.login-card {
   position: relative;
   width: 100%;
-  max-width: 420px; // ขนาดสูงสุดบนจอคอม
+  max-width: 440px;
+  padding: 3rem;
+  border-radius: 2rem;
   transform-style: preserve-3d;
   transition: transform 0.1s ease-out;
-  
-  // บนมือถือให้เต็มจอมากขึ้น
-  @media (max-width: 480px) {
-    max-width: 100%; 
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+
+  .rgb-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 2rem;
+    padding: 2px;
+    background: radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0), 
+      rgba(25, 0, 255, 0.6), rgb(55, 0, 255), rgb(255, 0, 0), transparent 40%);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    opacity: 1;
+    z-index: 10;
   }
 }
 
-// --- Holographic Card ---
-.holo-card {
-  position: relative;
-  background: $card-bg;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba($cyan, 0.3);
-  border-radius: 16px;
-  box-shadow: 0 0 40px rgba($cyan, 0.15);
-  overflow: hidden;
-  z-index: 10;
-}
-
-// --- Animations ---
-@keyframes scan {
-  0% { top: -10%; opacity: 0; }
-  50% { opacity: 1; }
-  100% { top: 110%; opacity: 0; }
-}
-
-.scan-line {
+.glass-panel {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: linear-gradient(to right, transparent, $cyan, transparent);
-  opacity: 0.5;
-  animation: scan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events: none;
-  z-index: 20;
+  inset: 0;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  z-index: -1;
+}
+
+.card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.corner-dot {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: rgba($text-muted, 0.4);
+  border-radius: 50%;
+  &.top-right { top: -10px; right: -10px; }
+  &.bottom-left { bottom: -10px; left: -10px; }
 }
 
 // --- Header ---
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  opacity: 0.7;
+.header {
+  margin-bottom: 2.5rem;
   
-  .chip-icon {
-    color: $cyan;
-    font-size: 1.5rem;
-    animation: pulse 2s infinite;
-  }
-  
-  .sys-text {
-    font-family: monospace;
-    color: $cyan;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-  }
-}
-
-// --- Content ---
-.content {
-  padding: 0 40px 40px 40px;
-
-  // Responsive: ลด padding บนจอมือถือ
-  @media (max-width: 480px) {
-    padding: 0 25px 30px 25px;
-  }
-}
-
-.title-section {
-  text-align: center;
-  margin-bottom: 30px;
-  
-  .nebula-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2.5rem;
-    margin: 0;
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid #fff;
+    border-radius: 20px;
+    font-family: $font-mono;
+    font-size: 10px;
+    color: $text-muted;
     font-weight: 700;
-    background: linear-gradient(90deg, $cyan-glow, #fff, $purple);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 15px rgba($cyan, 0.5);
-    letter-spacing: 3px;
-
-    // Responsive: ลดขนาดฟอนต์ชื่อ
-    @media (max-width: 480px) {
-      font-size: 2rem; 
-      letter-spacing: 1px;
-    }
-  }
-  
-  .subtitle {
-    color: rgba($cyan, 0.7);
-    font-size: 0.8rem;
-    letter-spacing: 4px;
-    margin-top: 5px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     
-    // Responsive: ลดระยะห่างตัวอักษร
-    @media (max-width: 480px) {
-      letter-spacing: 2px;
-      font-size: 0.7rem;
+    .text-blue { color: $blue; }
+  }
+
+  .title {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0;
+    letter-spacing: -1px;
+    color: $text-main;
+    
+    .text-dark { font-weight: 600; }
+    .text-decrypt { font-family: $font-mono; color: $text-muted; }
+  }
+
+  .subtitle {
+    font-family: $font-mono;
+    font-size: 0.75rem;
+    color: $text-muted;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+
+    .dot-pulse {
+      width: 6px; height: 6px;
+      background: $emerald;
+      border-radius: 50%;
+      box-shadow: 0 0 8px $emerald;
+      animation: pulse 2s infinite;
     }
   }
 }
 
 // --- Inputs ---
 .input-group {
-  margin-bottom: 25px;
-  
+  position: relative;
+  margin-bottom: 1.5rem;
+
   label {
-    display: block;
-    color: $cyan;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
+    position: absolute;
+    top: 16px; left: 44px;
+    font-family: $font-mono;
+    font-size: 11px;
+    color: $text-muted;
+    transition: 0.3s all ease-out;
+    pointer-events: none;
+    z-index: 10;
+    letter-spacing: 1px;
   }
-  
+
   .input-box {
     position: relative;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba($text-muted, 0.2);
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba($cyan, 0.2);
-    border-radius: 4px;
     transition: 0.3s;
-    
+    overflow: hidden;
+
     .icon {
-      padding: 0 15px;
-      color: rgba($cyan, 0.5);
+      padding-left: 16px;
+      color: $text-muted;
+      transition: 0.3s;
+      font-size: 14px;
     }
-    
+
     input {
       width: 100%;
-      padding: 12px 12px 12px 0;
       background: transparent;
       border: none;
-      color: #fff;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1.1rem;
+      padding: 16px;
       outline: none;
-      
-      &::placeholder {
-        color: rgba(255, 255, 255, 0.3);
-        font-size: 0.9rem;
-      }
+      color: $text-main;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: $font-main;
+      z-index: 5;
+      &::placeholder { color: transparent; }
     }
 
-    .glow-bar {
+    .scan-bg {
       position: absolute;
-      bottom: -1px;
-      left: 0;
-      height: 2px;
-      width: 0%;
-      background: $cyan;
-      box-shadow: 0 0 10px $cyan;
-      transition: width 0.3s ease;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba($blue, 0.08), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+      z-index: 0;
     }
 
-    &:focus-within {
-      border-color: $cyan;
-      box-shadow: 0 0 15px rgba($cyan, 0.1);
-      
-      .icon { color: $cyan; }
-      .glow-bar { width: 100%; }
+    .bracket {
+      position: absolute;
+      width: 6px; height: 6px;
+      border-color: $blue;
+      opacity: 0;
+      transition: 0.3s;
+      z-index: 10;
+      &.tl { top: 0; left: 0; border-top: 1px solid; border-left: 1px solid; }
+      &.tr { top: 0; right: 0; border-top: 1px solid; border-right: 1px solid; }
+      &.bl { bottom: 0; left: 0; border-bottom: 1px solid; border-left: 1px solid; }
+      &.br { bottom: 0; right: 0; border-bottom: 1px solid; border-right: 1px solid; }
+    }
+  }
+
+  &.focused {
+    label {
+      top: -8px; left: 12px;
+      background: rgba(255,255,255,0.95);
+      padding: 2px 6px;
+      font-size: 9px;
+      color: $blue;
+      border: 1px solid rgba($blue, 0.2);
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .input-box {
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 8px 16px rgba($blue, 0.05);
+      border-color: transparent;
+
+      .icon { color: $blue; }
+      .bracket { opacity: 1; }
+      .scan-bg { transform: translateX(100%); transition: transform 0.8s ease-in-out; }
     }
   }
 }
 
-// --- Button ---
-.cyber-btn {
+// --- Options & Button ---
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: $font-mono;
+  font-size: 10px;
+  color: $text-muted;
+  margin-bottom: 2rem;
+  
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    &:hover { color: $text-main; }
+    
+    input { display: none; }
+    .checkmark {
+      width: 14px; height: 14px;
+      border: 1px solid $text-muted;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    input:checked + .checkmark {
+      background: $blue;
+      border-color: $blue;
+      &::after {
+        content: '';
+        width: 6px; height: 6px;
+        background: #fff;
+        border-radius: 1px;
+      }
+    }
+  }
+  
+  .forgot-link {
+    color: $text-muted;
+    text-decoration: none;
+    transition: 0.2s;
+    &:hover { color: $blue; text-decoration: underline; }
+  }
+}
+
+button {
   position: relative;
   width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  background: rgba($cyan, 0.1);
-  border: 1px solid rgba($cyan, 0.5);
-  color: $cyan-glow;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
-  letter-spacing: 2px;
+  padding: 1.2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #0f172a; 
+  color: #fff;
+  font-family: $font-mono;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
   cursor: pointer;
   overflow: hidden;
-  transition: 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   
-  // Responsive: ลดขนาดฟอนต์ปุ่มนิดหน่อย
-  @media (max-width: 480px) {
-    font-size: 0.9rem;
-    padding: 12px;
+  .noise-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
   
-  // States
   &:hover:not(:disabled) {
-    background: rgba($cyan, 0.2);
-    box-shadow: 0 0 20px rgba($cyan, 0.4);
-    color: #fff;
-    text-shadow: 0 0 5px #fff;
-  }
-  
-  &.btn-loading {
-    cursor: wait;
-    opacity: 0.7;
+    background: #1e293b;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+    transform: translateY(-2px);
   }
   
   &.btn-success {
-    border-color: #22c55e;
-    color: #4ade80;
-    background: rgba(34, 197, 94, 0.1);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
-  }
-
-  .btn-content {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+    background: $emerald;
+    box-shadow: 0 0 20px rgba($emerald, 0.4);
+    border-color: transparent;
   }
   
-  .btn-bg {
+  .loading-bar {
     position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to top, rgba($cyan, 0.3), transparent);
-    transition: 0.3s;
+    bottom: 0; left: 0; height: 3px;
+    background: $blue;
+    width: 0%;
+    animation: loadBar 2s forwards ease-in-out;
   }
   
-  &:hover .btn-bg {
-    top: 0;
-  }
+  &:disabled { cursor: not-allowed; opacity: 0.9; }
 }
 
-// --- Footer ---
-.footer-links {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 25px;
-  
-  a {
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.5);
-    text-decoration: none;
-    letter-spacing: 1px;
-    transition: 0.3s;
-    
-    &:hover { color: $cyan; }
-  }
-}
+// --- Animations ---
+@keyframes gridFlow { from { background-position: 0 0; } to { background-position: 0 60px; } }
+@keyframes particleFloat { from { transform: translateY(0); } to { transform: translateY(-200px); } }
+@keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(30px, 30px); } }
+@keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 50% { opacity: 0.5; transform: scale(1.1); } }
+@keyframes loadBar { to { width: 100%; } }
 
-// --- Decorative Backgrounds ---
-.grid-overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: 
-    linear-gradient(rgba($cyan, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba($cyan, 0.05) 1px, transparent 1px);
-  background-size: 30px 30px;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.ring-bg {
-  position: absolute;
-  border-radius: 50px;
-  pointer-events: none;
-  z-index: 0;
-  
-  // Responsive: ปรับวงแหวนไม่ให้ล้นจอในมือถือ
-  &.ring-cyan {
-    top: -20px; left: -20px; right: -20px; bottom: -20px;
-    border: 1px solid rgba($cyan, 0.15);
-    animation: pulse 4s infinite;
-    
-    @media (max-width: 480px) {
-      top: -10px; left: -10px; right: -10px; bottom: -10px;
-    }
-  }
-  
-  &.ring-purple {
-    top: -40px; left: -40px; right: -40px; bottom: -40px;
-    border: 1px solid rgba($purple, 0.15);
-    animation: pulse 6s infinite reverse;
-
-    @media (max-width: 480px) {
-      display: none; // ซ่อนวงแหวนวงนอกสุดบนมือถือ เพื่อประหยัดพื้นที่
-    }
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.02); opacity: 0.8; }
+@media (max-width: 640px) {
+  .login-card { padding: 2rem; max-width: 100%; }
+  .header .title { font-size: 2rem; }
+  .hud-text, .hud-circle { display: none; }
 }
