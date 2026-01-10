@@ -15,7 +15,8 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
         @Query(value = """
                         SELECT * FROM sample_orders s
                         WHERE
-                            (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                            (:id IS NULL OR s.id = :id)
+                            AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
                             AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
@@ -24,6 +25,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                         ORDER BY s.id DESC
                         """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
         Page<SampleOrder> findByFilters(
+                        @Param("id") Integer id,
                         @Param("folderName") String folderName,
                         @Param("jobOwner") String jobOwner,
                         @Param("responsiblePerson") String responsiblePerson,
@@ -35,7 +37,8 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
         @Query(value = """
                         SELECT * FROM sample_orders s
                         WHERE
-                            (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                            (:id IS NULL OR s.id = :id)
+                            AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
                             AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
@@ -44,6 +47,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                         ORDER BY s.id desc
                         """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
         Page<SampleOrder> findByFiltersDetail(
+                        @Param("id") Integer id,
                         @Param("folderName") String folderName,
                         @Param("jobOwner") String jobOwner,
                         @Param("responsiblePerson") String responsiblePerson,
@@ -63,6 +67,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                         SELECT * FROM sample_orders s
                         WHERE
                             s.status IN ('ไฟล์เสร็จ รอตรวจสอบไฟล์', 'แก้ไขไฟล์', 'สำเร็จ รออนุมัติไปตารางรอผลิต','ไฟล์ถูกต้อง รอขึ้นตัวอย่าง', 'ผ่าน', 'ขึ้นตัวอย่างแล้ว')
+                            AND (:id IS NULL OR s.id = :id)
                             AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
@@ -74,6 +79,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                         SELECT count(*) FROM sample_orders s
                         WHERE
                             s.status IN ('ไฟล์เสร็จ รอตรวจสอบไฟล์', 'แก้ไขไฟล์', 'สำเร็จ รออนุมัติไปตารางรอผลิต', 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง', 'ผ่าน', 'ขึ้นตัวอย่างแล้ว')
+                            AND (:id IS NULL OR s.id = :id)
                             AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
@@ -82,6 +88,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                             AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
                         """, nativeQuery = true)
         Page<SampleOrder> findByFiltersVerify(
+                        @Param("id") Integer id,
                         @Param("folderName") String folderName,
                         @Param("jobOwner") String jobOwner,
                         @Param("responsiblePerson") String responsiblePerson,

@@ -78,6 +78,7 @@ export class Dcsm11Component implements OnInit {
   // 1. สร้าง Form
   initSearchForm(): void {
     this.searchForm = this.fb.group({
+      id: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -114,6 +115,7 @@ export class Dcsm11Component implements OnInit {
 
   onClear(): void {
     this.searchForm.reset({
+        id: '',
         folderName: '',
         jobOwner: '',
         responsiblePerson: '',

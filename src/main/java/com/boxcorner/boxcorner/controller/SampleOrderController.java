@@ -44,6 +44,7 @@ public class SampleOrderController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<SampleOrder>> searchOrders(
+            @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "folderName", required = false) String folderName,
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
@@ -55,6 +56,7 @@ public class SampleOrderController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<SampleOrder> result = sampleOrderService.getAll(
+                id,
                 folderName,
                 jobOwner,
                 responsiblePerson,
@@ -69,6 +71,7 @@ public class SampleOrderController {
     @GetMapping("/searchDetail")
     public ResponseEntity<Page<SampleOrder>> searchOrdersDetail(
             // เพิ่ม value = "..." ให้ครบทุกตัวครับ
+            @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "folderName", required = false) String folderName,
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
@@ -80,6 +83,7 @@ public class SampleOrderController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<SampleOrder> result = sampleOrderService.getAllDetail(
+                id,
                 folderName,
                 jobOwner,
                 responsiblePerson,
@@ -94,6 +98,7 @@ public class SampleOrderController {
     @GetMapping("/searchVerify")
     public ResponseEntity<Page<SampleOrder>> getAllVerify(
             // เพิ่ม value = "..." ให้ครบทุกตัวครับ
+            @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "folderName", required = false) String folderName,
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
@@ -105,6 +110,7 @@ public class SampleOrderController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<SampleOrder> result = sampleOrderService.getAllVerify(
+                id,
                 folderName,
                 jobOwner,
                 responsiblePerson,

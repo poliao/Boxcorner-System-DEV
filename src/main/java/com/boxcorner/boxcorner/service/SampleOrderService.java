@@ -50,9 +50,10 @@ public class SampleOrderService {
     }
 
     @Transactional
-    public Page<SampleOrder> getAll(String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAll(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFilters(
+            id,
             folderName,
             jobOwner,
             responsiblePerson,
@@ -68,9 +69,10 @@ public class SampleOrderService {
     }
 
     @Transactional
-    public Page<SampleOrder> getAllDetail(String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllDetail(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersDetail(
+            id,
             folderName,
             jobOwner,
             responsiblePerson,
@@ -101,9 +103,10 @@ public class SampleOrderService {
     }
 
     @Transactional
-    public Page<SampleOrder> getAllVerify(String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllVerify(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersVerify(
+            id,
             folderName,
             jobOwner,
             responsiblePerson,

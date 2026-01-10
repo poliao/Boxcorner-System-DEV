@@ -30,6 +30,7 @@ export class Dcsm02Service {
   }
 
   getAllDesignOrders(
+    id: string,
     job_details: string,
     job_owner: string,
     process_status: string,
@@ -41,6 +42,7 @@ export class Dcsm02Service {
     size: number
   ): Observable<any> {
     const params = {
+      id: id || '',
       job_details: job_details || '',
       job_owner: job_owner || '',
       process_status: process_status || '',
@@ -52,7 +54,7 @@ export class Dcsm02Service {
       size: size.toString()
     };
 
-    return this.http.get(`${this.apiUrl}/designs/list`, { params: params });
+    return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
   }
 
   getUniqueJobDetail(query: string): Observable<any> {

@@ -23,6 +23,7 @@ export class Dcsm11Service {
     let params: any = {
       page: page.toString(),
       size: size.toString(),
+      id: filters.id || '',
       folderName: filters.folderName || '',           // เดิม job_details
       jobOwner: filters.jobOwner || '',               // เดิม job_owner
       responsiblePerson: filters.responsiblePerson || '', // เดิม assignee

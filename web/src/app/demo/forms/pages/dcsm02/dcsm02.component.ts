@@ -60,6 +60,7 @@ export class Dcsm02Component implements OnInit {
   filterassignee: string = '';
   filterprocess: string = '';
   filterconfirm: string = ''; // Filter for process
+  filterId: string = ''; // Filter for ID
 
   jobdetailsList: string[] = [];
   OwnerList: string[] = [];
@@ -101,6 +102,7 @@ export class Dcsm02Component implements OnInit {
     const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
 
     this.dcsm02Service.getAllDesignOrders(
+      this.filterId,
       this.filterjobdetails,
       this.filterowner,
       this.filterprocess,
@@ -298,6 +300,7 @@ export class Dcsm02Component implements OnInit {
   }
 
   clearAllFilters() {
+    this.filterId = '';
     this.filterjobdetails = '';
     this.filterowner = '';
     this.filterassignee = '';

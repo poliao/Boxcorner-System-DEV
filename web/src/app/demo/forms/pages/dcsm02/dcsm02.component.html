@@ -5,6 +5,13 @@
       <div class="row g-3 align-items-center">
         <div class="col-12 col-md-4">
           <mat-form-field appearance="outline" class="w-100 hide-subscript">
+            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหา ID...</mat-label>
+            <input type="text" matInput [(ngModel)]="filterId" (keyup.enter)="onSearchChange()">
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <mat-form-field appearance="outline" class="w-100 hide-subscript">
             <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหารายละเอียดงาน...</mat-label>
             <input type="text" matInput [(ngModel)]="filterjobdetails" [matAutocomplete]="autoJob"
               (input)="onJobSearch($event)" (keyup.enter)="onSearchChange()">

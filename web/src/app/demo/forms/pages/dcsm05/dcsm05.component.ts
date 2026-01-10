@@ -94,6 +94,7 @@ export class Dcsm05Component implements OnInit {
 
   initSearchForm(): void {
     this.searchForm = this.fb.group({
+      id: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -131,6 +132,7 @@ export class Dcsm05Component implements OnInit {
 
   onClear(): void {
     this.searchForm.reset({
+      id: '',
       folderName: '',
       jobOwner: '',
       responsiblePerson: '',
@@ -184,6 +186,7 @@ export class Dcsm05Component implements OnInit {
 
   onClearAll(): void {
     this.searchForm.reset({
+      id: '',
       folderName: '',
       jobOwner: '',
       responsiblePerson: '',

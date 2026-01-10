@@ -71,7 +71,7 @@ public class DesignOrdersService {
             process_status, // 5. processStatus
             confirm_status, // 6. confirm
             startDate,      // 7. startDate
-            endDate,        // 8. endDate
+            endDate,        
             paging
         );
     }

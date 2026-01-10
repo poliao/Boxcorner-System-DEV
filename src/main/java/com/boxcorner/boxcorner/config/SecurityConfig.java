@@ -26,22 +26,22 @@ import com.boxcorner.boxcorner.security.jwt.JwtAuthFilter;
 public class SecurityConfig {
 
     @Autowired private JwtAuthFilter jwtAuthFilter;
-    @Autowired private UserDetailsService userDetailsService; // (ต้อง Implement ตัวนี้แยกต่างหากเพื่อดึงจาก DB)
+    @Autowired private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // ปิด CSRF เพราะใช้ Stateless Token
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // เปิดใช้ CORS
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("api/auth/**").permitAll() // อนุญาตให้เข้าหน้า Login/Register ได้เลย
-                .anyRequest().authenticated() // หน้าอื่นๆ ต้อง Login ก่อน
+                .requestMatchers("api/auth/**").permitAll()
+                .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // ไม่เก็บ Session (สำคัญมากสำหรับ JWT)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // ใส่ Filter เราก่อน Filter มาตรฐาน
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -61,13 +61,13 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // เข้ารหัส Password
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:4200"); //localhost
+        configuration.addAllowedOrigin("http://localhost:4200");
         configuration.addAllowedOrigin("http://18.139.217.88");
 
         configuration.addAllowedMethod("*");
