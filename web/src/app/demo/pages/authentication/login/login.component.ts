@@ -1,33 +1,34 @@
-// angular import
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
+import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { AuthService } from 'src/app/services/auth.service';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
-import { LoadingService } from 'src/app/demo/loadingservice/loading';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule],
+  standalone: true, // หรือลบออกถ้าใช้แบบ Module
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
+ loginForm: FormGroup;
+  loginState: 'IDLE' | 'AUTHENTICATING' | 'SUCCESS' = 'IDLE';
+  
+  tiltX = 0;
+  tiltY = 0;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private sweetAlert: SweetAlertService,private loadingService: LoadingService) {
+  constructor(private fb: FormBuilder, private loadingService : LoadingService, private authService: AuthService, private sweetAlert: SweetAlertService, private router: Router) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      username: ['', Validators.required],
+      password: ['', Validators.required]
     });
   }
 
-  ngOnInit() {
-    // Clear expired token on login page
-    if (!this.authService.isTokenValid()) {
+  ngOnInit(){
+     if (!this.authService.isTokenValid()) {
       this.authService.logout();
     }
   }
@@ -40,6 +41,28 @@ export class LoginComponent implements OnInit {
     if (!/[A-Za-z0-9]/.test(char)) {
       event.preventDefault();
     }
+  }
+
+  // ฟังก์ชันคำนวณการเอียงแบบ 3D ตามเมาส์
+  onMouseMove(e: MouseEvent) {
+    const card = e.currentTarget as HTMLElement;
+    const rect = card.getBoundingClientRect();
+    
+    // หาจุดกึ่งกลางการ์ด
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // คำนวณองศา (จำกัดไว้ที่ 10 องศาเพื่อให้ดูนุ่มนวล)
+    this.tiltX = ((y - centerY) / centerY) * -10; 
+    this.tiltY = ((x - centerX) / centerX) * 10;
+  }
+
+  // รีเซ็ตค่าเมื่อเมาส์ออก
+  onMouseLeave() {
+    this.tiltX = 0;
+    this.tiltY = 0;
   }
 
   onSubmit() {
@@ -61,4 +84,5 @@ export class LoginComponent implements OnInit {
       });
     }
   }
+  
 }

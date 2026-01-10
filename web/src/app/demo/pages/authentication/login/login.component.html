@@ -1,40 +1,58 @@
-<div class="auth-main">
-  <div class="auth-wrapper v3">
-    <div class="auth-form">
-      <div class="card my-5">
-        <div class="card-body ">
-          <a href="#" class="d-flex justify-content-center">
-            <img src="assets/images/logo-boxcorner.svg" alt="logo" />
-          </a>
-          <div class="row">
-            <div class="d-flex justify-content-center">
-              <div class="auth-header">
-                <h2 class="text-secondary mt-5"><b>Welcome To BCA System</b></h2>
-              </div>
+<div class="space-container">
+
+  <div class="card-wrapper" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave()"
+    [style.transform]="'perspective(1000px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg)'">
+
+    <div class="holo-card">
+
+      <div class="scan-line"></div>
+
+      <div class="card-header">
+        <i class="fas fa-microchip chip-icon"></i>
+        <div class="sys-text">SYS.SEC.L5</div>
+      </div>
+
+      <div class="content">
+        <div class="title-section">
+          <h1 class="nebula-title">BCA SYSTEM</h1>
+          <p class="subtitle">SECURE ACCESS GATEWAY</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+          <div class="input-group">
+            <label>USERNAME</label>
+            <div class="input-box">
+              <i class="fas fa-user icon"></i>
+              <input type="text" formControlName="username" placeholder="ENTER USERNAME" autocomplete="off">
+              <div class="glow-bar"></div>
             </div>
           </div>
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <div class="form-floating mb-3">
-              <input type="email" class="form-control" id="floatingInput" formControlName="username" />
-              <label for="floatingInput"> Username</label>
+
+          <div class="input-group">
+            <label>PASSWORD</label>
+            <div class="input-box">
+              <i class="fas fa-lock icon"></i>
+              <input type="password" formControlName="password" placeholder="ENTER PASSWORD" pattern="[A-Za-z0-9]*" (keypress)="onPasswordKeyPress($event)">
+              <div class="glow-bar"></div>
             </div>
-            <div class="form-floating mb-3">
-              <input type="password" class="form-control" id="password" formControlName="password" 
-                     pattern="[A-Za-z0-9]*" (keypress)="onPasswordKeyPress($event)" />
-              <label for="password">Password</label>
+          </div>
+
+          <button type="submit" class="cyber-btn">
+            <div class="btn-content">
+              <ng-container>
+                <span>LOGIN</span>
+                <i class="fas fa-arrow-right"></i>
+              </ng-container>
             </div>
-             <div class="d-flex mt-1 justify-content-between">
-              <div class="form-check">
-                <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" formControlName="rememberMe" />
-                <label class="form-check-label text-muted" for="customCheckc1">Remember me</label>
-              </div>
-            </div>
-            <div class="d-grid mt-4">
-              <button type="submit" class="btn btn-secondary">Sign In</button>
-            </div>
-          </form>
-        </div>
+          </button>
+        </form>
       </div>
+
+      <div class="grid-overlay"></div>
     </div>
+
+    <div class="ring-bg ring-cyan"></div>
+    <div class="ring-bg ring-purple"></div>
   </div>
 </div>
