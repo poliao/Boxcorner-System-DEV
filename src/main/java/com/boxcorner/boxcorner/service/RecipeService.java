@@ -119,7 +119,7 @@ public class RecipeService {
         }
         
         int number = Integer.parseInt(lastId.substring(3));
-        return String.format("BCA%02d", number + 1);
+        return String.format("COL%06d", number + 1);
     }
     
     private String generateNextColorId() {
@@ -129,7 +129,7 @@ public class RecipeService {
         }
         
         int number = Integer.parseInt(lastId.substring(3));
-        return String.format("COL%02d", number + 1);
+        return String.format("COL%06d", number + 1);
     }
 
 

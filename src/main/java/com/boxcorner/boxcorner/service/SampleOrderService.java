@@ -64,6 +64,21 @@ public class SampleOrderService {
         );
     }
 
+    @Transactional
+    public Page<SampleOrder> getAllSort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return sampleOrderRepository.findByFiltersSort(
+            id,
+            folderName,
+            jobOwner,
+            responsiblePerson,
+            status, 
+            startDate,
+            endDate,
+            paging
+        );
+    }
+
     public Optional<SampleOrder> getSampleOrderById(Integer id) {
         return sampleOrderRepository.findById(id);
     }
@@ -72,6 +87,21 @@ public class SampleOrderService {
     public Page<SampleOrder> getAllDetail(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersDetail(
+            id,
+            folderName,
+            jobOwner,
+            responsiblePerson,
+            status, 
+            startDate,
+            endDate,
+            paging
+        );
+    }
+
+    @Transactional
+    public Page<SampleOrder> getAllDetailSort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return sampleOrderRepository.findByFiltersDetailSort(
             id,
             folderName,
             jobOwner,
@@ -106,6 +136,21 @@ public class SampleOrderService {
     public Page<SampleOrder> getAllVerify(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersVerify(
+            id,
+            folderName,
+            jobOwner,
+            responsiblePerson,
+            status, 
+            startDate,
+            endDate,
+            paging
+        );
+    }
+
+    @Transactional
+    public Page<SampleOrder> getAllVerifySort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return sampleOrderRepository.findByFiltersVerifySort(
             id,
             folderName,
             jobOwner,

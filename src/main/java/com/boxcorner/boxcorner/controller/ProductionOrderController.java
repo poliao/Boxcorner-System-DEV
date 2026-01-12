@@ -37,7 +37,8 @@ public class ProductionOrderController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody ProductionOrder productionOrder, HttpServletRequest httpRequest) {
         try {
-            ProductionOrder savedData = productionOrderService.save(productionOrder,tokenService.getCurrentUser(httpRequest));
+            ProductionOrder savedData = productionOrderService.save(productionOrder,
+                    tokenService.getCurrentUser(httpRequest));
             return ResponseEntity.ok(savedData);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -74,13 +75,19 @@ public class ProductionOrderController {
             @RequestParam(required = false, name = "moldStatus") String moldStatus,
             @RequestParam(required = false, name = "jobType") String jobType,
             @RequestParam(defaultValue = "0", name = "page") int page,
-            @RequestParam(defaultValue = "10", name = "size") int size
-    ) {
+            @RequestParam(defaultValue = "10", name = "size") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductionOrder> result = productionOrderService.findByFilters(
-                id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable
-        );
+        Page<ProductionOrder> result;
+        if (Boolean.TRUE.equals(sortByDeadline)) {
+            result = productionOrderService.findByFiltersSort(
+                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+        } else {
+            result = productionOrderService.findByFilters(
+                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+        }
         return ResponseEntity.ok(result);
     }
 
@@ -98,13 +105,19 @@ public class ProductionOrderController {
             @RequestParam(required = false, name = "moldStatus") String moldStatus,
             @RequestParam(required = false, name = "jobType") String jobType,
             @RequestParam(defaultValue = "0", name = "page") int page,
-            @RequestParam(defaultValue = "10", name = "size") int size
-    ) {
+            @RequestParam(defaultValue = "10", name = "size") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductionOrder> result = productionOrderService.findByProductionFilters(
-                id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable
-        );
+        Page<ProductionOrder> result;
+        if (Boolean.TRUE.equals(sortByDeadline)) {
+            result = productionOrderService.findByProductionFiltersSort(
+                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+        } else {
+            result = productionOrderService.findByProductionFilters(
+                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+        }
         return ResponseEntity.ok(result);
     }
 
@@ -123,77 +136,95 @@ public class ProductionOrderController {
             @RequestParam(required = false, name = "jobType") String jobType,
             @RequestParam(required = false, name = "inspector") String inspector,
             @RequestParam(defaultValue = "0", name = "page") int page,
-            @RequestParam(defaultValue = "10", name = "size") int size
-    ) {
+            @RequestParam(defaultValue = "10", name = "size") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProductionOrder> result = productionOrderService.findByProductionCheck(
-                id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, pageable
-        );
+
+        Page<ProductionOrder> result;
+        if (Boolean.TRUE.equals(sortByDeadline)) {
+            result = productionOrderService.findByProductionCheckSort(
+                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, pageable);
+            return ResponseEntity.ok(result);
+        } else {
+            result = productionOrderService.findByProductionCheck(
+                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, pageable);
+        }
         return ResponseEntity.ok(result);
     }
 
     @PutMapping("/updateProcessStatus")
-    public ResponseEntity<ProductionOrder> updateProcessStatus (@RequestParam("id") Integer id, @RequestParam("processStatus") String processStatus) {
-        return ResponseEntity.ok(productionOrderService.updateProcessStatus(id,processStatus));
+    public ResponseEntity<ProductionOrder> updateProcessStatus(@RequestParam("id") Integer id,
+            @RequestParam("processStatus") String processStatus) {
+        return ResponseEntity.ok(productionOrderService.updateProcessStatus(id, processStatus));
     }
 
     @PutMapping("/updateInspector")
-    public ResponseEntity<ProductionOrder> updateInspector (@RequestParam("id") Integer id, @RequestParam("inspector") String inspector) {
-        return ResponseEntity.ok(productionOrderService.updateInspector(id,inspector));
+    public ResponseEntity<ProductionOrder> updateInspector(@RequestParam("id") Integer id,
+            @RequestParam("inspector") String inspector) {
+        return ResponseEntity.ok(productionOrderService.updateInspector(id, inspector));
     }
 
     @PutMapping("/updateJobStatus")
-    public ResponseEntity<ProductionOrder> updateJobStatus (@RequestParam("id") Integer id, @RequestParam("jobStatus") String jobStatus) {
-        return ResponseEntity.ok(productionOrderService.updateJobStatus(id,jobStatus));
+    public ResponseEntity<ProductionOrder> updateJobStatus(@RequestParam("id") Integer id,
+            @RequestParam("jobStatus") String jobStatus) {
+        return ResponseEntity.ok(productionOrderService.updateJobStatus(id, jobStatus));
     }
 
     @PutMapping("/updateMoldStatus")
-    public ResponseEntity<ProductionOrder> updateMoldStatus (@RequestParam("id") Integer id, @RequestParam("moldStatus") String moldStatus) {
+    public ResponseEntity<ProductionOrder> updateMoldStatus(@RequestParam("id") Integer id,
+            @RequestParam("moldStatus") String moldStatus) {
         return ResponseEntity.ok(productionOrderService.updateMoldStatus(id, moldStatus));
     }
+
     @PutMapping("/updatePrintingMachine")
-    public ResponseEntity<ProductionOrder> updatePrintingMachine (@RequestParam("id") Integer id, @RequestParam("printingMachine") String printingMachine) {
+    public ResponseEntity<ProductionOrder> updatePrintingMachine(@RequestParam("id") Integer id,
+            @RequestParam("printingMachine") String printingMachine) {
         return ResponseEntity.ok(productionOrderService.updatePrintingMachine(id, printingMachine));
     }
 
     @PutMapping("/updateMoldMakerName")
-    public ResponseEntity<ProductionOrder> updateMoldMakerName (@RequestParam("id") Integer id, HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(productionOrderService.updateMoldMakerName(id, tokenService.getCurrentUser(httpRequest)));
+    public ResponseEntity<ProductionOrder> updateMoldMakerName(@RequestParam("id") Integer id,
+            HttpServletRequest httpRequest) {
+        return ResponseEntity
+                .ok(productionOrderService.updateMoldMakerName(id, tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklog")
-    public ResponseEntity<Integer> getUniqueStatus(HttpServletRequest httpRequest){
+    public ResponseEntity<Integer> getUniqueStatus(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(productionOrderService.countBacklog(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogHPlanning")
-    public ResponseEntity<Integer> getUniqueStatusHPlanning(){
+    public ResponseEntity<Integer> getUniqueStatusHPlanning() {
         return ResponseEntity.ok(productionOrderService.countBacklogHPlanning());
     }
 
     @GetMapping("/countBacklogCheck")
-    public ResponseEntity<Integer> getUniqueStatusCheck(){
+    public ResponseEntity<Integer> getUniqueStatusCheck() {
         return ResponseEntity.ok(productionOrderService.countBacklogCheck());
     }
 
     @GetMapping("/countBacklogMold")
-    public ResponseEntity<Integer> getUniqueStatusMold(){
+    public ResponseEntity<Integer> getUniqueStatusMold() {
         return ResponseEntity.ok(productionOrderService.countBacklogMold());
     }
 
     @GetMapping("/countProcessStatus")
-    public ResponseEntity<Integer> countBacklogProcessStatus(@RequestParam("processStatus") String processStatus,HttpServletRequest httpRequest){
-        return ResponseEntity.ok(productionOrderService.countBacklogProcessStatus(processStatus,tokenService.getCurrentUser(httpRequest)));
+    public ResponseEntity<Integer> countBacklogProcessStatus(@RequestParam("processStatus") String processStatus,
+            HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(productionOrderService.countBacklogProcessStatus(processStatus,
+                tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countProcessStatusAll")
-    public ResponseEntity<Integer> countBacklogProcessStatus(@RequestParam("processStatus") String processStatus){
+    public ResponseEntity<Integer> countBacklogProcessStatus(@RequestParam("processStatus") String processStatus) {
         return ResponseEntity.ok(productionOrderService.countBacklogProcessStatus(processStatus));
     }
 
     @GetMapping("/countBacklogMoldStatus")
-    public ResponseEntity<Integer> countBacklogMoldStatus(@RequestParam("moldStatus") String moldStatus){
+    public ResponseEntity<Integer> countBacklogMoldStatus(@RequestParam("moldStatus") String moldStatus) {
         return ResponseEntity.ok(productionOrderService.countBacklogMoldStatus(moldStatus));
     }
 }

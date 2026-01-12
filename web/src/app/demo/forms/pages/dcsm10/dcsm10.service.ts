@@ -44,7 +44,7 @@ export class Dcsm10Service {
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });
   }
 
-   getOrdersProduction(apiFilters: any): Observable<any> {
+  getOrdersWithSearchSort(apiFilters: any): Observable<any> {
     let params: any = {
       page: apiFilters.page.toString(),
       size: apiFilters.size.toString(),
@@ -57,7 +57,8 @@ export class Dcsm10Service {
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
-      endDate: apiFilters.endDate
+      endDate: apiFilters.endDate,
+      sortByDeadline: 'true'
     };
 
     Object.keys(params).forEach(key => {

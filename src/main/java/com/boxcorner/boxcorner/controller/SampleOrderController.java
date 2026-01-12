@@ -34,11 +34,13 @@ public class SampleOrderController {
     private TokenService tokenService;
 
     @Autowired
-    private SampleOrderRepository sampleOrderRepository; ;
+    private SampleOrderRepository sampleOrderRepository;;
 
     @PostMapping("/create")
-    public ResponseEntity<SampleOrder> createOrder(@RequestBody SampleOrder sampleOrder , HttpServletRequest httpRequest) {
-        SampleOrder newOrder = sampleOrderService.saveOrUpdateOrder(sampleOrder,tokenService.getCurrentUser(httpRequest));
+    public ResponseEntity<SampleOrder> createOrder(@RequestBody SampleOrder sampleOrder,
+            HttpServletRequest httpRequest) {
+        SampleOrder newOrder = sampleOrderService.saveOrUpdateOrder(sampleOrder,
+                tokenService.getCurrentUser(httpRequest));
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }
 
@@ -54,17 +56,32 @@ public class SampleOrderController {
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
 
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        Page<SampleOrder> result = sampleOrderService.getAll(
-                id,
-                folderName,
-                jobOwner,
-                responsiblePerson,
-                status,
-                startDate,
-                endDate,
-                page,
-                size);
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+        Page<SampleOrder> result;
+        if (Boolean.TRUE.equals(sortByDeadline)) {
+            result = sampleOrderService.getAllSort(
+                    id,
+                    folderName,
+                    jobOwner,
+                    responsiblePerson,
+                    status,
+                    startDate,
+                    endDate,
+                    page,
+                    size);
+        } else {
+            result = sampleOrderService.getAll(
+                    id,
+                    folderName,
+                    jobOwner,
+                    responsiblePerson,
+                    status,
+                    startDate,
+                    endDate,
+                    page,
+                    size);
+        }
         return ResponseEntity.ok(result);
     }
 
@@ -81,35 +98,52 @@ public class SampleOrderController {
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
 
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        Page<SampleOrder> result = sampleOrderService.getAllDetail(
-                id,
-                folderName,
-                jobOwner,
-                responsiblePerson,
-                status,
-                startDate,
-                endDate,
-                page,
-                size);
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+        Page<SampleOrder> result;
+        if (Boolean.TRUE.equals(sortByDeadline)) {
+            result = sampleOrderService.getAllDetailSort(
+                    id,
+                    folderName,
+                    jobOwner,
+                    responsiblePerson,
+                    status,
+                    startDate,
+                    endDate,
+                    page,
+                    size);
+        } else {
+            result = sampleOrderService.getAllDetail(
+                    id,
+                    folderName,
+                    jobOwner,
+                    responsiblePerson,
+                    status,
+                    startDate,
+                    endDate,
+                    page,
+                    size);
+        }
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/searchVerify")
     public ResponseEntity<Page<SampleOrder>> getAllVerify(
-            // เพิ่ม value = "..." ให้ครบทุกตัวครับ
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "folderName", required = false) String folderName,
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
             @RequestParam(value = "status", required = false) String status,
-
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        Page<SampleOrder> result = sampleOrderService.getAllVerify(
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+
+
+        Page<SampleOrder> result ;
+        if (Boolean.TRUE.equals(sortByDeadline)) {
+            result= sampleOrderService.getAllVerifySort(
                 id,
                 folderName,
                 jobOwner,
@@ -119,6 +153,18 @@ public class SampleOrderController {
                 endDate,
                 page,
                 size);
+        }else{
+            result= sampleOrderService.getAllVerify(
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                page,
+                size);
+        }
         return ResponseEntity.ok(result);
     }
 
@@ -130,13 +176,14 @@ public class SampleOrderController {
     }
 
     @GetMapping("/countBacklog")
-    public ResponseEntity<Integer> getUniqueStatus(){
+    public ResponseEntity<Integer> getUniqueStatus() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอผู้รับผิดชอบอนุมัติ"));
     }
 
     @PutMapping("/updateAssign")
     public ResponseEntity<SampleOrder> updateAssign(@RequestParam("id") Integer id, HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "รอดำเนินการ",tokenService.getCurrentUser(httpRequest)));
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "รอดำเนินการ",
+                tokenService.getCurrentUser(httpRequest)));
     }
 
     @PutMapping("/updateStatusDeliver")
@@ -172,10 +219,11 @@ public class SampleOrderController {
     @PutMapping("/updateFileChecked")
     public ResponseEntity<SampleOrder> updateFileChecked(@RequestParam("id") Integer id) {
         String status = null;
-        SampleOrder sampleOrder = sampleOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        SampleOrder sampleOrder = sampleOrderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         if (sampleOrder.getIsCreateSample() == true) {
             status = "ไฟล์ถูกต้อง รอขึ้นตัวอย่าง";
-        }else{
+        } else {
             status = "ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง";
         }
         return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, status, null));
@@ -198,62 +246,62 @@ public class SampleOrderController {
     }
 
     @GetMapping("/countBacklogWaitProcess")
-    public ResponseEntity<Integer> getUniqueStatusWaitProcess(){
+    public ResponseEntity<Integer> getUniqueStatusWaitProcess() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอดำเนินการ"));
     }
 
     @GetMapping("/countBacklogShif")
-    public ResponseEntity<Integer> getUniqueStatusShif(){
+    public ResponseEntity<Integer> getUniqueStatusShif() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขอเลื่อนวันส่ง"));
     }
 
     @GetMapping("/countBacklogApproveShif")
-    public ResponseEntity<Integer> getUniqueStatusCheck(){
+    public ResponseEntity<Integer> getUniqueStatusCheck() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("อนุมัติเลื่อนวันส่ง"));
     }
 
     @GetMapping("/countBacklogNotApproveShif")
-    public ResponseEntity<Integer> countBacklogNotApproveShif(){
+    public ResponseEntity<Integer> countBacklogNotApproveShif() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไม่อนุมัติเลื่อนส่ง"));
     }
 
     @GetMapping("/countBacklogClearFile")
-    public ResponseEntity<Integer> countBacklogClearFile(){
+    public ResponseEntity<Integer> countBacklogClearFile() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("จัดส่งได้ รอเคลียร์ไฟล์"));
     }
 
     @GetMapping("/countBacklogInClearFile")
-    public ResponseEntity<Integer> countBacklogInClearFile(){
+    public ResponseEntity<Integer> countBacklogInClearFile() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("กำลังเคลียร์ไฟล์"));
     }
 
     @GetMapping("/countBacklogCheckFile")
-    public ResponseEntity<Integer> countBacklogCheckFile(){
+    public ResponseEntity<Integer> countBacklogCheckFile() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์เสร็จ รอตรวจสอบไฟล์"));
     }
 
     @GetMapping("/countBacklogFileComplete")
-    public ResponseEntity<Integer> countBacklogFileComplete(){
+    public ResponseEntity<Integer> countBacklogFileComplete() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง"));
     }
 
     @GetMapping("/countBacklogWaitSample")
-    public ResponseEntity<Integer> countBacklogWaitSample(){
+    public ResponseEntity<Integer> countBacklogWaitSample() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง รอขึ้นตัวอย่าง"));
     }
 
     @GetMapping("/countBacklogSendBackSample")
-    public ResponseEntity<Integer> countBacklogSendBackSample(){
+    public ResponseEntity<Integer> countBacklogSendBackSample() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขึ้นตัวอย่างแล้ว"));
     }
 
     @GetMapping("/countBacklogSendBack")
-    public ResponseEntity<Integer> countBacklogSendBack(){
+    public ResponseEntity<Integer> countBacklogSendBack() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง"));
     }
 
     @GetMapping("/countBacklogApproveSample")
-    public ResponseEntity<Integer> countBacklogApproveSample(){
+    public ResponseEntity<Integer> countBacklogApproveSample() {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("สำเร็จ รออนุมัติไปตารางรอผลิต"));
     }
 }

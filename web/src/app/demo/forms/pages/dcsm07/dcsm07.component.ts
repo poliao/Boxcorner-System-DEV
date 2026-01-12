@@ -42,6 +42,7 @@ export class Dcsm07Component implements OnInit {
   pageSize = 10;
   pageIndex = 0;
   countBacklog = 0;
+  isSortMode: boolean = false;
 
   tableColumns = [
     { key: 'id', label: 'รหัสสั่งผลิต' },
@@ -116,6 +117,39 @@ export class Dcsm07Component implements OnInit {
     });
   }
 
+  loadDataSort(): void {
+    const formValues = this.searchForm.getRawValue();
+
+    const apiFilters = {
+      id: formValues.id,                  
+      folderName: formValues.folderName,
+      jobOwner: formValues.jobOwner,
+      operatorName: formValues.responsiblePerson, 
+      jobStatus: formValues.status,             
+      processStatus: formValues.processStatus,
+      moldStatus: formValues.moldStatus,
+      jobType: formValues.jobType,
+      startDate: formValues.startDate,
+      endDate: formValues.endDate,
+      page: this.pageIndex,
+      size: this.pageSize
+    };
+
+    this.dcsm07Service.getOrdersWithSearchSort(apiFilters).subscribe({
+      next: (res: any) => {
+        this.tableData = res.content.map((item: any) => ({
+          ...item,
+          deadlineDate: this.formatDate(item.deadlineDate),
+          deliveryDate: this.formatDate(item.deliveryDate)
+        }));
+        this.totalElements = res.totalElements;
+      },
+      error: (err) => {
+        console.error('Error loading data:', err);
+      }
+    });
+  }
+
   private formatDate(dateString: string): string {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('th-TH', {
@@ -125,7 +159,14 @@ export class Dcsm07Component implements OnInit {
     });
   }
 
+  onSearchSort(): void {
+    this.isSortMode = true;
+    this.pageIndex = 0;
+    this.loadDataSort();
+  }
+
   onSearch(): void {
+    this.isSortMode = false;
     this.pageIndex = 0;
     this.loadData();
   }
@@ -171,7 +212,11 @@ export class Dcsm07Component implements OnInit {
   onPageChange(event: any): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadData();
+    if (this.isSortMode == true) {
+      this.loadDataSort();
+    } else {
+      this.loadData();
+    }
   }
 
   onRowClick(row: any): void {

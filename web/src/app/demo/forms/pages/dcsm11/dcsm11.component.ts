@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'; // อย่าลืม import
 import { Router } from '@angular/router';
 import { Dcsm11Service } from './dcsm11.service';
@@ -8,7 +8,7 @@ import { StatusColorService } from 'src/app/shared/services/status-color.service
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -40,7 +40,7 @@ import { MatNativeDateModule } from '@angular/material/core';
   styleUrls: ['./dcsm11.component.scss']
 })
 export class Dcsm11Component implements OnInit {
-  
+
   searchForm!: FormGroup;
 
   tableData: any[] = [];
@@ -48,9 +48,10 @@ export class Dcsm11Component implements OnInit {
   pageSize = 10;
   pageIndex = 0;
   inspection = 0;
+  isSortMode: boolean = false;
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  
   tableColumns = [
     { key: 'id', label: 'ID' },
     { key: 'orderDate', label: 'วันที่สั่ง' },
@@ -67,7 +68,7 @@ export class Dcsm11Component implements OnInit {
     private router: Router,
     private dcsm11Service: Dcsm11Service,
     private statusColorService: StatusColorService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initSearchForm();
@@ -84,7 +85,7 @@ export class Dcsm11Component implements OnInit {
       responsiblePerson: [''],
       status: [''],
       startDate: [null],
-      endDate: [{value: null, disabled: true}]
+      endDate: [{ value: null, disabled: true }]
     });
   }
 
@@ -94,7 +95,7 @@ export class Dcsm11Component implements OnInit {
     this.dcsm11Service.getOrdersWithSearch(
       this.pageIndex,
       this.pageSize,
-      filters 
+      filters
     ).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
@@ -108,20 +109,47 @@ export class Dcsm11Component implements OnInit {
     });
   }
 
+  loadDataSort(): void {
+    const filters = this.searchForm.value;
+
+    this.dcsm11Service.getOrdersWithSearchSort(
+      this.pageIndex,
+      this.pageSize,
+      filters
+    ).subscribe({
+      next: (res: any) => {
+        this.tableData = res.content.map((item: any) => ({
+          ...item,
+          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : ''
+        }));
+        this.totalElements = res.totalElements;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  sortByClosestDate() {
+    this.isSortMode = true;
+    this.pageIndex = 0;
+    this.loadDataSort();
+  }
+
   onSearch(): void {
+    this.isSortMode = false;
     this.pageIndex = 0;
     this.loadData();
   }
 
   onClear(): void {
     this.searchForm.reset({
-        id: '',
-        folderName: '',
-        jobOwner: '',
-        responsiblePerson: '',
-        status: '',
-        startDate: null,
-        endDate: null
+      id: '',
+      folderName: '',
+      jobOwner: '',
+      responsiblePerson: '',
+      status: '',
+      startDate: null,
+      endDate: null
     });
     this.searchForm.get('endDate')?.disable();
     this.onSearch();
@@ -140,7 +168,7 @@ export class Dcsm11Component implements OnInit {
   onStartDateChange(): void {
     const startDate = this.searchForm.get('startDate')?.value;
     const endDate = this.searchForm.get('endDate')?.value;
-    
+
     if (!startDate) {
       this.searchForm.get('endDate')?.disable();
       this.searchForm.patchValue({ endDate: null });
@@ -156,11 +184,11 @@ export class Dcsm11Component implements OnInit {
   onPageChange(event: any): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadData();
-  }
-
-  add(): void {
-    this.router.navigate(['/Dcsm11Detail']); 
+    if (this.isSortMode) {
+      this.loadDataSort(); // ถ้าเป็นโหมด Sort ให้เรียกอันนี้
+    } else {
+      this.loadData();     // ถ้าปกติ ให้เรียกอันนี้
+    }
   }
 
   onRowClick(row: any): void {

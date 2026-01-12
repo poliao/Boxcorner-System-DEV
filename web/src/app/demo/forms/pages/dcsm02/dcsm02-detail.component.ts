@@ -27,7 +27,8 @@ export class Dcsm02DetailComponent implements OnInit {
   approveTime = new FormControl('', Validators.required);
   approveQty = new FormControl('', Validators.required);
   approveUnit = new FormControl('', Validators.required);
-  isCreateSample = new FormControl(false);
+  isCreateSample = new FormControl(true);
+  approveRemarks = new FormControl('');
 
   showEditModal = false;
   editNote = new FormControl('', Validators.required);
@@ -195,6 +196,7 @@ export class Dcsm02DetailComponent implements OnInit {
     this.approveQty.setValue('');
     this.approveUnit.setValue('');
     this.isCreateSample.setValue(false);
+    this.approveRemarks.setValue('');
     this.showApproveModal = true;
   }
 
@@ -213,6 +215,7 @@ export class Dcsm02DetailComponent implements OnInit {
       quantity: this.approveQty.value,
       unit: this.approveUnit.value,
       isCreateSample: this.isCreateSample.value,
+      note: this.approveRemarks.value,
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
       designOrderId: this.designForm.getRawValue().id,

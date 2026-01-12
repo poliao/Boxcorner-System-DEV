@@ -29,7 +29,30 @@ export class Dcsm05Service {
       responsiblePerson: filters.responsiblePerson || '', // เดิม assignee
       status: filters.status || '',                   // เดิม process_status
       startDate: filters.startDate || '',
-      endDate: filters.endDate || ''
+      endDate: filters.endDate || '',
+    };
+
+    Object.keys(params).forEach(key => {
+        if (params[key] === null || params[key] === '') {
+            delete params[key];
+        }
+    });
+
+    return this.http.get(`${this.apiUrl}/sampleOrders/searchDetail`, { params: params });
+  }
+
+  getOrdersWithSearchSort(page: number, size: number, filters: any): Observable<any> {
+    let params: any = {
+      page: page.toString(),
+      size: size.toString(),
+      id: filters.id || '',
+      folderName: filters.folderName || '',           // เดิม job_details
+      jobOwner: filters.jobOwner || '',               // เดิม job_owner
+      responsiblePerson: filters.responsiblePerson || '', // เดิม assignee
+      status: filters.status || '',                   // เดิม process_status
+      startDate: filters.startDate || '',
+      endDate: filters.endDate || '',
+      sortByDeadline: 'true'
     };
 
     Object.keys(params).forEach(key => {

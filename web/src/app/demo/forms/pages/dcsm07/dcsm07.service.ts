@@ -50,6 +50,32 @@ export class Dcsm07Service {
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });
   }
 
+  getOrdersWithSearchSort(apiFilters: any): Observable<any> {
+    let params: any = {
+      page: apiFilters.page.toString(),
+      size: apiFilters.size.toString(),
+      id: apiFilters.id,
+      folderName: apiFilters.folderName,
+      jobOwner: apiFilters.jobOwner,
+      jobStatus: apiFilters.jobStatus, 
+      operatorName: apiFilters.operatorName, 
+      processStatus: apiFilters.processStatus,
+      moldStatus: apiFilters.moldStatus,
+      jobType: apiFilters.jobType,
+      startDate: apiFilters.startDate,
+      endDate: apiFilters.endDate,
+      sortByDeadline: 'true'
+    };
+
+    Object.keys(params).forEach(key => {
+        if (params[key] === null || params[key] === '') {
+            delete params[key];
+        }
+    });
+
+    return this.http.get(`${this.apiUrl}/production/search`, { params: params });
+  }
+
   getPlanningOperators(): Observable<DropdownOption[]> {
     return this.http.get<DropdownOption[]>(`${this.apiUrl}/user/planning`);
   }

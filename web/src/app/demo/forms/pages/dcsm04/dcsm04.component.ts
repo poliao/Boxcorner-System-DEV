@@ -49,6 +49,7 @@ export class Dcsm04Component implements OnInit {
   pageIndex = 0;
   shif = 0;
   approveSample = 0;
+  isSortMode: boolean = false;
 
 
   
@@ -110,7 +111,34 @@ export class Dcsm04Component implements OnInit {
     });
   }
 
+  loadDataSort(): void {
+    const filters = this.searchForm.value;
+
+    this.dcsm04Service.getOrdersWithSearchSort(
+      this.pageIndex,
+      this.pageSize,
+      filters 
+    ).subscribe({
+      next: (res: any) => {
+        this.tableData = res.content.map((item: any) => ({
+          ...item,
+          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : ''
+        }));
+        this.totalElements = res.totalElements;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  onSearchSort(): void {
+    this.isSortMode = true;
+    this.pageIndex = 0;
+    this.loadDataSort();
+  }
+
   onSearch(): void {
+    this.isSortMode = false;
     this.pageIndex = 0;
     this.loadData();
   }
@@ -158,7 +186,11 @@ export class Dcsm04Component implements OnInit {
   onPageChange(event: any): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadData();
+    if (this.isSortMode == true) {
+      this.loadDataSort();
+    } else {
+      this.loadData();
+    }
   }
 
   add(): void {

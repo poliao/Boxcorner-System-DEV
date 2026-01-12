@@ -45,6 +45,33 @@ export class Dcsm09Service {
     return this.http.get(`${this.apiUrl}/production/searchProductCheck`, { params: params });
   }
 
+  getOrdersWithSearchSort(apiFilters: any): Observable<any> {
+    let params: any = {
+      page: apiFilters.page.toString(),
+      size: apiFilters.size.toString(),
+      id: apiFilters.id,
+      folderName: apiFilters.folderName,
+      jobOwner: apiFilters.jobOwner,
+      jobStatus: apiFilters.jobStatus, 
+      operatorName: apiFilters.operatorName, 
+      processStatus: apiFilters.processStatus,
+      moldStatus: apiFilters.moldStatus,
+      jobType: apiFilters.jobType,
+      startDate: apiFilters.startDate,
+      endDate: apiFilters.endDate,
+      inspector: apiFilters.inspector,
+      sortByDeadline: 'true'
+    };
+
+    Object.keys(params).forEach(key => {
+        if (params[key] === null || params[key] === '') {
+            delete params[key];
+        }
+    });
+
+    return this.http.get(`${this.apiUrl}/production/searchProductCheck`, { params: params });
+  }
+
   updateProcessStatus(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateProcessStatus?id=${data.id}&processStatus=${data.processStatus}`, {});
   }

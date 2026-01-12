@@ -14,7 +14,7 @@
           </div>
           <div class="col-md-3">
             <label class="form-label fw-bold">ประเภทงาน</label>
-            <input type="text" class="form-control" formControlName="jobType" placeholder="เช่น กล่องฝาชน">
+            <input type="text" class="form-control" formControlName="jobType" placeholder="เช่น OD">
           </div>
           <div class="col-md-3">
             <label class="form-label fw-bold">เจ้าของงาน</label>
@@ -74,6 +74,9 @@
             </button>
             <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #003747;">
               <mat-icon>search</mat-icon> ค้นหา
+            </button>
+            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onSearchSort()" style="background-color: #003747;">
+              <mat-icon>sort</mat-icon> เรียงตามวันส่งลูกค้า
             </button>
             <button mat-flat-button style="background-color: #003747; color: white;" (click)="add()">
               <mat-icon>add</mat-icon> เพิ่มรายการ

@@ -54,6 +54,15 @@ public class ProductionOrderService {
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }
 
+    public Page<ProductionOrder> findByFiltersSort(Integer id, String folderName, String jobOwner,
+            LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
+            String jobStatus, String processStatus, String operatorName,
+            String moldStatus, String jobType, Pageable pageable) {
+        return productionOrderRepository.findByFiltersSort(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+    }
+
     public Page<ProductionOrder> findByProductionFilters(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
@@ -63,11 +72,29 @@ public class ProductionOrderService {
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }
 
+    public Page<ProductionOrder> findByProductionFiltersSort(Integer id, String folderName, String jobOwner,
+            LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
+            String jobStatus, String processStatus, String operatorName,
+            String moldStatus, String jobType, Pageable pageable) {
+        return productionOrderRepository.findByProductionFiltersSort(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+    }
+
     public Page<ProductionOrder> findByProductionCheck(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
             String moldStatus, String jobType,String inspector, Pageable pageable) {
         return productionOrderRepository.findProductionCheck(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType,inspector, pageable);
+    }
+
+    public Page<ProductionOrder> findByProductionCheckSort(Integer id, String folderName, String jobOwner,
+            LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
+            String jobStatus, String processStatus, String operatorName,
+            String moldStatus, String jobType,String inspector, Pageable pageable) {
+        return productionOrderRepository.findProductionCheckSort(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType,inspector, pageable);
     }

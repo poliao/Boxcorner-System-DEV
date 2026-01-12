@@ -70,49 +70,58 @@
             <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
           </div>
 
-          <div class="col-md-9 d-flex align-items-end justify-content-end gap-2">
-            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()"
-              style="background-color: #350142;">
-              <mat-icon>clear_all</mat-icon> ล้างค่า
-            </button>
-            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #350142;">
-              <mat-icon>search</mat-icon> ค้นหา
-            </button>
-            <div class="position-relative">
-              <button mat-flat-button class="btn text-white px-4" (click)="onFilterUnassigned()"
-                style="background-color: #350142;">
-                <span *ngIf="countBacklog > 0"
-                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #ffffff;">
-                  {{ countBacklog }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-                <mat-icon>search</mat-icon> งานที่ยังไม่เริ่มดำเนินการ
-              </button>
-            </div>
-            <div class="position-relative">
-              <button mat-flat-button class="btn text-white px-4" (click)="onFilterInProcess()"
-                style="background-color: #350142;">
-                <span *ngIf="inProcess > 0"
-                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #ffffff;">
-                  {{ inProcess }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-                <mat-icon>search</mat-icon> งานที่กำลังดำเนินการ
-              </button>
-            </div>
-            <div class="position-relative">
-              <button mat-flat-button class="btn text-white px-4" (click)="onFilterFinished()"
-                style="background-color: #350142;">
-                <span *ngIf="finished > 0"
-                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #ffffff;">
-                  {{ finished }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-                <mat-icon>search</mat-icon> งานที่รอตรวจสอบ
-              </button>
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 text-white" (click)="onClear()" style="background-color: #350142;">
+                  <mat-icon>clear_all</mat-icon> ล้างค่า
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="submit" class="w-100 px-3 text-white" style="background-color: #350142;">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterUnassigned()" style="background-color: #350142;">
+                  <span *ngIf="countBacklog > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ countBacklog }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่เริ่มดำเนินการ</span><span class="d-lg-none">ยังไม่เริ่ม</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterInProcess()" style="background-color: #350142;">
+                  <span *ngIf="inProcess > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ inProcess }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่กำลังดำเนินการ</span><span class="d-lg-none">กำลังดำเนินการ</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterFinished()" style="background-color: #350142;">
+                  <span *ngIf="finished > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ finished }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจสอบ</span><span class="d-lg-none">รอตรวจสอบ</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button type="button" mat-flat-button class="w-100 px-3" (click)="onSearchSort()"
+                  style="background: #350142; color: white; font-family: 'Prompt', sans-serif;">
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามงานที่ไกล้ส่ง</span><span
+                    class="d-lg-none">เรียงตามวันส่ง</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

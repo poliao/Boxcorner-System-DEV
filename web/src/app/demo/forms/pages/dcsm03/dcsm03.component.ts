@@ -17,6 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
+import { E } from '@angular/material/error-options.d-CGdTZUYk';
 
 @Component({
   selector: 'app-dcsm03.component',
@@ -71,7 +72,7 @@ export class Dcsm03Component implements OnInit {
   Assignee: string[] = [];
   Process: string[] = [];
   Confirm: string[] = [];
-
+  isSortMode: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
@@ -149,6 +150,7 @@ export class Dcsm03Component implements OnInit {
 
   sortByClosestDate() {
     this.pageIndex = 0;
+    this.isSortMode = true;
     if (this.paginator) {
       this.paginator.pageIndex = 0;
     }
@@ -210,10 +212,15 @@ export class Dcsm03Component implements OnInit {
   onPageChange(event: { pageIndex: number, pageSize: number }) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadData();
+    if (this.isSortMode) {
+      this.loadDataSorted();
+    } else {
+      this.loadData();
+    }
   }
 
   onSearchChange() {
+    this.isSortMode = false;
     this.pageIndex = 0;
     if (this.paginator) {
       this.paginator.pageIndex = 0;
@@ -341,8 +348,8 @@ export class Dcsm03Component implements OnInit {
       case 'รอดำเนินการ': return '#ffa600ff';
       case 'กำลังดำเนินการ': return '#ffd900ff';
       case 'เสร็จสิ้น': return '#66bb6a';
-      case 'รอผู้รับผิดชอบยืนยัน' : return '#9e9e9e';
-      case 'รอดำเนินการแก้ไข' : return '#ef5350';
+      case 'รอผู้รับผิดชอบยืนยัน': return '#9e9e9e';
+      case 'รอดำเนินการแก้ไข': return '#ef5350';
       default: return '#9e9e9e';
     }
   }
@@ -354,7 +361,7 @@ export class Dcsm03Component implements OnInit {
       case 'กำลังดำเนินการ': return '#ffd900ff';
       case 'รอตรวจสอบ': return '#aee76c';
       case 'ไม่ผ่าน': return '#ef5350';
-      case 'รอผู้รับผิดชอบยืนยัน' : return '#9e9e9e';
+      case 'รอผู้รับผิดชอบยืนยัน': return '#9e9e9e';
       default: return '#9e9e9e';
     }
   }
@@ -450,7 +457,7 @@ export class Dcsm03Component implements OnInit {
     });
   }
 
-   onFilterCheck() {
+  onFilterCheck() {
     this.clearAll();
     this.filterconfirm = 'รอตรวจสอบ';
     setTimeout(() => {
@@ -467,7 +474,7 @@ export class Dcsm03Component implements OnInit {
     });
   }
 
-   onFilterEdit() {
+  onFilterEdit() {
     this.clearAll();
     this.filterprocess = 'รอดำเนินการแก้ไข';
     setTimeout(() => {
@@ -484,7 +491,7 @@ export class Dcsm03Component implements OnInit {
     });
   }
 
-   onFilterComplete() {
+  onFilterComplete() {
     this.clearAll();
     this.filterconfirm = 'ผ่าน';
     setTimeout(() => {

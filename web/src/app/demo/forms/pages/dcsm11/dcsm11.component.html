@@ -48,22 +48,17 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="primary" type="submit" class="w-100 px-3" style="background-color: #9e2d00;">
+                <button mat-flat-button color="primary" type="submit" class="w-100 px-3" style="background-color: #2e2200;">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-stroked-button color="warn" type="button" class="w-100 px-3" (click)="onClear()" style="color: #9e2d00;">
+                <button mat-stroked-button color="warn" type="button" class="w-100 px-3" (click)="onClear()" style="color: #2e2200;">
                   <mat-icon>refresh</mat-icon> ล้างค่า
                 </button>
               </div>
-              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" type="button" class="w-100 px-3" (click)="add()" style="background-color: #9e2d00;">
-                  <mat-icon>add_circle</mat-icon> เพิ่มข้อมูล
-                </button>
-              </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterUnassigned()" style="background-color: #9e2d00;">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterUnassigned()" style="background-color: #2e2200;">
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจสอบ</span>
                   <span *ngIf="inspection > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -71,6 +66,13 @@
                     {{ inspection }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button type="button" mat-flat-button class="w-100 px-3" (click)="sortByClosestDate()"
+                  style="background: #2e2200; color: white; font-family: 'Prompt', sans-serif;">
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามงานที่ไกล้ส่ง</span><span
+                    class="d-lg-none">เรียงตามวันส่ง</span>
                 </button>
               </div>
             </div>
@@ -81,7 +83,7 @@
   </div>
 
   <app-data-table 
-    [headerStyle]="'background: #9e2d00; color: #ffffff;'"
+    [headerStyle]="'background: #2e2200; color: #ffffff;'"
     [columns]="tableColumns" 
     [data]="tableData" 
     [totalElements]="totalElements" 

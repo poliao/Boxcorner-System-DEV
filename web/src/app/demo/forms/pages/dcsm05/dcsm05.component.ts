@@ -125,6 +125,27 @@ export class Dcsm05Component implements OnInit {
     });
   }
 
+  loadDataSort(): void {
+    const filters = this.searchForm.value;
+
+    this.dcsm05Service.getOrdersWithSearchSort(
+      this.pageIndex,
+      this.pageSize,
+      filters
+    ).subscribe({
+      next: (res: any) => {
+        this.tableData = res.content.map((item: any) => ({
+          ...item,
+          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : '',
+          deliveryDate: item.deliveryDate ? new Date(item.deliveryDate).toLocaleDateString('th-TH') : ''
+        }));
+        this.totalElements = res.totalElements;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
   onSearch(): void {
     this.pageIndex = 0;
     this.loadData();

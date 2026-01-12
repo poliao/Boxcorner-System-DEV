@@ -61,6 +61,7 @@ export class Dcsm02Component implements OnInit {
   filterprocess: string = '';
   filterconfirm: string = ''; // Filter for process
   filterId: string = ''; // Filter for ID
+  filterremarks: string = ''; // Filter for remarks
 
   jobdetailsList: string[] = [];
   OwnerList: string[] = [];
@@ -90,6 +91,7 @@ export class Dcsm02Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
+  isSortMode: boolean = false;
 
   ngOnInit() {
     this.loadData();
@@ -102,6 +104,37 @@ export class Dcsm02Component implements OnInit {
     const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
 
     this.dcsm02Service.getAllDesignOrders(
+      this.filterId,
+      this.filterjobdetails,
+      this.filterowner,
+      this.filterprocess,
+      this.filterassignee,
+      this.filterconfirm,
+      startDateStr,
+      endDateStr,
+      this.pageIndex,
+      this.pageSize,
+    )
+      .subscribe({
+        next: (response: any) => {
+          this.tableData = response.content.map((item: any) => ({
+            ...item,
+            orderDate: this.formatDate(item.orderDate),
+            deadlineDate: this.formatDate(item.deadlineDate)
+          }));
+          this.totalElements = response.totalElements;
+        },
+        error: (err) => {
+          console.error('Error loading data:', err);
+        }
+      });
+  }
+
+  loadDataSort() {
+    const startDateStr = this.startDate ? this.formatDateForApi(this.startDate) : '';
+    const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
+
+    this.dcsm02Service.getAllDesignOrdersSort(
       this.filterId,
       this.filterjobdetails,
       this.filterowner,
@@ -144,10 +177,24 @@ export class Dcsm02Component implements OnInit {
   onPageChange(event: { pageIndex: number, pageSize: number }) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadData();
+    if (this.isSortMode == true) {
+      this.loadDataSort();
+    } else {
+      this.loadData();
+    }
+  }
+
+  onSearchSort(): void {
+    this.isSortMode = true;
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
+    this.loadDataSort();
   }
 
   onSearchChange() {
+    this.isSortMode = false;
     this.pageIndex = 0;
     if (this.paginator) {
       this.paginator.pageIndex = 0;

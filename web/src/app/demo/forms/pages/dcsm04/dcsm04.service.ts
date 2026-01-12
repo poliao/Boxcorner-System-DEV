@@ -41,6 +41,29 @@ export class Dcsm04Service {
     return this.http.get(`${this.apiUrl}/sampleOrders/search`, { params: params });
   }
   
+  getOrdersWithSearchSort(page: number, size: number, filters: any): Observable<any> {
+    let params: any = {
+      page: page.toString(),
+      size: size.toString(),
+      id: filters.id || '',
+      folderName: filters.folderName || '',
+      jobOwner: filters.jobOwner || '',
+      responsiblePerson: filters.responsiblePerson || '',
+      status: filters.status || '',
+      startDate: filters.startDate || '',
+      endDate: filters.endDate || '',
+      sortByDeadline: 'true'
+    };
+
+    Object.keys(params).forEach(key => {
+        if (params[key] === null || params[key] === '') {
+            delete params[key];
+        }
+    });
+
+    return this.http.get(`${this.apiUrl}/sampleOrders/search`, { params: params });
+  }
+  
   updateFileChecked(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/sampleOrders/updateFileChecked?id=${id}`, {});
   }

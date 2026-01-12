@@ -127,6 +127,12 @@
           </div>
         </div>
 
+        <div class="mb-3">
+          <label class="form-label font-weight-bold">หมายเหตุ</label>
+          <textarea class="form-control" rows="3" [formControl]="approveRemarks" 
+            placeholder="หมายเหตุเพิ่มเติม..."></textarea>
+        </div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>

@@ -88,6 +88,10 @@
             <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #350142;">
              <mat-icon>search</mat-icon> ค้นหา
             </button>
+            <button type="button" mat-flat-button class="btn text-white px-4" (click)="onSearchSort()"
+              style="background-color: #350142;">
+              <mat-icon>sort</mat-icon> เรียงตามวันส่งลูกค้า
+            </button>
             <div class="position-relative">
               <button mat-flat-button class="btn text-white px-4" (click)="onFilterUnassigned()" style="background-color: #350142;">
                 <span *ngIf="countBacklog > 0"
