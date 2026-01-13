@@ -67,20 +67,30 @@
             <label class="form-label fw-bold">ถึงวันที่</label>
             <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
           </div>
-          <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
-            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()"
-              style="background-color: #003747;">
-              <mat-icon>clear_all</mat-icon> ล้างค่า
-            </button>
-            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #003747;">
-              <mat-icon>search</mat-icon> ค้นหา
-            </button>
-            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onSearchSort()" style="background-color: #003747;">
-              <mat-icon>sort</mat-icon> เรียงตามวันส่งลูกค้า
-            </button>
-            <button mat-flat-button style="background-color: #003747; color: white;" (click)="add()">
-              <mat-icon>add</mat-icon> เพิ่มรายการ
-            </button>
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="btn text-white px-4 w-100" (click)="onClear()"
+                  style="background-color: #003747;">
+                  <mat-icon>clear_all</mat-icon> ล้างค่า
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="submit" class="btn text-white px-4 w-100" style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="btn text-white px-4 w-100" (click)="onSearchSort()" style="background-color: #003747;">
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่งลูกค้า</span><span class="d-lg-none">เรียงตาม</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button class="btn text-white px-4 w-100" style="background-color: #003747;" (click)="add()">
+                  <mat-icon>add</mat-icon> เพิ่มรายการ
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </form>

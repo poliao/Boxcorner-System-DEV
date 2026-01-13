@@ -55,6 +55,7 @@ export class Dcsm02Component implements OnInit {
   private searchProcessListSubject = new Subject<string>();
   private searchConfirmListSubject = new Subject<string>();
 
+  filterfolder: string = '';
   filterjobdetails: string = '';
   filterowner: string = '';
   filterassignee: string = '';
@@ -73,15 +74,11 @@ export class Dcsm02Component implements OnInit {
 
   constructor(private http: HttpClient, private dcsm02Service: Dcsm02Service, private router: Router, private statusColorService: StatusColorService) { }
   tableColumns = [
-    { key: 'id', label: 'ID' },
+    { key: 'id', label: 'ลำดับ' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
-    { key: 'orderDate', label: 'วันที่สั่งงาน' },
-    { key: 'jobDetails', label: 'รายละเอียดงาน' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'assignee', label: 'ผู้รับผิดชอบ' },
     { key: 'deadlineDate', label: 'วันที่ต้องส่ง' },
-    { key: 'deadlineTime', label: 'ภายในเวลา' },
-    { key: 'remarks', label: 'หมายเหตุ' },
     { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
   ];
@@ -105,6 +102,7 @@ export class Dcsm02Component implements OnInit {
 
     this.dcsm02Service.getAllDesignOrders(
       this.filterId,
+      this.filterfolder,
       this.filterjobdetails,
       this.filterowner,
       this.filterprocess,
@@ -136,6 +134,7 @@ export class Dcsm02Component implements OnInit {
 
     this.dcsm02Service.getAllDesignOrdersSort(
       this.filterId,
+      this.filterfolder,
       this.filterjobdetails,
       this.filterowner,
       this.filterprocess,
@@ -171,7 +170,10 @@ export class Dcsm02Component implements OnInit {
   formatDate(dateString: string): string {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2); // เอาแค่ 2 หลักท้าย
+    return `${day}/${month}/${year}`;
   }
 
   onPageChange(event: { pageIndex: number, pageSize: number }) {
@@ -348,6 +350,7 @@ export class Dcsm02Component implements OnInit {
 
   clearAllFilters() {
     this.filterId = '';
+    this.filterfolder = '';
     this.filterjobdetails = '';
     this.filterowner = '';
     this.filterassignee = '';
@@ -370,6 +373,7 @@ export class Dcsm02Component implements OnInit {
    onFilterCheck() {
     this.clearAllFilters();
     this.filterconfirm = 'รอตรวจสอบ';
+    this.filterfolder = '';
     setTimeout(() => {
       this.onSearchChange();
     }, 0);

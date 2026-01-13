@@ -73,6 +73,7 @@ public class DesignOrdersController {
     @GetMapping("/listDesign")
     public ResponseEntity<?> getAllDesign(
             @RequestParam(value = "id", required = false) String id,
+            @RequestParam(value = "folder_name", required = false) String folder_name,
             @RequestParam(value = "job_details", required = false) String job_details,
             @RequestParam(value = "job_owner", required = false) String job_owner,
             @RequestParam(value = "process_status", required = false) String process_status,
@@ -87,9 +88,9 @@ public class DesignOrdersController {
         try {
             Page<DesignOrders> pageDesignOrders;
             if (Boolean.TRUE.equals(sortByDeadline)) {
-                pageDesignOrders = service.getAllRecipesDesignSorted(id, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+                pageDesignOrders = service.getAllRecipesDesignSorted(id, folder_name, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
             } else {
-                pageDesignOrders = service.getAllRecipesDesign(id, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+                pageDesignOrders = service.getAllRecipesDesign(id, folder_name, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
             }
             return ResponseEntity.ok(pageDesignOrders);
         } catch (Exception e) {
@@ -136,6 +137,11 @@ public class DesignOrdersController {
     @PutMapping("/updateStatusComplete")
     public ResponseEntity<DesignOrders> updateComplete(@RequestParam("id") Integer id) {
         return ResponseEntity.ok(service.updateDesignComplete(id));
+    }
+
+    @PutMapping("/updateStatusCompleteWithFile")
+    public ResponseEntity<DesignOrders> updateCompleteWithFile(@RequestParam("id") Integer id, @RequestParam("fileName") String fileName) {
+        return ResponseEntity.ok(service.updateDesignCompleteWithFile(id, fileName));
     }
 
     @PutMapping("/updateStatusApprove")

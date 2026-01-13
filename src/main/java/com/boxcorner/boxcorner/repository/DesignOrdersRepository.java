@@ -41,6 +41,7 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                         SELECT * FROM design_orders d
                         WHERE
                             (:id IS NULL OR :id = '' OR CAST(d.id AS TEXT) LIKE CONCAT('%', :id, '%'))
+                            AND (:folderName IS NULL OR :folderName = '' OR UPPER(d.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
@@ -52,6 +53,7 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                         """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
         Page<DesignOrders> findByAll(
                         @Param("id") String id,
+                        @Param("folderName") String folderName,
                         @Param("jobDetails") String jobDetails,
                         @Param("jobOwner") String jobOwner,
                         @Param("assignee") String assignee,
@@ -65,6 +67,7 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                         SELECT * FROM design_orders d
                         WHERE
                             (:id IS NULL OR :id = '' OR CAST(d.id AS TEXT) LIKE CONCAT('%', :id, '%'))
+                            AND (:folderName IS NULL OR :folderName = '' OR UPPER(d.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                             AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
@@ -76,6 +79,7 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                         """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
         Page<DesignOrders> findByAllSorted(
                         @Param("id") String id,
+                        @Param("folderName") String folderName,
                         @Param("jobDetails") String jobDetails,
                         @Param("jobOwner") String jobOwner,
                         @Param("assignee") String assignee,

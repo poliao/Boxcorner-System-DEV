@@ -57,4 +57,7 @@ public class DesignOrders {
     @Column(name = "confirm_date")
     private LocalDate confirmDate;
 
+    @Column(name = "file_name")
+    private String fileName;
+
 }

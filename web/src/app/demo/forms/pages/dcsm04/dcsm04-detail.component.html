@@ -26,8 +26,8 @@
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
-          <input type="date" formControlName="orderDate" class="form-control"
-            [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+          <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
+            [class.is-invalid]="mainForm.get('orderDate')?.invalid && mainForm.get('orderDate')?.touched">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
@@ -44,7 +44,11 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
-          <input type="date" formControlName="deliveryDate" class="form-control">
+          <input type="text" #deliveryDateInput class="form-control" 
+            (input)="onThaiDateInput($event, 'deliveryDate')" 
+            [value]="getThaiDateInput('deliveryDate')"
+            [disabled]="mainForm.get('deliveryDate')?.disabled"
+            placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
@@ -64,7 +68,8 @@
         </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
-          <input style="background-color: rgb(255, 136, 0); color: white;" type="date" formControlName="updateDateDelivery" class="form-control">
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="text" 
+            [value]="getThaiDateInput('updateDateDelivery')" class="form-control" readonly>
         </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">เวลาที่ขอเลื่อนส่ง</label>

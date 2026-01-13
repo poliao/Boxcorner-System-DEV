@@ -21,6 +21,9 @@ export class Dcsm02DetailComponent implements OnInit {
   isBtnApprove = false;
   isBtnEdit = false;
   isBtnSave = true;
+  isBtnCancel = false;
+  isFileName = false;
+  isCancel = true;
 
   showApproveModal = false;
   approveDate = new FormControl('', Validators.required);
@@ -32,6 +35,8 @@ export class Dcsm02DetailComponent implements OnInit {
 
   showEditModal = false;
   editNote = new FormControl('', Validators.required);
+
+  showCancelModal = false;
 
   constructor(
     private fb: FormBuilder,
@@ -51,6 +56,7 @@ export class Dcsm02DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
     }
+
     if (this.designForm.getRawValue().processStatus == 'กำลังดำเนินการ' || this.designForm.getRawValue().confirmStatus == 'กำลังดำเนินการ' || this.designForm.getRawValue().processStatus == 'เสร็จสิ้น') {
       this.designForm.controls['folderName'].disable({ emitEvent: false });
       this.designForm.controls['jobDetails'].disable({ emitEvent: false });
@@ -59,6 +65,9 @@ export class Dcsm02DetailComponent implements OnInit {
       this.designForm.controls['deadlineTime'].disable({ emitEvent: false });
 
       this.isBtnSave = false;
+    }
+    if (this.designForm.getRawValue().processStatus == 'เสร็จสิ้น') {
+      this.isFileName = true;
     }
     this.checkBtn();
   }
@@ -71,11 +80,12 @@ export class Dcsm02DetailComponent implements OnInit {
       jobDetails: ['', Validators.required],
       remarks: [''],
       jobOwner: ['', Validators.required],
-      deadlineDate: ['', Validators.required],
+      deadlineDate: ['2026-01-13', Validators.required],
       deadlineTime: ['', Validators.required],
       assignee: [''],
       processStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
-      confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required]
+      confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
+      fileName: [''],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -83,7 +93,7 @@ export class Dcsm02DetailComponent implements OnInit {
     this.designForm.controls['assignee'].disable({ emitEvent: false });
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
-    
+    this.designForm.controls['fileName'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -107,18 +117,6 @@ export class Dcsm02DetailComponent implements OnInit {
           this.sweetAlert.error('Save', error);
         }
       });
-    }
-  }
-
-  getJobDetailsColor() {
-    const value = this.designForm.get('jobDetails')?.value;
-    switch (value) {
-      case 'ปรับไดคัท': return 'bg-warning text-white';
-      case 'แก้ไขอาร์ต': return 'bg-danger text-white';
-      case 'รอลูกค้าแจ้งกลับ': return 'bg-success text-white';
-      case 'ออกแบบรายละเอียดใน Line': return 'bg-info text-white';
-      case 'เคลียร์ไฟล์ ส่งคอนเฟิร์ม': return 'bg-danger text-white';
-      default: return 'bg-light text-dark';
     }
   }
 
@@ -195,7 +193,7 @@ export class Dcsm02DetailComponent implements OnInit {
     this.approveTime.setValue(now.toTimeString().substring(0, 5));
     this.approveQty.setValue('');
     this.approveUnit.setValue('');
-    this.isCreateSample.setValue(false);
+    this.isCreateSample.setValue(true);
     this.approveRemarks.setValue('');
     this.showApproveModal = true;
   }
@@ -219,7 +217,6 @@ export class Dcsm02DetailComponent implements OnInit {
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
       designOrderId: this.designForm.getRawValue().id,
-    
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
@@ -292,6 +289,63 @@ export class Dcsm02DetailComponent implements OnInit {
       });
       }
     });
+  }
+
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2); // เอาแค่ 2 หลักท้าย ค.ศ.
+    return `${day}/${month}/${year}`;
+  }
+
+  getThaiDateInput(controlName: string): string {
+    const value = this.designForm.get(controlName)?.value;
+    return this.formatDateThai(value);
+  }
+
+  onThaiDateInput(event: any, controlName: string): void {
+    let value = event.target.value.replace(/[^0-9]/g, '');
+    
+    if (value.length >= 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2);
+    }
+    if (value.length >= 5) {
+      value = value.substring(0, 5) + '/' + value.substring(5, 7);
+    }
+    
+    event.target.value = value;
+    
+    if (value.length === 8) {
+      const parts = value.split('/');
+      if (parts.length === 3) {
+        const day = parseInt(parts[0]);
+        const month = parseInt(parts[1]);
+        let year = parseInt(parts[2]);
+        
+        if (year <= 50) {
+          year += 2000;
+        } else {
+          year += 1900;
+        }
+        
+        if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+          const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+          if (this.designForm.get(controlName)) {
+            this.designForm.get(controlName)?.setValue(isoDate);
+          }
+        }
+      }
+    } else {
+      if (this.designForm.get(controlName)) {
+        this.designForm.get(controlName)?.setValue('');
+      }
+    }
+  }
+
+  closeCancelModal() {
+    this.showCancelModal = false;
   }
 
 }

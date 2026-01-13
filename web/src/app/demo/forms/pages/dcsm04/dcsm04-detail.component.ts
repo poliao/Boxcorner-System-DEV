@@ -7,10 +7,11 @@ import { Dcsm04Service } from './dcsm04.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dcsm04-detail.component',
-  imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
+  imports: [ReactiveFormsModule, CommonModule, MatIconModule, ThaiDatePipe],
   templateUrl: './dcsm04-detail.component.html',
   styleUrl: './dcsm04-detail.component.scss'
 })
@@ -55,7 +56,7 @@ export class Dcsm04DetailComponent implements OnInit {
       }
     }
 
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน') {
+    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง'|| this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
@@ -358,6 +359,59 @@ export class Dcsm04DetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
+  }
+
+  getThaiDateInput(controlName: string): string {
+    const value = this.mainForm.get(controlName)?.value;
+    return this.formatDateThai(value);
+  }
+
+  onThaiDateInput(event: any, controlName: string): void {
+    let value = event.target.value.replace(/[^0-9]/g, '');
+    
+    if (value.length >= 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2);
+    }
+    if (value.length >= 5) {
+      value = value.substring(0, 5) + '/' + value.substring(5, 7);
+    }
+    
+    event.target.value = value;
+    
+    if (value.length === 8) {
+      const parts = value.split('/');
+      if (parts.length === 3) {
+        const day = parseInt(parts[0]);
+        const month = parseInt(parts[1]);
+        let year = parseInt(parts[2]);
+        
+        if (year <= 50) {
+          year += 2000;
+        } else {
+          year += 1900;
+        }
+        
+        if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+          const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+          if (this.mainForm.get(controlName)) {
+            this.mainForm.get(controlName)?.setValue(isoDate);
+          }
+        }
+      }
+    } else {
+      if (this.mainForm.get(controlName)) {
+        this.mainForm.get(controlName)?.setValue('');
+      }
+    }
   }
 
 }

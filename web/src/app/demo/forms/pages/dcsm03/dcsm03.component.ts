@@ -82,15 +82,12 @@ export class Dcsm03Component implements OnInit {
     private loadingService: LoadingService) { }
 
   tableColumns = [
-    { key: 'id', label: 'ID' },
+    { key: 'id', label: 'ลำดับ' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
-    { key: 'orderDate', label: 'วันที่สั่งงาน' },
-    { key: 'jobDetails', label: 'รายละเอียดงาน' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'assignee', label: 'ผู้รับผิดชอบ' },
     { key: 'deadlineDate', label: 'วันที่ต้องส่ง' },
     { key: 'deadlineTime', label: 'ภายในเวลา' },
-    { key: 'remarks', label: 'หมายเหตุ' },
     { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.getProcessStatusColor.bind(this) },
     { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.getConfirmStatusColor.bind(this) },
   ];

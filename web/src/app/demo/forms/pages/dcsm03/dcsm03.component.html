@@ -2,198 +2,130 @@
 <div class="card-body">
   <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-body bg-light">
-      <div class="row g-3 align-items-center">
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหา ID...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterId" (keyup.enter)="onSearchChange()">
-          </mat-form-field>
-        </div>
+      <form (ngSubmit)="onSearchChange()">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterId" name="filterId" placeholder="ค้นหา ลำดับ" (keyup.enter)="onSearchChange()">
+          </div>
 
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหารายละเอียดงาน...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterjobdetails" [matAutocomplete]="autoJob"
-              (input)="onJobSearch($event)" (keyup.enter)="onSearchChange()">
-            <mat-autocomplete #autoJob="matAutocomplete" (optionSelected)="onSearchChange()">
-              <mat-option style="font-family: 'Prompt', sans-serif;" value="">-- ทั้งหมด --</mat-option>
-              <mat-option style="font-family: 'Prompt', sans-serif;" *ngFor="let id of jobdetailsList"
-                [value]="id">{{id}}</mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterjobdetails" name="filterjobdetails" placeholder="ค้นหา รายละเอียดงาน" (keyup.enter)="onSearchChange()">
+          </div>
 
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหาเจ้าของงาน...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterowner" [matAutocomplete]="autoOwner"
-              (input)="onOwnerSearch($event)" (keyup.enter)="onSearchChange()">
-            <mat-autocomplete #autoOwner="matAutocomplete" (optionSelected)="onSearchChange()">
-              <mat-option style="font-family: 'Prompt', sans-serif;" value="">-- ทั้งหมด --</mat-option>
-              <mat-option style="font-family: 'Prompt', sans-serif;" *ngFor="let id of OwnerList"
-                [value]="id">{{id}}</mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterowner" name="filterowner" placeholder="ค้นหา เจ้าของงาน" (input)="onOwnerSearch($event)" (keyup.enter)="onSearchChange()">
+          </div>
 
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหาผู้รับผิดชอบ...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterassignee" [matAutocomplete]="autoAssignee"
-              (input)="onAssigneeSearch($event)" (keyup.enter)="onSearchChange()">
-            <mat-autocomplete #autoAssignee="matAutocomplete" (optionSelected)="onSearchChange()">
-              <mat-option style="font-family: 'Prompt', sans-serif;" value="">-- ทั้งหมด --</mat-option>
-              <mat-option style="font-family: 'Prompt', sans-serif;" *ngFor="let id of Assignee"
-                [value]="id">{{id}}</mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterassignee" name="filterassignee" placeholder="ค้นหา ผู้รับผิดชอบ" (input)="onAssigneeSearch($event)" (keyup.enter)="onSearchChange()">
+          </div>
 
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหาสถานะงาน...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterprocess" [matAutocomplete]="autoProcess"
-              (input)="onProcessSearch($event)" (keyup.enter)="onSearchChange()">
-            <mat-autocomplete #autoProcess="matAutocomplete" (optionSelected)="onSearchChange()">
-              <mat-option style="font-family: 'Prompt', sans-serif;" value="">-- ทั้งหมด --</mat-option>
-              <mat-option style="font-family: 'Prompt', sans-serif;" *ngFor="let id of Process"
-                [value]="id">{{id}}</mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterprocess" name="filterprocess" placeholder="ค้นหา สถานะงาน" (input)="onProcessSearch($event)" (keyup.enter)="onSearchChange()">
+          </div>
 
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">ค้นหาสถานะคอนเฟิร์ม...</mat-label>
-            <input type="text" matInput [(ngModel)]="filterconfirm" [matAutocomplete]="autoConfirm"
-              (input)="onConfirmSearch($event)" (keyup.enter)="onSearchChange()">
-            <mat-autocomplete #autoConfirm="matAutocomplete" (optionSelected)="onSearchChange()">
-              <mat-option style="font-family: 'Prompt', sans-serif;" value="">-- ทั้งหมด --</mat-option>
-              <mat-option style="font-family: 'Prompt', sans-serif;" *ngFor="let id of Confirm"
-                [value]="id">{{id}}</mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterconfirm" name="filterconfirm" placeholder="ค้นหา สถานะคอนเฟิร์ม" (input)="onConfirmSearch($event)" (keyup.enter)="onSearchChange()">
+          </div>
 
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">วันที่เริ่มต้น</mat-label>
-            <input style="font-family: 'Prompt', sans-serif;" matInput [matDatepicker]="startPicker"
-              [(ngModel)]="startDate" (dateChange)="onStartDateChange()" placeholder="วว/ดด/ปปปป">
-            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-            <mat-datepicker #startPicker></mat-datepicker>
-          </mat-form-field>
-        </div>
-
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100 hide-subscript">
-            <mat-label style="font-family: 'Prompt', sans-serif;">วันที่สิ้นสุด</mat-label>
-            <input style="font-family: 'Prompt', sans-serif;" matInput [matDatepicker]="endPicker" [(ngModel)]="endDate"
-              [disabled]="!startDate" [min]="startDate" (dateChange)="onEndDateChange()" placeholder="วว/ดด/ปปปป">
-            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-            <mat-datepicker #endPicker></mat-datepicker>
-          </mat-form-field>
-        </div>
-
-        <div class="col-12">
-          <div class="row g-2">
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-stroked-button color="warn" class="w-100 px-3" (click)="clearAllFilters()"
-                style="font-family: 'Prompt', sans-serif;">
-                <mat-icon>clear_all</mat-icon> ล้างค่า
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button color="accent" class="w-100 px-3" (click)="onSearchChange()"
-                style="background: #8f0021;">
-                <mat-icon>search</mat-icon> ค้นหา
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterUnassigned()"
-                style="background: #3f0000; color: #ffffff;">
-                <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่มีผู้รับผิดชอบ</span><span class="d-lg-none">ไม่มีผู้รับผิดชอบ</span>
-                <span *ngIf="countBacklog > 0"
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ countBacklog }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterPending()"
-                style="background: #3f0000; color: #ff9900;">
-                <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอดำเนินการ</span><span class="d-lg-none">รอดำเนินการ</span>
-                <span *ngIf="pending > 0"
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ pending }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterInProgress()"
-                style="background: #3f0000; color: #ffff00;">
-                <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่กำลังดำเนินการ</span><span class="d-lg-none">กำลังดำเนินการ</span>
-                <span *ngIf="countInProgress > 0"
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ countInProgress }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterCheck()"
-                style="background: #3f0000; color: #aee76c;">
-                <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจสอบ</span><span class="d-lg-none">รอตรวจสอบ</span>
-                <span *ngIf="checked > 0"
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ checked }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterEdit()"
-                style="background: #3f0000; color: #ff0000;">
-                <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอแก้ไข</span><span class="d-lg-none">รอตรวจสอบ</span>
-                <span *ngIf="edited > 0"
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ edited }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterComplete()"
-                style="background: #3f0000; color: #00ff2a;">
-                <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ผ่านแล้ว</span><span class="d-lg-none">รอตรวจสอบ</span>
-                <span *ngIf="completed > 0"
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ completed }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-              <button mat-flat-button class="w-100 px-3" (click)="sortByClosestDate()"
-                style="background: #300707; color: white; font-family: 'Prompt', sans-serif;">
-                <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามงานที่ไกล้ส่ง</span><span class="d-lg-none">เรียงตามวันส่ง</span>
-              </button>
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="submit" class="w-100 px-3" style="background-color: #300707;">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-stroked-button type="button" class="w-100 px-3" (click)="clearAllFilters()" style="color: #300707;">
+                  <mat-icon>clear_all</mat-icon> ล้างค่า
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" (click)="sortByClosestDate()" style="background-color: #944d4d;">
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่ง</span><span class="d-lg-none">เรียงตามวันส่ง</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative" (click)="onFilterUnassigned()"
+                  style="background-color: #300707;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่มีผู้รับผิดชอบ</span><span class="d-lg-none">ไม่มีผู้รับผิดชอบ</span>
+                  <span *ngIf="countBacklog > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ countBacklog }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative" (click)="onFilterPending()"
+                  style="background-color: #300707;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอดำเนินการ</span><span class="d-lg-none">รอดำเนินการ</span>
+                  <span *ngIf="pending > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ pending }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative" (click)="onFilterInProgress()"
+                  style="background-color: #300707;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่กำลังดำเนินการ</span><span class="d-lg-none">กำลังดำเนินการ</span>
+                  <span *ngIf="countInProgress > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ countInProgress }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative" (click)="onFilterCheck()"
+                  style="background-color: #300707;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจสอบ</span><span class="d-lg-none">รอตรวจสอบ</span>
+                  <span *ngIf="checked > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ checked }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative" (click)="onFilterEdit()"
+                  style="background-color: #300707;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอแก้ไข</span><span class="d-lg-none">รอแก้ไข</span>
+                  <span *ngIf="edited > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ edited }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative" (click)="onFilterComplete()"
+                  style="background-color: #009b00;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ผ่านแล้ว</span><span class="d-lg-none">ผ่านแล้ว</span>
+                  <span *ngIf="completed > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ completed }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 
-  <app-data-table [headerStyle]="'background: #3f0000; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+  <app-data-table [headerStyle]="'background: #300707; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
     [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
     (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
+</div>

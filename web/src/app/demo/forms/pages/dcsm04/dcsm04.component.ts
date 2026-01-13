@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'; // อย่าลืม import
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Dcsm04Service } from './dcsm04.service';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
 
 @Component({
   selector: 'app-dcsm04',
@@ -33,8 +34,9 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatButtonModule,
     MatSelectModule,
     MatAutocompleteModule,
-    MatDatepickerModule, // เพิ่มเข้าในลิสต์
-    MatNativeDateModule, // เพิ่มเข้าในลิสต์
+    MatDatepickerModule,
+    MatNativeDateModule,
+    ThaiDatePipe
   ],
   templateUrl: './dcsm04.component.html',
   styleUrls: ['./dcsm04.component.scss']
@@ -102,7 +104,8 @@ export class Dcsm04Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
-          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : ''
+          orderDate: this.formatDate(item.orderDate),
+          deliveryDate: this.formatDate(item.deliveryDate)
         }));
         this.totalElements = res.totalElements;
       },
@@ -122,7 +125,8 @@ export class Dcsm04Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
-          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : ''
+          orderDate: this.formatDate(item.orderDate),
+          deliveryDate: this.formatDate(item.deliveryDate)
         }));
         this.totalElements = res.totalElements;
       },
@@ -225,6 +229,15 @@ export class Dcsm04Component implements OnInit {
   onFilterApproveSample() {
     this.searchForm.get('status')?.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
     this.onSearch();
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
   }
 
 

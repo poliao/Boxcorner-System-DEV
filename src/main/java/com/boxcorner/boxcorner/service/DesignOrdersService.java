@@ -61,32 +61,34 @@ public class DesignOrdersService {
         );
     }
 
-    public Page<DesignOrders> getAllRecipesDesign(String id, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignOrders> getAllRecipesDesign(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByAll(
             id,             // 1. id
-            job_details,    // 2. jobDetails
-            job_owner,      // 3. jobOwner
-            assignee,       // 4. assignee
-            process_status, // 5. processStatus
-            confirm_status, // 6. confirm
-            startDate,      // 7. startDate
+            folder_name,    // 2. folderName
+            job_details,    // 3. jobDetails
+            job_owner,      // 4. jobOwner
+            assignee,       // 5. assignee
+            process_status, // 6. processStatus
+            confirm_status, // 7. confirm
+            startDate,      // 8. startDate
             endDate,        
             paging
         );
     }
 
-    public Page<DesignOrders> getAllRecipesDesignSorted(String id, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignOrders> getAllRecipesDesignSorted(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size);
         return repository.findByAllSorted(
             id,             // 1. id
-            job_details,    // 2. jobDetails
-            job_owner,      // 3. jobOwner
-            assignee,       // 4. assignee
-            process_status, // 5. processStatus
-            confirm_status, // 6. confirm
-            startDate,      // 7. startDate
-            endDate,        // 8. endDate
+            folder_name,    // 2. folderName
+            job_details,    // 3. jobDetails
+            job_owner,      // 4. jobOwner
+            assignee,       // 5. assignee
+            process_status, // 6. processStatus
+            confirm_status, // 7. confirm
+            startDate,      // 8. startDate
+            endDate,        // 9. endDate
             paging
         );
     }
@@ -145,6 +147,14 @@ public class DesignOrdersService {
         DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("รอตรวจสอบ");
+        return repository.save(existingOrder);
+    }
+
+    public DesignOrders updateDesignCompleteWithFile(int id, String fileName) {
+        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setProcessStatus("เสร็จสิ้น");
+        existingOrder.setConfirmStatus("รอตรวจสอบ");
+        existingOrder.setFileName(fileName);
         return repository.save(existingOrder);
     }
 

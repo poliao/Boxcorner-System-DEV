@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -22,6 +22,9 @@ export class Dcsm03DetailComponent implements OnInit {
   isBtnWorking = false
   isBtnComplete = false
   isNoteEdit = false
+
+  showCompleteModal = false;
+  latestFileName = new FormControl('', Validators.required);
 
   constructor(
     private fb: FormBuilder,
@@ -61,6 +64,9 @@ export class Dcsm03DetailComponent implements OnInit {
       processStatus: ['', Validators.required],
       confirmStatus: ['', Validators.required],
       noteEdit: [''],
+      joCode: ['', Validators.required],
+      qtCode: [''],
+      qpCode: [''],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -74,26 +80,16 @@ export class Dcsm03DetailComponent implements OnInit {
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['noteEdit'].disable({ emitEvent: false });
+    this.designForm.controls['joCode'].disable({ emitEvent: false });
+    this.designForm.controls['qtCode'].disable({ emitEvent: false });
+    this.designForm.controls['qpCode'].disable({ emitEvent: false });
   }
   patchFormData(data: any): void {
     const apiData = data as any;
     this.designForm.patchValue(apiData);
   }
 
-  getJobDetailsColor() {
-    const value = this.designForm.get('jobDetails')?.value;
-    switch (value) {
-      case 'ปรับไดคัท': return 'bg-warning text-white';
-      case 'แก้ไขอาร์ต': return 'bg-danger text-white';
-      case 'รอลูกค้าแจ้งกลับ': return 'bg-success text-white';
-      case 'ออกแบบรายละเอียดใน Line': return 'bg-info text-white';
-      case 'เคลียร์ไฟล์ ส่งคอนเฟิร์ม': return 'bg-danger text-white';
-      default: return 'bg-light text-dark';
-    }
-  }
-
   checkButtonVisibility() {
-
     if (this.designForm.getRawValue().assignee === 'รอผู้รับผิดชอบยืนยัน') {
       this.isBtnAccept = true;
       this.isBtnWorking = false;
@@ -142,17 +138,16 @@ export class Dcsm03DetailComponent implements OnInit {
           this.checkButtonVisibility();
           this.loadingService.hide();
           this.sweetAlert.success('Success', 'ยอมรับงานสำเร็จ!');
-          this.router.navigate(['/Dcsm03']);
+          this.router.navigate(['/dcsm03']);
         })
       }
     });
-
   }
 
   updateStatusWorking() {
     Swal.fire({
-      title: 'ยืนยันการเริ่มทำงาน',
-      text: "คุณต้องการเปลี่ยนสถานะเป็น 'กำลังดำเนินการ' ใช่หรือไม่?",
+      title: 'ยืนยันการยอมรับงาน',
+      text: "คุณต้องการยอมรับงาน ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',
@@ -167,16 +162,26 @@ export class Dcsm03DetailComponent implements OnInit {
           this.checkButtonVisibility();
           this.loadingService.hide();
           this.sweetAlert.success('Success', 'กำลังดำเนินการ!');
-          this.router.navigate(['/Dcsm03']);
+          this.router.navigate(['/dcsm03']);
         });
       }
     });
   }
 
-  updateStatusComplete() {
+  openCompleteModal() {
+    this.latestFileName.setValue('');
+    this.showCompleteModal = true;
+  }
+
+  closeCompleteModal() {
+    this.showCompleteModal = false;
+  }
+
+  confirmComplete() {
+
     Swal.fire({
-      title: 'ยืนยันงานเสร็จสิ้น',
-      text: "คุณต้องการยืนยันงานเสร็จสิ้น ใช่หรือไม่?",
+      title: 'ยืนยันการยอมรับงาน',
+      text: "คุณต้องการยอมรับงาน ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',
@@ -185,15 +190,24 @@ export class Dcsm03DetailComponent implements OnInit {
       cancelButtonText: 'ยกเลิก'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm03Service.updateStatusComplete(this.designForm.getRawValue().id).subscribe((response) => {
-          this.designForm.patchValue(response);
-          this.checkButtonVisibility();
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-          this.router.navigate(['/Dcsm03']);
-        })
+        if (this.latestFileName.valid) {
+          this.loadingService.show();
+          
+          const completeData = {
+            id: this.designForm.getRawValue().id,
+            fileName: this.latestFileName.value
+          };
+
+          this.dcsm03Service.updateStatusComplete(completeData).subscribe((response) => {
+            this.designForm.patchValue(response);
+            this.checkButtonVisibility();
+            this.closeCompleteModal();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          });
+        }
       }
     });
   }
+
 }

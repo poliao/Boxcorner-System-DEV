@@ -11,79 +11,89 @@
           style="background-color: #1e1b4b;">
           เริ่มทำงาน
         </button>
-        <button *ngIf="isBtnComplete == true" (click)="updateStatusComplete()" type="submit" class="btn text-white px-5 shadow-sm" 
+        <button *ngIf="isBtnComplete == true" (click)="openCompleteModal()" type="submit" class="btn text-white px-5 shadow-sm" 
           style="background-color: #1e1b4b;">
           เสร็จสิ้น
         </button>
       </div>
-      <div class="col-md-6">
-        <label class="form-label font-weight-bold">รหัสสั่งงาน</label>
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">ลำดับ</label>
         <input type="text" formControlName="id" class="form-control">
       </div>
-
-      <div class="col-md-6">
+      <div class="col-md-3">
         <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
         <input type="date" formControlName="orderDate" class="form-control"
           [class.is-invalid]="designForm.get('order_date')?.invalid && designForm.get('order_date')?.touched">
       </div>
-
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
+        <input type="date" formControlName="deadlineDate" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
+        <input type="time" formControlName="deadlineTime" class="form-control">
+      </div>
       <div class="col-md-6">
         <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
         <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
           [class.is-invalid]="designForm.get('folder_name')?.invalid && designForm.get('folder_name')?.touched">
       </div>
-
       <div class="col-md-6">
-        <label class="form-label font-weight-bold">รายละเอียดงาน</label>
-        <select formControlName="jobDetails" class="form-select" [ngClass]="getJobDetailsColor()">
-          <option value="ปรับไดคัท">ปรับไดคัท</option>
-          <option value="แก้ไขอาร์ต">แก้ไขอาร์ต</option>
-          <option value="รอลูกค้าแจ้งกลับ">รอลูกค้าแจ้งกลับ</option>
-          <option value="ออกแบบรายละเอียดใน Line">ออกแบบรายละเอียดใน Line</option>
-          <option value="เคลียร์ไฟล์ ส่งคอนเฟิร์ม">เคลียร์ไฟล์ ส่งคอนเฟิร์ม</option>
-        </select>
-      </div>
-
+          <label class="form-label font-weight-bold">รายละเอียดงาน</label>
+          <input type="text" formControlName="jobDetails" class="form-control" placeholder="ระบุรายละเอียดงาน">
+        </div>
       <div class="col-md-6">
         <label class="form-label font-weight-bold">เจ้าของงาน</label>
         <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
       </div>
-
       <div class="col-md-6">
         <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
         <input type="text" formControlName="assignee" class="form-control" placeholder="ชื่อผู้ออกแบบ">
       </div>
-
-      <div class="col-md-6">
-        <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
-        <input type="date" formControlName="deadlineDate" class="form-control">
-      </div>
-
-      <div class="col-md-6">
-        <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
-        <input type="time" formControlName="deadlineTime" class="form-control">
-      </div>
-
+      
       <div class="col-md-6">
         <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
         <input type="text" formControlName="processStatus" class="form-control">
       </div>
-
       <div class="col-md-6">
         <label class="form-label font-weight-bold">สถานะคอนเฟิร์ม</label>
         <input type="text" formControlName="confirmStatus" class="form-control">
       </div>
-
       <div class="col-12" *ngIf="isNoteEdit == true">
         <label class="form-label font-weight-bold">รายละเอียดแก้ไข</label>
         <input  style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="noteEdit" class="form-control" >
       </div>
-
       <div class="col-12">
         <label class="form-label font-weight-bold">หมายเหตุ</label>
         <input type="text" formControlName="remarks" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
       </div>
     </form>
+    </div>
+  </div>
+</div>
+
+<!-- Complete Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showCompleteModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ยืนยันเสร็จสิ้นงาน</h5>
+        <button type="button" class="btn-close" (click)="closeCompleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [formControl]="latestFileName" 
+            placeholder="ระบุชื่อไฟล์ล่าสุด..."
+            [class.is-invalid]="latestFileName.invalid && latestFileName.touched">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCompleteModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-success" (click)="confirmComplete()" [disabled]="latestFileName.invalid">
+          ยืนยันเสร็จสิ้น
+        </button>
+      </div>
     </div>
   </div>
 </div>

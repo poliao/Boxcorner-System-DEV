@@ -80,8 +80,8 @@ export class Dcsm03Service {
     return this.http.put(`${this.apiUrl}/designs/updateStatusWork?id=${id}`, {});
   }
 
-  updateStatusComplete(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatusComplete?id=${id}`, {});
+  updateStatusComplete(completeData : any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/designs/updateStatusCompleteWithFile?id=${completeData.id}&fileName=${completeData.fileName}`, {});
   }
 
   getAllDesignOrdersSorted(
