@@ -19,8 +19,8 @@
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
-          <input type="date" formControlName="orderDate" class="form-control"
-            [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+          <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
+            [class.is-invalid]="mainForm.get('orderDate')?.invalid && mainForm.get('orderDate')?.touched">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
@@ -41,7 +41,11 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
-          <input type="date" formControlName="deadlineDate" class="form-control">
+          <input type="text" #deadlineDateInput class="form-control" 
+            (input)="onThaiDateInput($event, 'deadlineDate')" 
+            [value]="getThaiDateInput('deadlineDate')"
+            [disabled]="mainForm.get('deadlineDate')?.disabled"
+            placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
@@ -49,7 +53,7 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
-          <input type="date" formControlName="deliveryDate" class="form-control">
+          <input type="text" class="form-control" [value]="getThaiDateInput('deliveryDate')" readonly disabled>
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">สถานะงาน</label>
