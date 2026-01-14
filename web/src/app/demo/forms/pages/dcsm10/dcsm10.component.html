@@ -5,28 +5,23 @@
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
         <div class="row g-3">
           <div class="col-md-3">
-            <label class="form-label fw-bold">รหัสสั่งผลิต (ID)</label>
-            <input type="number" class="form-control" formControlName="id" placeholder="ระบุ ID">
+            <input type="number" class="form-control" formControlName="id" placeholder="ค้นหา ลำดับ">
           </div>
           <div class="col-md-3">
-            <label class="form-label fw-bold">ชื่อโฟลเดอร์งาน</label>
-            <input type="text" class="form-control" formControlName="folderName" placeholder="ระบุชื่อโฟลเดอร์">
+            <input type="text" class="form-control" formControlName="folderName" placeholder="ค้นหา ชื่อโฟลเดอร์">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">เจ้าของงาน</label>
-            <input type="text" class="form-control" formControlName="jobOwner" placeholder="ระบุเจ้าของงาน">
+            <input type="text" class="form-control" formControlName="jobOwner" placeholder="ค้นหา เจ้าของงาน">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">ผู้รับผิดชอบ</label>
-            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ระบุผู้รับผิดชอบ">
+            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ค้นหา ผู้รับผิดชอบ">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">สถานะดำเนินการ (Process)</label>
             <select class="form-select" formControlName="processStatus">
-              <option value="">ทั้งหมด</option>
+              <option value="">สถานะดำเนินการ ทั้งหมด</option>
               <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
@@ -39,9 +34,8 @@
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">สถานะแม่พิมพ์ (Mold)</label>
             <select class="form-select" formControlName="moldStatus">
-              <option value="">ทั้งหมด</option>
+              <option value="">สถานะแม่พิมพ์ ทั้งหมด</option>
               <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังทำแม่พิมพ์">กำลังทำแม่พิมพ์</option>
@@ -49,17 +43,7 @@
               <option value="ส่งแม่พิมพ์">ส่งแม่พิมพ์</option>
             </select>
           </div>
-
-          <div class="col-md-3">
-            <label class="form-label fw-bold">ตั้งแต่วันที่</label>
-            <input type="date" class="form-control" formControlName="startDate" (change)="onStartDateChange()">
-          </div>
-
-          <div class="col-md-3">
-            <label class="form-label fw-bold">ถึงวันที่</label>
-            <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
-          </div>
-
+          
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">

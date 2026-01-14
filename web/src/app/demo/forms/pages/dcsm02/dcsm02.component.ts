@@ -92,7 +92,6 @@ export class Dcsm02Component implements OnInit {
 
   ngOnInit() {
     this.loadData();
-    this.prepareDropdownData();
     this.countBacklogCheck();
   }
 
@@ -237,94 +236,6 @@ export class Dcsm02Component implements OnInit {
   onConfirmSearch(event: any) {
     const value = (event.target as HTMLInputElement).value;
     this.searchConfirmListSubject.next(value);
-  }
-
-  prepareDropdownData() {
-    this.searchJobDetailsSubject.pipe(
-    ).subscribe(searchValue => {
-      this.fetchJobDetailFromDB(searchValue);
-    });
-
-    this.searchOwnerListSubject.pipe(
-    ).subscribe(searchValue => {
-      this.fetchOwnerListFromDB(searchValue);
-    });
-
-    this.searchAssigneeListSubject.pipe(
-    ).subscribe(searchValue => {
-      this.fetchAssigneeFromDB(searchValue);
-    });
-
-    this.searchProcessListSubject.pipe(
-    ).subscribe(searchValue => {
-      this.fetchProcessFromDB(searchValue);
-    });
-
-    this.searchConfirmListSubject.pipe(
-    ).subscribe(searchValue => {
-      this.fetchConfirmFromDB(searchValue);
-    });
-
-    this.fetchJobDetailFromDB('');
-    this.fetchOwnerListFromDB('');
-    this.fetchAssigneeFromDB('');
-    this.fetchProcessFromDB('');
-    this.fetchConfirmFromDB('');
-  }
-
-  fetchJobDetailFromDB(query: string) {
-    this.dcsm02Service.getUniqueJobDetail(query).subscribe({
-      next: (data: string[]) => {
-        this.jobdetailsList = data;
-      },
-      error: (err) => {
-        console.error('Error fetching jobdetails from DB:', err);
-      }
-    });
-  }
-
-  fetchOwnerListFromDB(query: string) {
-    this.dcsm02Service.getUniqueOwner(query).subscribe({
-      next: (data: string[]) => {
-        this.OwnerList = data;
-      },
-      error: (err) => {
-        console.error('Error fetching OwnerList from DB:', err);
-      }
-    });
-  }
-
-  fetchAssigneeFromDB(query: string) {
-    this.dcsm02Service.getUniqueAssignee(query).subscribe({
-      next: (data: string[]) => {
-        this.Assignee = data;
-      },
-      error: (err) => {
-        console.error('Error fetching Assignee from DB:', err);
-      }
-    });
-  }
-
-  fetchProcessFromDB(query: string) {
-    this.dcsm02Service.getUniqueProcess(query).subscribe({
-      next: (data: string[]) => {
-        this.Process = data;
-      },
-      error: (err) => {
-        console.error('Error fetching Process from DB:', err);
-      }
-    });
-  }
-
-  fetchConfirmFromDB(query: string) {
-    this.dcsm02Service.getUniqueConfirm(query).subscribe({
-      next: (data: string[]) => {
-        this.Confirm = data;
-      },
-      error: (err) => {
-        console.error('Error fetching Process from DB:', err);
-      }
-    });
   }
 
   onStartDateChange() {

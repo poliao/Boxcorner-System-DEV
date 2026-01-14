@@ -3,16 +3,20 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
             {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
           </button>
-          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             อนุมัติ
           </button>
-          <button *ngIf="isUpdateDelivery == true" (click)="updateDelivery()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isUpdateDelivery == true" (click)="updateDelivery()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             อนุมัติเลื่อนวันส่ง
           </button>
-          <button *ngIf="isUpdateDelivery == true" (click)="updateNotDelivery()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isUpdateDelivery == true" (click)="updateNotDelivery()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไม่อนุมัติเลื่อนวันส่ง
           </button>
         </div>
@@ -44,17 +48,15 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
-          <input type="text" #deliveryDateInput class="form-control" 
-            (input)="onThaiDateInput($event, 'deliveryDate')" 
-            [value]="getThaiDateInput('deliveryDate')"
-            [disabled]="mainForm.get('deliveryDate')?.disabled"
+          <input type="text" #deliveryDateInput class="form-control" (input)="onThaiDateInput($event, 'deliveryDate')"
+            [value]="getThaiDateInput('deliveryDate')" [disabled]="mainForm.get('deliveryDate')?.disabled"
             placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
           <input type="time" formControlName="deliveryTime" class="form-control">
         </div>
-         <div class="col-md-6">
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">สถานะ</label>
           <input type="text" formControlName="status" class="form-control">
         </div>
@@ -68,12 +70,13 @@
         </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
-          <input style="background-color: rgb(255, 136, 0); color: white;" type="text" 
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="text"
             [value]="getThaiDateInput('updateDateDelivery')" class="form-control" readonly>
         </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">เวลาที่ขอเลื่อนส่ง</label>
-          <input style="background-color: rgb(255, 136, 0); color: white;" type="time" formControlName="updateTimeDelivery" class="form-control">
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="time"
+            formControlName="updateTimeDelivery" class="form-control">
         </div>
         <div class="col-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
@@ -97,11 +100,11 @@
         <h5 class="modal-title">อนุมัติข้อมูลไปยัง ตารางคอนเฟิร์มรอผลิต</h5>
         <button type="button" class="btn-close" (click)="closeApproveModal()"></button>
       </div>
-      <div class="modal-body">  
-      <div class="row mb-3">
+      <div class="modal-body">
+        <div class="row mb-3">
           <div class="col-6">
             <label class="form-label font-weight-bold">ใช้ไฟล์ <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [formControl]="usedFile" 
+            <input type="text" class="form-control" [formControl]="usedFile"
               [class.is-invalid]="usedFile.invalid && usedFile.touched">
           </div>
           <div class="col-6">
@@ -113,7 +116,7 @@
 
         <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า  <span style="color: red;">*</span></label>
+            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า <span style="color: red;">*</span></label>
             <input type="date" class="form-control" [formControl]="deadlineDate"
               [class.is-invalid]="deadlineDate.invalid && deadlineDate.touched">
           </div>
@@ -125,16 +128,16 @@
         </div>
 
         <div class="row mb-3">
-          <div class="col-6">
+          <div class="col-12">
             <label class="form-label font-weight-bold">หมายเหตุ </label>
-            <input type="text" class="form-control" [formControl]="remarks"
-              [class.is-invalid]="remarks.invalid && remarks.touched">
+            <textarea class="form-control" rows="3" [formControl]="remarks" placeholder="หมายเหตุเพิ่มเติม..."
+              [class.is-invalid]="remarks.invalid && remarks.touched"></textarea>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
-        
+
         <button type="button" class="btn btn-success" (click)="confirmApprove()"
           [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid">
           ยืนยันอนุมัติ

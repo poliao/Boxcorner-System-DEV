@@ -53,8 +53,7 @@ export class Dcsm11Component implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   tableColumns = [
-    { key: 'id', label: 'ID' },
-    { key: 'orderDate', label: 'วันที่สั่ง' },
+    { key: 'id', label: 'ลำดับ' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'responsiblePerson', label: 'ผู้รับผิดชอบ' },

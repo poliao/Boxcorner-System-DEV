@@ -7,10 +7,13 @@
             style="background-color: #1e1b4b;">
             บันทึกข้อมูล
           </button>
+          <button *ngIf="isCancel == true" type="button" class="btn text-white px-5 shadow-sm" (click)="updateCancelStatus()" style="background-color: #ff0000;">
+            ยกเลิกงานตัวอย่าง
+          </button>
         </div>
 
         <div class="col-md-6">
-          <label class="form-label font-weight-bold">รหัสสั่งผลิต</label>
+          <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
         <div class="col-md-6">

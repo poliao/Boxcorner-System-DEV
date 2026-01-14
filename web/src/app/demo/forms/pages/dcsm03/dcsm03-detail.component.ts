@@ -138,7 +138,7 @@ export class Dcsm03DetailComponent implements OnInit {
           this.checkButtonVisibility();
           this.loadingService.hide();
           this.sweetAlert.success('Success', 'ยอมรับงานสำเร็จ!');
-          this.router.navigate(['/dcsm03']);
+          this.router.navigate(['/Dcsm03']);
         })
       }
     });
@@ -162,7 +162,7 @@ export class Dcsm03DetailComponent implements OnInit {
           this.checkButtonVisibility();
           this.loadingService.hide();
           this.sweetAlert.success('Success', 'กำลังดำเนินการ!');
-          this.router.navigate(['/dcsm03']);
+          this.router.navigate(['/Dcsm03']);
         });
       }
     });
@@ -192,18 +192,17 @@ export class Dcsm03DetailComponent implements OnInit {
       if (result.isConfirmed) {
         if (this.latestFileName.valid) {
           this.loadingService.show();
-          
           const completeData = {
             id: this.designForm.getRawValue().id,
             fileName: this.latestFileName.value
           };
-
           this.dcsm03Service.updateStatusComplete(completeData).subscribe((response) => {
             this.designForm.patchValue(response);
             this.checkButtonVisibility();
             this.closeCompleteModal();
             this.loadingService.hide();
             this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+            this.router.navigate(['/Dcsm03']);
           });
         }
       }

@@ -9,34 +9,28 @@
         <div class="row g-3">
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">รหัสสั่งผลิต (ID)</label>
-            <input type="number" class="form-control" formControlName="id" placeholder="ระบุ ID">
+            <input type="number" class="form-control" formControlName="id" placeholder="ค้นหา ลำดับ">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">ชื่อโฟลเดอร์งาน</label>
-            <input type="text" class="form-control" formControlName="folderName" placeholder="ระบุชื่อโฟลเดอร์">
+            <input type="text" class="form-control" formControlName="folderName" placeholder="ค้นหา ชื่อโฟลเดอร์">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">ประเภทงาน</label>
-            <input type="text" class="form-control" formControlName="jobType" placeholder="เช่น กล่องฝาชน">
+            <input type="text" class="form-control" formControlName="jobType" placeholder="ค้นหา ประเภทงาน">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">เจ้าของงาน</label>
-            <input type="text" class="form-control" formControlName="jobOwner" placeholder="ระบุเจ้าของงาน">
+            <input type="text" class="form-control" formControlName="jobOwner" placeholder="ค้นหา เจ้าของงาน">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">ผู้รับผิดชอบ</label>
-            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ระบุผู้รับผิดชอบ">
+            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ค้นหา ผู้รับผิดชอบ">
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">สถานะงาน (Job Status)</label>
             <select class="form-select" formControlName="status">
-              <option value="">ทั้งหมด</option>
+              <option value="">สถานะงาน ทั้งหมด</option>
               <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
@@ -45,9 +39,8 @@
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">สถานะดำเนินการ (Process)</label>
             <select class="form-select" formControlName="processStatus">
-              <option value="">ทั้งหมด</option>
+              <option value="">สถานะดำเนินการ ทั้งหมด</option>
               <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
@@ -60,9 +53,8 @@
           </div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold">สถานะแม่พิมพ์ (Mold)</label>
             <select class="form-select" formControlName="moldStatus">
-              <option value="">ทั้งหมด</option>
+              <option value="">สถานะแม่พิมพ์ ทั้งหมด</option>
               <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน	</option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังทำแม่พิมพ์">กำลังทำแม่พิมพ์</option>
@@ -71,37 +63,37 @@
             </select>
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label fw-bold">ตั้งแต่วันที่</label>
-            <input type="date" class="form-control" formControlName="startDate" (change)="onStartDateChange()">
-          </div>
-
-          <div class="col-md-3">
-            <label class="form-label fw-bold">ถึงวันที่</label>
-            <input type="date" class="form-control" formControlName="endDate" [min]="minEndDate | date:'yyyy-MM-dd'">
-          </div>
-
-          <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
-            <button mat-flat-button type="button" class="btn text-white px-4" (click)="onClear()" style="background-color: #350142;">
-              <mat-icon>clear_all</mat-icon> ล้างค่า
-            </button>
-            <button mat-flat-button type="submit" class="btn text-white px-4" style="background-color: #350142;">
-             <mat-icon>search</mat-icon> ค้นหา
-            </button>
-            <button type="button" mat-flat-button class="btn text-white px-4" (click)="onSearchSort()"
-              style="background-color: #350142;">
-              <mat-icon>sort</mat-icon> เรียงตามวันส่งลูกค้า
-            </button>
-            <div class="position-relative">
-              <button mat-flat-button class="btn text-white px-4" (click)="onFilterUnassigned()" style="background-color: #350142;">
-                <span *ngIf="countBacklog > 0"
-                  class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.75rem; border: 2px solid #fff;">
-                  {{ countBacklog }}
-                  <span class="visually-hidden">unread messages</span>
-                </span>
-                <mat-icon>search</mat-icon> งานที่ยังไม่มีผู้รับผิดชอบ
-              </button>
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="btn text-white px-4 w-100" (click)="onClear()" style="background-color: #350142;">
+                  <mat-icon>clear_all</mat-icon> ล้างค่า
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="submit" class="btn text-white px-4 w-100" style="background-color: #350142;">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button type="button" mat-flat-button class="btn text-white px-4 w-100" (click)="onSearchSort()"
+                  style="background-color: #350142;">
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่งลูกค้า</span><span class="d-lg-none">เรียงตาม</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <div class="position-relative">
+                  <button mat-flat-button class="btn text-white px-4 w-100" (click)="onFilterUnassigned()" style="background-color: #350142;">
+                    <span *ngIf="countBacklog > 0"
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style="font-size: 0.75rem; border: 2px solid #fff;">
+                      {{ countBacklog }}
+                      <span class="visually-hidden">unread messages</span>
+                    </span>
+                    <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่มีผู้รับผิดชอบ</span><span class="d-lg-none">ไม่มีผู้รับผิดชอบ</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

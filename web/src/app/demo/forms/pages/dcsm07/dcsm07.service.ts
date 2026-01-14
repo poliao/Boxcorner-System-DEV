@@ -88,4 +88,13 @@ export class Dcsm07Service {
     return this.http.get(`${this.apiUrl}/production/countProcessStatus?processStatus=${status}`);
   }
 
+  updateJobStatus(id: number, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateJobStatus?id=${id}&jobStatus=${status}`, {});
+  }
+  updateProcessStatus(id: number, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateProcessStatus?id=${id}&processStatus=${status}`, {});
+  }
+  updateMoldStatus(id: number, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateMoldStatus?id=${id}&moldStatus=${status}`, {});
+  }
 }

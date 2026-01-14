@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'; // อย่าลืม import
 import { Router } from '@angular/router';
-import { Dcsm05Service } from './dcsm05.service';
+import { Dcsm12Service } from './dcsm12.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
@@ -15,11 +15,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
-import { LoadingService } from 'src/app/demo/loadingservice/loading';
-import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 
 @Component({
-  selector: 'app-dcsm05',
+  selector: 'app-dcsm12',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -38,10 +36,10 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
     MatDatepickerModule,
     MatNativeDateModule,
   ],
-  templateUrl: './dcsm05.component.html',
-  styleUrls: ['./dcsm05.component.scss']
+  templateUrl: './dcsm12.component.html',
+  styleUrls: ['./dcsm12.component.scss']
 })
-export class Dcsm05Component implements OnInit {
+export class Dcsm12Component implements OnInit {
   countBacklog: number = 0;
   searchForm!: FormGroup;
 
@@ -73,7 +71,7 @@ export class Dcsm05Component implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm05Service: Dcsm05Service,
+    private dcsm12Service: Dcsm12Service,
     private statusColorService: StatusColorService
   ) { }
 
@@ -107,7 +105,7 @@ export class Dcsm05Component implements OnInit {
   loadData(): void {
     const filters = this.searchForm.value;
 
-    this.dcsm05Service.getOrdersWithSearch(
+    this.dcsm12Service.getOrdersWithSearch(
       this.pageIndex,
       this.pageSize,
       filters
@@ -128,7 +126,7 @@ export class Dcsm05Component implements OnInit {
   loadDataSort(): void {
     const filters = this.searchForm.value;
 
-    this.dcsm05Service.getOrdersWithSearchSort(
+    this.dcsm12Service.getOrdersWithSearchSort(
       this.pageIndex,
       this.pageSize,
       filters
@@ -198,11 +196,11 @@ export class Dcsm05Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm05Detail']); // ปรับ Path ตามจริง
+    this.router.navigate(['/Dcsm12Detail']); // ปรับ Path ตามจริง
   }
 
   onRowClick(row: any): void {
-    this.router.navigate(['/Dcsm05Detail', row.id]);
+    this.router.navigate(['/Dcsm12Detail', row.id]);
   }
 
   onClearAll(): void {
@@ -217,7 +215,7 @@ export class Dcsm05Component implements OnInit {
     });
   }
   countBacklogWaitProcess() {
-    this.dcsm05Service.countBacklogWaitProcess().subscribe({
+    this.dcsm12Service.countBacklogWaitProcess().subscribe({
       next: (data: number) => {
         this.waitProcess = data;
       },
@@ -231,7 +229,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   Backlog() {
-    this.dcsm05Service.countBacklog().subscribe({
+    this.dcsm12Service.countBacklog().subscribe({
       next: (data: number) => {
         this.countBacklog = data;
       },
@@ -247,7 +245,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   BacklogApproveShif() {
-    this.dcsm05Service.countBacklogApproveShif().subscribe({
+    this.dcsm12Service.countBacklogApproveShif().subscribe({
       next: (data: number) => {
         this.approveShif = data;
       },
@@ -261,7 +259,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   countBacklogNotApproveShif() {
-    this.dcsm05Service.countBacklogNotApproveShif().subscribe({
+    this.dcsm12Service.countBacklogNotApproveShif().subscribe({
       next: (data: number) => {
         this.notApproveShif = data;
       },
@@ -275,7 +273,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   countBacklogClearFile() {
-    this.dcsm05Service.countBacklogClearFile().subscribe({
+    this.dcsm12Service.countBacklogClearFile().subscribe({
       next: (data: number) => {
         this.clearFile = data;
       },
@@ -289,7 +287,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   countBacklogInClearFile() {
-    this.dcsm05Service.countBacklogInClearFile().subscribe({
+    this.dcsm12Service.countBacklogInClearFile().subscribe({
       next: (data: number) => {
         this.inClearFile = data;
       },
@@ -303,7 +301,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   countBacklogCheckFile() {
-    this.dcsm05Service.countBacklogCheckFile().subscribe({
+    this.dcsm12Service.countBacklogCheckFile().subscribe({
       next: (data: number) => {
         this.checkFile = data;
       },
@@ -317,7 +315,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   countBacklogWaitSample() {
-    this.dcsm05Service.countBacklogWaitSample().subscribe({
+    this.dcsm12Service.countBacklogWaitSample().subscribe({
       next: (data: number) => {
         this.waitSample = data;
       },
@@ -331,7 +329,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   countBacklogBackSample() {
-    this.dcsm05Service.countBacklogSendBackSample().subscribe({
+    this.dcsm12Service.countBacklogSendBackSample().subscribe({
       next: (data: number) => {
         this.backSample = data;
       },
@@ -345,7 +343,7 @@ export class Dcsm05Component implements OnInit {
   }
 
   countBacklogSendBack() {
-    this.dcsm05Service.countBacklogSendBack().subscribe({
+    this.dcsm12Service.countBacklogSendBack().subscribe({
       next: (data: number) => {
         this.back = data;
       },

@@ -177,7 +177,7 @@ public class SampleOrderController {
 
     @GetMapping("/countBacklog")
     public ResponseEntity<Integer> getUniqueStatus() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอผู้รับผิดชอบอนุมัติ"));
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอผู้รับผิดชอบอนุมัติ",null));
     }
 
     @PutMapping("/updateAssign")
@@ -216,6 +216,11 @@ public class SampleOrderController {
         return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "สำเร็จ รออนุมัติไปตารางรอผลิต", null));
     }
 
+    @PutMapping("/updateStatusCancel")
+    public ResponseEntity<SampleOrder> updateCancel(@RequestParam("id") Integer id) {
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(id, "ยกเลิก", null));
+    }
+
     @PutMapping("/updateFileChecked")
     public ResponseEntity<SampleOrder> updateFileChecked(@RequestParam("id") Integer id) {
         String status = null;
@@ -246,62 +251,62 @@ public class SampleOrderController {
     }
 
     @GetMapping("/countBacklogWaitProcess")
-    public ResponseEntity<Integer> getUniqueStatusWaitProcess() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอดำเนินการ"));
+    public ResponseEntity<Integer> getUniqueStatusWaitProcess(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอดำเนินการ",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogShif")
-    public ResponseEntity<Integer> getUniqueStatusShif() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขอเลื่อนวันส่ง"));
+    public ResponseEntity<Integer> getUniqueStatusShif(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogSalesStatus("ขอเลื่อนวันส่ง",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogApproveShif")
-    public ResponseEntity<Integer> getUniqueStatusCheck() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("อนุมัติเลื่อนวันส่ง"));
+    public ResponseEntity<Integer> getUniqueStatusCheck(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("อนุมัติเลื่อนวันส่ง",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogNotApproveShif")
-    public ResponseEntity<Integer> countBacklogNotApproveShif() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไม่อนุมัติเลื่อนส่ง"));
+    public ResponseEntity<Integer> countBacklogNotApproveShif(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไม่อนุมัติเลื่อนส่ง",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogClearFile")
-    public ResponseEntity<Integer> countBacklogClearFile() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("จัดส่งได้ รอเคลียร์ไฟล์"));
+    public ResponseEntity<Integer> countBacklogClearFile(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("จัดส่งได้ รอเคลียร์ไฟล์",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogInClearFile")
-    public ResponseEntity<Integer> countBacklogInClearFile() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("กำลังเคลียร์ไฟล์"));
+    public ResponseEntity<Integer> countBacklogInClearFile(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("กำลังเคลียร์ไฟล์",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogCheckFile")
-    public ResponseEntity<Integer> countBacklogCheckFile() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์เสร็จ รอตรวจสอบไฟล์"));
+    public ResponseEntity<Integer> countBacklogCheckFile(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์เสร็จ รอตรวจสอบไฟล์",tokenService.getCurrentUser(httpRequest)));
     }
 
-    @GetMapping("/countBacklogFileComplete")
-    public ResponseEntity<Integer> countBacklogFileComplete() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง"));
+    @GetMapping("/countCheckFile")
+    public ResponseEntity<Integer> countCheckFile() {
+        return ResponseEntity.ok(sampleOrderService.countStatus("ไฟล์เสร็จ รอตรวจสอบไฟล์"));
     }
 
     @GetMapping("/countBacklogWaitSample")
-    public ResponseEntity<Integer> countBacklogWaitSample() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง รอขึ้นตัวอย่าง"));
+    public ResponseEntity<Integer> countBacklogWaitSample(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง รอขึ้นตัวอย่าง",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogSendBackSample")
-    public ResponseEntity<Integer> countBacklogSendBackSample() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขึ้นตัวอย่างแล้ว"));
+    public ResponseEntity<Integer> countBacklogSendBackSample(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขึ้นตัวอย่างแล้ว",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogSendBack")
-    public ResponseEntity<Integer> countBacklogSendBack() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง"));
+    public ResponseEntity<Integer> countBacklogSendBack(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogApproveSample")
-    public ResponseEntity<Integer> countBacklogApproveSample() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("สำเร็จ รออนุมัติไปตารางรอผลิต"));
+    public ResponseEntity<Integer> countBacklogApproveSample(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("สำเร็จ รออนุมัติไปตารางรอผลิต",tokenService.getCurrentUser(httpRequest)));
     }
 }

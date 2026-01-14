@@ -90,26 +90,6 @@ export class Dcsm02Service {
     return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
   }
 
-  getUniqueJobDetail(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownjobdetails?query=${query}`);
-  }
-
-  getUniqueOwner(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownjobowner?query=${query}`);
-  }
-
-  getUniqueAssignee(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownassignee?query=${query}`);
-  }
-
-  getUniqueProcess(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownprocess?query=${query}`);
-  }
-
-  getUniqueConfirm(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownconfirm?query=${query}`);
-  }
-
   updateStatusApprove(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/designs/updateStatusApprove?id=${id}`, {});
   }

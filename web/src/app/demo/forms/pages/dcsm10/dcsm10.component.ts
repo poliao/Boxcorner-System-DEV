@@ -48,7 +48,7 @@ export class Dcsm10Component implements OnInit {
   isSortMode: boolean = false;
 
   tableColumns = [
-    { key: 'id', label: 'รหัสสั่งผลิต' },
+    { key: 'id', label: 'ลำดับ' },
     { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },

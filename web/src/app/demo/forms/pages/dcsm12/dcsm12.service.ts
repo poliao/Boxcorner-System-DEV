@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class Dcsm11Service {
+export class Dcsm12Service {
 
   private apiUrl = environment.apiUrl;
 
@@ -29,7 +29,7 @@ export class Dcsm11Service {
       responsiblePerson: filters.responsiblePerson || '', // เดิม assignee
       status: filters.status || '',                   // เดิม process_status
       startDate: filters.startDate || '',
-      endDate: filters.endDate || ''
+      endDate: filters.endDate || '',
     };
 
     Object.keys(params).forEach(key => {
@@ -38,7 +38,7 @@ export class Dcsm11Service {
         }
     });
 
-    return this.http.get(`${this.apiUrl}/sampleOrders/searchVerify`, { params: params });
+    return this.http.get(`${this.apiUrl}/sampleOrders/searchDetail`, { params: params });
   }
 
   getOrdersWithSearchSort(page: number, size: number, filters: any): Observable<any> {
@@ -61,36 +61,58 @@ export class Dcsm11Service {
         }
     });
 
-    return this.http.get(`${this.apiUrl}/sampleOrders/searchVerify`, { params: params });
+    return this.http.get(`${this.apiUrl}/sampleOrders/searchDetail`, { params: params });
   }
   
-  updateFileChecked(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateFileChecked?id=${id}`, {});
+  countBacklog(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklog`);
   }
 
-  updateEditFile(data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditFile`,data);
+  countBacklogShif(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogShif`);
   }
 
-  updateConfirmSample(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateConfirmSample?id=${id}`, {});
-  }
-
-  updateEditConfirmSample(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditConfirmSample?id=${id}`, {});
-  }
-
-  saveProduction(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/production/save`, data);
-  }
-
-  countBacklogInspection(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/countCheckFile`);
+  countBacklogWaitProcess(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogWaitProcess`);
   }
 
   countBacklogApproveShif(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShif`);
   }
 
-  
+  countBacklogNotApproveShif(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogNotApproveShif`);
+  }
+
+  countBacklogClearFile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogClearFile`);
+  }
+  countBacklogInClearFile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogInClearFile`);
+  }
+
+  countBacklogCheckFile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogCheckFile`);
+  }
+
+  countBacklogFileComplete(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogFileComplete`);
+  }
+
+  countBacklogWaitSample(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogWaitSample`);
+  }
+
+  countBacklogSendBackSample(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSendBackSample`);
+  }
+
+  countBacklogSendBack(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSendBack`);
+  }
+
+  updateStatusCancel(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusCancel?id=${id}`, {});
+  }
+
 }

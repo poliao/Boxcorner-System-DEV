@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { n } from '@angular/cdk/overlay-module.d-C2CxnwqT';
 @Component({
   selector: 'app-dcsm07-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -19,6 +20,8 @@ export class Dcsm07DetailComponent implements OnInit {
   isEditMode = false;
   id: string | null = null;
   operatorOptions: DropdownOption[] = [];
+
+  isCancel = true;
 
   constructor(
     private fb: FormBuilder,
@@ -91,17 +94,8 @@ export class Dcsm07DetailComponent implements OnInit {
   }
 
   checkBtn() {
-
-  }
-
-  private getCurrentUserFromToken(): string | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.username || payload.name || payload.sub;
-    } catch (error) {
-      return null;
+    if (this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().jobStatus == 'รอดำเนินการ') {
+      this.isCancel = false;
     }
   }
 
@@ -129,10 +123,10 @@ export class Dcsm07DetailComponent implements OnInit {
         this.mainForm.get('processStatus')?.setValue('รอดำเนินการ');
         if (this.mainForm.getRawValue().jobType == 'OD') {
           this.mainForm.get('moldStatus')?.setValue('งานดิจิทัล');
-        }else{
+        } else {
           this.mainForm.get('moldStatus')?.setValue('รอดำเนินการ');
         }
-        
+
         this.dcsm07Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();
@@ -158,6 +152,40 @@ export class Dcsm07DetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading operators', err);
+      }
+    });
+  }
+
+  updateCancelStatus() {
+    Swal.fire({
+      title: 'ยกเลิก',
+      text: "ยืนยันยกเลิกข้อมูล ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm07Service.updateJobStatus(this.mainForm.getRawValue().id, 'ยกเลิก').subscribe({
+          next: (res: any) => {
+            this.dcsm07Service.updateProcessStatus(this.mainForm.getRawValue().id, 'ยกเลิก').subscribe({
+              next: (res: any) => {
+                this.dcsm07Service.updateMoldStatus(this.mainForm.getRawValue().id, 'ยกเลิก').subscribe({
+                  next: (res: any) => {
+                    this.patchFormData(res);
+                    this.checkBtn();
+                    this.loadingService.hide();
+                    this.sweetAlert.success('ยกเลิกข้อมูลสำเร็จ', 'เรียบร้อย')
+                    this.router.navigate(['/Dcsm07']);
+                  }
+                })
+              },
+            });
+          },
+        });
       }
     });
   }

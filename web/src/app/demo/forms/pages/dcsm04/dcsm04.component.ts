@@ -52,12 +52,9 @@ export class Dcsm04Component implements OnInit {
   shif = 0;
   approveSample = 0;
   isSortMode: boolean = false;
-
-
   
   tableColumns = [
-    { key: 'id', label: 'ID' },
-    { key: 'orderDate', label: 'วันที่สั่ง' },
+    { key: 'id', label: 'ลำดับ' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'responsiblePerson', label: 'ผู้รับผิดชอบ' },

@@ -3,36 +3,9 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="confirm == true" type="submit" (click)="updateStatusComplete()"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            ยืนยันรับงาน
+          <button *ngIf="isCancel == true" class="btn text-white px-5 shadow-sm" (click)="updateCancel()" style="background-color: #ff0000;">
+            ยกเลิกงานตัวอย่าง
           </button>
-          <button *ngIf="confirmDeliver == true" type="submit" (click)="updateStatusDeliver()"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            จัดส่งได้
-          </button>
-          <button *ngIf="notDeliver == true" type="button" (click)="openNotDeliverModal()"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            จัดส่งไม่ได้
-          </button>
-          <button *ngIf="clearFile == true" type="submit" (click)="updateStatusClearFile()"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            เริ่มเคลียร์ไฟล์
-          </button>
-          <button *ngIf="inspection == true" type="submit" (click)="updateStatusInspection()"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            ส่งตรวจ
-          </button>
-          <button *ngIf="samples == true" type="submit" (click)="updateStatusSamples()"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            ส่งขึ้นตัวอย่าง
-          </button>
-          <button *ngIf="deadline == true" type="submit" (click)="updateStatusSucsess()"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            กำหนดส่งกลับ
-          </button>
-
-
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ลำดับ</label>
@@ -92,33 +65,6 @@
           </div>
         </div>
       </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade show d-block" tabindex="-1" *ngIf="showNotDeliverModal"
-  style="background-color: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">ระบุเวลาที่จัดส่งได้</h5>
-        <button type="button" class="btn-close" (click)="closeNotDeliverModal()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="failTime" class="form-label">วันที่</label>
-          <input type="date" class="form-control" [formControl]="notDeliverDate">
-        </div>
-        <div class="mb-3">
-          <label for="failTime" class="form-label">เวลา</label>
-          <input type="time" class="form-control" [formControl]="notDeliverTime">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeNotDeliverModal()">ยกเลิก</button>
-        <button type="button" class="btn btn-primary" (click)="confirmNotDeliver()"
-          style="background-color: #1e1b4b;">ยืนยัน</button>
-      </div>
     </div>
   </div>
 </div>

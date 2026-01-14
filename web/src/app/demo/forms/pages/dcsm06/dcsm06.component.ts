@@ -43,14 +43,14 @@ export class Dcsm06Component implements OnInit {
   isSortMode: boolean = false;
 
   tableColumns = [
-    { key: 'id', label: 'ID' },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'id', label: 'ลำดับ' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
     { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
     { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
     { key: 'jobType', label: 'ประเภทงาน' }
   ];
 

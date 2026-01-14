@@ -66,7 +66,7 @@ export class Dcsm04DetailComponent implements OnInit {
       this.mainForm.controls['note'].disable({ emitEvent: false });
     }
     this.checkBtn();
-    if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง') {
+    if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง' && this.getCurrentUserFromToken() == this.mainForm.getRawValue().jobOwner) {
       this.isUpdateDelivery = true
     }
   }

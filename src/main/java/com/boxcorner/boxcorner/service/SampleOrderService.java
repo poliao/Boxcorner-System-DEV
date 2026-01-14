@@ -128,8 +128,17 @@ public class SampleOrderService {
         return sampleOrderRepository.save(sampleOrder);
     }
 
-    public Integer countBacklogStatus(String status) {
-        return sampleOrderRepository.countBacklogStatus(status);
+    public Integer countBacklogStatus(String status ,String responsiblePerson) {
+        return sampleOrderRepository.countBacklogStatus(status,responsiblePerson);
+    }
+
+    public Integer countStatus(String status) {
+        return sampleOrderRepository.countStatus(status);
+    }
+
+
+    public Integer countBacklogSalesStatus(String status ,String jobOwner) {
+        return sampleOrderRepository.countBacklogSalesStatus(status,jobOwner);
     }
 
     @Transactional

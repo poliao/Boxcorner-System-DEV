@@ -80,7 +80,7 @@ export class Dcsm02DetailComponent implements OnInit {
       jobDetails: ['', Validators.required],
       remarks: [''],
       jobOwner: ['', Validators.required],
-      deadlineDate: ['2026-01-13', Validators.required],
+      deadlineDate: ['', Validators.required],
       deadlineTime: ['', Validators.required],
       assignee: [''],
       processStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
