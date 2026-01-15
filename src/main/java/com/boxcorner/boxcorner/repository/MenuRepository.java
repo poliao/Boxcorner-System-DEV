@@ -23,7 +23,7 @@ public class MenuRepository {
                      "WHERE u.username = ? " +
                      "AND u.enabled = true " + 
                      "AND dp.can_view = true " +
-                     "ORDER BY m.id ASC"; 
+                     "ORDER BY m.sort_order ASC"; 
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             MenuResponse menu = new MenuResponse();
