@@ -247,6 +247,36 @@ const routes: Routes = [
         path: 'Dcsm12',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm12/dcsm12.component').then((c) => c.Dcsm12Component)
+      },
+      {
+        path: 'Dcsm13Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm13/dcsm13-detail.component').then((c) => c.Dcsm13DetailComponent)
+      },
+      {
+        path: 'Dcsm13',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm13/dcsm13.component').then((c) => c.Dcsm13Component)
+      },
+      {
+        path: 'Dcsm14Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm14/dcsm14-detail.component').then((c) => c.Dcsm14DetailComponent)
+      },
+      {
+        path: 'Dcsm14',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm14/dcsm14.component').then((c) => c.Dcsm14Component)
+      },
+      {
+        path: 'Dcsm15Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm15/dcsm15-detail.component').then((c) => c.Dcsm15DetailComponent)
+      },
+      {
+        path: 'Dcsm15',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm15/dcsm15.component').then((c) => c.Dcsm15Component)
       }
     ]
   },

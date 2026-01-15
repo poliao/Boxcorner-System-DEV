@@ -1,0 +1,80 @@
+<form [formGroup]="coatingForm" (ngSubmit)="onSubmit()">
+  <div class="card-body">
+    <div class="card total-income-card warning overflow-hidden">
+      <div class="position">
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+      </div>
+      <div class="padding">
+        <h5 class="card-title mb-3">บันทึกงานเคลือบ (Coating)</h5>
+        
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">วันที่รายงาน<span style="color: red;">*</span></label>
+            <input type="date" class="form-control" formControlName="report_date" 
+              [class.is-invalid]="coatingForm.get('report_date')?.invalid && coatingForm.get('report_date')?.touched">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">เลขที่ใบสั่งงาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="job_order_no" 
+              [class.is-invalid]="coatingForm.get('job_order_no')?.invalid && coatingForm.get('job_order_no')?.touched">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">ชื่องาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="job_name" 
+              [class.is-invalid]="coatingForm.get('job_name')?.invalid && coatingForm.get('job_name')?.touched">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">ประเภทการเคลือบ<span style="color: red;">*</span></label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" formControlName="coating_type" value="glossy" id="glossy">
+              <label class="form-check-label" for="glossy">เคลือบเงา (Glossy OPP)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" formControlName="coating_type" value="matte" id="matte">
+              <label class="form-check-label" for="matte">เคลือบด้าน (Matte OPP)</label>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">เวลาเริ่มต้น<span style="color: red;">*</span></label>
+            <input type="time" class="form-control" formControlName="start_time" 
+              (change)="calculateTotalTime()"
+              [class.is-invalid]="coatingForm.get('start_time')?.invalid && coatingForm.get('start_time')?.touched">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">เวลาสิ้นสุด<span style="color: red;">*</span></label>
+            <input type="time" class="form-control" formControlName="end_time" 
+              (change)="calculateTotalTime()"
+              [class.is-invalid]="coatingForm.get('end_time')?.invalid && coatingForm.get('end_time')?.touched">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">เวลารวม</label>
+            <input type="text" class="form-control bg-light" formControlName="total_time" readonly>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">จำนวน<span style="color: red;">*</span></label>
+            <input type="number" class="form-control" formControlName="quantity" 
+              [class.is-invalid]="coatingForm.get('quantity')?.invalid && coatingForm.get('quantity')?.touched">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">ชื่อผู้รายงาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="reporter_name" 
+              [class.is-invalid]="coatingForm.get('reporter_name')?.invalid && coatingForm.get('reporter_name')?.touched">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">หมายเหตุ</label>
+            <textarea class="form-control" formControlName="remarks" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,74 @@
+<form [formGroup]="printingForm" (ngSubmit)="onSubmit()">
+  <div class="card-body">
+    <div class="card total-income-card warning overflow-hidden">
+      <div class="position">
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+      </div>
+      <div class="padding">
+        <h5 class="card-title mb-3">บันทึกงานพิมพ์ (Printing)</h5>
+        
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">วันที่รายงาน<span style="color: red;">*</span></label>
+            <input type="date" class="form-control" formControlName="report_date" 
+              [class.is-invalid]="printingForm.get('report_date')?.invalid && printingForm.get('report_date')?.touched">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">เลขที่ใบสั่งงาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="job_order_no" 
+              [class.is-invalid]="printingForm.get('job_order_no')?.invalid && printingForm.get('job_order_no')?.touched">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">ชื่องาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="job_name" 
+              [class.is-invalid]="printingForm.get('job_name')?.invalid && printingForm.get('job_name')?.touched">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">จำนวนสี<span style="color: red;">*</span></label>
+            <input type="number" class="form-control" formControlName="color_count" 
+              [class.is-invalid]="printingForm.get('color_count')?.invalid && printingForm.get('color_count')?.touched">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">เวลาเริ่มต้น<span style="color: red;">*</span></label>
+            <input type="time" class="form-control" formControlName="start_time" 
+              (change)="calculateTotalTime()"
+              [class.is-invalid]="printingForm.get('start_time')?.invalid && printingForm.get('start_time')?.touched">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">เวลาสิ้นสุด<span style="color: red;">*</span></label>
+            <input type="time" class="form-control" formControlName="end_time" 
+              (change)="calculateTotalTime()"
+              [class.is-invalid]="printingForm.get('end_time')?.invalid && printingForm.get('end_time')?.touched">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">เวลารวม</label>
+            <input type="text" class="form-control bg-light" formControlName="total_time" readonly>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">จำนวน<span style="color: red;">*</span></label>
+            <input type="number" class="form-control" formControlName="quantity" 
+              [class.is-invalid]="printingForm.get('quantity')?.invalid && printingForm.get('quantity')?.touched">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">ชื่อผู้รายงาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="reporter_name" 
+              [class.is-invalid]="printingForm.get('reporter_name')?.invalid && printingForm.get('reporter_name')?.touched">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label">หมายเหตุ</label>
+            <textarea class="form-control" formControlName="remarks" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
