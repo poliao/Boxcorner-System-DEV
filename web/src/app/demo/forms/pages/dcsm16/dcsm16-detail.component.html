@@ -1,0 +1,146 @@
+<div class="card-body">
+  <div class="card total-income-card warning overflow-hidden">
+    <div style="padding: 10px;">
+      <form [formGroup]="mainForm" class="row g-3">
+        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
+            {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
+          </button>
+          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            อนุมัติ
+          </button>
+          <button *ngIf="isUpdateDelivery == true" (click)="updateDelivery()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            อนุมัติเลื่อนวันส่ง
+          </button>
+          <button *ngIf="isUpdateDelivery == true" (click)="updateNotDelivery()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ไม่อนุมัติเลื่อนวันส่ง
+          </button>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">รหัสสั่งผลิต</label>
+          <input type="text" formControlName="id" class="form-control">
+        </div>
+        <div *ngIf="isDesign" class="col-md-6">
+          <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
+          <input type="text" formControlName="designOrderId" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
+          <input type="text" class="form-control" formControlName="orderDate"
+            [class.is-invalid]="mainForm.get('orderDate')?.invalid && mainForm.get('orderDate')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
+          <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
+            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">เจ้าของงาน</label>
+          <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
+          <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
+          <input type="date" class="form-control" formControlName="deliveryDate" placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
+          <input type="time" formControlName="deliveryTime" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">สถานะ</label>
+          <input type="text" formControlName="status" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">จำนวน<span style="color: red;">*</span></label>
+          <input type="number" formControlName="quantity" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">หน่วยนับ<span style="color: red;">*</span></label>
+          <input type="text" formControlName="unit" class="form-control">
+        </div>
+        <div class="col-md-3" *ngIf="isUpdateDelivery">
+          <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="date"
+           formControlName="updateDateDelivery" class="form-control">
+        </div>
+        <div class="col-md-3" *ngIf="isUpdateDelivery">
+          <label class="form-label font-weight-bold">เวลาที่ขอเลื่อนส่ง</label>
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="time"
+            formControlName="updateTimeDelivery" class="form-control">
+        </div>
+        <div class="col-12">
+          <label class="form-label font-weight-bold">หมายเหตุ</label>
+          <input type="text" formControlName="note" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
+        </div>
+        <div class="col-md-6">
+          <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
+              class="form-check-input" id="isCreateSampleSwitch">
+            <label class="form-check-label" for="isCreateSampleSwitch">ขึ้นตัวอย่าง</label>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showApproveModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">อนุมัติข้อมูลไปยัง ตารางคอนเฟิร์มรอผลิต</h5>
+        <button type="button" class="btn-close" (click)="closeApproveModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">ใช้ไฟล์ <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [formControl]="usedFile"
+              [class.is-invalid]="usedFile.invalid && usedFile.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">ตัวอย่างสี</label>
+            <input type="text" class="form-control" [formControl]="colorSample"
+              [class.is-invalid]="colorSample.invalid && colorSample.touched">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า <span style="color: red;">*</span></label>
+            <input type="date" class="form-control" [formControl]="deadlineDate"
+              [class.is-invalid]="deadlineDate.invalid && deadlineDate.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า <span style="color: red;">*</span></label>
+            <input type="time" class="form-control" [formControl]="deadlineTime"
+              [class.is-invalid]="deadlineTime.invalid && deadlineTime.touched">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">หมายเหตุ </label>
+            <textarea class="form-control" rows="3" [formControl]="remarks" placeholder="หมายเหตุเพิ่มเติม..."
+              [class.is-invalid]="remarks.invalid && remarks.touched"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
+
+        <button type="button" class="btn btn-success" (click)="confirmApprove()"
+          [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid">
+          ยืนยันอนุมัติ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
