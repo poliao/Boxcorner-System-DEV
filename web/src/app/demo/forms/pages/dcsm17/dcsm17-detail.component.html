@@ -100,7 +100,7 @@
       <div class="modal-body">
         <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">ใช้ไฟล์ <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">ใช้ไฟล์ <span style="color: red;">*</span></label>
             <input type="text" class="form-control" [formControl]="usedFile"
               [class.is-invalid]="usedFile.invalid && usedFile.touched">
           </div>
@@ -136,7 +136,7 @@
         <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
 
         <button type="button" class="btn btn-success" (click)="confirmApprove()"
-          [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid">
+          [disabled]="usedFile.invalid || deadlineDate.invalid || deadlineTime.invalid">
           ยืนยันอนุมัติ
         </button>
       </div>

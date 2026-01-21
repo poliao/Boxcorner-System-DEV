@@ -15,6 +15,12 @@ import { Dcsm09DetailResolver } from './demo/forms/pages/dcsm09/dcsm09-detail.re
 import { Dcsm10DetailResolver } from './demo/forms/pages/dcsm10/dcsm10-detail.resolver';
 import { Dcsm11DetailResolver } from './demo/forms/pages/dcsm11/dcsm11-detail.resolver';
 import { Dcsm12DetailResolver } from './demo/forms/pages/dcsm12/dcsm12-detail.resolver';
+import { Dcsm13DetailResolver } from './demo/forms/pages/dcsm13/dcsm13-detail.resolver';
+import { Dcsm14DetailResolver } from './demo/forms/pages/dcsm14/dcsm14-detail.resolver';
+import { Dcsm15DetailResolver } from './demo/forms/pages/dcsm15/dcsm15-detail.resolver';
+import { Dcsm16DetailResolver } from './demo/forms/pages/dcsm16/dcsm16-detail.resolver';
+import { Dcsm17DetailResolver } from './demo/forms/pages/dcsm17/dcsm17-detail.resolver';
+import { Dcsm18DetailResolver } from './demo/forms/pages/dcsm18/dcsm18-detail.resolver';
 
 const routes: Routes = [
   {
@@ -249,6 +255,14 @@ const routes: Routes = [
         loadComponent: () => import('./demo/forms/pages/dcsm12/dcsm12.component').then((c) => c.Dcsm12Component)
       },
       {
+        path: 'Dcsm13Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm13/dcsm13-detail.component').then((c) => c.Dcsm13DetailComponent),
+        resolve: {
+          designOrder: Dcsm13DetailResolver
+        }
+      },
+      {
         path: 'Dcsm13Detail',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm13/dcsm13-detail.component').then((c) => c.Dcsm13DetailComponent)
@@ -257,6 +271,14 @@ const routes: Routes = [
         path: 'Dcsm13',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm13/dcsm13.component').then((c) => c.Dcsm13Component)
+      },
+      {
+        path: 'Dcsm14Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm14/dcsm14-detail.component').then((c) => c.Dcsm14DetailComponent),
+        resolve: {
+          designOrder: Dcsm14DetailResolver
+        }
       },
       {
         path: 'Dcsm14Detail',
@@ -269,6 +291,14 @@ const routes: Routes = [
         loadComponent: () => import('./demo/forms/pages/dcsm14/dcsm14.component').then((c) => c.Dcsm14Component)
       },
       {
+        path: 'Dcsm15Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm15/dcsm15-detail.component').then((c) => c.Dcsm15DetailComponent),
+        resolve: {
+          designOrder: Dcsm15DetailResolver
+        }
+      },
+      {
         path: 'Dcsm15Detail',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm15/dcsm15-detail.component').then((c) => c.Dcsm15DetailComponent)
@@ -277,6 +307,60 @@ const routes: Routes = [
         path: 'Dcsm15',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm15/dcsm15.component').then((c) => c.Dcsm15Component)
+      },
+      {
+        path: 'Dcsm16Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm16/dcsm16-detail.component').then((c) => c.Dcsm16DetailComponent),
+        resolve: {
+          designOrder: Dcsm16DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm16Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm16/dcsm16-detail.component').then((c) => c.Dcsm16DetailComponent)
+      },
+      {
+        path: 'Dcsm16',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm16/dcsm16.component').then((c) => c.Dcsm16Component)
+      },
+      {
+        path: 'Dcsm17Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm17/dcsm17-detail.component').then((c) => c.Dcsm17DetailComponent),
+        resolve: {
+          designOrder: Dcsm17DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm17Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm17/dcsm17-detail.component').then((c) => c.Dcsm17DetailComponent)
+      },
+      {
+        path: 'Dcsm17',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm17/dcsm17.component').then((c) => c.Dcsm17Component)
+      },
+      {
+        path: 'Dcsm18Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm18/dcsm18-detail.component').then((c) => c.Dcsm18DetailComponent),
+        resolve: {
+          designOrder: Dcsm18DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm18Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm18/dcsm18-detail.component').then((c) => c.Dcsm18DetailComponent)
+      },
+      {
+        path: 'Dcsm18',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm18/dcsm18.component').then((c) => c.Dcsm18Component)
       }
     ]
   },

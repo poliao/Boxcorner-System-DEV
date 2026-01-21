@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Dcsm16Service } from './dcsm16.service';
+import { Dcsm17Service } from './dcsm17.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
@@ -18,7 +18,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
 
 @Component({
-  selector: 'app-dcsm16',
+  selector: 'app-dcsm17',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -38,10 +38,10 @@ import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
     MatNativeDateModule,
     ThaiDatePipe
   ],
-  templateUrl: './dcsm16.component.html',
-  styleUrls: ['./dcsm16.component.scss']
+  templateUrl: './dcsm17.component.html',
+  styleUrls: ['./dcsm17.component.scss']
 })
-export class Dcsm16Component implements OnInit {
+export class Dcsm17Component implements OnInit {
   
   searchForm!: FormGroup;
 
@@ -66,7 +66,7 @@ export class Dcsm16Component implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm16Service: Dcsm16Service,
+    private dcsm17Service: Dcsm17Service,
     private statusColorService: StatusColorService
   ) {}
 
@@ -93,7 +93,7 @@ export class Dcsm16Component implements OnInit {
   loadData(): void {
     const filters = this.searchForm.value;
 
-    this.dcsm16Service.getOrdersWithSearch(
+    this.dcsm17Service.getOrdersWithSearch(
       this.pageIndex,
       this.pageSize,
       filters 
@@ -114,7 +114,7 @@ export class Dcsm16Component implements OnInit {
   loadDataSort(): void {
     const filters = this.searchForm.value;
 
-    this.dcsm16Service.getOrdersWithSearchSort(
+    this.dcsm17Service.getOrdersWithSearchSort(
       this.pageIndex,
       this.pageSize,
       filters 
@@ -195,15 +195,15 @@ export class Dcsm16Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm16Detail']); 
+    this.router.navigate(['/Dcsm17Detail']); 
   }
 
   onRowClick(row: any): void {
-    this.router.navigate(['/Dcsm16Detail', row.id]);
+    this.router.navigate(['/Dcsm17Detail', row.id]);
   }
 
   BacklogShif() {
-    this.dcsm16Service.countBacklogShif().subscribe({
+    this.dcsm17Service.countBacklogShif().subscribe({
       next: (data: number) => {
         this.shif = data;
       },
@@ -216,7 +216,7 @@ export class Dcsm16Component implements OnInit {
   }
 
   BacklogApproveSample() {
-    this.dcsm16Service.countBacklogApproveSample().subscribe({
+    this.dcsm17Service.countBacklogApproveSample().subscribe({
       next: (data: number) => {
         this.approveSample = data;
       },
@@ -236,6 +236,4 @@ export class Dcsm16Component implements OnInit {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
-
-
 }

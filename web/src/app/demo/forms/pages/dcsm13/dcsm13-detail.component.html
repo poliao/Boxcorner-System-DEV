@@ -8,53 +8,58 @@
         <h5 class="card-title mb-3">บันทึกงานเคลือบ (Coating)</h5>
         
         <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">วันที่รายงาน<span style="color: red;">*</span></label>
-            <input type="date" class="form-control" formControlName="report_date" 
-              [class.is-invalid]="coatingForm.get('report_date')?.invalid && coatingForm.get('report_date')?.touched">
+          <div class="col-md-2">
+            <label class="form-label">ลำดับ</label>
+            <input type="number" class="form-control" formControlName="id" >
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-2">
+            <label class="form-label">วันที่รายงาน</label>
+            <input type="date" class="form-control" formControlName="reportDate" 
+              [class.is-invalid]="coatingForm.get('reportDate')?.invalid && coatingForm.get('reportDate')?.touched">
+          </div>
+
+          <div class="col-md-2">
             <label class="form-label">เลขที่ใบสั่งงาน<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" formControlName="job_order_no" 
-              [class.is-invalid]="coatingForm.get('job_order_no')?.invalid && coatingForm.get('job_order_no')?.touched">
-          </div>
-
-          <div class="col-md-12">
-            <label class="form-label">ชื่องาน<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" formControlName="job_name" 
-              [class.is-invalid]="coatingForm.get('job_name')?.invalid && coatingForm.get('job_name')?.touched">
+            <input type="text" class="form-control" formControlName="jobOrderNo" 
+              [class.is-invalid]="coatingForm.get('jobOrderNo')?.invalid && coatingForm.get('jobOrderNo')?.touched">
           </div>
 
           <div class="col-md-6">
+            <label class="form-label">ชื่องาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="jobName" 
+              [class.is-invalid]="coatingForm.get('jobName')?.invalid && coatingForm.get('jobName')?.touched">
+          </div>
+
+          <div class="col-md-2">
             <label class="form-label">ประเภทการเคลือบ<span style="color: red;">*</span></label>
             <div class="form-check">
-              <input class="form-check-input" type="radio" formControlName="coating_type" value="glossy" id="glossy">
+              <input class="form-check-input" type="radio" formControlName="coatingType" value="glossy" id="glossy">
               <label class="form-check-label" for="glossy">เคลือบเงา (Glossy OPP)</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" formControlName="coating_type" value="matte" id="matte">
+              <input class="form-check-input" type="radio" formControlName="coatingType" value="matte" id="matte">
               <label class="form-check-label" for="matte">เคลือบด้าน (Matte OPP)</label>
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">เวลาเริ่มต้น<span style="color: red;">*</span></label>
-            <input type="time" class="form-control" formControlName="start_time" 
+            <input type="time" class="form-control" formControlName="startTime" 
               (change)="calculateTotalTime()"
-              [class.is-invalid]="coatingForm.get('start_time')?.invalid && coatingForm.get('start_time')?.touched">
+              [class.is-invalid]="coatingForm.get('startTime')?.invalid && coatingForm.get('startTime')?.touched">
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">เวลาสิ้นสุด<span style="color: red;">*</span></label>
-            <input type="time" class="form-control" formControlName="end_time" 
+            <input type="time" class="form-control" formControlName="endTime" 
               (change)="calculateTotalTime()"
-              [class.is-invalid]="coatingForm.get('end_time')?.invalid && coatingForm.get('end_time')?.touched">
+              [class.is-invalid]="coatingForm.get('endTime')?.invalid && coatingForm.get('endTime')?.touched">
           </div>
 
           <div class="col-md-3">
             <label class="form-label">เวลารวม</label>
-            <input type="text" class="form-control bg-light" formControlName="total_time" readonly>
+            <input type="text" class="form-control bg-light" formControlName="totalTime">
           </div>
 
           <div class="col-md-3">
@@ -65,8 +70,8 @@
 
           <div class="col-md-6">
             <label class="form-label">ชื่อผู้รายงาน<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" formControlName="reporter_name" 
-              [class.is-invalid]="coatingForm.get('reporter_name')?.invalid && coatingForm.get('reporter_name')?.touched">
+            <input type="text" class="form-control" formControlName="reporterName" 
+              [class.is-invalid]="coatingForm.get('reporterName')?.invalid && coatingForm.get('reporterName')?.touched">
           </div>
 
           <div class="col-md-12">

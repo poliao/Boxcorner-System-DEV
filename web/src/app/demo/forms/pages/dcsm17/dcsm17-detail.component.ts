@@ -3,18 +3,18 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Dcsm16Service } from './dcsm16.service';
+import { Dcsm17Service } from './dcsm17.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 @Component({
-  selector: 'app-dcsm16-detail.component',
+  selector: 'app-dcsm17-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule],
-  templateUrl: './dcsm16-detail.component.html',
-  styleUrl: './dcsm16-detail.component.scss'
+  templateUrl: './dcsm17-detail.component.html',
+  styleUrl: './dcsm17-detail.component.scss'
 })
-export class Dcsm16DetailComponent implements OnInit {
+export class Dcsm17DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
@@ -37,7 +37,7 @@ export class Dcsm16DetailComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private dcsm16Service: Dcsm16Service,
+    private dcsm17Service: Dcsm17Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService
   ) { }
@@ -182,7 +182,7 @@ export class Dcsm16DetailComponent implements OnInit {
     if (formData.updateDateDelivery) formData.updateDateDelivery = this.convertDateToAPI(formData.updateDateDelivery);
 
     this.loadingService.show();
-    this.dcsm16Service.save(formData).subscribe({
+    this.dcsm17Service.save(formData).subscribe({
       next: (response) => {
         this.loadingService.hide();
         this.patchFormData(response);
@@ -210,11 +210,12 @@ export class Dcsm16DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm16Service.updateFileChecked(this.mainForm.getRawValue().id).subscribe((response) => {
+        this.dcsm17Service.updateFileChecked(this.mainForm.getRawValue().id).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm17']);
         })
       }
     });
@@ -233,11 +234,12 @@ export class Dcsm16DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm16Service.updateEditFile(this.mainForm.getRawValue().id).subscribe((response) => {
+        this.dcsm17Service.updateEditFile(this.mainForm.getRawValue().id).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm17']);
         })
       }
     });
@@ -256,12 +258,12 @@ export class Dcsm16DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm16Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
+        this.dcsm17Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-          this.router.navigate(['/Dcsm16']);
+          this.router.navigate(['/dcsm17']);
         })
       }
     });
@@ -310,7 +312,7 @@ export class Dcsm16DetailComponent implements OnInit {
         data.deliveryTime = this.mainForm.getRawValue().updateTimeDelivery
         data.status = 'อนุมัติขอเลื่อนส่ง';
         this.loadingService.show();
-        this.dcsm16Service.save(data).subscribe((response) => {
+        this.dcsm17Service.save(data).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
@@ -320,6 +322,7 @@ export class Dcsm16DetailComponent implements OnInit {
             this.isUpdateDelivery = false
           }
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm17']);
         })
       }
     });
@@ -340,7 +343,7 @@ export class Dcsm16DetailComponent implements OnInit {
         const data = this.mainForm.getRawValue();
         data.status = 'ไม่อนุมัติเลื่อนส่ง';
         this.loadingService.show();
-        this.dcsm16Service.save(data).subscribe((response) => {
+        this.dcsm17Service.save(data).subscribe((response) => {
           this.patchFormData(response);
           this.loadingService.hide();
           this.checkBtn();
@@ -350,15 +353,13 @@ export class Dcsm16DetailComponent implements OnInit {
             this.isUpdateDelivery = false
           }
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm17']);
         })
       }
     });
   }
 
   openApproveModal() {
-    const now = new Date();
-    this.deadlineDate.setValue(this.formatDateToDDMMYYYY(now));
-    this.deadlineTime.setValue(now.toTimeString().substring(0, 5));
     this.usedFile.setValue('');
     this.colorSample.setValue('');
     this.remarks.setValue('');
@@ -370,6 +371,7 @@ export class Dcsm16DetailComponent implements OnInit {
   }
 
   confirmApprove() {
+
     const data = {
       orderDate: this.formatDateToDDMMYYYY(new Date()),
       folderName: this.mainForm.getRawValue().folderName,
@@ -392,6 +394,8 @@ export class Dcsm16DetailComponent implements OnInit {
       status: 'รอผู้รับผิดชอบอนุมัติ',
       sampleOrderId: this.mainForm.getRawValue().id,
     };
+    console.log(data);
+    
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
       text: "คุณต้องอนุมัติส่งไปตารางขึ้นตัวอย่าง ใช่หรือไม่?",
@@ -404,14 +408,14 @@ export class Dcsm16DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm16Service.saveProduction(data).subscribe((response) => {
+        this.dcsm17Service.saveProduction(data).subscribe((response) => {
           if (response) {
-            this.dcsm16Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
+            this.dcsm17Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
               this.patchFormData(response);
               this.loadingService.hide();
               this.checkBtn();
               this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-              this.router.navigate(['/Dcsm16']);
+              this.router.navigate(['/Dcsm17']);
             })
           }
         });

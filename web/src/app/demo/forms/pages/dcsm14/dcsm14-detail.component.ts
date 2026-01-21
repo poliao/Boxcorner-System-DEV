@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Dcsm14Service } from './dcsm14.service';
 import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -19,31 +19,43 @@ export class Dcsm14DetailComponent implements OnInit {
     private fb: FormBuilder,
     private printingService: Dcsm14Service,
     private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit() {
     this.createForm();
+    const resolvedData = this.route.snapshot.data['designOrder'];
+    if (resolvedData) {
+      this.printingForm.patchValue(resolvedData);
+    }
   }
 
   createForm() {
+    const today = new Date().toISOString().split('T')[0];
     this.printingForm = this.fb.group({
-      report_date: [null, Validators.required],
-      job_order_no: [null, [Validators.required, Validators.maxLength(50)]],
-      job_name: [null, [Validators.required, Validators.maxLength(255)]],
-      color_count: [null, [Validators.required, Validators.min(1)]],
-      start_time: [null, Validators.required],
-      end_time: [null, Validators.required],
-      total_time: [null, Validators.maxLength(50)],
+      id: [null],
+      reportDate: [today],
+      jobOrderNo: [null, [Validators.required, Validators.maxLength(50)]],
+      jobName: [null, [Validators.required, Validators.maxLength(255)]],
+      colorCount: [null, [Validators.required, Validators.min(1)]],
+      startTime: [null, Validators.required],
+      endTime: [null, Validators.required],
+      totalTime: [null, Validators.maxLength(50)],
       quantity: [null, [Validators.required, Validators.min(1)]],
       remarks: [null],
-      reporter_name: [null, [Validators.required, Validators.maxLength(100)]]
+      reporterName: [null, [Validators.required, Validators.maxLength(100)]]
     });
+    this.printingForm.get('id')?.disable();
+    this.printingForm.get('reportDate')?.disable();
+    this.printingForm.get('totalTime')?.disable();
+    this.printingForm.get('reporterName')?.disable();
   }
 
   calculateTotalTime() {
-    const start = this.printingForm.get('start_time')?.value;
-    const end = this.printingForm.get('end_time')?.value;
+    const start = this.printingForm.get('startTime')?.value;
+    const end = this.printingForm.get('endTime')?.value;
     
     if (start && end) {
       const startTime = new Date(`2000-01-01 ${start}`);
@@ -53,7 +65,7 @@ export class Dcsm14DetailComponent implements OnInit {
       if (diff > 0) {
         const hours = Math.floor(diff / 3600000);
         const minutes = Math.floor((diff % 3600000) / 60000);
-        this.printingForm.patchValue({ total_time: `${hours}:${minutes.toString().padStart(2, '0')}` });
+        this.printingForm.patchValue({ totalTime: `${hours}:${minutes.toString().padStart(2, '0')}` });
       }
     }
   }
@@ -66,11 +78,12 @@ export class Dcsm14DetailComponent implements OnInit {
     }
 
     this.loadingService.show();
-    this.printingService.save(this.printingForm.value).subscribe({
+    this.printingService.save(this.printingForm.getRawValue()).subscribe({
       next: (res) => {
         this.loadingService.hide();
+        this.printingForm.patchValue(res);
         this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-        this.printingForm.reset();
+        this.router.navigate(['/Dcsm14']);
       },
       error: (err) => {
         this.loadingService.hide();

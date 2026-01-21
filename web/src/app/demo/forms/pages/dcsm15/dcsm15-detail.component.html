@@ -6,69 +6,70 @@
       </div>
       <div class="padding">
         <h5 class="card-title mb-3">บันทึกงานปั๊ม (Stamping)</h5>
-        
+
         <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">วันที่รายงาน<span style="color: red;">*</span></label>
-            <input type="date" class="form-control" formControlName="report_date" 
+          <div class="col-md-2">
+            <label class="form-label">ลำดับ</label>
+            <input type="number" class="form-control" formControlName="id">
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">วันที่รายงาน</label>
+            <input type="date" class="form-control" formControlName="reportDate"
               [class.is-invalid]="stampingForm.get('report_date')?.invalid && stampingForm.get('report_date')?.touched">
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-2">
             <label class="form-label">เลขที่ใบสั่งงาน<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" formControlName="job_order_no" 
+            <input type="text" class="form-control" formControlName="jobOrderNo"
               [class.is-invalid]="stampingForm.get('job_order_no')?.invalid && stampingForm.get('job_order_no')?.touched">
           </div>
 
-          <div class="col-md-12">
+          <div class="col-md-6">
             <label class="form-label">ชื่องาน<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" formControlName="job_name" 
+            <input type="text" class="form-control" formControlName="jobName"
               [class.is-invalid]="stampingForm.get('job_name')?.invalid && stampingForm.get('job_name')?.touched">
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-2">
             <label class="form-label">ประเภทงานปั๊ม<span style="color: red;">*</span></label>
             <div class="form-check">
-              <input class="form-check-input" type="radio" formControlName="stamping_type" value="embossing" id="embossing">
+              <input class="form-check-input" type="radio" formControlName="stampingType" value="embossing"
+                id="embossing">
               <label class="form-check-label" for="embossing">ปั๊มนูน (Embossing)</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" formControlName="stamping_type" value="diecutting" id="diecutting">
-              <label class="form-check-label" for="diecutting">ไดคัท (Die-cutting)</label>
+              <input class="form-check-input" type="radio" formControlName="stampingType" value="cutting" id="cutting">
+              <label class="form-check-label" for="cutting">ปั้มขาด (Cutting)</label>
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">เวลาเริ่มต้น<span style="color: red;">*</span></label>
-            <input type="time" class="form-control" formControlName="start_time" 
-              (change)="calculateTotalTime()"
-              [class.is-invalid]="stampingForm.get('start_time')?.invalid && stampingForm.get('start_time')?.touched">
+            <input type="time" class="form-control" formControlName="startTime" (change)="calculateTotalTime()"
+              [class.is-invalid]="stampingForm.get('startTime')?.invalid && stampingForm.get('startTime')?.touched">
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">เวลาสิ้นสุด<span style="color: red;">*</span></label>
-            <input type="time" class="form-control" formControlName="end_time" 
-              (change)="calculateTotalTime()"
-              [class.is-invalid]="stampingForm.get('end_time')?.invalid && stampingForm.get('end_time')?.touched">
+            <input type="time" class="form-control" formControlName="endTime" (change)="calculateTotalTime()"
+              [class.is-invalid]="stampingForm.get('endTime')?.invalid && stampingForm.get('endTime')?.touched">
           </div>
 
           <div class="col-md-3">
             <label class="form-label">เวลารวม</label>
-            <input type="text" class="form-control bg-light" formControlName="total_time" readonly>
+            <input type="text" class="form-control bg-light" formControlName="totalTime" readonly>
           </div>
 
           <div class="col-md-3">
-            <label class="form-label">จำนวน<span style="color: red;">*</span></label>
-            <input type="number" class="form-control" formControlName="quantity" 
+            <label class="form-label">จำนวนใบพิมพ์<span style="color: red;">*</span></label>
+            <input type="number" class="form-control" formControlName="quantity"
               [class.is-invalid]="stampingForm.get('quantity')?.invalid && stampingForm.get('quantity')?.touched">
           </div>
-
-          <div class="col-md-6">
-            <label class="form-label">ชื่อผู้รายงาน<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" formControlName="reporter_name" 
-              [class.is-invalid]="stampingForm.get('reporter_name')?.invalid && stampingForm.get('reporter_name')?.touched">
+          <div class="col-md-3">
+            <label class="form-label">ผู้รายงาน</label>
+            <input type="text" class="form-control" formControlName="reporterName">
           </div>
-
           <div class="col-md-12">
             <label class="form-label">หมายเหตุ</label>
             <textarea class="form-control" formControlName="remarks" rows="3"></textarea>

@@ -86,7 +86,7 @@ export class Dcsm12DetailComponent implements OnInit {
   }
 
   checkBtn() {
-    if (this.mainForm.getRawValue().status == 'รอผู้รับผิดชอบอนุมัติ' || this.mainForm.getRawValue().status == 'รอดำเนินการ') {
+    if (this.mainForm.getRawValue().status == 'รอผู้รับผิดชอบอนุมัติ' || this.mainForm.getRawValue().status == 'รอดำเนินการ' || this.mainForm.getRawValue().status == 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status == 'ผ่าน') {
       this.isCancel = false;
     }
   }

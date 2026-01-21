@@ -115,8 +115,8 @@ export class Dcsm05Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
-          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : '',
-          deliveryDate: item.deliveryDate ? new Date(item.deliveryDate).toLocaleDateString('th-TH') : ''
+          orderDate: this.formatDate(item.orderDate),
+          deliveryDate: this.formatDate(item.deliveryDate)
         }));
         this.totalElements = res.totalElements;
       },
@@ -136,14 +136,23 @@ export class Dcsm05Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
-          orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('th-TH') : '',
-          deliveryDate: item.deliveryDate ? new Date(item.deliveryDate).toLocaleDateString('th-TH') : ''
+          orderDate: this.formatDate(item.orderDate),
+          deliveryDate: this.formatDate(item.deliveryDate)
         }));
         this.totalElements = res.totalElements;
       },
       error: (err) => {
       }
     });
+  }
+
+  private formatDate(dateString: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   onSearch(): void {

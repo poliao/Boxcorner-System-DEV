@@ -68,7 +68,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:4200");
-        configuration.addAllowedOrigin("http://18.139.217.88");
+        configuration.addAllowedOrigin("http://13.213.46.185");
+        configuration.addAllowedOrigin("http://bca-system.sytes.net");
 
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");

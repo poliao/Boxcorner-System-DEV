@@ -3,19 +3,19 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Dcsm06Service } from './dcsm06.service';
+import { Dcsm18Service } from './dcsm18.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
 @Component({
-  selector: 'app-dcsm06-detail.component',
+  selector: 'app-dcsm18-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
-  templateUrl: './dcsm06-detail.component.html',
-  styleUrl: './dcsm06-detail.component.scss'
+  templateUrl: './dcsm18-detail.component.html',
+  styleUrl: './dcsm18-detail.component.scss'
 })
-export class Dcsm06DetailComponent implements OnInit {
+export class Dcsm18DetailComponent implements OnInit {
   mainForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
@@ -26,7 +26,7 @@ export class Dcsm06DetailComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private dcsm06Service: Dcsm06Service,
+    private dcsm18Service: Dcsm18Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private authService: AuthService,
@@ -45,7 +45,7 @@ export class Dcsm06DetailComponent implements OnInit {
       this.isSampleOrderId = false
     }
 
-    if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || (this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().jobOwner)) {
+    if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || ((this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().jobStatus == 'รอดำเนินการ') && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().jobOwner)) {
       this.mainForm.get('usedFile')?.enable();
       this.mainForm.get('colorSample')?.enable();
       this.mainForm.get('deadlineDate')?.enable();
@@ -57,15 +57,16 @@ export class Dcsm06DetailComponent implements OnInit {
   }
 
   initForm(): void {
+    const today = this.formatDateToDDMMYYYY(new Date());
     this.mainForm = this.fb.group({
       id: [''],
-      orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
+      orderDate: [today, Validators.required],
       folderName: ['', Validators.required],
-      usedFile: ['',Validators.required],
+      usedFile: ['', Validators.required],
       colorSample: [''],
       jobOwner: [''],
-      deadlineDate: ['',Validators.required],
-      deadlineTime: ['',Validators.required],
+      deadlineDate: ['', Validators.required],
+      deadlineTime: ['', Validators.required],
       deliveryDate: [''],
       jobStatus: [''],
       processStatus: [''],
@@ -127,12 +128,12 @@ export class Dcsm06DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm06Service.save(this.mainForm.getRawValue()).subscribe({
+        this.dcsm18Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
             this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm06']);
+            this.router.navigate(['/Dcsm18']);
           },
           error: (error) => {
             this.loadingService.hide();
@@ -144,56 +145,10 @@ export class Dcsm06DetailComponent implements OnInit {
     });
   }
 
-  formatDateThai(dateString: string): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
+  private formatDateToDDMMYYYY(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString().slice(-2);
+    const year = date.getFullYear();
     return `${day}/${month}/${year}`;
-  }
-
-  getThaiDateInput(controlName: string): string {
-    const value = this.mainForm.get(controlName)?.value;
-    return this.formatDateThai(value);
-  }
-
-  onThaiDateInput(event: any, controlName: string): void {
-    let value = event.target.value.replace(/[^0-9]/g, '');
-    
-    if (value.length >= 2) {
-      value = value.substring(0, 2) + '/' + value.substring(2);
-    }
-    if (value.length >= 5) {
-      value = value.substring(0, 5) + '/' + value.substring(5, 7);
-    }
-    
-    event.target.value = value;
-    
-    if (value.length === 8) {
-      const parts = value.split('/');
-      if (parts.length === 3) {
-        const day = parseInt(parts[0]);
-        const month = parseInt(parts[1]);
-        let year = parseInt(parts[2]);
-        
-        if (year <= 50) {
-          year += 2000;
-        } else {
-          year += 1900;
-        }
-        
-        if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
-          const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-          if (this.mainForm.get(controlName)) {
-            this.mainForm.get(controlName)?.setValue(isoDate);
-          }
-        }
-      }
-    } else {
-      if (this.mainForm.get(controlName)) {
-        this.mainForm.get(controlName)?.setValue('');
-      }
-    }
   }
 }

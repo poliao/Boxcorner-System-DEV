@@ -31,7 +31,6 @@ export class Dcsm15Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
-
   filterId = '';
   filterJobOrderNo = '';
   filterJobName = '';

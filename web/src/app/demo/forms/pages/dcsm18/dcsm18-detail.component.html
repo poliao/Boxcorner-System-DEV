@@ -3,13 +3,9 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
             บันทึกข้อมูล
-          </button>
-          <button *ngIf="isCancel == true" type="button" class="btn text-white px-5 shadow-sm"
-            (click)="updateCancelStatus()" style="background-color: #ff0000;">
-            ยกเลิกงานรอผลิต
           </button>
         </div>
 
@@ -23,16 +19,15 @@
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
-          <input type="date" formControlName="orderDate" class="form-control"
-            [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+          <input type="text" class="form-control" formControlName="orderDate">
         </div>
         <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
+          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">ใช้ไฟล์</label>
+          <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
           <input type="text" formControlName="usedFile" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
         <div class="col-md-3">
@@ -44,16 +39,16 @@
           <input type="text" formControlName="jobOwner" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
-          <input type="date" formControlName="deadlineDate" class="form-control">
+          <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า<span style="color: red;">*</span></label>
+          <input type="date" formControlName="deadlineDate" class="form-control" placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
+          <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า<span style="color: red;">*</span></label>
           <input type="time" formControlName="deadlineTime" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง<span style="color: red;">*</span></label>
-          <input type="date" formControlName="deliveryDate" class="form-control">
+          <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
+          <input type="date" class="form-control" formControlName="deliveryDate">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">สถานะงาน</label>
@@ -68,31 +63,36 @@
           <input type="text" formControlName="moldStatus" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">ผู้รับผิดชอบ <span style="color: red;">*</span></label>
-          <select formControlName="operatorName" class="form-control form-select">
-            <option value="" disabled selected>-- เลือกผู้รับผิดชอบ --</option>
-            <option *ngFor="let option of operatorOptions" [value]="option.value">
-              {{ option.text }}
-            </option>
-          </select>
-          <div class="invalid-feedback">
-            กรุณาเลือกผู้รับผิดชอบ
-          </div>
+          <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
+          <input type="text" formControlName="operatorName" class="form-control" >
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">ประเภทงาน<span style="color: red;">*</span></label>
-          <select formControlName="jobType" class="form-control form-select">
-            <option value="" disabled selected>-- เลือกประเภทงาน --</option>
-            <option value="OD">OD</option>
-            <option value="OS">OS</option>
-          </select>
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="jobType" class="form-control" >
         </div>
-        <div class="col-md-9">
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">ผู้รับผิดชอบแม่พิมพ์</label>
+          <input type="text" formControlName="moldMakerName" class="form-control" >
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">เครื่องทำแม่พิมพ์</label>
+          <input type="text" formControlName="printingMachine" class="form-control" >
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">ผู้ตรวจไฟล์</label>
+          <input type="text" formControlName="inspector" class="form-control" >
+        </div>
+        <div class="col-md-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control">
+          <input type="text" formControlName="remarks" class="form-control" >
         </div>
-
+        
+        <!-- <div class="col-md-3">
+          <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
+          <input type="text" formControlName="updatedAt" class="form-control" >
+        </div> -->
       </form>
     </div>
   </div>
 </div>
+

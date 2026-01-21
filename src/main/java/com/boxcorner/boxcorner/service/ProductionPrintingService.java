@@ -13,12 +13,18 @@ public class ProductionPrintingService {
     @Autowired
     private ProductionPrintingRepository repository;
 
-    public ProductionPrinting create(ProductionPrinting printing) {
+    public ProductionPrinting create(ProductionPrinting printing, String username) {
+        printing.setReporterName(username);
         return repository.save(printing);
     }
 
-    public Page<ProductionPrinting> getAll(int page, int size) {
-        return repository.findAll(PageRequest.of(page, size));
+    public Page<ProductionPrinting> getAll(int page, int size, String id, String jobOrderNo, String jobName) {
+        if ((id == null || id.trim().isEmpty()) && 
+            (jobOrderNo == null || jobOrderNo.trim().isEmpty()) && 
+            (jobName == null || jobName.trim().isEmpty())) {
+            return repository.findAll(PageRequest.of(page, size));
+        }
+        return repository.findByFilters(id, jobOrderNo, jobName, PageRequest.of(page, size));
     }
 
     public ProductionPrinting getById(Integer id) {

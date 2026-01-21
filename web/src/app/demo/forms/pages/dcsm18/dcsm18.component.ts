@@ -13,10 +13,10 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
-import { Dcsm07Service } from './dcsm07.service';
+import { Dcsm18Service } from './dcsm18.service';
 
 @Component({
-  selector: 'app-dcsm07',
+  selector: 'app-dcsm18',
   standalone: true,
   imports: [
     CommonModule,
@@ -31,42 +31,39 @@ import { Dcsm07Service } from './dcsm07.service';
     MatNativeDateModule,
     DataTableComponent
   ],
-  templateUrl: './dcsm07.component.html',
-  styleUrls: ['./dcsm07.component.scss']
+  templateUrl: './dcsm18.component.html',
+  styleUrls: ['./dcsm18.component.scss']
 })
-export class Dcsm07Component implements OnInit {
+export class Dcsm18Component implements OnInit {
   searchForm!: FormGroup;
-
   tableData: any[] = [];
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
-  countBacklog = 0;
   isSortMode: boolean = false;
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
     { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
     { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
-    { key: 'deliveryDate', label: 'วันที่ผู้รับผิดชอบต้องส่ง' }
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'jobType', label: 'ประเภทงาน' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private dcsm07Service: Dcsm07Service,
+    private dcsm18Service: Dcsm18Service,
     private statusColorService: StatusColorService
   ) { }
 
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
-    this.Backlog();
   }
 
   initSearchForm(): void {
@@ -82,13 +79,15 @@ export class Dcsm07Component implements OnInit {
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
+    
   }
 
   loadData(): void {
     const formValues = this.searchForm.getRawValue();
 
+    // Map ข้อมูลให้ตรงกับ Service ที่เตรียมไว้
     const apiFilters = {
-      id: formValues.id,                  
+      id: formValues.id,                   // ส่ง id
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
       operatorName: formValues.responsiblePerson, 
@@ -102,7 +101,7 @@ export class Dcsm07Component implements OnInit {
       size: this.pageSize
     };
 
-    this.dcsm07Service.getOrdersWithSearch(apiFilters).subscribe({
+    this.dcsm18Service.getOrdersWithSearch(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
@@ -121,7 +120,7 @@ export class Dcsm07Component implements OnInit {
     const formValues = this.searchForm.getRawValue();
 
     const apiFilters = {
-      id: formValues.id,                  
+      id: formValues.id,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
       operatorName: formValues.responsiblePerson, 
@@ -135,7 +134,7 @@ export class Dcsm07Component implements OnInit {
       size: this.pageSize
     };
 
-    this.dcsm07Service.getOrdersWithSearchSort(apiFilters).subscribe({
+    this.dcsm18Service.getOrdersWithSearchSort(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
@@ -219,24 +218,11 @@ export class Dcsm07Component implements OnInit {
     }
   }
 
-  onRowClick(row: any): void {
-    this.router.navigate(['/Dcsm07Detail', row.id]);
+  add(): void {
+    this.router.navigate(['/Dcsm18Detail']); 
   }
 
-  Backlog(){
-    this.dcsm07Service.countBacklog().subscribe({
-      next: (data: number) => {
-        this.countBacklog = data;
-      },
-      error: (err) => {
-      }
-    });
-  }
-  
-  onFilterUnassigned() {
-    this.searchForm.patchValue({
-      status: 'รอผู้รับผิดชอบยืนยัน',
-    });
-    this.onSearch();
+  onRowClick(row: any): void {
+    this.router.navigate(['/Dcsm18Detail', row.id]);
   }
 }

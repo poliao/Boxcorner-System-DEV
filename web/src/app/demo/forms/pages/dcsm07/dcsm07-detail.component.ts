@@ -20,8 +20,9 @@ export class Dcsm07DetailComponent implements OnInit {
   isEditMode = false;
   id: string | null = null;
   operatorOptions: DropdownOption[] = [];
-
+  isSampleOrderId = true;
   isCancel = true;
+  isBtnSave = false;
 
   constructor(
     private fb: FormBuilder,
@@ -46,6 +47,9 @@ export class Dcsm07DetailComponent implements OnInit {
         this.mainForm.get('deliveryDate')?.enable({ emitEvent: false });
         this.mainForm.get('remarks')?.enable({ emitEvent: false });
       }
+      if (this.mainForm.getRawValue().sampleOrderId == '' || this.mainForm.getRawValue().sampleOrderId == null) {
+        this.isSampleOrderId = false
+      }
     }
   }
 
@@ -69,6 +73,7 @@ export class Dcsm07DetailComponent implements OnInit {
       jobType: ['', Validators.required],
       createdAt: [''],
       updatedAt: [''],
+      sampleOrderId: [''],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -86,6 +91,7 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('operatorName')?.disable({ emitEvent: false });
     this.mainForm.get('deliveryDate')?.disable({ emitEvent: false });
     this.mainForm.get('remarks')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleOrderId')?.disable();
   }
 
   patchFormData(data: any): void {
@@ -96,6 +102,9 @@ export class Dcsm07DetailComponent implements OnInit {
   checkBtn() {
     if (this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().jobStatus == 'รอดำเนินการ') {
       this.isCancel = false;
+    }
+    if(this.mainForm.getRawValue().processStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().processStatus == 'รอดำเนินการ') {
+      this.isBtnSave = true;
     }
   }
 
@@ -159,7 +168,7 @@ export class Dcsm07DetailComponent implements OnInit {
   updateCancelStatus() {
     Swal.fire({
       title: 'ยกเลิก',
-      text: "ยืนยันยกเลิกข้อมูล ใช่หรือไม่?",
+      text: "การยกเลิกจะลบงานนี้ออกจากตารางรอผลิต",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',

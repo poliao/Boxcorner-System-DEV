@@ -13,12 +13,18 @@ public class ProductionStampingService {
     @Autowired
     private ProductionStampingRepository repository;
 
-    public ProductionStamping create(ProductionStamping stamping) {
+    public ProductionStamping save(ProductionStamping stamping,String username) {
+        stamping.setReporterName(username);
         return repository.save(stamping);
     }
 
-    public Page<ProductionStamping> getAll(int page, int size) {
-        return repository.findAll(PageRequest.of(page, size));
+    public Page<ProductionStamping> getAll(int page, int size, String id, String jobOrderNo, String jobName) {
+        if ((id == null || id.trim().isEmpty()) && 
+            (jobOrderNo == null || jobOrderNo.trim().isEmpty()) && 
+            (jobName == null || jobName.trim().isEmpty())) {
+            return repository.findAll(PageRequest.of(page, size));
+        }
+        return repository.findByFilters(id, jobOrderNo, jobName, PageRequest.of(page, size));
     }
 
     public ProductionStamping getById(Integer id) {
