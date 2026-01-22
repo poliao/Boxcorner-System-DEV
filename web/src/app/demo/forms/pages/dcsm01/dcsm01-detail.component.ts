@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 // ต้อง import FormArray ด้วยครับ
-import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
 import { Dcsm01Service } from 'src/app/demo/forms/pages/dcsm01/dcsm01.service';
@@ -9,9 +9,11 @@ import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { count } from 'rxjs';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-docsystem',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './dcsm01-detail.component.html',
   styleUrls: ['./dcsm01-detail.component.scss']
 })
@@ -25,6 +27,11 @@ export class Dcsm01DetailComponent implements OnInit {
   isUpdateMode: boolean = false;
   calculatedColors: any[] = [];
   calculatedTotalWeight: number = 0;
+
+  // ตัวแปรสำหรับ modal เพิ่มน้ำหนัก
+  additionalWeight: number = 0;
+  selectedColorIndex: number | null = null;
+  showAddWeightModal: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -66,7 +73,7 @@ export class Dcsm01DetailComponent implements OnInit {
     const items = this.colorForms.getRawValue();
 
     const sumWeight = items.reduce((sum: number, item: any) => {
-      const weight = Number(item.weight) || 0; 
+      const weight = Number(item.weight) || 0;
       return sum + weight;
     }, 0);
 
@@ -208,53 +215,78 @@ export class Dcsm01DetailComponent implements OnInit {
   }
 
   calresult() {
-  const reqTotal = Number(this.docForm.get('reqtotalweight')?.value) || 0;
-  const currentTotal = this.totalWeight;
+    const reqTotal = Number(this.docForm.get('reqtotalweight')?.value) || 0;
+    const currentTotal = this.totalWeight;
 
-  if (currentTotal === 0 || reqTotal === 0) {
-    this.calculatedColors = [];
-    this.calculatedTotalWeight = 0;
-    return;
-  }
-
-  const ratio = Number((reqTotal / currentTotal).toFixed(2)); 
-  
-  const currentItems = this.colorForms.getRawValue();
-  let runningSum = 0;
-
-  this.calculatedColors = currentItems.map((item: any, index: number) => {
-    const originalWeight = Number(item.weight) || 0;
-    let newWeight: number;
-
-    if (index === currentItems.length - 1) {
-      newWeight = Number((reqTotal - runningSum).toFixed(2));
-    } else {
-      newWeight = Number((originalWeight * ratio).toFixed(2));
-      runningSum += newWeight;
+    if (currentTotal === 0 || reqTotal === 0) {
+      this.calculatedColors = [];
+      this.calculatedTotalWeight = 0;
+      return;
     }
 
-    return {
-      color: item.color,
-      weight: newWeight,
-      lot: item.lot
-    };
-  });
+    const ratio = Number((reqTotal / currentTotal).toFixed(2));
 
-  this.calculatedTotalWeight = reqTotal;
-}
+    const currentItems = this.colorForms.getRawValue();
+    let runningSum = 0;
 
-  get labColorString(): string {
-  // ดึงค่าและแปลงเป็น Number ทันที พร้อมใส่ค่า Default เป็น 0 หากเป็นค่าว่าง
-  const l = Number(this.docForm.get('lightness')?.value) || 0;
-  const a = Number(this.docForm.get('greenred')?.value) || 0;
-  const b = Number(this.docForm.get('blueyellow')?.value) || 0;
+    this.calculatedColors = currentItems.map((item: any, index: number) => {
+      const originalWeight = Number(item.weight) || 0;
+      let newWeight: number;
 
-  // ตรวจสอบว่ามีค่าครบหรือไม่ (ในที่นี้เช็ค l เพราะ Lightness มักไม่เป็นลบ)
-  if (this.docForm.get('lightness')?.value === null) {
-    return '#f0f0f0';
+      if (index === currentItems.length - 1) {
+        newWeight = Number((reqTotal - runningSum).toFixed(2));
+      } else {
+        newWeight = Number((originalWeight * ratio).toFixed(2));
+        runningSum += newWeight;
+      }
+
+      return {
+        color: item.color,
+        weight: newWeight,
+        lot: item.lot
+      };
+    });
+
+    this.calculatedTotalWeight = reqTotal;
   }
 
-  // ส่งคืนค่าในรูปแบบ lab(L A B) ซึ่งรองรับทศนิยมโดยธรรมชาติใน CSS
-  return `lab(${l} ${a} ${b})`;
-}
+  get labColorString(): string {
+
+    const l = Number(this.docForm.get('lightness')?.value) || 0;
+    const a = Number(this.docForm.get('greenred')?.value) || 0;
+    const b = Number(this.docForm.get('blueyellow')?.value) || 0;
+
+    if (this.docForm.get('lightness')?.value === null) {
+      return '#f0f0f0';
+    }
+
+    return `lab(${l} ${a} ${b})`;
+  }
+
+  openAddWeightModal(colorIndex: number) {
+    this.selectedColorIndex = colorIndex;
+    this.additionalWeight = 0;
+    this.showAddWeightModal = true;
+  }
+
+  closeAddWeightModal() {
+    this.showAddWeightModal = false;
+    this.additionalWeight = 0;
+    this.selectedColorIndex = null;
+  }
+
+  addWeight() {
+    if (this.selectedColorIndex !== null && this.additionalWeight && this.additionalWeight > 0) {
+      const currentWeight = Number(this.colorForms.at(this.selectedColorIndex).get('weight')?.value) || 0;
+      const newWeight = currentWeight + Number(this.additionalWeight);
+
+      this.colorForms.at(this.selectedColorIndex).patchValue({
+        weight: newWeight
+      });
+
+      this.colorForms.at(this.selectedColorIndex).get('weight')?.updateValueAndValidity();
+
+      this.closeAddWeightModal();
+    }
+  }
 }

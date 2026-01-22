@@ -44,9 +44,10 @@
           <h5 class="card-title mb-3">สูตรตั้งต้น</h5>
 
           <div class="row bg-light p-2 fw-bold border border-bottom-0 d-none d-md-flex text-center">
-            <div class="col-md-5">สี <span style="color: red;">*</span></div>
-            <div class="col-md-3">น้ำหนัก (กรัม) <span style="color: red;">*</span></div>
+            <div class="col-md-4">สี <span style="color: red;">*</span></div>
+            <div class="col-md-2">น้ำหนัก (กรัม) <span style="color: red;">*</span></div>
             <div class="col-md-3">Lot <span style="color: red;">*</span></div>
+            <div class="col-md-2">จัดการ</div>
             <div class="col-md-1">ลบ</div>
           </div>
 
@@ -54,12 +55,12 @@
             <div *ngFor="let item of colorForms.controls; let i = index" [formGroupName]="i"
               class="row border p-3 mb-2 mb-md-0 align-items-center bg-white shadow-sm shadow-md-none rounded-3 rounded-md-0">
 
-              <div class="col-12 col-md-5 mb-2 mb-md-0">
+              <div class="col-12 col-md-4 mb-2 mb-md-0">
                 <label class="d-md-none form-label text-muted small">สี <span style="color: red;">*</span></label> 
                 <input type="text" class="form-control" formControlName="color" placeholder="ระบุสี" [class.is-invalid]="item.get('color')?.invalid && (item.get('color')?.touched || item.get('color')?.dirty)">
               </div>
 
-              <div class="col-6 col-md-3 mb-2 mb-md-0">
+              <div class="col-6 col-md-2 mb-2 mb-md-0">
                 <label class="d-md-none form-label text-muted small">น้ำหนัก <span style="color: red;">*</span></label>
                 <input type="number" class="form-control" formControlName="weight" placeholder="0" [class.is-invalid]="item.get('weight')?.invalid && (item.get('weight')?.touched || item.get('weight')?.dirty)">
               </div>
@@ -67,6 +68,13 @@
               <div class="col-6 col-md-3 mb-2 mb-md-0">
                 <label class="d-md-none form-label text-muted small">Lot <span style="color: red;">*</span> </label>
                 <input type="text" class="form-control" formControlName="lot" placeholder="Lot" [class.is-invalid]="item.get('lot')?.invalid && (item.get('lot')?.touched || item.get('lot')?.dirty)">
+              </div>
+
+              <div class="col-12 col-md-2 mb-2 mb-md-0">
+                <label class="d-md-none form-label text-muted small">เพิ่มน้ำหนัก</label>
+                <button type="button" class="btn btn-outline-primary w-100" (click)="openAddWeightModal(i)">
+                  <i class="fa fa-plus"></i> เพิ่มน้ำหนัก
+                </button>
               </div>
 
               <div class="col-12 col-md-1 text-end text-md-center">
@@ -107,6 +115,34 @@
       </div>
     </div>
   </form>
+
+<!-- Modal สำหรับเพิ่มน้ำหนัก -->
+<div class="modal" [class.show]="showAddWeightModal" [style.display]="showAddWeightModal ? 'block' : 'none'" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">เพิ่มน้ำหนัก</h5>
+        <button type="button" class="btn-close" (click)="closeAddWeightModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">จำนวนน้ำหนักที่ต้องการเพิ่ม (กรัม)</label>
+          <input type="number" class="form-control" [(ngModel)]="additionalWeight" [ngModelOptions]="{standalone: true}" placeholder="กรอกจำนวนที่ต้องการเพิ่ม" min="0">
+        </div>
+        <div class="alert alert-info" *ngIf="selectedColorIndex !== null">
+          <strong>สี:</strong> {{ colorForms.at(selectedColorIndex)?.get('color')?.value }}<br>
+          <strong>น้ำหนักปัจจุบัน:</strong> {{ colorForms.at(selectedColorIndex)?.get('weight')?.value }} กรัม<br>
+          <strong>จำนวนที่จะเพิ่ม:</strong> {{ additionalWeight }} กรัม<br>
+          <strong>น้ำหนักใหม่:</strong> {{ (colorForms.at(selectedColorIndex)?.get('weight')?.value || 0) + (additionalWeight || 0) }} กรัม
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddWeightModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="addWeight()">เพิ่มน้ำหนัก</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- --------------------------------------------------------------------------------------------------------------- -->
  <div class="card-body mt-4">
   <div class="card total-income-card warning overflow-hidden">
@@ -144,7 +180,7 @@
 
     </div>
   </div>
-</div>
+</div> 
  <div class="card-body">
     <div class="card total-income-card warning overflow-hidden">
       <div class="padding">
