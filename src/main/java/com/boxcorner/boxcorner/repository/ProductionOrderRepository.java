@@ -272,7 +272,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     +
                     "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))"
                     +
-                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ'))", nativeQuery = true)
+                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))", nativeQuery = true)
     Page<ProductionOrder> findProductionCheck(
             @Param("id") Integer id,
             @Param("folderName") String folderName,
@@ -335,7 +335,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     +
                     "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))"
                     +
-                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ'))", nativeQuery = true)
+                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))", nativeQuery = true)
     Page<ProductionOrder> findProductionCheckSort(
             @Param("id") Integer id,
             @Param("folderName") String folderName,

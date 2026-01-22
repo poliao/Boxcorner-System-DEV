@@ -127,6 +127,48 @@ public class SampleOrderController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/searchDetailBack")
+    public ResponseEntity<Page<SampleOrder>> searchOrdersDetailBack(
+            // เพิ่ม value = "..." ให้ครบทุกตัวครับ
+            @RequestParam(value = "id", required = false) Integer id,
+            @RequestParam(value = "folderName", required = false) String folderName,
+            @RequestParam(value = "jobOwner", required = false) String jobOwner,
+            @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
+            @RequestParam(value = "status", required = false) String status,
+
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+        Page<SampleOrder> result;
+        if (Boolean.TRUE.equals(sortByDeadline)) {
+            result = sampleOrderService.getAllDetailBackSort(
+                    id,
+                    folderName,
+                    jobOwner,
+                    responsiblePerson,
+                    status,
+                    startDate,
+                    endDate,
+                    page,
+                    size);
+        } else {
+            result = sampleOrderService.getAllDetailBack(
+                    id,
+                    folderName,
+                    jobOwner,
+                    responsiblePerson,
+                    status,
+                    startDate,
+                    endDate,
+                    page,
+                    size);
+        }
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/searchVerify")
     public ResponseEntity<Page<SampleOrder>> getAllVerify(
             @RequestParam(value = "id", required = false) Integer id,
@@ -298,6 +340,12 @@ public class SampleOrderController {
     public ResponseEntity<Integer> countBacklogSendBackSample(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขึ้นตัวอย่างแล้ว",tokenService.getCurrentUser(httpRequest)));
     }
+
+    @GetMapping("/countBacklogSendBackSampleBack")
+    public ResponseEntity<Integer> countBacklogSendBackSampleBack() {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("ขึ้นตัวอย่างแล้ว",null));
+    }
+    
 
     @GetMapping("/countBacklogSendBack")
     public ResponseEntity<Integer> countBacklogSendBack(HttpServletRequest httpRequest) {

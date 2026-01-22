@@ -185,10 +185,10 @@
         </div>
 
         <div class="row mb-3">
-          <div class="col-6">
+          <div class="col-12 ">
             <label class="form-label font-weight-bold">หมายเหตุ </label>
-            <input type="text" class="form-control" [formControl]="remarks"
-              [class.is-invalid]="remarks.invalid && remarks.touched">
+            <textarea class="form-control" rows="3" [formControl]="remarks"
+            placeholder="หมายเหตุเพิ่มเติม..."></textarea>
           </div>
         </div>
       </div>

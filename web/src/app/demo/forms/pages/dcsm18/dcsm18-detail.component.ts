@@ -60,7 +60,7 @@ export class Dcsm18DetailComponent implements OnInit {
     const today = this.formatDateToDDMMYYYY(new Date());
     this.mainForm = this.fb.group({
       id: [''],
-      orderDate: [today, Validators.required],
+      orderDate: [today],
       folderName: ['', Validators.required],
       usedFile: ['', Validators.required],
       colorSample: [''],
@@ -144,9 +144,6 @@ export class Dcsm18DetailComponent implements OnInit {
       }
     });
   }
-
-  
-
 
   private formatDateToDDMMYYYY(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');

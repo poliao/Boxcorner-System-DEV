@@ -117,9 +117,9 @@ public class ProductionOrderService {
         return productionOrderRepository.save(existingOrder);
     }
 
-    public ProductionOrder updateMoldStatus (Integer id , String jobStatus) {
+    public ProductionOrder updateMoldStatus (Integer id , String mold) {
         ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setMoldStatus(jobStatus);
+        existingOrder.setMoldStatus(mold);
         return productionOrderRepository.save(existingOrder);
     }
 

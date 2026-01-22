@@ -104,6 +104,54 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
             @Param("endDate") LocalDate endDate,
             Pageable pageable);
 
+        @Query(value = """
+            SELECT * FROM sample_orders s
+            WHERE
+                (s.status != 'ยกเลิก')
+                AND (:id IS NULL OR s.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
+                AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
+                AND (s.status IN ('ขึ้นตัวอย่างแล้ว','สำเร็จ รออนุมัติไปตารางรอผลิต','ผ่าน'))
+            ORDER BY s.id desc
+            """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
+    Page<SampleOrder> findByFiltersDetailBack(
+            @Param("id") Integer id,
+            @Param("folderName") String folderName,
+            @Param("jobOwner") String jobOwner,
+            @Param("responsiblePerson") String responsiblePerson,
+            @Param("status") String status,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
+
+        @Query(value = """
+            SELECT * FROM sample_orders s
+            WHERE
+                (s.status != 'ยกเลิก')
+                AND (:id IS NULL OR s.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
+                AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
+                AND (s.status IN ('ขึ้นตัวอย่างแล้ว','สำเร็จ รออนุมัติไปตารางรอผลิต','ผ่าน'))
+            ORDER BY s.delivery_date asc , s.delivery_time asc
+            """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
+    Page<SampleOrder> findByFiltersDetailBackSort(
+            @Param("id") Integer id,
+            @Param("folderName") String folderName,
+            @Param("jobOwner") String jobOwner,
+            @Param("responsiblePerson") String responsiblePerson,
+            @Param("status") String status,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
+
     @Query(value = """
             SELECT count(id)
             FROM sample_orders so

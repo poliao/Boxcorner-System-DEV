@@ -49,7 +49,7 @@ export class Dcsm08Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
+    { key: 'jobType', label: 'ประเภทงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },

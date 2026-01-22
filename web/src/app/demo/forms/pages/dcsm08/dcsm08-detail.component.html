@@ -11,9 +11,13 @@
             style="background-color: #1e1b4b;">
             เสร็จสิ้น
           </button>
-          <button *ngIf="isProsess == true" (click)="updateProcessStatus()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isSupplier == true" (click)="updateSupplierStatus()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
             ส่ง Supplier
+          </button>
+          <button *ngIf="isKeepSupplier == true" (click)="updateKeepSupplierStatus()" type="submit" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
+            รับของจากซัพพลายเออร์แล้ว
           </button>
         </div>
 
@@ -28,16 +32,16 @@
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
-          <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
+          <input type="text" formControlName="folderName" class="form-control" 
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ใช้ไฟล์</label>
-          <input type="text" formControlName="usedFile" class="form-control" placeholder="ชื่อผู้สั่งงาน">
+          <input type="text" formControlName="usedFile" class="form-control" >
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">สีตัวอย่าง</label>
-          <input type="text" formControlName="colorSample" class="form-control" placeholder="ชื่อผู้ออกแบบ">
+          <input type="text" formControlName="colorSample" class="form-control" >
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>

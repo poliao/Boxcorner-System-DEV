@@ -113,6 +113,36 @@ public class SampleOrderService {
         );
     }
 
+    @Transactional
+    public Page<SampleOrder> getAllDetailBack(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return sampleOrderRepository.findByFiltersDetailBack(
+            id,
+            folderName,
+            jobOwner,
+            responsiblePerson,
+            status, 
+            startDate,
+            endDate,
+            paging
+        );
+    }
+
+    @Transactional
+    public Page<SampleOrder> getAllDetailBackSort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return sampleOrderRepository.findByFiltersDetailBackSort(
+            id,
+            folderName,
+            jobOwner,
+            responsiblePerson,
+            status, 
+            startDate,
+            endDate,
+            paging
+        );
+    }
+
     public SampleOrder updatesampleOrderStatus(int id, String status, String assignee) {
         SampleOrder sampleOrder = sampleOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         if (assignee != null) {

@@ -22,6 +22,8 @@ export class Dcsm08DetailComponent implements OnInit {
   isProsess = false;
   isSuccess = false;
   isEditMold = false;
+  isSupplier = false;
+  isKeepSupplier = false;
 
   constructor(
     private fb: FormBuilder,
@@ -89,11 +91,15 @@ export class Dcsm08DetailComponent implements OnInit {
   }
 
   checkBtn() {
-    if ((this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().processStatus == 'รอดำเนินการ') ) {
+    if ((this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().processStatus == 'รอดำเนินการ' )) {
       this.isProsess = true;
-    } else if ((this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().processStatus == 'กำลังดำเนินการ')|| (this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().processStatus == 'กำลังแก้ไขแม่พิมพ์')) {
+    } else if ((this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().processStatus == 'กำลังดำเนินการ' && this.mainForm.getRawValue().jobType != 'Supplier') || (this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().processStatus == 'กำลังแก้ไขแม่พิมพ์' && this.mainForm.getRawValue().jobType != 'Supplier')) {
       this.isSuccess = true
-    }else{
+    } else if (this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().jobType == 'Supplier' && this.mainForm.getRawValue().processStatus == 'กำลังดำเนินการ') {
+      this.isSupplier = true
+    } else if (this.tokenService.getCurrentUserFromToken() === this.mainForm.getRawValue().operatorName && this.mainForm.getRawValue().jobType == 'Supplier' && this.mainForm.getRawValue().processStatus == 'ส่ง Supplier') {
+      this.isKeepSupplier = true
+    } else {
       this.isSuccess = false
       this.isProsess = false;
     }
@@ -187,14 +193,19 @@ export class Dcsm08DetailComponent implements OnInit {
   }
 
   updateSupplierStatus() {
-   const apiFilters = {
+    const apiFilters = {
       id: this.mainForm.getRawValue().id,
       processStatus: 'ส่ง Supplier',
     };
 
     const date = {
       id: this.mainForm.getRawValue().id,
-      jobStatus: 'ส่ง Supplier',
+      jobStatus: 'กำลังดำเนินการ',
+    }
+
+    const mold = {
+      id: this.mainForm.getRawValue().id,
+      moldStatus: 'ส่ง Supplier',
     }
 
     Swal.fire({
@@ -213,11 +224,15 @@ export class Dcsm08DetailComponent implements OnInit {
           next: () => {
             this.dcsm08Service.updateJobStatus(date).subscribe({
               next: (response) => {
-                this.patchFormData(response);
-                this.checkBtn();
-                this.loadingService.hide();
-                this.sweetAlert.success('กำลังดำเนินการ', 'เรียบร้อย')
-                this.router.navigate(['/Dcsm08']);
+                this.dcsm08Service.updateMoldStatus(mold).subscribe({
+                  next: (response) => {
+                    this.patchFormData(response);
+                    this.checkBtn();
+                    this.loadingService.hide();
+                    this.sweetAlert.success('กำลังดำเนินการ', 'เรียบร้อย')
+                    this.router.navigate(['/Dcsm08']);
+                  }
+                })
               },
               error: (error) => {
                 this.loadingService.hide();
@@ -235,4 +250,65 @@ export class Dcsm08DetailComponent implements OnInit {
       }
     });
   }
+
+  updateKeepSupplierStatus() {
+    const apiFilters = {
+      id: this.mainForm.getRawValue().id,
+      processStatus: 'รับของจากซัพพลายเออร์แล้ว',
+    };
+
+    const date = {
+      id: this.mainForm.getRawValue().id,
+      jobStatus: 'เสร็จสิ้น',
+    }
+
+    const mold = {
+      id: this.mainForm.getRawValue().id,
+      moldStatus: 'รับของจากซัพพลายเออร์แล้ว',
+    }
+
+    Swal.fire({
+      title: 'ยืนยันกำลังดำเนินการ',
+      text: "ยืนยันกำลังดำเนินการ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm08Service.updateProcessStatus(apiFilters).subscribe({
+          next: () => {
+            this.dcsm08Service.updateJobStatus(date).subscribe({
+              next: (response) => {
+                this.dcsm08Service.updateMoldStatus(mold).subscribe({
+                  next: (response) => {
+                    this.patchFormData(response);
+                    this.checkBtn();
+                    this.loadingService.hide();
+                    this.sweetAlert.success('กำลังดำเนินการ', 'เรียบร้อย')
+                    this.router.navigate(['/Dcsm08']);
+                  }
+                })
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+                this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+              }
+            });
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
+      }
+    });
+  }
+
+  
 }

@@ -84,4 +84,8 @@ export class Dcsm08Service {
   countProcessStatus(status: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countProcessStatus?processStatus=${status}`);
   }
+
+  updateMoldStatus(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateMoldStatus?id=${data.id}&moldStatus=${data.moldStatus}`, {});
+  }
 }
