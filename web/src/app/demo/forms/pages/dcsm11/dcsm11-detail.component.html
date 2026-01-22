@@ -6,8 +6,8 @@
           <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไฟล์ถูกต้อง
           </button>
-          <button *ngIf="isBtnReject == true" (click)="openEditFileModal()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            แก้ไขไฟล์
+          <button *ngIf="isBtnReject == true" (click)="confirmEditFile()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ให้เจ้าของงานตรวจสอบ
           </button>
         </div>
         <div class="col-md-6">
@@ -132,37 +132,6 @@
         <button type="button" class="btn btn-success" (click)="confirmApprove()"
           [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid">
           ยืนยันอนุมัติ
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade show d-block" tabindex="-1" *ngIf="showEditFileModal" style="background-color: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">ระบุสาเหตุการแก้ไขไฟล์</h5>
-        <button type="button" class="btn-close" (click)="closeEditFileModal()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-12">
-            <label class="form-label font-weight-bold">หมายเหตุ / สาเหตุ <span class="text-danger">*</span></label>
-            <textarea class="form-control" [formControl]="editFileNote" rows="3"
-              [class.is-invalid]="editFileNote.invalid && editFileNote.touched"
-              placeholder="กรุณาระบุสิ่งที่ต้องการแก้ไข..."></textarea>
-            <div *ngIf="editFileNote.invalid && editFileNote.touched" class="text-danger mt-1">
-              กรุณากรอกหมายเหตุ
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeEditFileModal()">ยกเลิก</button>
-        <button type="button" class="btn btn-primary" (click)="confirmEditFile()"
-          [disabled]="editFileNote.invalid">
-          ยืนยันส่งแก้ไข
         </button>
       </div>
     </div>

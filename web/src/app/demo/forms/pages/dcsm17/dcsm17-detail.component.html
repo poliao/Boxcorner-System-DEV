@@ -19,6 +19,10 @@
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไม่อนุมัติเลื่อนวันส่ง
           </button>
+          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ไฟล์ถูกต้อง
+          </button>
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">รหัสสั่งผลิต</label>
@@ -47,7 +51,8 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
-          <input type="date" class="form-control" formControlName="deliveryDate" placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
+          <input type="date" class="form-control" formControlName="deliveryDate" placeholder="วว/ดด/ปป (13/01/26)"
+            maxlength="8">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
@@ -68,7 +73,7 @@
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
           <input style="background-color: rgb(255, 136, 0); color: white;" type="date"
-           formControlName="updateDateDelivery" class="form-control">
+            formControlName="updateDateDelivery" class="form-control">
         </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">เวลาที่ขอเลื่อนส่ง</label>

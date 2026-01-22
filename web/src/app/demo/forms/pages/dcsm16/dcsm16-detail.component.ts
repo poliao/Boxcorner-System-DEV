@@ -55,7 +55,7 @@ export class Dcsm16DetailComponent implements OnInit {
       }
     }
 
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง'|| this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง') {
+    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
@@ -127,14 +127,14 @@ export class Dcsm16DetailComponent implements OnInit {
 
   patchFormData(data: any): void {
     const apiData = { ...data };
-    
+
     // แปลงรูปแบบวันที่และเวลา
     if (apiData.orderDate) apiData.orderDate = this.convertDateFormat(apiData.orderDate);
     // if (apiData.deliveryDate) apiData.deliveryDate = this.convertDateFormat(apiData.deliveryDate);
     if (apiData.updateDateDelivery) apiData.updateDateDelivery = this.convertDateFormat(apiData.updateDateDelivery);
     if (apiData.deliveryTime) apiData.deliveryTime = this.convertTimeFormat(apiData.deliveryTime);
     if (apiData.updateTimeDelivery) apiData.updateTimeDelivery = this.convertTimeFormat(apiData.updateTimeDelivery);
-    
+
     // ตั้งค่าแต่ละฟิลด์ทีละตัว
     Object.keys(apiData).forEach(key => {
       if (apiData[key] !== null && apiData[key] !== undefined && this.mainForm.get(key)) {
@@ -168,7 +168,7 @@ export class Dcsm16DetailComponent implements OnInit {
   onSubmit() {
     const requiredFields = ['folderName', 'deliveryDate', 'deliveryTime', 'quantity', 'unit'];
     const missingFields = requiredFields.filter(field => !this.mainForm.getRawValue()[field] || this.mainForm.getRawValue()[field] === '');
-    
+
     if (missingFields.length > 0) {
       this.mainForm.markAllAsTouched();
       this.sweetAlert.warning('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
@@ -284,6 +284,12 @@ export class Dcsm16DetailComponent implements OnInit {
       this.isBtnReject = false;
       this.isBtnApproveSample = true;
       this.isBtnRejectSample = true;
+    } else if (currentUser === formValue.jobOwner && formValue.status === 'รอเจ้าของงานตรวจสอบ') {
+      this.isBtnSave = false;
+      this.isBtnApprove = true;
+      this.isBtnReject = false;
+      this.isBtnApproveSample = false;
+      this.isBtnRejectSample = false;
     } else {
       this.isBtnSave = false;
       this.isBtnApprove = false;

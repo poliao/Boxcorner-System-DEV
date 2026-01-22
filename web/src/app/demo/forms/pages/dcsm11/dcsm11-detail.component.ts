@@ -265,7 +265,6 @@ export class Dcsm11DetailComponent implements OnInit {
   }
 
   confirmApprove() {
-
     const data = {
       orderDate: new Date().toISOString().substring(0, 10),
       folderName: this.mainForm.getRawValue().folderName,
@@ -316,23 +315,18 @@ export class Dcsm11DetailComponent implements OnInit {
   }
 
   openEditFileModal() {
-    this.editFileNote.setValue(''); // เคลียร์ค่าเก่า
-    this.showEditFileModal = true;  // เปิด Modal
+    this.editFileNote.setValue('');
+    this.showEditFileModal = true;
   }
 
-  // 3. ฟังก์ชันปิด Modal
   closeEditFileModal() {
     this.showEditFileModal = false;
   }
 
   confirmEditFile() {
-    if (this.editFileNote.invalid) {
-      this.editFileNote.markAsTouched();
-      return;
-    }
     Swal.fire({
-      title: 'ยืนยันการแก้ไขไฟล์',
-      text: "คุณต้องการส่งคำขอแก้ไขไฟล์ ใช่หรือไม่?",
+      title: 'ส่งกลับไปยังเจ้าของงาน',
+      text: "ส่งกลับไปยังเจ้าของงานตรวจสอบ ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',
@@ -344,7 +338,6 @@ export class Dcsm11DetailComponent implements OnInit {
         this.loadingService.show();
         const data ={
           id: this.mainForm.getRawValue().id,
-          noteEdit: this.editFileNote.value
         }
         this.dcsm11Service.updateEditFile(data).subscribe({
           next: (response) => {

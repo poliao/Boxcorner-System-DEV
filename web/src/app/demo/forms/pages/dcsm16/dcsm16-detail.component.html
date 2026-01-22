@@ -19,6 +19,9 @@
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไม่อนุมัติเลื่อนวันส่ง
           </button>
+          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ไฟล์ถูกต้อง
+          </button>
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">รหัสสั่งผลิต</label>

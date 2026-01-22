@@ -26,6 +26,7 @@ export class Dcsm04DetailComponent implements OnInit {
   isBtnApproveSample = false
   isBtnRejectSample = false
   isUpdateDelivery = false
+  
 
   showApproveModal = false;
   usedFile = new FormControl('', Validators.required);
@@ -226,7 +227,14 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnReject = false;
       this.isBtnApproveSample = true;
       this.isBtnRejectSample = true;
-    } else {
+    } else if (currentUser === formValue.jobOwner && formValue.status === 'รอเจ้าของงานตรวจสอบ') {
+      this.isBtnSave = false;
+      this.isBtnApprove = true;
+      this.isBtnReject = false;
+      this.isBtnApproveSample = false;
+      this.isBtnRejectSample = false;
+    }
+    else {
       this.isBtnSave = false;
       this.isBtnApprove = false;
       this.isBtnReject = false;
@@ -413,5 +421,4 @@ export class Dcsm04DetailComponent implements OnInit {
       }
     }
   }
-
 }

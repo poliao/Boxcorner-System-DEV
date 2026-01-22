@@ -236,8 +236,7 @@ public class SampleOrderController {
 
     @PutMapping("/updateEditFile")
     public ResponseEntity<SampleOrder> updateEditFile(@RequestBody SampleReqDTO jsonBody) {
-        sampleOrderService.updatesampleOrderNoteEdit(jsonBody.getId(), jsonBody.getNoteEdit());
-        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(jsonBody.getId(), "แก้ไขไฟล์", null));
+        return ResponseEntity.ok(sampleOrderService.updatesampleOrderStatus(jsonBody.getId(), "รอเจ้าของงานตรวจสอบ", null));
     }
 
     @PutMapping("/updateConfirmSample")
