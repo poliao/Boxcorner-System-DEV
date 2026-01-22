@@ -11,6 +11,10 @@
             style="background-color: #1e1b4b;">
             เสร็จสิ้น
           </button>
+          <button *ngIf="isProsess == true" (click)="updateProcessStatus()" type="submit" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
+            ส่ง Supplier
+          </button>
         </div>
 
         <div class="col-md-6">

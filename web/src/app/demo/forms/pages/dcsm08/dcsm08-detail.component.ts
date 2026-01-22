@@ -185,4 +185,54 @@ export class Dcsm08DetailComponent implements OnInit {
       }
     });
   }
+
+  updateSupplierStatus() {
+   const apiFilters = {
+      id: this.mainForm.getRawValue().id,
+      processStatus: 'ส่ง Supplier',
+    };
+
+    const date = {
+      id: this.mainForm.getRawValue().id,
+      jobStatus: 'ส่ง Supplier',
+    }
+
+    Swal.fire({
+      title: 'ยืนยันกำลังดำเนินการ',
+      text: "ยืนยันกำลังดำเนินการ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm08Service.updateProcessStatus(apiFilters).subscribe({
+          next: () => {
+            this.dcsm08Service.updateJobStatus(date).subscribe({
+              next: (response) => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('กำลังดำเนินการ', 'เรียบร้อย')
+                this.router.navigate(['/Dcsm08']);
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+                this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+              }
+            });
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
+      }
+    });
+  }
 }
