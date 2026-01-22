@@ -7,7 +7,9 @@ import packageInfo from '../../package.json';
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
-  apiUrl: 'http://18.139.217.88:8080/api'
+  // apiUrl: 'http://bca-system.sytes.net/api'
+  apiUrl: 'http://localhost:8080/api'
+
 };
 
 /*

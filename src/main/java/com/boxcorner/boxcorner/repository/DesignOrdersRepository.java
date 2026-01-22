@@ -120,20 +120,28 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
         Integer countBacklog();
 
         @Query(value = "select count(t.id) from design_orders t " +
-                        "where t.process_status = 'รอดำเนินการ'", nativeQuery = true)
-        Integer countBacklogPending();
+                        "where t.process_status = 'รอดำเนินการ' " +
+                        "and t.assignee = :assignee", nativeQuery = true)
+        Integer countBacklogPending(@Param("assignee") String assignee);
 
         @Query(value = "select count(t.id) from design_orders t " +
-                        "where t.process_status = 'กำลังดำเนินการ'", nativeQuery = true)
-        Integer countBacklogInProgress();
+                        "where t.process_status = 'กำลังดำเนินการ' " +
+                        "and t.assignee = :assignee", nativeQuery = true)
+        Integer countBacklogInProgress(@Param("assignee") String assignee);
 
         @Query(value = "select count(t.id) from design_orders t " +
                         "where t.confirm_status  = 'รอตรวจสอบ'", nativeQuery = true)
         Integer countBacklogCheck();
 
         @Query(value = "select count(t.id) from design_orders t " +
-                        "where t.process_status  = 'รอดำเนินการแก้ไข'", nativeQuery = true)
-        Integer countBacklogEdit();
+                        "where t.confirm_status  = 'รอตรวจสอบ' " + 
+                        "and t.assignee = :assignee", nativeQuery = true)
+        Integer countBacklogCheckDe(@Param("assignee") String assignee);
+
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.process_status  = 'รอดำเนินการแก้ไข' " + 
+                        "and t.assignee = :assignee", nativeQuery = true)
+        Integer countBacklogEdit(@Param("assignee") String assignee);
         
         @Query(value = "select count(t.id) from design_orders t " +
                         "where t.confirm_status  = 'ผ่าน' AND date_trunc('month', t.confirm_date) = date_trunc('month', CURRENT_DATE)", nativeQuery = true)

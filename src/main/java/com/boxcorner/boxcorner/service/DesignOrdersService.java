@@ -177,20 +177,24 @@ public class DesignOrdersService {
         return repository.countBacklog();
     }
 
-    public Integer countBacklogPending(){
-        return repository.countBacklogPending();
+    public Integer countBacklogPending(String assignee) {
+        return repository.countBacklogPending(assignee);
     }
 
-    public Integer countBacklogInProgress() {
-        return repository.countBacklogInProgress();
+    public Integer countBacklogInProgress(String assignee) {
+        return repository.countBacklogInProgress(assignee);
     }
 
     public Integer countBacklogCheck(){
         return repository.countBacklogCheck();
     }
+
+    public Integer countBacklogCheckDe(String assignee){
+        return repository.countBacklogCheckDe(assignee);
+    }
     
-    public Integer countBacklogEdit(){
-        return repository.countBacklogEdit();
+    public Integer countBacklogEdit(String assignee){
+        return repository.countBacklogEdit(assignee);
     }
 
     public Integer countBacklogComplete(){

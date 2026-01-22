@@ -126,7 +126,7 @@ export class Dcsm03Service {
   }
 
   countBacklogCheck(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/countBacklogCheck`);
+    return this.http.get(`${this.apiUrl}/designs/countBacklogCheckDe`);
   }
 
   countBacklogEdit(): Observable<any> {

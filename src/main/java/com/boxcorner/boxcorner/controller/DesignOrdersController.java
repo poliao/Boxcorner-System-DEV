@@ -160,13 +160,13 @@ public class DesignOrdersController {
     } 
 
     @GetMapping("/countBacklogPending")
-    public ResponseEntity<Integer> countBacklogPending(){
-        return ResponseEntity.ok(service.countBacklogPending());
+    public ResponseEntity<Integer> countBacklogPending(HttpServletRequest httpRequest){
+        return ResponseEntity.ok(service.countBacklogPending(tokenService.getCurrentUser(httpRequest)));
     } 
 
     @GetMapping("/countBacklogInProgress")
-    public ResponseEntity<Integer> countBacklogInProgress(){
-        return ResponseEntity.ok(service.countBacklogInProgress());
+    public ResponseEntity<Integer> countBacklogInProgress(HttpServletRequest httpRequest){
+        return ResponseEntity.ok(service.countBacklogInProgress(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogCheck")
@@ -174,9 +174,14 @@ public class DesignOrdersController {
         return ResponseEntity.ok(service.countBacklogCheck());
     }
 
+    @GetMapping("/countBacklogCheckDe")
+    public ResponseEntity<Integer> countBacklogCheckDe(HttpServletRequest httpRequest){
+        return ResponseEntity.ok(service.countBacklogCheckDe(tokenService.getCurrentUser(httpRequest)));
+    }
+
     @GetMapping("/countBacklogEdit")
-    public ResponseEntity<Integer> countBacklogEdit(){
-        return ResponseEntity.ok(service.countBacklogEdit());
+    public ResponseEntity<Integer> countBacklogEdit(HttpServletRequest httpRequest){
+        return ResponseEntity.ok(service.countBacklogEdit(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogComplete")
