@@ -31,6 +31,8 @@
               <option value="จัดส่งได้ รอเคลียร์ไฟล์">จัดส่งได้ รอเคลียร์ไฟล์</option>
               <option value="กำลังเคลียร์ไฟล์">กำลังเคลียร์ไฟล์</option>
               <option value="ไฟล์เสร็จ รอตรวจสอบไฟล์">ไฟล์เสร็จ รอตรวจสอบไฟล์</option>
+              <option value="สำเร็จ รออนุมัติไปตารางรอผลิต">สำเร็จ รออนุมัติไปตารางรอผลิต</option>
+              <option value="รอเจ้าของงานตรวจสอบ">รอเจ้าของงานตรวจสอบ</option>
               <option value="แก้ไขไฟล์">แก้ไขไฟล์</option>
               <option value="ไฟล์ถูกต้อง">ไฟล์ถูกต้อง</option>
               <option value="แก้ไข">แก้ไข</option>
@@ -78,6 +80,17 @@
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ approveSample }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterSampleCheck()" style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">รอเจ้าของงานตรวจสอบ</span><span class="d-lg-none">รอเจ้าของงานตรวจสอบ</span>
+                  <span *ngIf="sampleCheck > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ sampleCheck }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </button>

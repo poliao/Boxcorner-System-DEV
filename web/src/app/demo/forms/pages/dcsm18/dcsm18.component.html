@@ -77,6 +77,17 @@
                     class="d-lg-none">เรียงตามวันส่ง</span>
                 </button>
               </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterUnassigned()" style="background-color: #350142;">
+                  <span *ngIf="machine > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ machine }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">รอเพิ่มเครื่องพิมพ์</span><span class="d-lg-none">รอเพิ่มเครื่องพิมพ์</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

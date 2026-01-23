@@ -93,7 +93,7 @@ export class Dcsm19DetailComponent implements OnInit {
   }
 
   checkBtn() {
-    if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson) && this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว') {
+    if (this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว') {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;

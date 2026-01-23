@@ -30,6 +30,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                 AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
                 AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
                 AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                AND (:postpone IS NULL OR :postpone = '' OR p.postpone = :postpone)
             ORDER BY p.id DESC
             """, countQuery = """
             SELECT count(*) FROM production_orders p
@@ -48,6 +49,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                 AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
                 AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
                 AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                AND (:postpone IS NULL OR :postpone = '' OR p.postpone = :postpone)
             """, nativeQuery = true)
     Page<ProductionOrder> findByFilters(
             @Param("id") Integer id,
@@ -61,6 +63,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             @Param("operatorName") String operatorName,
             @Param("moldStatus") String moldStatus,
             @Param("jobType") String jobType,
+            @Param("postpone") String postpone,
             Pageable pageable);
 
     @Query(value = """
@@ -80,6 +83,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                 AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
                 AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
                 AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                AND (:postpone IS NULL OR :postpone = '' OR p.postpone = :postpone)
             ORDER BY p.delivery_date asc
             """, countQuery = """
             SELECT count(*) FROM production_orders p
@@ -98,6 +102,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                 AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
                 AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
                 AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                AND (:postpone IS NULL OR :postpone = '' OR p.postpone = :postpone)
             """, nativeQuery = true)
     Page<ProductionOrder> findByFiltersSort(
             @Param("id") Integer id,
@@ -111,6 +116,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             @Param("operatorName") String operatorName,
             @Param("moldStatus") String moldStatus,
             @Param("jobType") String jobType,
+            @Param("postpone") String postpone,
             Pageable pageable);
 
     @Query(value = """
@@ -367,4 +373,29 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     @Query(value = "select count(id) as backlog from production_orders po  " +
             "where po.mold_status = :moldStatus", nativeQuery = true)
     Integer countBacklogMoldStatus(@Param("moldStatus") String moldStatus);
+
+    @Query(value = "select count(id) as backlog from production_orders po  " +
+            "where po.process_status = 'กำลังดำเนินการ' "+
+            "and po.job_type = 'Supplier' "+
+            "and po.operator_name = :operatorName", nativeQuery = true)
+    Integer countBacklogSupplier(@Param("operatorName") String operatorName);
+
+    @Query(value = "select count(id) as backlog from production_orders po  " +
+            "where po.process_status = 'ส่ง Supplier' "+
+            "and po.job_type = 'Supplier' "+
+            "and po.operator_name = :operatorName", nativeQuery = true)
+    Integer countBacklogKeepSupplier(@Param("operatorName") String operatorName);
+
+    @Query(value = "select count(id) as backlog from production_orders po " +
+            "where po.postpone = 'มีการเลื่อนเวลาส่ง' "+
+            "and po.job_owner = :jobOwner", nativeQuery = true)
+    Integer countBacklogPostpone(@Param("jobOwner") String jobOwner);
+
+    @Query(value = "select count(id) as backlog from production_orders po " +
+            "where po.process_status = 'ส่งไฟล์แล้ว' "+
+            "and po.job_status = 'เสร็จสิ้น' "+
+            "and po.job_type = 'OD' "+
+            "and printing_machine is null", nativeQuery = true)
+    Integer countBacklogMachine();
+
 }

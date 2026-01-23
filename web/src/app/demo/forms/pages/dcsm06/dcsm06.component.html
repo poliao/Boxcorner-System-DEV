@@ -77,6 +77,21 @@
                     class="d-lg-none">เรียงตามวันส่ง</span>
                 </button>
               </div>
+
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <div class="position-relative">
+                  <button mat-flat-button class="btn text-white px-4 w-100" (click)="onFilterPostpone()" style="background-color: #003747;">
+                    <span *ngIf="isPostpone > 0"
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style="font-size: 0.75rem; border: 2px solid #fff;">
+                      {{ isPostpone }}
+                      <span class="visually-hidden">unread messages</span>
+                    </span>
+                    <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่มีการเลื่อนเวลา</span><span class="d-lg-none">งานที่มีการเลื่อนเวลา</span>
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>

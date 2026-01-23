@@ -97,4 +97,8 @@ export class Dcsm07Service {
   updateMoldStatus(id: number, status: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateMoldStatus?id=${id}&moldStatus=${status}`, {});
   }
+
+  updatePostPoneDeadline(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updatePostPoneDeadline`, data);
+  }
 }

@@ -70,4 +70,8 @@ export class Dcsm18Service {
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });
   }
 
+  countBacklogMachine(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogMachine`);
+  }
+
 }

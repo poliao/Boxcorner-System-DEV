@@ -88,4 +88,12 @@ export class Dcsm08Service {
   updateMoldStatus(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateMoldStatus?id=${data.id}&moldStatus=${data.moldStatus}`, {});
   }
+
+  countBacklogSupplier(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogSupplier`);
+  }
+
+  countBacklogKeepSupplier(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogKeepSupplier`);
+  }
 }

@@ -166,7 +166,6 @@ public class SampleOrderService {
         return sampleOrderRepository.countStatus(status);
     }
 
-
     public Integer countBacklogSalesStatus(String status ,String jobOwner) {
         return sampleOrderRepository.countBacklogSalesStatus(status,jobOwner);
     }

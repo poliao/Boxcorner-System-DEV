@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { Dcsm06Service } from './dcsm06.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm06',
@@ -41,6 +42,7 @@ export class Dcsm06Component implements OnInit {
   pageSize = 10;
   pageIndex = 0;
   isSortMode: boolean = false;
+  isPostpone = 0;
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
@@ -58,12 +60,14 @@ export class Dcsm06Component implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private dcsm06Service: Dcsm06Service,
-    private statusColorService: StatusColorService
+    private statusColorService: StatusColorService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
+    this.countBacklogPostpone();
   }
 
   initSearchForm(): void {
@@ -75,7 +79,8 @@ export class Dcsm06Component implements OnInit {
       status: [''],
       processStatus: [''],   // เพิ่ม processStatus
       moldStatus: [''],      // เพิ่ม moldStatus
-      jobType: [''],         // เพิ่ม jobType
+      jobType: [''],
+      postpone: [''],        
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
@@ -97,6 +102,7 @@ export class Dcsm06Component implements OnInit {
       jobType: formValues.jobType,
       startDate: formValues.startDate,
       endDate: formValues.endDate,
+      postpone: formValues.postpone,
       page: this.pageIndex,
       size: this.pageSize
     };
@@ -130,6 +136,7 @@ export class Dcsm06Component implements OnInit {
       jobType: formValues.jobType,
       startDate: formValues.startDate,
       endDate: formValues.endDate,
+      postpone: formValues.postpone,
       page: this.pageIndex,
       size: this.pageSize
     };
@@ -224,5 +231,21 @@ export class Dcsm06Component implements OnInit {
 
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm06Detail', row.id]);
+  }
+
+  countBacklogPostpone(){
+    this.dcsm06Service.countBacklogPostpone().subscribe({
+      next: (data: number) => {
+        this.isPostpone = data;
+      },
+    });
+  }
+  
+  onFilterPostpone() {
+    this.searchForm.patchValue({
+      postpone: 'มีการเลื่อนเวลาส่ง',
+      jobOwner: this.authService.getUserFromToken().sub,
+    });
+    this.onSearch();
   }
 }

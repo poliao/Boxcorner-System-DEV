@@ -115,7 +115,6 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                 AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
                 AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
-                AND (s.status IN ('ขึ้นตัวอย่างแล้ว','สำเร็จ รออนุมัติไปตารางรอผลิต','ผ่าน'))
             ORDER BY s.id desc
             """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
     Page<SampleOrder> findByFiltersDetailBack(
@@ -139,7 +138,6 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                 AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
                 AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
-                AND (s.status IN ('ขึ้นตัวอย่างแล้ว','สำเร็จ รออนุมัติไปตารางรอผลิต','ผ่าน'))
             ORDER BY s.delivery_date asc , s.delivery_time asc
             """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
     Page<SampleOrder> findByFiltersDetailBackSort(

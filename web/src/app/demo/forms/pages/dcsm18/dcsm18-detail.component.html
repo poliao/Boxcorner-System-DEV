@@ -75,22 +75,21 @@
           <input type="text" formControlName="moldMakerName" class="form-control" >
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">เครื่องทำแม่พิมพ์</label>
-          <input type="text" formControlName="printingMachine" class="form-control" >
-        </div>
-        <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้ตรวจไฟล์</label>
           <input type="text" formControlName="inspector" class="form-control" >
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">เครื่องพิมพ์ <span style="color: red;">*</span></label>
+          <select class="form-select" formControlName="printingMachine">
+            <option value="Canon" style="color: rgb(0, 183, 255);">Canon</option>
+            <option value="Ricoh" style="color: rgb(0, 183, 255);">Ricoh</option>
+          </select>
         </div>
         <div class="col-md-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="remarks" class="form-control" >
         </div>
-        
-        <!-- <div class="col-md-3">
-          <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
-          <input type="text" formControlName="updatedAt" class="form-control" >
-        </div> -->
+
       </form>
     </div>
   </div>

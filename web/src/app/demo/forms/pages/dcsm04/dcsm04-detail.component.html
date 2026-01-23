@@ -160,12 +160,12 @@
       <div class="modal-body">  
       <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">ใช้ไฟล์ <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">ใช้ไฟล์ <span style="color: red;">*</span></label>
             <input type="text" class="form-control" [formControl]="usedFile" 
               [class.is-invalid]="usedFile.invalid && usedFile.touched">
           </div>
           <div class="col-6">
-            <label class="form-label font-weight-bold">ตัวอย่างสี <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">ตัวอย่างสี </label>
             <input type="text" class="form-control" [formControl]="colorSample"
               [class.is-invalid]="colorSample.invalid && colorSample.touched">
           </div>

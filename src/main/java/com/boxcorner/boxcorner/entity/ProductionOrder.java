@@ -81,4 +81,7 @@ public class ProductionOrder {
     @Column(name = "inspector")
     private String inspector;
 
+    @Column(name = "postpone")
+    private String postpone;
+
 }

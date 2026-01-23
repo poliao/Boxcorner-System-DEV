@@ -45,6 +45,8 @@ export class Dcsm08Component implements OnInit {
   countBacklog = 0;
   inProcess = 0;
   finished = 0;
+  isSupplier = 0;
+  isKeepSupplier = 0;
   isSortMode: boolean = false;
 
   tableColumns = [
@@ -72,7 +74,9 @@ export class Dcsm08Component implements OnInit {
     this.loadData();
     this.Backlog();
     this.BacklogInProcess();
-    this.BacklogFinished()
+    this.BacklogFinished();
+    this.BacklogSupplier();
+    this.BacklogKeepSupplier();
   }
 
   initSearchForm(): void {
@@ -295,6 +299,40 @@ export class Dcsm08Component implements OnInit {
       jobType: '',
       startDate: null,
       endDate: null
+    });
+  }
+
+  onFilterSupplier() {
+    this.onClearAll()
+    this.searchForm.patchValue({
+      jobType: 'Supplier',
+      processStatus: 'กำลังดำเนินการ',
+    });
+    this.onSearch();
+  }
+
+  BacklogSupplier(){
+    this.dcsm08Service.countBacklogSupplier().subscribe({
+      next: (data: number) => {
+        this.isSupplier = data;
+      },
+    });
+  }
+
+  onFilterKeepSupplier() {
+    this.onClearAll()
+    this.searchForm.patchValue({
+      jobType: 'Supplier',
+      processStatus: 'ส่ง Supplier',
+    });
+    this.onSearch();
+  }
+
+  BacklogKeepSupplier(){
+    this.dcsm08Service.countBacklogSupplier().subscribe({
+      next: (data: number) => {
+        this.isKeepSupplier = data;
+      },
     });
   }
 }

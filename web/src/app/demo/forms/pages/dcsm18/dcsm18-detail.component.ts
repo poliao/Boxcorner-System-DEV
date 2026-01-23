@@ -44,16 +44,15 @@ export class Dcsm18DetailComponent implements OnInit {
     } else {
       this.isSampleOrderId = false
     }
-
-    if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || ((this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().jobStatus == 'รอดำเนินการ') && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().jobOwner)) {
-      this.mainForm.get('usedFile')?.enable();
-      this.mainForm.get('colorSample')?.enable();
-      this.mainForm.get('deadlineDate')?.enable();
-      this.mainForm.get('deadlineTime')?.enable();
-      this.mainForm.get('folderName')?.enable();
-      this.mainForm.get('remarks')?.enable();
+    
+    if (this.mainForm.getRawValue().processStatus =='ส่งไฟล์แล้ว' && this.mainForm.getRawValue().printingMachine == null ) {
       this.isSave = true
+    }else{
+      this.mainForm.get('printingMachine')?.disable();
+      this.isSave = false
     }
+
+    
   }
 
   initForm(): void {
@@ -100,7 +99,6 @@ export class Dcsm18DetailComponent implements OnInit {
     this.mainForm.get('deliveryDate')?.disable({ emitEvent: false });
     this.mainForm.get('remarks')?.disable({ emitEvent: false });
     this.mainForm.get('moldMakerName')?.disable({ emitEvent: false });
-    this.mainForm.get('printingMachine')?.disable({ emitEvent: false });
     this.mainForm.get('inspector')?.disable({ emitEvent: false });
   }
 

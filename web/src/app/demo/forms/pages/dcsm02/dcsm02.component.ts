@@ -282,12 +282,24 @@ export class Dcsm02Component implements OnInit {
   }
 
    onFilterCheck() {
-    this.clearAllFilters();
+    this.clearAll();
     this.filterconfirm = 'รอตรวจสอบ';
     this.filterfolder = '';
     setTimeout(() => {
       this.onSearchChange();
     }, 0);
+  }
+
+   clearAll() {
+    this.filterId = '';
+    this.filterfolder = '';
+    this.filterjobdetails = '';
+    this.filterowner = '';
+    this.filterassignee = '';
+    this.filterprocess = '';
+    this.filterconfirm = '';
+    this.startDate = null;
+    this.endDate = null;
   }
 
 }

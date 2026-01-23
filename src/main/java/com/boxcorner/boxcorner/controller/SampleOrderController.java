@@ -129,7 +129,6 @@ public class SampleOrderController {
 
     @GetMapping("/searchDetailBack")
     public ResponseEntity<Page<SampleOrder>> searchOrdersDetailBack(
-            // เพิ่ม value = "..." ให้ครบทุกตัวครับ
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "folderName", required = false) String folderName,
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
@@ -355,5 +354,10 @@ public class SampleOrderController {
     @GetMapping("/countBacklogApproveSample")
     public ResponseEntity<Integer> countBacklogApproveSample(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(sampleOrderService.countBacklogStatus("สำเร็จ รออนุมัติไปตารางรอผลิต",tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countBacklogSampleCheck")
+    public ResponseEntity<Integer> countBacklogSampleCheck(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอเจ้าของงานตรวจสอบ",tokenService.getCurrentUser(httpRequest)));
     }
 }

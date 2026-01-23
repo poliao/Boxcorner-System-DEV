@@ -48,19 +48,19 @@ public class ProductionOrderService {
     public Page<ProductionOrder> findByFilters(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType, Pageable pageable) {
+            String moldStatus, String jobType, String postpone, Pageable pageable) {
         return productionOrderRepository.findByFilters(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
     }
 
     public Page<ProductionOrder> findByFiltersSort(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType, Pageable pageable) {
+            String moldStatus, String jobType, String postpone, Pageable pageable) {
         return productionOrderRepository.findByFiltersSort(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType,postpone, pageable);
     }
 
     public Page<ProductionOrder> findByProductionFilters(Integer id, String folderName, String jobOwner,
@@ -163,4 +163,33 @@ public class ProductionOrderService {
         return productionOrderRepository.countBacklogMoldStatus(moldStatus);
     }
 
+    public Integer countBacklogSupplier(String username) {
+        return productionOrderRepository.countBacklogSupplier(username);
+    }
+
+    public Integer countBacklogKeepSupplier(String username) {
+        return productionOrderRepository.countBacklogKeepSupplier(username);
+    }
+
+    public Integer countBacklogPostpone(String username) {
+        return productionOrderRepository.countBacklogPostpone(username);
+    }
+
+    public ProductionOrder updatePostPoneDeadline (ProductionOrder ProductionOrder) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(ProductionOrder.getId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + ProductionOrder.getId()));
+        existingOrder.setDeadlineDate(ProductionOrder.getDeadlineDate());
+        existingOrder.setDeadlineTime(ProductionOrder.getDeadlineTime());
+        existingOrder.setPostpone("มีการเลื่อนเวลาส่ง");
+        return productionOrderRepository.save(existingOrder);
+    }
+
+    public ProductionOrder updateKeepPostPoneDeadline (ProductionOrder ProductionOrder) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(ProductionOrder.getId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + ProductionOrder.getId()));
+        existingOrder.setPostpone("รับทราบการเลื่อนเวลา");
+        return productionOrderRepository.save(existingOrder);
+    }
+
+    public Integer countBacklogMachine() {
+        return productionOrderRepository.countBacklogMachine();
+    }
 }

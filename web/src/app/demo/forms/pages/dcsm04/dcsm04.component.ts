@@ -51,6 +51,7 @@ export class Dcsm04Component implements OnInit {
   pageIndex = 0;
   shif = 0;
   approveSample = 0;
+  sampleCheck = 0;
   isSortMode: boolean = false;
   
   tableColumns = [
@@ -75,6 +76,7 @@ export class Dcsm04Component implements OnInit {
     this.loadData();
     this.BacklogShif();
     this.BacklogApproveSample();
+    this.countBacklogSampleCheck()
   }
 
   // 1. สร้าง Form
@@ -225,6 +227,19 @@ export class Dcsm04Component implements OnInit {
 
   onFilterApproveSample() {
     this.searchForm.get('status')?.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
+    this.onSearch();
+  }
+
+  countBacklogSampleCheck() {
+    this.dcsm04Service.countBacklogSampleCheck().subscribe({
+      next: (data: number) => {
+        this.sampleCheck = data;
+      },
+    });
+  }
+
+  onFilterSampleCheck() {
+    this.searchForm.get('status')?.setValue('รอเจ้าของงานตรวจสอบ');
     this.onSearch();
   }
 

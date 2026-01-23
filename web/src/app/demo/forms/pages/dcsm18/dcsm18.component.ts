@@ -40,6 +40,7 @@ export class Dcsm18Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
+  machine = 0;
   isSortMode: boolean = false;
 
   tableColumns = [
@@ -64,6 +65,7 @@ export class Dcsm18Component implements OnInit {
   ngOnInit(): void {
     this.initSearchForm();
     this.loadData();
+    this.countBacklogMachine();
   }
 
   initSearchForm(): void {
@@ -94,7 +96,7 @@ export class Dcsm18Component implements OnInit {
       jobStatus: formValues.status,             
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
-      jobType: formValues.jobType,
+      jobType: 'OD',
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       page: this.pageIndex,
@@ -127,7 +129,7 @@ export class Dcsm18Component implements OnInit {
       jobStatus: formValues.status,             
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
-      jobType: formValues.jobType,
+      jobType: 'OD',
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       page: this.pageIndex,
@@ -225,4 +227,17 @@ export class Dcsm18Component implements OnInit {
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm18Detail', row.id]);
   }
+
+  countBacklogMachine() {
+    this.dcsm18Service.countBacklogMachine().subscribe({
+      next: (data: number) => {
+        this.machine = data;
+      },
+    });
+  }
+
+  onFilterUnassigned(){
+    
+  }
+
 }

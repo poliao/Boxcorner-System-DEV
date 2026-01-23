@@ -87,6 +87,31 @@
                   <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่กำลังดำเนินการ</span><span class="d-lg-none">กำลังดำเนินการ</span>
                 </button>
               </div>
+
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterSupplier()" style="background-color: #350142;">
+                  <span *ngIf="isSupplier > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ isSupplier }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานรอส่ง Supplier</span><span class="d-lg-none">รอส่งSupplier</span>
+                </button>
+              </div>
+
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterKeepSupplier()" style="background-color: #350142;">
+                  <span *ngIf="isKeepSupplier > 0"
+                    class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ isKeepSupplier }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอรับกลับจาก Supplier</span><span class="d-lg-none">งานที่รอรับกลับ</span>
+                </button>
+              </div>
+
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
                 <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterFinished()" style="background-color: #350142;">
                   <span *ngIf="finished > 0"

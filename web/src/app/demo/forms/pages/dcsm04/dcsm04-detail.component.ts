@@ -26,13 +26,13 @@ export class Dcsm04DetailComponent implements OnInit {
   isBtnApproveSample = false
   isBtnRejectSample = false
   isUpdateDelivery = false
-  
+
 
   showApproveModal = false;
   usedFile = new FormControl('', Validators.required);
   colorSample = new FormControl('');
-  deadlineDate = new FormControl('', Validators.required);
-  deadlineTime = new FormControl('', Validators.required);
+  deadlineDate = new FormControl('');
+  deadlineTime = new FormControl('');
   remarks = new FormControl('');
 
   constructor(
@@ -57,7 +57,7 @@ export class Dcsm04DetailComponent implements OnInit {
       }
     }
 
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง'|| this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง') {
+    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
@@ -124,20 +124,35 @@ export class Dcsm04DetailComponent implements OnInit {
       return;
     }
 
-    this.loadingService.show();
-    this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
-      next: (response) => {
-        this.loadingService.hide();
-        this.patchFormData(response);
-        this.checkBtn();
-        this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
-      },
-      error: (error) => {
-        this.loadingService.hide();
-        const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-        this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+    Swal.fire({
+      title: 'ยืนยันการบันทึก',
+      text: "ยื่นยันการบันทึก ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.checkBtn();
+            this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
       }
     });
+
+
   }
 
   updateFileChecked() {
@@ -385,29 +400,29 @@ export class Dcsm04DetailComponent implements OnInit {
 
   onThaiDateInput(event: any, controlName: string): void {
     let value = event.target.value.replace(/[^0-9]/g, '');
-    
+
     if (value.length >= 2) {
       value = value.substring(0, 2) + '/' + value.substring(2);
     }
     if (value.length >= 5) {
       value = value.substring(0, 5) + '/' + value.substring(5, 7);
     }
-    
+
     event.target.value = value;
-    
+
     if (value.length === 8) {
       const parts = value.split('/');
       if (parts.length === 3) {
         const day = parseInt(parts[0]);
         const month = parseInt(parts[1]);
         let year = parseInt(parts[2]);
-        
+
         if (year <= 50) {
           year += 2000;
         } else {
           year += 1900;
         }
-        
+
         if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
           const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
           if (this.mainForm.get(controlName)) {

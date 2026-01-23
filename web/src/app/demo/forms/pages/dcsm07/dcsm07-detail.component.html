@@ -11,6 +11,10 @@
             (click)="updateCancelStatus()" style="background-color: #ff0000;">
             ยกเลิกงานรอผลิต
           </button>
+          <button type="button" class="btn text-white px-5 shadow-sm" 
+          style="background-color: #ff9100;" (click)="openDeadlineModal()">
+            เปลี่ยนวันส่ง
+          </button>
         </div>
 
         <div class="col-md-6">
@@ -45,11 +49,16 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
-          <input type="date" formControlName="deadlineDate" class="form-control">
+          <div class="input-group">
+            <input type="date" formControlName="deadlineDate" class="form-control" readonly>
+
+          </div>
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
-          <input type="time" formControlName="deadlineTime" class="form-control">
+          <div class="input-group">
+            <input type="time" formControlName="deadlineTime" class="form-control" readonly>
+          </div>
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง<span style="color: red;">*</span></label>
@@ -94,6 +103,41 @@
         </div>
 
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal สำหรับเปลี่ยนวันที่และเวลาส่งงานลูกค้า -->
+<div class="modal" [class.show]="showDeadlineModal" [style.display]="showDeadlineModal ? 'block' : 'none'"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">เปลี่ยนวันที่และเวลาส่งงานลูกค้า</h5>
+        <button type="button" class="btn-close" (click)="closeDeadlineModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">วันที่ส่งงานลูกค้า</label>
+            <input type="date" class="form-control" [(ngModel)]="tempDeadlineDate"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">เวลาส่งงานลูกค้า</label>
+            <input type="time" class="form-control" [(ngModel)]="tempDeadlineTime"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+        <div class="alert alert-info mt-3">
+          <strong>วันที่ปัจจุบัน:</strong> {{ mainForm.get('deadlineDate')?.value || '-' }}<br>
+          <strong>เวลาปัจจุบัน:</strong> {{ mainForm.get('deadlineTime')?.value || '-' }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDeadlineModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="updateDeadline()">บันทึกการเปลี่ยนแปลง</button>
+      </div>
     </div>
   </div>
 </div>

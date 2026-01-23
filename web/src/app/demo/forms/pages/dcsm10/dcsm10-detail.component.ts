@@ -117,6 +117,7 @@ export class Dcsm10DetailComponent implements OnInit {
       id: this.mainForm.getRawValue().id,
       printingMachine: this.mainForm.getRawValue().printingMachine
     }
+    
     if (this.mainForm.valid) {
       Swal.fire({
         title: 'ยืนยันกำลังทำแม่พิมพ์',

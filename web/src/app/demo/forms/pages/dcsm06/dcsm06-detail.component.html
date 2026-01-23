@@ -7,6 +7,10 @@
             style="background-color: #1e1b4b;">
             บันทึกข้อมูล
           </button>
+          <button *ngIf="isPostPone == true" (click)="onKeepPostPoneDeadline()" type="button" class="btn text-white px-5 shadow-sm"
+            style="background-color: #1e1b4b;">
+            รับทราบการเลื่อนเวลา
+          </button>
         </div>
 
         <div class="col-md-6">
@@ -29,18 +33,18 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
-          <input type="text" formControlName="usedFile" class="form-control" placeholder="ชื่อผู้สั่งงาน">
+          <input type="text" formControlName="usedFile" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">สีตัวอย่าง</label>
-          <input type="text" formControlName="colorSample" class="form-control" placeholder="ชื่อผู้ออกแบบ">
+          <input type="text" formControlName="colorSample" class="form-control">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า<span style="color: red;">*</span></label>
+          <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
           <input type="text" #deadlineDateInput class="form-control" 
             (input)="onThaiDateInput($event, 'deadlineDate')" 
             [value]="getThaiDateInput('deadlineDate')"
@@ -48,7 +52,7 @@
             placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
         <div class="col-md-3">
-          <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า<span style="color: red;">*</span></label>
+          <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
           <input type="time" formControlName="deadlineTime" class="form-control">
         </div>
         <div class="col-md-3">

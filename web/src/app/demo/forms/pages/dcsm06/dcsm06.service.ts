@@ -26,19 +26,20 @@ export class Dcsm06Service {
       id: apiFilters.id,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
+      jobStatus: apiFilters.jobStatus,
+      operatorName: apiFilters.operatorName,
       processStatus: apiFilters.processStatus,
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
-      endDate: apiFilters.endDate
+      endDate: apiFilters.endDate,
+      postpone: apiFilters.postpone,
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });
@@ -51,23 +52,32 @@ export class Dcsm06Service {
       id: apiFilters.id,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
+      jobStatus: apiFilters.jobStatus,
+      operatorName: apiFilters.operatorName,
       processStatus: apiFilters.processStatus,
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
       endDate: apiFilters.endDate,
+      postpone: apiFilters.postpone,
       sortByDeadline: 'true'
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });
+  }
+
+  countBacklogPostpone(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogPostpone`);
+  }
+
+  updateKeepPostPoneDeadline(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateKeepPostPoneDeadline`, data);
   }
 
 }

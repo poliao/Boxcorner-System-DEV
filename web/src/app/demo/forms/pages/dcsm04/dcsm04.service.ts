@@ -95,4 +95,8 @@ export class Dcsm04Service {
   countBacklogApproveSample(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveSample`);
   }
+
+  countBacklogSampleCheck(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSampleCheck`);
+  }
 }

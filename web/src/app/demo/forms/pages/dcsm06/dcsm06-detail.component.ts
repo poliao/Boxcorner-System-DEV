@@ -21,6 +21,7 @@ export class Dcsm06DetailComponent implements OnInit {
   id: string | null = null;
   isSampleOrderId = false
   isSave = false
+  isPostPone = false
 
   constructor(
     private fb: FormBuilder,
@@ -39,6 +40,12 @@ export class Dcsm06DetailComponent implements OnInit {
       this.patchFormData(resolvedData);
     }
 
+    if (resolvedData) {
+      if (resolvedData.postpone == 'มีการเลื่อนเวลาส่ง') {
+        this.isPostPone = true
+      }
+    }
+
     if (this.mainForm.getRawValue().sampleOrderId != null && this.mainForm.getRawValue().sampleOrderId != '') {
       this.isSampleOrderId = true
     } else {
@@ -54,6 +61,7 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('remarks')?.enable();
       this.isSave = true
     }
+
   }
 
   initForm(): void {
@@ -64,8 +72,8 @@ export class Dcsm06DetailComponent implements OnInit {
       usedFile: ['',Validators.required],
       colorSample: [''],
       jobOwner: [''],
-      deadlineDate: ['',Validators.required],
-      deadlineTime: ['',Validators.required],
+      deadlineDate: [''],
+      deadlineTime: [''],
       deliveryDate: [''],
       jobStatus: [''],
       processStatus: [''],
@@ -196,4 +204,36 @@ export class Dcsm06DetailComponent implements OnInit {
       }
     }
   }
+
+  onKeepPostPoneDeadline() {
+    Swal.fire({
+      title: 'รับทราบการเลื่อนเวลา',
+      text: "ยืนยันรับทราบการเลื่อนเวลา ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm06Service.updateKeepPostPoneDeadline(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
+            this.router.navigate(['/Dcsm06']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
+      }
+    });
+  }
+
+
 }

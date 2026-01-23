@@ -74,6 +74,7 @@ public class ProductionOrderController {
             @RequestParam(required = false, name = "operatorName") String operatorName,
             @RequestParam(required = false, name = "moldStatus") String moldStatus,
             @RequestParam(required = false, name = "jobType") String jobType,
+            @RequestParam(required = false, name = "postpone") String postpone,
             @RequestParam(defaultValue = "0", name = "page") int page,
             @RequestParam(defaultValue = "10", name = "size") int size,
             @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
@@ -82,11 +83,11 @@ public class ProductionOrderController {
         if (Boolean.TRUE.equals(sortByDeadline)) {
             result = productionOrderService.findByFiltersSort(
                     id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
         } else {
             result = productionOrderService.findByFilters(
                     id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
         }
         return ResponseEntity.ok(result);
     }
@@ -227,4 +228,47 @@ public class ProductionOrderController {
     public ResponseEntity<Integer> countBacklogMoldStatus(@RequestParam("moldStatus") String moldStatus) {
         return ResponseEntity.ok(productionOrderService.countBacklogMoldStatus(moldStatus));
     }
+
+    @GetMapping("/countBacklogSupplier")
+    public ResponseEntity<Integer> countBacklogSupplier(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(productionOrderService.countBacklogSupplier(tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countBacklogKeepSupplier")
+    public ResponseEntity<Integer> countBacklogKeepSupplier(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(productionOrderService.countBacklogKeepSupplier(tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countBacklogMachine")
+    public ResponseEntity<Integer> countBacklogMachine() {
+        return ResponseEntity.ok(productionOrderService.countBacklogMachine());
+    }
+
+    @PutMapping("/updatePostPoneDeadline")
+    public ResponseEntity<?> updatePostPoneDeadline(@RequestBody ProductionOrder productionOrder) {
+        try {
+            ProductionOrder savedData = productionOrderService.updatePostPoneDeadline(productionOrder);
+            return ResponseEntity.ok(savedData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error saving data: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/countBacklogPostpone")
+    public ResponseEntity<Integer> countBacklogPostpone(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(productionOrderService.countBacklogPostpone(tokenService.getCurrentUser(httpRequest)));
+    }
+
+     @PutMapping("/updateKeepPostPoneDeadline")
+    public ResponseEntity<?> updateKeepPostPoneDeadline(@RequestBody ProductionOrder productionOrder) {
+        try {
+            ProductionOrder savedData = productionOrderService.updateKeepPostPoneDeadline(productionOrder);
+            return ResponseEntity.ok(savedData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error saving data: " + e.getMessage());
+        }
+    }
+
 }
