@@ -154,7 +154,6 @@ export class Dcsm09DetailComponent implements OnInit {
                 this.checkBtn();
                 this.loadingService.hide();
                 this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-                this.router.navigate(['/Dcsm09']);
               },
               error: (error) => {
                 this.loadingService.hide();
@@ -197,7 +196,6 @@ export class Dcsm09DetailComponent implements OnInit {
             this.checkBtn();
             this.loadingService.hide();
             this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm09']);
           },
           error: (error) => {
             this.loadingService.hide();
@@ -233,7 +231,6 @@ export class Dcsm09DetailComponent implements OnInit {
             this.checkBtn();
             this.loadingService.hide();
             this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm09']);
           },
           error: (error) => {
             this.loadingService.hide();

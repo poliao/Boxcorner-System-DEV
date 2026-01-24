@@ -1,0 +1,66 @@
+<h2>ตารางติดตามการผลิต</h2>
+<div class="card-body">
+  <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+    <div class="card-body bg-light">
+      <form>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <input type="number" class="form-control" [(ngModel)]="filterId" name="filterId" placeholder="ค้นหา ลำดับ"
+              (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterJobId" name="filterJobId"
+              placeholder="ค้นหา JOB ID" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
+              placeholder="ค้นหา ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" [(ngModel)]="filterPrintStatus" name="filterPrintStatus" (change)="onSearchChange()">
+              <option value="">สถานะพิมพ์ ทั้งหมด</option>
+              <option value="เริ่ม">เริ่ม</option>
+              <option value="รอวัสดุ">รอวัสดุ</option>
+              <option value="กำลังผลิต">กำลังผลิต</option>
+              <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input type="date" class="form-control" [(ngModel)]="filterStartDate" name="filterStartDate"
+              placeholder="วันที่เริ่ม" (change)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="date" class="form-control" [(ngModel)]="filterEndDate" name="filterEndDate"
+              placeholder="วันที่สิ้นสุด" (change)="onSearchChange()">
+          </div>
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #003747;" (click)="onSearchChange()">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-stroked-button type="button" class="w-100 px-3" (click)="clearAllFilters()"
+                  style="color: #003747;">
+                  <mat-icon>refresh</mat-icon> ล้างค่า
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" (click)="add()"
+                  style="background-color: #10bb00;">
+                  <mat-icon>add_circle</mat-icon> เพิ่มข้อมูล
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <app-data-table [headerStyle]="'background: #003747; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
+    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
+  </app-data-table>
+</div>

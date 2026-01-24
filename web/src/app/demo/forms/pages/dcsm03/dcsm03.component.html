@@ -2,28 +2,24 @@
 <div class="card-body">
   <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-body bg-light">
-      <form (ngSubmit)="onSearchChange()">
+      <form >
         <div class="row g-3">
           <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterId" name="filterId" placeholder="ค้นหา ลำดับ"
               (keyup.enter)="onSearchChange()">
           </div>
-
           <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterjobdetails" name="filterjobdetails"
-              placeholder="ค้นหา รายละเอียดงาน" (keyup.enter)="onSearchChange()">
+              placeholder="ค้นหา ชื่อโฟลเดอร์งาน" (keyup.enter)="onSearchChange()">
           </div>
-
           <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterowner" name="filterowner"
               placeholder="ค้นหา เจ้าของงาน" (input)="onOwnerSearch($event)" (keyup.enter)="onSearchChange()">
           </div>
-
           <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterassignee" name="filterassignee"
               placeholder="ค้นหา ผู้รับผิดชอบ" (input)="onAssigneeSearch($event)" (keyup.enter)="onSearchChange()">
           </div>
-
           <div class="col-md-3">
             <select class="form-select" (input)="onProcessSearch($event)" [(ngModel)]="filterprocess"
               name="filterprocess" (keyup.enter)="onSearchChange()">
@@ -35,7 +31,6 @@
               <option value="เสร็จสิ้น">เสร็จสิ้น</option>
             </select>
           </div>
-
           <div class="col-md-3">
             <select class="form-select" (input)="onConfirmSearch($event)" [(ngModel)]="filterconfirm"
               name="filterconfirm" (keyup.enter)="onSearchChange()">
@@ -48,11 +43,10 @@
               <option value="ผ่าน">ผ่าน</option>
             </select>
           </div>
-
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button type="submit" class="w-100 px-3" style="background-color: #300707;">
+                <button mat-flat-button type="button" (click)="onSearchChange()" class="w-100 px-3" style="background-color: #300707;">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>

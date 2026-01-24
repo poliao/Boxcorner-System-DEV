@@ -26,7 +26,7 @@ export class Dcsm03Service {
 
   getAllDesignOrders(
     id: string,
-    job_details: string,
+    folder_name: string,
     job_owner: string,
     process_status: string,
     assignee: string,
@@ -38,7 +38,7 @@ export class Dcsm03Service {
   ): Observable<any> {
     const params = {
       id: id || '',
-      job_details: job_details || '',
+      folder_name: folder_name || '',
       job_owner: job_owner || '',
       process_status: process_status || '',
       assignee: assignee || '',
@@ -86,7 +86,7 @@ export class Dcsm03Service {
 
   getAllDesignOrdersSorted(
     id: string,
-    job_details: string,
+    folder_name: string,
     job_owner: string,
     process_status: string,
     assignee: string,
@@ -98,7 +98,7 @@ export class Dcsm03Service {
   ): Observable<any> {
     const params = {
       id: id || '',
-      job_details: job_details || '',
+      folder_name: folder_name || '',
       job_owner: job_owner || '',
       process_status: process_status || '',
       assignee: assignee || '',

@@ -144,6 +144,7 @@ export class Dcsm04DetailComponent implements OnInit {
             this.patchFormData(response);
             this.checkBtn();
             this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
+            this.router.navigate(['/Dcsm04']);
           },
           error: (error) => {
             this.loadingService.hide();
@@ -175,6 +176,7 @@ export class Dcsm04DetailComponent implements OnInit {
           this.loadingService.hide();
           this.checkBtn();
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm04']);
         })
       }
     });
@@ -198,6 +200,7 @@ export class Dcsm04DetailComponent implements OnInit {
           this.loadingService.hide();
           this.checkBtn();
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm04']);
         })
       }
     });
@@ -287,6 +290,7 @@ export class Dcsm04DetailComponent implements OnInit {
             this.isUpdateDelivery = false
           }
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm04']);
         })
       }
     });
@@ -317,6 +321,7 @@ export class Dcsm04DetailComponent implements OnInit {
             this.isUpdateDelivery = false
           }
           this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm04']);
         })
       }
     });

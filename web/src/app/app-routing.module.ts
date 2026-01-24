@@ -22,6 +22,7 @@ import { Dcsm16DetailResolver } from './demo/forms/pages/dcsm16/dcsm16-detail.re
 import { Dcsm17DetailResolver } from './demo/forms/pages/dcsm17/dcsm17-detail.resolver';
 import { Dcsm18DetailResolver } from './demo/forms/pages/dcsm18/dcsm18-detail.resolver';
 import { Dcsm19DetailResolver } from './demo/forms/pages/dcsm19/dcsm19-detail.resolver';
+import { Dcsm20DetailResolver } from './demo/forms/pages/dcsm20/dcsm20-detail.resolver';
 
 const routes: Routes = [
   {
@@ -380,6 +381,24 @@ const routes: Routes = [
         path: 'Dcsm19',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm19/dcsm19.component').then((c) => c.Dcsm19Component)
+      },
+      {
+        path: 'Dcsm20Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm20/dcsm20-detail.component').then((c) => c.Dcsm20DetailComponent),
+        resolve: {
+          productionOrder: Dcsm20DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm20Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm20/dcsm20-detail.component').then((c) => c.Dcsm20DetailComponent)
+      },
+      {
+        path: 'Dcsm20',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm20/dcsm20.component').then((c) => c.Dcsm20Component)
       }
     ]
   },

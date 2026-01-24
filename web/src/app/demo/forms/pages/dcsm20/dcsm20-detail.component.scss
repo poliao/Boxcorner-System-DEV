@@ -1,0 +1,116 @@
+/* Red Zone Styling */
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Form styling */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.font-weight-bold {
+  font-weight: 600 !important;
+}
+
+/* Card styling */
+.card {
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Button styling */
+.btn {
+  border-radius: 0.375rem;
+  font-weight: 500;
+}
+
+/* Grid section styling */
+.border {
+  border: 1px solid #dee2e6 !important;
+}
+
+.rounded {
+  border-radius: 0.375rem !important;
+}
+
+/* Red zone background */
+input[style*="background-color: #ffe6e6"],
+select[style*="background-color: #ffe6e6"],
+textarea[style*="background-color: #ffe6e6"] {
+  border-color: #f5c6cb;
+}
+
+input[style*="background-color: #ffe6e6"]:focus,
+select[style*="background-color: #ffe6e6"]:focus,
+textarea[style*="background-color: #ffe6e6"]:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Section headers */
+h5.text-primary {
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+h5.text-danger {
+  border-bottom: 2px solid #dc3545;
+  padding-bottom: 0.5rem;
+}
+
+/* Workflow grid styling */
+h6.text-secondary {
+  font-weight: 600;
+  color: #ffbb00 !important;
+  border-bottom: 1px solid #ff7b00;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+/* Form validation */
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Disabled field styling */
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: #c4c4c4 !important;
+  border-color: #c4c4c4 !important;
+  color: #121213 !important;
+  opacity: 0.8;
+}
+
+select.form-control:disabled {
+  background-color: #c4c4c4 !important;
+  color: #121213 !important;
+}
+
+textarea.form-control:disabled {
+  background-color: #c4c4c4 !important;
+  color: #121213 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .col-md-6,
+  .col-md-4,
+  .col-md-12 {
+    margin-bottom: 1rem;
+  }
+  
+  .d-flex.gap-2 {
+    flex-direction: column;
+  }
+  
+  .d-flex.gap-2 .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
