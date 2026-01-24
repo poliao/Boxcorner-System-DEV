@@ -64,6 +64,7 @@ export class Dcsm09DetailComponent implements OnInit {
       inspector: [''],
       createdAt: [''],
       updatedAt: [''],
+      customerName: [''],
 
     });
     this.mainForm.get('id')?.disable();
@@ -85,6 +86,7 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.get('operatorName')?.disable();
     this.mainForm.get('remarks')?.disable();
     this.mainForm.get('inspector')?.disable();
+    this.mainForm.get('customerName')?.disable();
   }
 
   patchFormData(data: any): void {

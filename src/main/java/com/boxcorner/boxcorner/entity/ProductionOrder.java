@@ -84,4 +84,7 @@ public class ProductionOrder {
     @Column(name = "postpone")
     private String postpone;
 
+    @Column(name = "customer_name")
+    private String customerName;
+
 }

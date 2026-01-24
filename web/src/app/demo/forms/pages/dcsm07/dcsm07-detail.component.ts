@@ -79,6 +79,7 @@ export class Dcsm07DetailComponent implements OnInit {
       createdAt: [''],
       updatedAt: [''],
       sampleOrderId: [''],
+      customerName: [''],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -97,6 +98,7 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('deliveryDate')?.disable({ emitEvent: false });
     this.mainForm.get('remarks')?.disable({ emitEvent: false });
     this.mainForm.get('sampleOrderId')?.disable();
+    this.mainForm.get('customerName')?.disable();
   }
 
   patchFormData(data: any): void {

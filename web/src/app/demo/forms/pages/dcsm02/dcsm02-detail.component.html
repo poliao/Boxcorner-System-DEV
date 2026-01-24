@@ -80,9 +80,14 @@
             [class.is-invalid]="designForm.get('orderDate')?.invalid && designForm.get('orderDate')?.touched">
         </div>
 
-        <div class="col-md-4" *ngIf="isFileName">
+        <div class="col-md-12" *ngIf="isFileName">
           <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
           <input type="text" formControlName="fileName" class="form-control" style="background-color: #ff7b00; color: white;">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
         </div>
       </form>
     </div>

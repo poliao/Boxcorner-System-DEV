@@ -192,4 +192,13 @@ public class ProductionOrderService {
     public Integer countBacklogMachine() {
         return productionOrderRepository.countBacklogMachine();
     }
+
+    public Page<ProductionOrder> findByFiltersSample(Integer id, String folderName, String jobOwner,
+            LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
+            String jobStatus, String processStatus, String operatorName,
+            String moldStatus, String jobType, String postpone, Pageable pageable) {
+        return productionOrderRepository.findByFiltersSample(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType,postpone, pageable);
+    }
 }

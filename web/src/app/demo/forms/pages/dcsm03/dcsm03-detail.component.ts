@@ -64,9 +64,8 @@ export class Dcsm03DetailComponent implements OnInit {
       processStatus: ['', Validators.required],
       confirmStatus: ['', Validators.required],
       noteEdit: [''],
-      joCode: ['', Validators.required],
-      qtCode: [''],
-      qpCode: [''],
+      fileName: [''],
+      customerName: [''],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -80,9 +79,7 @@ export class Dcsm03DetailComponent implements OnInit {
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['noteEdit'].disable({ emitEvent: false });
-    this.designForm.controls['joCode'].disable({ emitEvent: false });
-    this.designForm.controls['qtCode'].disable({ emitEvent: false });
-    this.designForm.controls['qpCode'].disable({ emitEvent: false });
+    this.designForm.controls['customerName'].disable({ emitEvent: false });
   }
   patchFormData(data: any): void {
     const apiData = data as any;

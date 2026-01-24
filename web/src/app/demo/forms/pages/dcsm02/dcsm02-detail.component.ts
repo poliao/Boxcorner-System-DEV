@@ -63,6 +63,7 @@ export class Dcsm02DetailComponent implements OnInit {
       this.designForm.controls['remarks'].disable({ emitEvent: false });
       this.designForm.controls['deadlineDate'].disable({ emitEvent: false });
       this.designForm.controls['deadlineTime'].disable({ emitEvent: false });
+      this.designForm.controls['customerName'].disable({ emitEvent: false });
 
       this.isBtnSave = false;
     }
@@ -86,6 +87,7 @@ export class Dcsm02DetailComponent implements OnInit {
       processStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
       confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
       fileName: [''],
+      customerName: [''],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -217,6 +219,7 @@ export class Dcsm02DetailComponent implements OnInit {
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
       designOrderId: this.designForm.getRawValue().id,
+      customerName: this.designForm.getRawValue().customerName
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',

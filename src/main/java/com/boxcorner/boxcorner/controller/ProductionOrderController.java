@@ -236,7 +236,8 @@ public class ProductionOrderController {
 
     @GetMapping("/countBacklogKeepSupplier")
     public ResponseEntity<Integer> countBacklogKeepSupplier(HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(productionOrderService.countBacklogKeepSupplier(tokenService.getCurrentUser(httpRequest)));
+        return ResponseEntity
+                .ok(productionOrderService.countBacklogKeepSupplier(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogMachine")
@@ -260,7 +261,7 @@ public class ProductionOrderController {
         return ResponseEntity.ok(productionOrderService.countBacklogPostpone(tokenService.getCurrentUser(httpRequest)));
     }
 
-     @PutMapping("/updateKeepPostPoneDeadline")
+    @PutMapping("/updateKeepPostPoneDeadline")
     public ResponseEntity<?> updateKeepPostPoneDeadline(@RequestBody ProductionOrder productionOrder) {
         try {
             ProductionOrder savedData = productionOrderService.updateKeepPostPoneDeadline(productionOrder);
@@ -269,6 +270,31 @@ public class ProductionOrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error saving data: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/searchSample")
+    public ResponseEntity<Page<ProductionOrder>> searchSample(
+            @RequestParam(required = false, name = "id") Integer id,
+            @RequestParam(required = false, name = "folderName") String folderName,
+            @RequestParam(required = false, name = "jobOwner") String jobOwner,
+            @RequestParam(required = false, name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false, name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false, name = "deadlineTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime deadlineTime,
+            @RequestParam(required = false, name = "jobStatus") String jobStatus,
+            @RequestParam(required = false, name = "processStatus") String processStatus,
+            @RequestParam(required = false, name = "operatorName") String operatorName,
+            @RequestParam(required = false, name = "moldStatus") String moldStatus,
+            @RequestParam(required = false, name = "jobType") String jobType,
+            @RequestParam(required = false, name = "postpone") String postpone,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductionOrder> result;
+        result = productionOrderService.findByFiltersSample(
+                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
+        return ResponseEntity.ok(result);
     }
 
 }

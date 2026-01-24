@@ -59,6 +59,7 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('deadlineTime')?.enable();
       this.mainForm.get('folderName')?.enable();
       this.mainForm.get('remarks')?.enable();
+      this.mainForm.get('customerName')?.enable();
       this.isSave = true
     }
 
@@ -88,6 +89,7 @@ export class Dcsm06DetailComponent implements OnInit {
       moldMakerName: [''],
       printingMachine: [''],
       inspector: [''],
+      customerName: [''],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -109,6 +111,7 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('moldMakerName')?.disable({ emitEvent: false });
     this.mainForm.get('printingMachine')?.disable({ emitEvent: false });
     this.mainForm.get('inspector')?.disable({ emitEvent: false });
+    this.mainForm.get('customerName')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

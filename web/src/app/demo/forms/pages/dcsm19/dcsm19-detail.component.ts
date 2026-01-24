@@ -71,6 +71,7 @@ export class Dcsm19DetailComponent implements OnInit {
       status: ['รอผู้รับผิดชอบอนุมัติ'],
       note: [''],
       noteEdit: [''],
+      customerName: [''],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -85,6 +86,7 @@ export class Dcsm19DetailComponent implements OnInit {
     this.mainForm.controls['status'].disable({ emitEvent: false });
     this.mainForm.controls['note'].disable({ emitEvent: false });
     this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
+    this.mainForm.controls['customerName'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

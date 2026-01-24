@@ -67,6 +67,7 @@ export class Dcsm10DetailComponent implements OnInit {
       updatedAt: [''],
       moldMakerName: [''],
       printingMachine: ['', Validators.required],
+      customerName: [''],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -86,6 +87,7 @@ export class Dcsm10DetailComponent implements OnInit {
     this.mainForm.get('deliveryDate')?.disable();
     this.mainForm.get('operatorName')?.disable();
     this.mainForm.get('remarks')?.disable();
+    this.mainForm.get('customerName')?.disable();
   }
 
   patchFormData(data: any): void {

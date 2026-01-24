@@ -74,4 +74,29 @@ export class Dcsm18Service {
     return this.http.get(`${this.apiUrl}/production/countBacklogMachine`);
   }
 
+  getOrdersWithSearchSample(apiFilters: any): Observable<any> {
+    let params: any = {
+      page: apiFilters.page.toString(),
+      size: apiFilters.size.toString(),
+      id: apiFilters.id,
+      folderName: apiFilters.folderName,
+      jobOwner: apiFilters.jobOwner,
+      jobStatus: apiFilters.jobStatus, 
+      operatorName: apiFilters.operatorName, 
+      processStatus: apiFilters.processStatus,
+      moldStatus: apiFilters.moldStatus,
+      jobType: apiFilters.jobType,
+      startDate: apiFilters.startDate,
+      endDate: apiFilters.endDate
+    };
+
+    Object.keys(params).forEach(key => {
+        if (params[key] === null || params[key] === '') {
+            delete params[key];
+        }
+    });
+
+    return this.http.get(`${this.apiUrl}/production/searchSample`, { params: params });
+  }
+
 }

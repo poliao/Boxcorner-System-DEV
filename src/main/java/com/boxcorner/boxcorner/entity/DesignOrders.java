@@ -60,4 +60,7 @@ public class DesignOrders {
     @Column(name = "file_name")
     private String fileName;
 
+    @Column(name = "customer_name")
+    private String customerName;
+
 }

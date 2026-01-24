@@ -83,6 +83,7 @@ export class Dcsm11DetailComponent implements OnInit {
       updateDateDelivery: [new Date().toISOString().substring(0, 10)],
       updateTimeDelivery: [''],
       noteEdit: [''],
+      customerName: [''],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -100,6 +101,7 @@ export class Dcsm11DetailComponent implements OnInit {
     this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
     this.mainForm.controls['note'].disable({ emitEvent: false });
     this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
+    this.mainForm.controls['customerName'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

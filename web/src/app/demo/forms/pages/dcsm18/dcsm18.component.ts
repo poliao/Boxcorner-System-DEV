@@ -70,14 +70,14 @@ export class Dcsm18Component implements OnInit {
 
   initSearchForm(): void {
     this.searchForm = this.fb.group({
-      id: [''],              // เพิ่ม id
+      id: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
       status: [''],
-      processStatus: [''],   // เพิ่ม processStatus
-      moldStatus: [''],      // เพิ่ม moldStatus
-      jobType: [''],         // เพิ่ม jobType
+      processStatus: [''],
+      moldStatus: [''],
+      jobType: [''],
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
@@ -236,8 +236,39 @@ export class Dcsm18Component implements OnInit {
     });
   }
 
+
+
   onFilterUnassigned(){
-    
+    const formValues = this.searchForm.getRawValue();
+
+    const apiFilters = {
+      id: formValues.id,              
+      folderName: formValues.folderName,
+      jobOwner: formValues.jobOwner,
+      operatorName: formValues.responsiblePerson, 
+      jobStatus: formValues.status,             
+      processStatus: formValues.processStatus,
+      moldStatus: formValues.moldStatus,
+      jobType: 'OD',
+      startDate: formValues.startDate,
+      endDate: formValues.endDate,
+      page: this.pageIndex,
+      size: this.pageSize
+    };
+
+    this.dcsm18Service.getOrdersWithSearchSample(apiFilters).subscribe({
+      next: (res: any) => {
+        this.tableData = res.content.map((item: any) => ({
+          ...item,
+          deadlineDate: this.formatDate(item.deadlineDate),
+          deliveryDate: this.formatDate(item.deliveryDate)
+        }));
+        this.totalElements = res.totalElements;
+      },
+      error: (err) => {
+        console.error('Error loading data:', err);
+      }
+    });
   }
 
 }

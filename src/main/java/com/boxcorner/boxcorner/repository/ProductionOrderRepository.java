@@ -398,4 +398,58 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             "and printing_machine is null", nativeQuery = true)
     Integer countBacklogMachine();
 
+
+    @Query(value = """
+            SELECT * FROM production_orders p
+            WHERE
+                (p.job_status = 'เสร็จสิ้น')
+                AND (p.process_status = 'ส่งไฟล์แล้ว')
+                AND (:id IS NULL OR p.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR p.deadline_date <= :endDate)
+                AND (CAST(:deadlineTime AS time) IS NULL OR p.deadline_time = :deadlineTime)
+                AND (:jobStatus IS NULL OR :jobStatus = '' OR UPPER(p.job_status) LIKE UPPER(CONCAT('%', :jobStatus, '%')))
+                AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(p.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
+                AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
+                AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                AND (:postpone IS NULL OR :postpone = '' OR p.postpone = :postpone)
+                AND (p.printing_machine IS NULL)
+            ORDER BY p.id DESC
+            """, countQuery = """
+            SELECT count(*) FROM production_orders p
+            WHERE
+                (p.job_status = 'เสร็จสิ้น')
+                AND (p.process_status = 'ส่งไฟล์แล้ว')
+                AND (:id IS NULL OR p.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR p.deadline_date <= :endDate)
+                AND (CAST(:deadlineTime AS time) IS NULL OR p.deadline_time = :deadlineTime)
+                AND (:jobStatus IS NULL OR :jobStatus = '' OR UPPER(p.job_status) LIKE UPPER(CONCAT('%', :jobStatus, '%')))
+                AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(p.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
+                AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
+                AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                AND (:postpone IS NULL OR :postpone = '' OR p.postpone = :postpone)
+                AND (p.printing_machine IS NULL)
+            """, nativeQuery = true)
+    Page<ProductionOrder> findByFiltersSample(
+            @Param("id") Integer id,
+            @Param("folderName") String folderName,
+            @Param("jobOwner") String jobOwner,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("deadlineTime") LocalTime deadlineTime,
+            @Param("jobStatus") String jobStatus,
+            @Param("processStatus") String processStatus,
+            @Param("operatorName") String operatorName,
+            @Param("moldStatus") String moldStatus,
+            @Param("jobType") String jobType,
+            @Param("postpone") String postpone,
+            Pageable pageable);
+
 }

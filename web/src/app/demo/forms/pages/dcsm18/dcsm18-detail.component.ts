@@ -80,6 +80,7 @@ export class Dcsm18DetailComponent implements OnInit {
       moldMakerName: [''],
       printingMachine: [''],
       inspector: [''],
+      customerName: [''],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -100,6 +101,7 @@ export class Dcsm18DetailComponent implements OnInit {
     this.mainForm.get('remarks')?.disable({ emitEvent: false });
     this.mainForm.get('moldMakerName')?.disable({ emitEvent: false });
     this.mainForm.get('inspector')?.disable({ emitEvent: false });
+    this.mainForm.get('customerName')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

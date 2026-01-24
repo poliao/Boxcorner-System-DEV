@@ -57,7 +57,7 @@ export class Dcsm04DetailComponent implements OnInit {
       }
     }
 
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง') {
+    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'รอเจ้าของงานตรวจสอบ') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
@@ -65,6 +65,7 @@ export class Dcsm04DetailComponent implements OnInit {
       this.mainForm.controls['unit'].disable({ emitEvent: false });
       this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
       this.mainForm.controls['note'].disable({ emitEvent: false });
+      this.mainForm.controls['customerName'].disable({ emitEvent: false });
     }
     this.checkBtn();
     if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง' && this.getCurrentUserFromToken() == this.mainForm.getRawValue().jobOwner) {
@@ -88,7 +89,8 @@ export class Dcsm04DetailComponent implements OnInit {
       note: [''],
       designOrderId: [''],
       updateDateDelivery: [new Date().toISOString().substring(0, 10)],
-      updateTimeDelivery: ['']
+      updateTimeDelivery: [''],
+      customerName: ['']
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -356,6 +358,7 @@ export class Dcsm04DetailComponent implements OnInit {
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
       sampleOrderId: this.mainForm.getRawValue().id,
+      customerName: this.mainForm.getRawValue().customerName
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',

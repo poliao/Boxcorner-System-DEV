@@ -70,4 +70,7 @@ public class SampleOrder {
     
     @Column(name = "update_time_delivery")
     private LocalTime updateTimeDelivery;
+
+    @Column(name = "customer_name")
+    private String customerName;
 }
