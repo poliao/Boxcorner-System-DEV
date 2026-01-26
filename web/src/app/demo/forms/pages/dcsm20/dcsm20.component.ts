@@ -61,17 +61,18 @@ export class Dcsm20Component implements OnInit {
     { key: 'id', label: 'ลำดับ' },
     { key: 'date', label: 'วันที่' },
     { key: 'jobId', label: 'JOB ID' },
-    { key: 'printingDate', label: 'วันที่ส่งพิมพ์', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'printingResponsible', label: 'พิมพ์ที่', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'coatingDate', label: 'วันที่ส่งเคลือบ', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'coatingResponsible', label: 'เคลือบที่', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'stampingDate', label: 'วันที่ส่งปั้ม', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'stampingResponsible', label: 'ปั้มที่', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'gluingDate', label: 'วันที่ส่งปะ', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'gluingResponsible', label: 'ปะที่', backgroundFunction: this.getColumnBackground.bind(this) },
-    { key: 'qcDate', label: 'วันที่ส่งQC', backgroundFunction: this.getColumnBackground.bind(this) },
+    { key: 'printingDate', label: 'วันที่ส่งพิมพ์', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },
+    { key: 'printingResponsible', label: 'พิมพ์ที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },
+    { key: 'coatingDate', label: 'วันที่ส่งเคลือบ', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #ffc107; color: black;' },
+    { key: 'coatingResponsible', label: 'เคลือบที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #ffc107; color: black;' },
+    { key: 'stampingDate', label: 'วันที่ส่งปั้ม', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #007bff; color: white;' },
+    { key: 'stampingResponsible', label: 'ปั้มที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #007bff; color: white;' },
+    { key: 'gluingDate', label: 'วันที่ส่งปะ', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #17a2b8; color: white;' },
+    { key: 'gluingResponsible', label: 'ปะที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #17a2b8; color: white;' },
+    { key: 'qcDate', label: 'วันที่ส่งQC', styleFunction: this.getColumnStyle.bind(this) },
     { key: 'dueDate', label: 'วันที่ส่งลูกค้า' },
-    { key: 'printStatus', label: 'สถานะ', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'printStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'deliveryStatus', label: 'สถานะจัดส่ง',colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) }
   ];
 
   constructor(
@@ -159,5 +160,34 @@ export class Dcsm20Component implements OnInit {
     this.filterStartDate = '';
     this.filterEndDate = '';
     this.onSearchChange();
+  }
+
+  getColumnStyle(columnKey: string, rowData: any): any {
+    const status = rowData.printStatus;
+    
+    const columnOrder = [
+      'printingDate', 'printingResponsible',
+      'coatingDate', 'coatingResponsible', 
+      'stampingDate', 'stampingResponsible',
+      'gluingDate', 'gluingResponsible',
+      'qcDate'
+    ];
+    
+    const currentIndex = columnOrder.indexOf(columnKey);
+    if (currentIndex === -1) return {};
+    
+    let highlightUntil = -1;
+    
+    if (status === 'พิมพ์แล้ว') highlightUntil = 1;
+    else if (status === 'เคลือบแล้ว') highlightUntil = 3;
+    else if (status === 'ปั้มแล้ว') highlightUntil = 5;
+    else if (status === 'ปะแล้ว') highlightUntil = 7;
+    else if (status === 'Qcแล้ว') highlightUntil = 8;
+
+    if (currentIndex <= highlightUntil) {
+      return { 'background-color': '#e0e0e0' };
+    }
+    
+    return {};
   }
 }

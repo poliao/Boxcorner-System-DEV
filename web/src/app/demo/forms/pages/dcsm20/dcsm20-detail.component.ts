@@ -52,37 +52,37 @@ export class Dcsm20DetailComponent implements OnInit {
   }
 
   checkButton() {
-    if (this.productionForm.getRawValue().printingDate != null && this.productionForm.getRawValue().printStatus != 'พิมพ์แล้ว' && this.productionForm.getRawValue().printStatus != 'เคลือบแล้ว' && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().printStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().printStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    if (this.productionForm.getRawValue().printingDate != null && this.productionForm.getRawValue().printStatus != 'พิมพ์แล้ว' && this.productionForm.getRawValue().printStatus != 'เคลือบแล้ว' && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isPrint = true
       this.isCoating = false
       this.isStamping = false
       this.isGluing = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().coatingDate != null && this.productionForm.getRawValue().printStatus != 'เคลือบแล้ว' && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().printStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().printStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().coatingDate != null && this.productionForm.getRawValue().printStatus != 'เคลือบแล้ว' && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isCoating = true
       this.isPrint = false
       this.isStamping = false
       this.isGluing = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().stampingDate != null && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().printStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().printStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().stampingDate != null && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isStamping = true
       this.isPrint = false
       this.isCoating = false
       this.isGluing = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().gluingDate != null && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().printStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().printStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().gluingDate != null && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isGluing = true
       this.isPrint = false
       this.isCoating = false
       this.isStamping = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().qcDate != null && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().printStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().printStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().qcDate != null && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isQc = true
       this.isPrint = false
       this.isCoating = false
       this.isStamping = false
       this.isGluing = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().printStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().printStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isAddress = true
       this.isWaitDelivery = true
       this.isDelivery = false
@@ -92,7 +92,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isStamping = false
       this.isGluing = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().printStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isAddress = false
       this.isWaitDelivery = true
       this.isDelivery = false
@@ -102,7 +102,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isStamping = false
       this.isGluing = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().printStatus != 'กำลังส่ง' && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isAddress = false
       this.isWaitDelivery = false
       this.isDelivery = true
@@ -112,7 +112,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isStamping = false
       this.isGluing = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().printStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isAddress = false
       this.isWaitDelivery = false
       this.isDelivery = false
@@ -156,9 +156,11 @@ export class Dcsm20DetailComponent implements OnInit {
       dueDate: ['', Validators.required],
       printStatus: [''],
       shippingAddress: [''],
-      remark: ['']
+      remark: [''],
+      deliveryStatus: ['']
     });
     this.productionForm.get('printStatus')?.disable();
+    this.productionForm.get('deliveryStatus')?.disable();
     this.productionForm.get('printingResponsible')?.disable();
     this.productionForm.get('coatingResponsible')?.disable();
     this.productionForm.get('stampingResponsible')?.disable();
@@ -265,10 +267,10 @@ export class Dcsm20DetailComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.dcsm20Service.save(data).subscribe((response) => {
-           this.patchFormData(response);
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-          this.router.navigate(['/Dcsm20']);
+            this.patchFormData(response);
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+            this.router.navigate(['/Dcsm20']);
           })
         }
       });
@@ -291,28 +293,8 @@ export class Dcsm20DetailComponent implements OnInit {
 
   onUpdatePrint(status: string): void {
     if (this.productionForm.valid) {
-      
-      if (status === 'Print') {
-        this.productionForm.get('printStatus')?.setValue('พิมพ์แล้ว');
-      } else if (status === 'Coating') {
-        this.productionForm.get('printStatus')?.setValue('เคลือบแล้ว');
-      } else if (status === 'Stamping') {
-        this.productionForm.get('printStatus')?.setValue('ปั้มแล้ว');
-      } else if (status === 'Gluing') {
-        this.productionForm.get('printStatus')?.setValue('ปะแล้ว');
-      } else if (status === 'Qc') {
-        this.productionForm.get('printStatus')?.setValue('Qcแล้ว');
-      } else if (status === 'Address') {
-        this.productionForm.get('printStatus')?.setValue('รอที่อยู่จัดส่ง');
-      } else if (status === 'WaitDelivery') {
-        this.productionForm.get('printStatus')?.setValue('รอจัดส่ง');
-      } else if (status === 'Delivery') {
-        this.productionForm.get('printStatus')?.setValue('กำลังส่ง');
-      } else if (status === 'DeliveryComplete') {
-        this.productionForm.get('printStatus')?.setValue('จัดส่งเรียบร้อย');
-      }
 
-      const data = this.productionForm.getRawValue();
+      
 
       Swal.fire({
         title: 'ยืนยันอัพเดตสถานะ',
@@ -325,7 +307,29 @@ export class Dcsm20DetailComponent implements OnInit {
         cancelButtonText: 'ยกเลิก'
       }).then((result) => {
         if (result.isConfirmed) {
+
           this.loadingService.show();
+          if (status === 'Print') {
+            this.productionForm.get('printStatus')?.setValue('พิมพ์แล้ว');
+          } else if (status === 'Coating') {
+            this.productionForm.get('printStatus')?.setValue('เคลือบแล้ว');
+          } else if (status === 'Stamping') {
+            this.productionForm.get('printStatus')?.setValue('ปั้มแล้ว');
+          } else if (status === 'Gluing') {
+            this.productionForm.get('printStatus')?.setValue('ปะแล้ว');
+          } else if (status === 'Qc') {
+            this.productionForm.get('printStatus')?.setValue('Qcแล้ว');
+          } else if (status === 'Address') {
+            this.productionForm.get('deliveryStatus')?.setValue('รอที่อยู่จัดส่ง');
+          } else if (status === 'WaitDelivery') {
+            this.productionForm.get('deliveryStatus')?.setValue('รอจัดส่ง');
+          } else if (status === 'Delivery') {
+            this.productionForm.get('deliveryStatus')?.setValue('กำลังส่ง');
+          } else if (status === 'DeliveryComplete') {
+            this.productionForm.get('deliveryStatus')?.setValue('จัดส่งเรียบร้อย');
+          }
+          const data = this.productionForm.getRawValue();
+          
           this.dcsm20Service.save(data).subscribe((response) => {
             this.patchFormData(response);
             this.disableForm();

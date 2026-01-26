@@ -86,7 +86,8 @@ public class ProductionJob {
     @Column(name = "remark", columnDefinition = "TEXT")
     private String remark;
 
-    // --- Audit Fields (จัดการเวลาอัตโนมัติ) ---
+    @Column(name = "delivery_status")
+    private String deliveryStatus;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

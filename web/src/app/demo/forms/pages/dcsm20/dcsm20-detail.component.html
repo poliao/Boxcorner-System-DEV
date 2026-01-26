@@ -13,7 +13,10 @@
             <button *ngIf="isGluing" (click)="onUpdatePrint('Gluing')" class="btn btn-outline-secondary btn-sm">ปะ</button>
             <button *ngIf="isQc" (click)="onUpdatePrint('Qc')" class="btn btn-outline-secondary btn-sm">QC</button>
         </div>
-        <button *ngIf="isDelivery" (click)="onUpdatePrint('Delivery')" class="btn btn-info btn-sm text-white">กำลังจัดส่ง</button>
+        <button *ngIf="isAddress" (click)="onUpdatePrint('Address')" class="btn btn-info btn-sm text-white">รอที่อยู่จัดส่ง</button>
+        <button *ngIf="isWaitDelivery" (click)="onUpdatePrint('WaitDelivery')" class="btn btn-info btn-sm text-white">รอจัดส่ง</button>
+        <button *ngIf="isDelivery" (click)="onUpdatePrint('Delivery')" class="btn btn-info btn-sm text-white">กำลังส่ง</button>
+        <button *ngIf="isDeliveryComplete" (click)="onUpdatePrint('DeliveryComplete')" class="btn btn-info btn-sm text-white">จัดส่งเรียบร้อย</button>
       </div>
     </div>
 
@@ -40,9 +43,13 @@
                 <label class="form-label fw-bold small">ชื่อลูกค้า/ชื่องาน <span class="text-danger">*</span></label>
                 <input type="text" formControlName="customerJobName" class="form-control form-control-sm">
               </div>
-              <div class="col-12">
-                <label class="form-label fw-bold small">สถานะ <span class="text-danger">*</span></label>
+              <div class="col-6">
+                <label class="form-label fw-bold small">สถานะงาน </label>
                 <input type="text" formControlName="printStatus" class="form-control form-control-sm">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold small">สถานะจัดส่ง </label>
+                <input type="text" formControlName="deliveryStatus" class="form-control form-control-sm">
               </div>
               <div class="col-md-6 mt-3">
                 <div class="p-2 bg-white border rounded">
