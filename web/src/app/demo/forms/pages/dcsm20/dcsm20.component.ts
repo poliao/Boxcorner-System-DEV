@@ -69,7 +69,7 @@ export class Dcsm20Component implements OnInit {
     { key: 'stampingResponsible', label: 'ปั้มที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #007bff; color: white;' },
     { key: 'gluingDate', label: 'วันที่ส่งปะ', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #17a2b8; color: white;' },
     { key: 'gluingResponsible', label: 'ปะที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #17a2b8; color: white;' },
-    { key: 'qcDate', label: 'วันที่ส่งQC', styleFunction: this.getColumnStyle.bind(this) },
+    { key: 'qcDate', label: 'วันที่ส่งQC', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #670097ff; color: white;' },
     { key: 'dueDate', label: 'วันที่ส่งลูกค้า' },
     { key: 'printStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'deliveryStatus', label: 'สถานะจัดส่ง',colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) }
@@ -106,6 +106,11 @@ export class Dcsm20Component implements OnInit {
           this.tableData = response.content.map((item: any) => ({
             ...item,
             date: this.formatDate(item.date),
+            printingDate: this.formatDate(item.printingDate),
+            coatingDate: this.formatDate(item.coatingDate),
+            stampingDate: this.formatDate(item.stampingDate),
+            gluingDate: this.formatDate(item.gluingDate),
+            qcDate: this.formatDate(item.qcDate),
             dueDate: this.formatDate(item.dueDate)
           }));
           this.totalElements = response.totalElements;
@@ -185,7 +190,7 @@ export class Dcsm20Component implements OnInit {
     else if (status === 'Qcแล้ว') highlightUntil = 8;
 
     if (currentIndex <= highlightUntil) {
-      return { 'background-color': '#e0e0e0' };
+      return { 'background-color': '#222222ff', 'color': '#777777ff' };
     }
     
     return {};

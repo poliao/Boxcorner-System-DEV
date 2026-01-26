@@ -56,11 +56,11 @@ export class StatusColorService {
       case 'ส่ง Supplier': return '#2196f3';
       case 'รับของจากซัพพลายเออร์แล้ว': return '#36f4a5';
 
-      case 'พิมพ์': return '#ff0000ff'; // สีส้มแดง
-      case 'เคลือบ': return '#ff7300ff'; // สีแดง
-      case 'ปั้ม': return '#ffd900ff'; // สีเทา
-      case 'ปะ': return '#a6ff00ff';
-      case 'QC': return '#36def4ff';
+      case 'พิมพ์แล้ว': return '#dc3545'; // สีส้มแดง
+      case 'เคลือบแล้ว': return '#ffc107'; // สีแดง
+      case 'ปั้มแล้ว': return '#007bff'; // สีเทา
+      case 'ปะแล้ว': return '#17a2b8';
+      case 'Qcแล้ว': return '#a61ee6ff';
       case 'รอที่อยู่จัดส่ง': return '#001affff'; // สีส้มแดง
       case 'รอจัดส่ง': return '#7f36f4ff'; // สีแดง
       case 'กำลังส่ง': return '#ff05acff'; // สีเทา
