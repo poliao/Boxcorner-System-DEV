@@ -22,7 +22,9 @@ import { Dcsm16DetailResolver } from './demo/forms/pages/dcsm16/dcsm16-detail.re
 import { Dcsm17DetailResolver } from './demo/forms/pages/dcsm17/dcsm17-detail.resolver';
 import { Dcsm18DetailResolver } from './demo/forms/pages/dcsm18/dcsm18-detail.resolver';
 import { Dcsm19DetailResolver } from './demo/forms/pages/dcsm19/dcsm19-detail.resolver';
+import { Dcsm22DetailResolver } from './demo/forms/pages/dcsm22/dcsm22-detail.resolver';
 import { Dcsm20DetailResolver } from './demo/forms/pages/dcsm20/dcsm20-detail.resolver';
+import { Dcsm21DetailResolver } from './demo/forms/pages/dcsm21/dcsm21-detail.resolver';
 
 const routes: Routes = [
   {
@@ -381,8 +383,7 @@ const routes: Routes = [
         path: 'Dcsm19',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm19/dcsm19.component').then((c) => c.Dcsm19Component)
-      },
-      {
+      }, {
         path: 'Dcsm20Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm20/dcsm20-detail.component').then((c) => c.Dcsm20DetailComponent),
@@ -399,6 +400,41 @@ const routes: Routes = [
         path: 'Dcsm20',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm20/dcsm20.component').then((c) => c.Dcsm20Component)
+      }, {
+        path: 'Dcsm21Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm21/dcsm21-detail.component').then((c) => c.Dcsm21DetailComponent),
+        resolve: {
+          designInside: Dcsm21DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm21Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm21/dcsm21-detail.component').then((c) => c.Dcsm21DetailComponent)
+      },
+      {
+        path: 'Dcsm21',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm21/dcsm21.component').then((c) => c.Dcsm21Component)
+      },
+      {
+        path: 'Dcsm22Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm22/dcsm22-detail.component').then((c) => c.Dcsm22DetailComponent),
+        resolve: {
+          designInside: Dcsm22DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm22Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm22/dcsm22-detail.component').then((c) => c.Dcsm22DetailComponent)
+      },
+      {
+        path: 'Dcsm22',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm22/dcsm22.component').then((c) => c.Dcsm22Component)
       }
     ]
   },

@@ -293,9 +293,6 @@ export class Dcsm20DetailComponent implements OnInit {
 
   onUpdatePrint(status: string): void {
     if (this.productionForm.valid) {
-
-      
-
       Swal.fire({
         title: 'ยืนยันอัพเดตสถานะ',
         text: "ยืนยันอัพเดตสถานะ ใช่หรือไม่?",

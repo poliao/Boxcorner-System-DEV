@@ -1,0 +1,97 @@
+<h2>ตารางสั่งงานออกแบบ</h2>
+<div class="card-body">
+  <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+    <div class="card-body bg-light">
+      <form (ngSubmit)="onSearchChange()">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <input type="number" class="form-control" [(ngModel)]="filterId" name="filterId" placeholder="ค้นหา ลำดับ"
+              (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterfolder" name="filterfolder"
+              placeholder="ค้นหา ชื่อโฟลเดอร์" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterowner" name="filterowner"
+              placeholder="ค้นหา เจ้าของงาน" (input)="onOwnerSearch($event)" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterassignee" name="filterassignee"
+              placeholder="ค้นหา ผู้รับผิดชอบ" (input)="onAssigneeSearch($event)" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" (input)="onProcessSearch($event)" [(ngModel)]="filterprocess"
+              name="filterprocess" (keyup.enter)="onSearchChange()">
+              <option value="">สถานะ ทั้งหมด</option>
+              <option value="รอผู้รับผิดชอบยืนยัน">รอผู้รับผิดชอบยืนยัน</option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+              <option value="รอดำเนินการแก้ไข">รอดำเนินการแก้ไข</option>
+              <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <select class="form-select" (input)="onConfirmSearch($event)" [(ngModel)]="filterconfirm"
+              name="filterconfirm" (keyup.enter)="onSearchChange()">
+              <option value="">สถานะคอนเฟิร์ม ทั้งหมด</option>
+              <option value="รอผู้รับผิดชอบยืนยัน">รอผู้รับผิดชอบยืนยัน</option>
+              <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+              <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+              <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+              <option value="ผ่าน">ผ่าน</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="submit" class="w-100 px-3" style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-stroked-button type="button" class="w-100 px-3" (click)="clearAllFilters()"
+                  style="color: #003747;">
+                  <mat-icon>refresh</mat-icon> ล้างค่า
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" (click)="add()"
+                  style="background-color: #10bb00;">
+                  <mat-icon>add_circle</mat-icon> เพิ่มข้อมูล
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" (click)="onSearchSort()"
+                  style="background-color: #003747;">
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่ง</span><span
+                    class="d-lg-none">เรียงตามวันส่ง</span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative" (click)="onFilterCheck()"
+                  style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจสอบ</span><span
+                    class="d-lg-none">งานที่รอตรวจสอบ</span>
+                  <span *ngIf="checked > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ checked }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <app-data-table [headerStyle]="'background: #003747; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
+    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
+  </app-data-table>
+</div>
