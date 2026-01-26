@@ -78,7 +78,7 @@ export class Dcsm18DetailComponent implements OnInit {
       updatedAt: [''],
       sampleOrderId: [''],
       moldMakerName: [''],
-      printingMachine: [''],
+      printingMachine: ['',Validators.required],
       inspector: [''],
       customerName: [''],
     });
@@ -116,9 +116,10 @@ export class Dcsm18DetailComponent implements OnInit {
       return;
     }
 
+    this.mainForm.get('processStatus')?.setValue('เสร็จสิ้น');
     Swal.fire({
-      title: 'ยืนยันบันทึกข้อมูล',
-      text: "ยืนยันบันทึกข้อมูล ใช่หรือไม่?",
+      title: 'เสร็จสิ้น',
+      text: "ยืนยันเสร็จสิ้น ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',

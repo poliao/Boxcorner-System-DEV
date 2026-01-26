@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/production-stamping")
-@CrossOrigin(origins = "*")
 public class ProductionStampingController {
 
     @Autowired

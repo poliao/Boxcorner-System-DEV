@@ -83,6 +83,9 @@ public class ProductionJob {
     @Column(name = "shipping_address", columnDefinition = "TEXT")
     private String shippingAddress;
 
+    @Column(name = "remark", columnDefinition = "TEXT")
+    private String remark;
+
     // --- Audit Fields (จัดการเวลาอัตโนมัติ) ---
 
     @Column(name = "created_at", updatable = false)

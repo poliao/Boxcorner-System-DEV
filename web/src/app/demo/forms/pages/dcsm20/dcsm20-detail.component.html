@@ -1,415 +1,133 @@
-<div class="card-body">
-  <div class="card total-income-card warning overflow-hidden">
-    <div style="padding: 10px;">
+<div class="card-body p-3">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+      <h4 class="mb-0 text-primary font-weight-bold">บันทึกข้อมูลการผลิต</h4>
+      <div class="d-flex flex-wrap gap-2 justify-content-end">
+        <button (click)="onSubmit()" type="submit" class="btn btn-primary px-4 shadow-sm" [disabled]="productionForm.invalid">
+          <i class="fas fa-save me-1"></i> บันทึก
+        </button>
+        <div class="btn-group" role="group">
+            <button *ngIf="isPrint" (click)="onUpdatePrint('Print')" class="btn btn-outline-secondary btn-sm">พิมพ์</button>
+            <button *ngIf="isCoating" (click)="onUpdatePrint('Coating')" class="btn btn-outline-secondary btn-sm">เคลือบ</button>
+            <button *ngIf="isStamping" (click)="onUpdatePrint('Stamping')" class="btn btn-outline-secondary btn-sm">ปั๊ม</button>
+            <button *ngIf="isGluing" (click)="onUpdatePrint('Gluing')" class="btn btn-outline-secondary btn-sm">ปะ</button>
+            <button *ngIf="isQc" (click)="onUpdatePrint('Qc')" class="btn btn-outline-secondary btn-sm">QC</button>
+        </div>
+        <button *ngIf="isDelivery" (click)="onUpdatePrint('Delivery')" class="btn btn-info btn-sm text-white">กำลังจัดส่ง</button>
+      </div>
+    </div>
+
+    <div class="card-body bg-light">
       <form [formGroup]="productionForm" class="row g-3">
         
-        <!-- ปุ่มดำเนินการ -->
-        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-            บันทึก
-          </button>
-          <button *ngIf="isPrint == true" (click)="onUpdatePrint('Print')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-            พิมพ์
-          </button>
-          <button *ngIf="isCoating == true" (click)="onUpdatePrint('Coating')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-            เคลือบ
-          </button>
-          <button *ngIf="isStamping == true" (click)="onUpdatePrint('Stamping')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-            ปั้ม
-          </button>
-          <button *ngIf="isGluing == true" (click)="onUpdatePrint('Gluing')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-            ปะ
-          </button>
-          <button *ngIf="isQc == true" (click)="onUpdatePrint('Qc')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-            QC
-          </button>
-          <button *ngIf="isAddress == true" (click)="onUpdatePrint('Address')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-           รอที่อยู่จัดส่ง
-          </button>
-          <button *ngIf="isWaitDelivery == true" (click)="onUpdatePrint('WaitDelivery')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-           รอจัดส่ง
-          </button>
-          <button *ngIf="isDelivery == true" (click)="onUpdatePrint('Delivery')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-           กำลังจัดส่ง
-          </button>
-          <button *ngIf="isDeliveryComplete == true" (click)="onUpdatePrint('DeliveryComplete')" type="button" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-           จัดส่งเรียบร้อย
-          </button>
-        </div>
-
-        <div class="col-12">
-          <h5 class="mb-3 text-primary">ข้อมูลทั่วไป</h5>
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label font-weight-bold">วันที่ <span style="color: red;">*</span></label>
-          <input type="date" formControlName="date" class="form-control"
-            [class.is-invalid]="productionForm.get('date')?.invalid && productionForm.get('date')?.touched">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label font-weight-bold">JOB <span style="color: red;">*</span></label>
-          <input type="text" formControlName="jobId" class="form-control" placeholder="เช่น JO6901-0098"
-            [class.is-invalid]="productionForm.get('jobId')?.invalid && productionForm.get('jobId')?.touched">
-        </div>
-
-        <div class="col-md-12">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า/ชื่องาน <span style="color: red;">*</span></label>
-          <input type="text" formControlName="customerJobName" class="form-control" 
-            placeholder="ระบุชื่อบริษัทลูกค้าและรายละเอียดชื่องาน"
-            [class.is-invalid]="productionForm.get('customerJobName')?.invalid && productionForm.get('customerJobName')?.touched">
-        </div>
-
-        <!-- ส่วนปริมาณการผลิต (Quantities) -->
-        <div class="col-12 mt-4">
-          <h5 class="mb-3 text-primary">ปริมาณการผลิต</h5>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ยอดใบพิมพ์ จำนวน</label>
-          <input type="number" formControlName="printQuantity" class="form-control" placeholder="0">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ยอดผลิต/กล่อง จำนวน</label>
-          <input type="number" formControlName="productionQuantity" class="form-control" placeholder="0">
-        </div>
-
-        <!-- ส่วนติดตามกระบวนการผลิต (Production Workflow Grid) -->
-        <div class="col-12 mt-4">
-          <h5 class="mb-3 text-primary">ติดตามกระบวนการผลิต</h5>
-        </div>
-
-        <!-- งานพิมพ์ -->
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานพิมพ์ (Printing)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="printingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <select formControlName="printingResponsible" class="form-control">
-                <option value="">เลือก...</option>
-                <option value="BCA">BCA</option>
-                <option value="อื่นๆ">อื่นๆ</option>
-              </select>
+        <div class="col-lg-8">
+          <div class="card h-100 border-0 shadow-sm p-3">
+            <h5 class="text-primary border-bottom pb-2 mb-3">ข้อมูลหลัก</h5>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">วันที่ <span class="text-danger">*</span></label>
+                <input type="date" formControlName="date" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">JOB ID <span class="text-danger">*</span></label>
+                <input type="text" formControlName="jobId" class="form-control form-control-sm" placeholder="JO6901-0098">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold small">กำหนดส่ง <span class="text-danger">*</span></label>
+                <input type="date" formControlName="dueDate" class="form-control form-control-sm border-danger shadow-sm">
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold small">ชื่อลูกค้า/ชื่องาน <span class="text-danger">*</span></label>
+                <input type="text" formControlName="customerJobName" class="form-control form-control-sm">
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold small">สถานะ <span class="text-danger">*</span></label>
+                <input type="text" formControlName="printStatus" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-6 mt-3">
+                <div class="p-2 bg-white border rounded">
+                   <label class="form-label fw-bold small mb-1">ยอดใบพิมพ์</label>
+                   <input type="number" formControlName="printQuantity" class="form-control form-control-sm border-0 bg-light" placeholder="0">
+                </div>
+              </div>
+              <div class="col-md-6 mt-3">
+                <div class="p-2 bg-white border rounded">
+                   <label class="form-label fw-bold small mb-1">ยอดผลิต/กล่อง</label>
+                   <input type="number" formControlName="productionQuantity" class="form-control form-control-sm border-0 bg-light" placeholder="0">
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- งานเคลือบ -->
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานเคลือบ (Coating)</h6>
+        <div class="col-lg-4">
+          <div class="card h-100 border-0 shadow-sm p-3">
+            <h5 class="text-danger border-bottom pb-2 mb-3">ข้อมูลการจัดส่ง</h5>
+            <div class="mb-2">
+              <label class="form-label fw-bold small">ที่อยู่จัดส่ง</label>
+              <textarea formControlName="shippingAddress" class="form-control form-control-sm" rows="3"></textarea>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="coatingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <select formControlName="coatingResponsible" class="form-control">
-                <option value="">เลือก...</option>
-                <option value="งานนอก">งานนอก</option>
-                <option value="งานใน">งานใน</option>
-              </select>
+            <div>
+              <label class="form-label fw-bold small">หมายเหตุ</label>
+              <textarea formControlName="remark" class="form-control form-control-sm" rows="3"></textarea>
             </div>
           </div>
         </div>
 
-        <!-- งานปั๊ม -->
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานปั๊ม (Stamping)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="stampingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <select formControlName="stampingResponsible" class="form-control">
-                <option value="">เลือก...</option>
-                <option value="งานนอก">งานนอก</option>
-                <option value="งานใน">งานใน</option>
-              </select>
+        <div class="col-12 mt-2">
+          <div class="card border-0 shadow-sm p-3">
+            <h5 class="text-primary border-bottom pb-2 mb-3">กระบวนการผลิต (Production Tracking)</h5>
+            <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-3">
+              
+              <div class="col">
+                <div class="p-2 border-start border-4 border-danger bg-white shadow-sm rounded">
+                  <label class="d-block fw-bold small text-danger">งานพิมพ์</label>
+                  <input type="date" formControlName="printingDate" class="form-control form-control-sm mb-1 border-0">
+                  <input type="text" formControlName="printingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="p-2 border-start border-4 border-warning bg-white shadow-sm rounded">
+                  <label class="d-block fw-bold small text-warning">งานเคลือบ</label>
+                  <input type="date" formControlName="coatingDate" class="form-control form-control-sm mb-1 border-0">
+                  <input type="text" formControlName="coatingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="p-2 border-start border-4 border-primary bg-white shadow-sm rounded">
+                  <label class="d-block fw-bold small text-primary">งานปั๊ม</label>
+                  <input type="date" formControlName="stampingDate" class="form-control form-control-sm mb-1 border-0">
+                  <input type="text" formControlName="stampingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="p-2 border-start border-4 border-info bg-white shadow-sm rounded">
+                  <label class="d-block fw-bold small text-info">งานปะ</label>
+                  <input type="date" formControlName="gluingDate" class="form-control form-control-sm mb-1 border-0">
+                  <input type="text" formControlName="gluingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="p-2 border-start border-4 border-success bg-white shadow-sm rounded">
+                  <label class="d-block fw-bold small text-success">QC/QA</label>
+                  <input type="date" formControlName="qcDate" class="form-control form-control-sm mb-1 border-0">
+                  <select formControlName="qcStatus" class="form-select form-select-sm border-0">
+                    <option value="">เลือก...</option>
+                    <option value="QC">Pass</option>
+                    <option value="ไม่ QC">Fail</option>
+                  </select>
+                </div>
+              </div>
+
             </div>
           </div>
-        </div>
-
-        <!-- งานปะ -->
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานปะ (Gluing/Patching)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="gluingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <select formControlName="gluingResponsible" class="form-control">
-                <option value="">เลือก...</option>
-                <option value="งานนอก">งานนอก</option>
-                <option value="งานใน">งานใน</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- QC/QA -->
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">QC/QA (Quality Control)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="qcDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">สถานะ</label>
-              <select formControlName="qcStatus" class="form-control">
-                <option value="">เลือก...</option>
-                <option value="QC">QC</option>
-                <option value="ไม่ QC">ไม่ QC</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- ส่วนสำคัญและจัดส่ง (Delivery & Critical Info) - Red Zone -->
-        <div class="col-12 mt-4">
-          <h5 class="mb-3 text-danger">ข้อมูลสำคัญและจัดส่ง</h5>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold text-danger">วันที่กำหนดส่งงาน <span style="color: red;">*</span></label>
-          <input type="date" formControlName="dueDate" class="form-control" 
-            style="background-color: #ffe6e6;"
-            [class.is-invalid]="productionForm.get('dueDate')?.invalid && productionForm.get('dueDate')?.touched">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold ">สถานะที่สั่งพิมพ์</label>
-          <select formControlName="printStatus" class="form-control" style="background-color: #ffffff;">
-            <option value="">เลือกสถานะ...</option>
-            <option value="เริ่ม">เริ่ม</option>
-            <option value="รอวัสดุ">รอวัสดุ</option>
-            <option value="กำลังผลิต">กำลังผลิต</option>
-            <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-          </select>
-        </div>
-
-        <div class="col-12">
-          <label class="form-label font-weight-bold ">ที่อยู่จัดส่ง</label>
-          <textarea formControlName="shippingAddress" class="form-control" rows="3" 
-            style="background-color: #ffffff;"
-            placeholder="ระบุที่อยู่ปลายทาง หรือหมายเหตุการส่งของ"></textarea>
         </div>
 
       </form>
     </div>
   </div>
 </div>
-
-<!-- 
-<div class="card-body">
-  <div class="card total-income-card warning overflow-hidden">
-    <div style="padding: 10px;">
-      <form [formGroup]="productionForm" class="row g-3">
-
-       
-        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
-            [disabled]="productionForm.invalid" style="background-color: #1e1b4b;">
-            บันทึก
-          </button>
-        </div>
-
-        <div class="col-12">
-          <h5 class="mb-3 text-primary">ข้อมูลทั่วไป</h5>
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label font-weight-bold">ลำดับ</label>
-          <input type="number" formControlName="id" class="form-control" 
-            [style.background-color]="productionForm.get('id')?.disabled ? '#f8f9fa' : '#ffffff'">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label font-weight-bold">วันที่ <span style="color: red;">*</span></label>
-          <input type="date" formControlName="date" class="form-control"
-            [style.background-color]="productionForm.get('date')?.disabled ? '#f8f9fa' : '#ffffff'"
-            [class.is-invalid]="productionForm.get('date')?.invalid && productionForm.get('date')?.touched">
-        </div>
-
-        <div class="col-md-4">
-          <label class="form-label font-weight-bold">JOB <span style="color: red;">*</span></label>
-          <input type="text" formControlName="jobId" class="form-control" placeholder="เช่น JO6901-0098"
-            [class.is-invalid]="productionForm.get('jobId')?.invalid && productionForm.get('jobId')?.touched">
-        </div>
-
-        <div class="col-md-12">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า/ชื่องาน <span style="color: red;">*</span></label>
-          <input type="text" formControlName="customerJobName" class="form-control"
-            placeholder="ระบุชื่อบริษัทลูกค้าและรายละเอียดชื่องาน"
-            [class.is-invalid]="productionForm.get('customerJobName')?.invalid && productionForm.get('customerJobName')?.touched">
-        </div>
-
-        <div class="col-12 mt-4">
-          <h5 class="mb-3 text-primary">ปริมาณการผลิต</h5>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ยอดใบพิมพ์ จำนวน</label>
-          <input type="number" formControlName="printQuantity" class="form-control" placeholder="0">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ยอดผลิต/กล่อง จำนวน</label>
-          <input type="number" formControlName="productionQuantity" class="form-control" placeholder="0">
-        </div>
-
-        <div class="col-12 mt-4">
-          <h5 class="mb-3 text-primary">ติดตามกระบวนการผลิต</h5>
-        </div>
-
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานพิมพ์ (Printing)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="printingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <input type="text" formControlName="printingResponsible" class="form-control">
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานเคลือบ (Coating)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="coatingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <input type="text" formControlName="coatingResponsible" class="form-control">
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานปั๊ม (Stamping)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="stampingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <input type="text" formControlName="stampingResponsible" class="form-control">
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">งานปะ (Gluing/Patching)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="gluingDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">บริษัท/ผู้รับผิดชอบ</label>
-              <input type="text" formControlName="gluingResponsible" class="form-control">
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="row border rounded p-3 mb-3">
-            <div class="col-12 mb-2">
-              <h6 class="text-secondary">QC/QA (Quality Control)</h6>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">วันที่</label>
-              <input type="date" formControlName="qcDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">สถานะ<span style="color: red;">*</span></label>
-              <select formControlName="qcStatus" class="form-control" style="background-color: #ffffff;">
-                <option value="">เลือกสถานะ...</option>
-                <option value="QC">QC</option>
-                <option value="ไม่QC">ไม่QC</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 mt-4">
-          <h5 class="mb-3 text-danger">ข้อมูลสำคัญและจัดส่ง</h5>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold text-danger">วันที่กำหนดส่งงาน <span
-              style="color: red;">*</span></label>
-          <input type="date" formControlName="dueDate" class="form-control" style="background-color: #ffe6e6;"
-            [class.is-invalid]="productionForm.get('dueDate')?.invalid && productionForm.get('dueDate')?.touched">
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold ">สถานะที่สั่งพิมพ์</label>
-          <select formControlName="printStatus" class="form-control" style="background-color: #ffffff;">
-            <option value="">เลือกสถานะ...</option>
-            <option value="พิมพ์">พิมพ์</option>
-            <option value="เคลือบ">เคลือบ</option>
-            <option value="ปั้ม">ปั้ม</option>
-            <option value="ปะ">ปะ</option>
-            <option value="QC">QC</option>
-            <option value="รอที่อยู่จัดส่ง">รอที่อยู่จัดส่ง</option>
-            <option value="รอจัดส่ง">รอจัดส่ง</option>
-            <option value="กำลังจัดส่ง">กำลังจัดส่ง</option>
-            <option value="จัดส่งแล้ว">จัดส่งแล้ว</option>
-          </select>
-        </div>
-
-        <div class="col-12">
-          <label class="form-label font-weight-bold ">ที่อยู่จัดส่ง</label>
-          <textarea formControlName="shippingAddress" class="form-control" rows="3" style="background-color: #ffffff;"
-            placeholder="ระบุที่อยู่ปลายทาง หรือหมายเหตุการส่งของ"></textarea>
-        </div>
-
-      </form>
-    </div>
-  </div>
-</div> -->

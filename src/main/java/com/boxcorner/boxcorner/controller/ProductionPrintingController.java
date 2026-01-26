@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/production-printing")
-@CrossOrigin(origins = "*")
 public class ProductionPrintingController {
 
     @Autowired

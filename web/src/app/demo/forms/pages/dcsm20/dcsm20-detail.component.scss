@@ -49,18 +49,18 @@ textarea[style*="background-color: #ffe6e6"]:focus {
 }
 
 /* Section headers */
-h5.text-primary {
+h1.text-primary {
   border-bottom: 2px solid #007bff;
   padding-bottom: 0.5rem;
 }
 
-h5.text-danger {
+h1.text-danger {
   border-bottom: 2px solid #dc3545;
   padding-bottom: 0.5rem;
 }
 
 /* Workflow grid styling */
-h6.text-secondary {
+h3.text-secondary {
   font-weight: 600;
   color: #ffbb00 !important;
   border-bottom: 1px solid #ff7b00;

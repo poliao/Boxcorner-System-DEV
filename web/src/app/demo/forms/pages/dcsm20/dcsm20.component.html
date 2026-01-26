@@ -14,15 +14,20 @@
           </div>
           <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
-              placeholder="ค้นหา ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
+              placeholder="ค้นหา ชื่องาน/ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
             <select class="form-select" [(ngModel)]="filterPrintStatus" name="filterPrintStatus" (change)="onSearchChange()">
               <option value="">สถานะพิมพ์ ทั้งหมด</option>
-              <option value="เริ่ม">เริ่ม</option>
-              <option value="รอวัสดุ">รอวัสดุ</option>
-              <option value="กำลังผลิต">กำลังผลิต</option>
-              <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+              <option value="พิมพ์แล้ว">พิมพ์แล้ว</option>
+              <option value="เคลือบแล้ว">เคลือบแล้ว</option>
+              <option value="ปั้มแล้ว">ปั้มแล้ว</option>
+              <option value="ปะแล้ว">ปะแล้ว</option>
+              <option value="Qcแล้ว">QCแล้ว</option>
+              <option value="รอที่อยู่จัดส่ง">รอที่อยู่จัดส่ง</option>
+              <option value="รอจัดส่ง">รอจัดส่ง</option>
+              <option value="กำลังส่ง">กำลังส่ง</option>
+              <option value="จัดส่งเรียบร้อย">จัดส่งเรียบร้อย</option>
             </select>
           </div>
           <div class="col-md-3">

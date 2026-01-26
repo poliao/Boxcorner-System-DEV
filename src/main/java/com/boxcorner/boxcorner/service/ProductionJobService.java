@@ -2,7 +2,9 @@ package com.boxcorner.boxcorner.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.boxcorner.boxcorner.entity.ProductionJob;
@@ -28,10 +30,16 @@ public class ProductionJobService {
         return productionJobRepository.findAll(pageable);
     }
 
-    public Page<ProductionJob> findByFilters(Long id, String jobId, String customerJobName, 
-                                           String printStatus, LocalDate startDate, LocalDate endDate, 
-                                           Pageable pageable) {
-        return productionJobRepository.findByFilters(id, jobId, customerJobName, printStatus, 
-                                                   startDate, endDate, pageable);
+    public Page<ProductionJob> findByFilters(Long id, String jobId, String customerJobName,
+            String printStatus, LocalDate startDate, LocalDate endDate,
+            int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return productionJobRepository.findByFilters(id, jobId, customerJobName, printStatus,
+                startDate, endDate, paging);
+    }
+
+    public Page<ProductionJob> findByFilters(int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return productionJobRepository.findUndeliveredJobsThisMonth(paging);
     }
 }
