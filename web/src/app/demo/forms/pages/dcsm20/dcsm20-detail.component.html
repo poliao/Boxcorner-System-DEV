@@ -1,28 +1,49 @@
 <div class="card-body p-3">
   <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-      <h4 class="mb-0 text-primary font-weight-bold">บันทึกข้อมูลการผลิต</h4>
+      <div class="col-md-2">
+        <h4 class="mb-0 text-primary font-weight-bold">บันทึกข้อมูลการผลิต</h4>
+      </div>
       <div class="d-flex flex-wrap gap-2 justify-content-end">
-        <button (click)="onSubmit()" type="submit" class="btn btn-primary px-4 shadow-sm" [disabled]="productionForm.invalid">
+        <button (click)="onSubmit()" type="submit" class="btn btn-primary px-4 shadow-sm"
+          [disabled]="productionForm.invalid">
           <i class="fas fa-save me-1"></i> บันทึก
         </button>
         <div class="btn-group" role="group">
-            <button *ngIf="isPrint" (click)="onUpdatePrint('Print')" class="btn btn-outline-secondary btn-sm">พิมพ์</button>
-            <button *ngIf="isCoating" (click)="onUpdatePrint('Coating')" class="btn btn-outline-secondary btn-sm">เคลือบ</button>
-            <button *ngIf="isStamping" (click)="onUpdatePrint('Stamping')" class="btn btn-outline-secondary btn-sm">ปั๊ม</button>
-            <button *ngIf="isGluing" (click)="onUpdatePrint('Gluing')" class="btn btn-outline-secondary btn-sm">ปะ</button>
-            <button *ngIf="isQc" (click)="onUpdatePrint('Qc')" class="btn btn-outline-secondary btn-sm">QC</button>
+          <button *ngIf="isPrint" (click)="onUpdatePrint('Print')"
+            class="btn btn-outline-secondary btn-sm">พิมพ์</button>
+          <button *ngIf="isCoating" (click)="onUpdatePrint('Coating')"
+            class="btn btn-outline-secondary btn-sm">เคลือบ</button>
+          <button *ngIf="isStamping" (click)="onUpdatePrint('Stamping')"
+            class="btn btn-outline-secondary btn-sm">ปั๊ม</button>
+          <button *ngIf="isGluing" (click)="onUpdatePrint('Gluing')"
+            class="btn btn-outline-secondary btn-sm">ปะ</button>
+          <button *ngIf="isQc" (click)="onUpdatePrint('Qc')" class="btn btn-outline-secondary btn-sm">QC</button>
         </div>
-        <button *ngIf="isAddress" (click)="onUpdatePrint('Address')" class="btn btn-info btn-sm text-white">รอที่อยู่จัดส่ง</button>
-        <button *ngIf="isWaitDelivery" (click)="onUpdatePrint('WaitDelivery')" class="btn btn-info btn-sm text-white">รอจัดส่ง</button>
-        <button *ngIf="isDelivery" (click)="onUpdatePrint('Delivery')" class="btn btn-info btn-sm text-white">กำลังส่ง</button>
-        <button *ngIf="isDeliveryComplete" (click)="onUpdatePrint('DeliveryComplete')" class="btn btn-info btn-sm text-white">จัดส่งเรียบร้อย</button>
+        <button *ngIf="isAddress" (click)="onUpdatePrint('Address')"
+          class="btn btn-info btn-sm text-white">รอที่อยู่จัดส่ง</button>
+        <button *ngIf="isWaitDelivery" (click)="onUpdatePrint('WaitDelivery')"
+          class="btn btn-info btn-sm text-white">รอจัดส่ง</button>
+        <button *ngIf="isDelivery" (click)="onUpdatePrint('Delivery')"
+          class="btn btn-info btn-sm text-white">กำลังส่ง</button>
+        <button *ngIf="isDeliveryComplete" (click)="onUpdatePrint('DeliveryComplete')"
+          class="btn btn-info btn-sm text-white">จัดส่งเรียบร้อย</button>
       </div>
     </div>
 
     <div class="card-body bg-light">
+      <div class="mb-3">
+        <form [formGroup]="productionForm">
+          <div class="input-group">
+            <input type="number" formControlName="oidPap" class="form-control form-control-sm" placeholder="กรอก OID PAP">
+            <button (click)="onFetchData()" type="button" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-search"></i> ดึงข้อมูล
+            </button>
+          </div>
+        </form>
+      </div>
       <form [formGroup]="productionForm" class="row g-3">
-        
+
         <div class="col-lg-8">
           <div class="card h-100 border-0 shadow-sm p-3">
             <h5 class="text-primary border-bottom pb-2 mb-3">ข้อมูลหลัก</h5>
@@ -37,7 +58,8 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-bold small">กำหนดส่ง <span class="text-danger">*</span></label>
-                <input type="date" formControlName="dueDate" class="form-control form-control-sm border-danger shadow-sm">
+                <input type="date" formControlName="dueDate"
+                  class="form-control form-control-sm border-danger shadow-sm">
               </div>
               <div class="col-12">
                 <label class="form-label fw-bold small">ชื่อลูกค้า/ชื่องาน <span class="text-danger">*</span></label>
@@ -53,14 +75,16 @@
               </div>
               <div class="col-md-6 mt-3">
                 <div class="p-2 bg-white border rounded">
-                   <label class="form-label fw-bold small mb-1">ยอดใบพิมพ์</label>
-                   <input type="number" formControlName="printQuantity" class="form-control form-control-sm border-0 bg-light" placeholder="0">
+                  <label class="form-label fw-bold small mb-1">ยอดใบพิมพ์</label>
+                  <input type="number" formControlName="printQuantity"
+                    class="form-control form-control-sm border-0 bg-light" placeholder="0">
                 </div>
               </div>
               <div class="col-md-6 mt-3">
                 <div class="p-2 bg-white border rounded">
-                   <label class="form-label fw-bold small mb-1">ยอดผลิต/กล่อง</label>
-                   <input type="number" formControlName="productionQuantity" class="form-control form-control-sm border-0 bg-light" placeholder="0">
+                  <label class="form-label fw-bold small mb-1">ยอดผลิต/กล่อง</label>
+                  <input type="number" formControlName="productionQuantity"
+                    class="form-control form-control-sm border-0 bg-light" placeholder="0">
                 </div>
               </div>
             </div>
@@ -85,12 +109,13 @@
           <div class="card border-0 shadow-sm p-3">
             <h5 class="text-primary border-bottom pb-2 mb-3">กระบวนการผลิต (Production Tracking)</h5>
             <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-3">
-              
+
               <div class="col">
                 <div class="p-2 border-start border-4 border-danger bg-white shadow-sm rounded">
                   <label class="d-block fw-bold small text-danger">งานพิมพ์</label>
                   <input type="date" formControlName="printingDate" class="form-control form-control-sm mb-1 border-0">
-                  <input type="text" formControlName="printingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                  <input type="text" formControlName="printingResponsible" class="form-control form-control-sm"
+                    placeholder="ผู้รับผิดชอบ">
                 </div>
               </div>
 
@@ -98,7 +123,8 @@
                 <div class="p-2 border-start border-4 border-warning bg-white shadow-sm rounded">
                   <label class="d-block fw-bold small text-warning">งานเคลือบ</label>
                   <input type="date" formControlName="coatingDate" class="form-control form-control-sm mb-1 border-0">
-                  <input type="text" formControlName="coatingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                  <input type="text" formControlName="coatingResponsible" class="form-control form-control-sm"
+                    placeholder="ผู้รับผิดชอบ">
                 </div>
               </div>
 
@@ -106,7 +132,8 @@
                 <div class="p-2 border-start border-4 border-primary bg-white shadow-sm rounded">
                   <label class="d-block fw-bold small text-primary">งานปั๊ม</label>
                   <input type="date" formControlName="stampingDate" class="form-control form-control-sm mb-1 border-0">
-                  <input type="text" formControlName="stampingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                  <input type="text" formControlName="stampingResponsible" class="form-control form-control-sm"
+                    placeholder="ผู้รับผิดชอบ">
                 </div>
               </div>
 
@@ -114,7 +141,8 @@
                 <div class="p-2 border-start border-4 border-info bg-white shadow-sm rounded">
                   <label class="d-block fw-bold small text-info">งานปะ</label>
                   <input type="date" formControlName="gluingDate" class="form-control form-control-sm mb-1 border-0">
-                  <input type="text" formControlName="gluingResponsible" class="form-control form-control-sm" placeholder="ผู้รับผิดชอบ">
+                  <input type="text" formControlName="gluingResponsible" class="form-control form-control-sm"
+                    placeholder="ผู้รับผิดชอบ">
                 </div>
               </div>
 

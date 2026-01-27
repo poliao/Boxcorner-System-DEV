@@ -219,7 +219,8 @@ export class Dcsm02DetailComponent implements OnInit {
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
       designOrderId: this.designForm.getRawValue().id,
-      customerName: this.designForm.getRawValue().customerName
+      customerName: this.designForm.getRawValue().customerName,
+      fileName: this.designForm.getRawValue().fileName
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',

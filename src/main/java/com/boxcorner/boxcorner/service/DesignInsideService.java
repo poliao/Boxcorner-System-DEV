@@ -29,8 +29,8 @@ public class DesignInsideService {
     }
 
      public DesignInside saveDesign(DesignInside designOrder, String currentUser) {
-        designOrder.setJobOwner(currentUser);
         if (designOrder.getId() != null) {
+            designOrder.setJobOwner(currentUser);
             Optional<DesignInside> existing = repository.findById(designOrder.getId());
             if (existing.isPresent()) {
                 return repository.save(designOrder);

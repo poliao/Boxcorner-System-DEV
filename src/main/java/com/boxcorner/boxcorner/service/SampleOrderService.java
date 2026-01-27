@@ -22,7 +22,7 @@ public class SampleOrderService {
 
     @Transactional
     public SampleOrder saveOrUpdateOrder(SampleOrder order, String jobOwner) {
-        order.setJobOwner(jobOwner);
+        
         if (order.getId() != null) {
             return sampleOrderRepository.findById(order.getId())
                 .map(existingOrder -> {
@@ -43,6 +43,7 @@ public class SampleOrderService {
                     return sampleOrderRepository.save(existingOrder);
                 })
                 .orElseGet(() -> {
+                    order.setJobOwner(jobOwner);
                     return sampleOrderRepository.save(order);
                 });
         }

@@ -73,4 +73,7 @@ public class SampleOrder {
 
     @Column(name = "customer_name")
     private String customerName;
+
+    @Column(name = "file_name")
+    private String fileName;
 }

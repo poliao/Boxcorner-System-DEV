@@ -138,6 +138,7 @@ export class Dcsm20DetailComponent implements OnInit {
   initForm(): void {
     this.productionForm = this.fb.group({
       id: [null],
+      oidPap: [null],
       date: [new Date().toISOString().substring(0, 10), Validators.required],
       jobId: ['', Validators.required],
       customerJobName: ['', Validators.required],
@@ -340,6 +341,14 @@ export class Dcsm20DetailComponent implements OnInit {
       this.markFormGroupTouched();
       this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
     }
+  }
+
+  onFetchData(): void {
+    const oidPapValue = this.productionForm.get('oidPap')?.value;
+    this.dcsm20Service.getJobPAP(oidPapValue).subscribe((response) => {
+      console.log(response);
+      
+    })
   }
 
 

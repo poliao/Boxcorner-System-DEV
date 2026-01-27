@@ -19,7 +19,7 @@ export class Dcsm05DetailComponent implements OnInit {
   isEditMode = false;
   id: string | null = null;
   isNoteEdit = false
-
+  isDesign = false
   confirm = false;
   confirmDeliver = false;
   notDeliver = false;
@@ -29,8 +29,8 @@ export class Dcsm05DetailComponent implements OnInit {
   deadline = false;
 
   showNotDeliverModal = false;
-  notDeliverTime = new FormControl('');
-  notDeliverDate = new FormControl('');
+  notDeliverTime = new FormControl('', Validators.required);
+  notDeliverDate = new FormControl('', Validators.required);
 
   constructor(
     private fb: FormBuilder,
@@ -53,6 +53,9 @@ export class Dcsm05DetailComponent implements OnInit {
       if (this.mainForm.getRawValue().noteEdit) {
         this.isNoteEdit = true
       }
+      if (resolvedData.designOrderId != null) {
+        this.isDesign = true
+      }
     }
   }
 
@@ -72,6 +75,8 @@ export class Dcsm05DetailComponent implements OnInit {
       note: [''],
       noteEdit: [''],
       customerName: [''],
+      fileName: [''],
+      designOrderId: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -87,6 +92,8 @@ export class Dcsm05DetailComponent implements OnInit {
     this.mainForm.controls['note'].disable({ emitEvent: false });
     this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
     this.mainForm.controls['customerName'].disable({ emitEvent: false });
+    this.mainForm.controls['fileName'].disable({ emitEvent: false });
+    this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -103,7 +110,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = false;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ')|| (this.getCurrentUserFromToken() === this.mainForm.getRawValue().jobOwner && this.mainForm.getRawValue().status === 'ไม่อนุมัติเลื่อนส่ง') || ( this.getCurrentUserFromToken() === this.mainForm.getRawValue().jobOwner && this.mainForm.getRawValue().status === 'อนุมัติขอเลื่อนส่ง')) {
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไม่อนุมัติเลื่อนส่ง') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'อนุมัติขอเลื่อนส่ง')) {
       this.confirm = false;
       this.confirmDeliver = true;
       this.notDeliver = true;
@@ -143,7 +150,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = true;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต') ) {
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต')) {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -323,6 +330,10 @@ export class Dcsm05DetailComponent implements OnInit {
   confirmNotDeliver() {
     const dateValue = this.notDeliverDate.value;
     const timeValue = this.notDeliverTime.value;
+    if ( !dateValue || !timeValue) {
+      this.sweetAlert.error('Error', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
 
     Swal.fire({
       title: 'ขอเลื่อนวันส่ง',

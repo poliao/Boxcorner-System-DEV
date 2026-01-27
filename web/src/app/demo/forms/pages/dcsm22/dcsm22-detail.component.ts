@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
-import { end } from '@popperjs/core';
+
 @Component({
   selector: 'app-dcsm22-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -83,6 +83,7 @@ export class Dcsm22DetailComponent implements OnInit {
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['noteEdit'].disable({ emitEvent: false });
+    this.designForm.controls['fileName'].disable({ emitEvent: false });
   }
   patchFormData(data: any): void {
     const apiData = data as any;

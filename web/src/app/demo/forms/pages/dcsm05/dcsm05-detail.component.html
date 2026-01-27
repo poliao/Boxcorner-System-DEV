@@ -38,6 +38,10 @@
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
+        <div *ngIf="isDesign" class="col-md-6">
+          <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
+          <input type="text" formControlName="designOrderId" class="form-control">
+        </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
@@ -89,6 +93,10 @@
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
           <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
         </div>
+         <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
+          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="fileName" class="form-control" >
+        </div>
         <div class="col-md-12">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
               class="form-check-input" id="isCreateSampleSwitch">
@@ -110,11 +118,11 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
-          <label for="failTime" class="form-label">วันที่</label>
+          <label for="failTime" class="form-label">วันที่<span style="color: red;">*</span></label>
           <input type="date" class="form-control" [formControl]="notDeliverDate">
         </div>
         <div class="mb-3">
-          <label for="failTime" class="form-label">เวลา</label>
+          <label for="failTime" class="form-label">เวลา<span style="color: red;">*</span></label>
           <input type="time" class="form-control" [formControl]="notDeliverTime">
         </div>
       </div>

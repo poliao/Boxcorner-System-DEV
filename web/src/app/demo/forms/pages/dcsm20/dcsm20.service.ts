@@ -99,4 +99,8 @@ export class Dcsm20Service {
   countBacklogSendBackSample(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSendBackSampleBack`);
   }
+
+  getJobPAP(oid: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/pap/getJo?oid=${oid}`);
+  }
 }

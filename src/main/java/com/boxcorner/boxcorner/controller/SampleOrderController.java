@@ -302,7 +302,7 @@ public class SampleOrderController {
 
     @GetMapping("/countBacklogApproveShif")
     public ResponseEntity<Integer> getUniqueStatusCheck(HttpServletRequest httpRequest) {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("อนุมัติเลื่อนวันส่ง",tokenService.getCurrentUser(httpRequest)));
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("อนุมัติขอเลื่อนส่ง",tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogNotApproveShif")
