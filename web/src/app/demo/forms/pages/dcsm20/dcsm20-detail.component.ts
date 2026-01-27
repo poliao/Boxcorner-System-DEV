@@ -344,11 +344,68 @@ export class Dcsm20DetailComponent implements OnInit {
   }
 
   onFetchData(): void {
+    this.loadingService.show();
     const oidPapValue = this.productionForm.get('oidPap')?.value;
+    
     this.dcsm20Service.getJobPAP(oidPapValue).subscribe((response) => {
-      console.log(response);
-      
+      this.loadingService.show();
+      this.productionForm.get('jobId')?.setValue(response.header.job_code);
+      this.productionForm.get('customerJobName')?.setValue(response.header.job_name+' - '+response.header.customer_name);
+      this.productionForm.get('dueDate')?.setValue(this.convertDateFormat(response.header.delivery_date));
+      this.productionForm.get('printQuantity')?.setValue(response.header.print_sheets);
+      this.productionForm.get('productionQuantity')?.setValue(response.header.quantity);
+      this.productionForm.get('printingDate')?.setValue(response.form_data.d_print === '-' ? null : this.convertDateFormat(response.form_data.d_print));
+      this.productionForm.get('printingResponsible')?.setValue(response.form_data.printer === '-' ? null : response.form_data.printer);
+      this.productionForm.get('coatingDate')?.setValue(response.form_data.d_coat === '-' ? null : this.convertDateFormat(response.form_data.d_coat));
+      this.productionForm.get('coatingResponsible')?.setValue(response.form_data.l_coat === '-' ? null : response.form_data.l_coat);
+      this.productionForm.get('stampingDate')?.setValue(response.form_data.d_daicut === '-' ? null : this.convertDateFormat(response.form_data.d_daicut));
+      this.productionForm.get('stampingResponsible')?.setValue(response.form_data.l_pcut === '-' ? null : response.form_data.l_pcut);
+      this.productionForm.get('gluingDate')?.setValue(response.form_data.d_pa === '-' ? null : this.convertDateFormat(response.form_data.d_pa));
+      this.productionForm.get('gluingResponsible')?.setValue(response.form_data.l_pa === '-' ? null : response.form_data.l_pa);
+      this.productionForm.get('qcDate')?.setValue(response.form_data.d_qc === '-' ? null : this.convertDateFormat(response.form_data.d_qc));
+      this.loadingService.hide();
     })
+    
+  }
+
+  private convertDateFormat(dateStr: string): string {
+    if (!dateStr || dateStr === '-') return '';
+    
+    // แปลงจาก "27/01/2026" เป็น "2026-01-27"
+    if (dateStr.includes('/')) {
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2];
+        
+        // ตรวจสอบว่าเป็นปีพุทธศักราชหรือคริสต์ศักราช
+        const yearNum = parseInt(year);
+        const convertedYear = yearNum > 2500 ? (yearNum - 543).toString() : year;
+        
+        return `${convertedYear}-${month}-${day}`;
+      }
+    }
+    
+    // แปลงจาก "29 ม.ค. 2569" เป็น "2026-01-29"
+    const thaiMonths: { [key: string]: string } = {
+      'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03', 'เม.ย.': '04',
+      'พ.ค.': '05', 'มิ.ย.': '06', 'ก.ค.': '07', 'ส.ค.': '08',
+      'ก.ย.': '09', 'ต.ค.': '10', 'พ.ย.': '11', 'ธ.ค.': '12'
+    };
+    
+    const parts = dateStr.trim().split(' ');
+    if (parts.length === 3) {
+      const day = parts[0].padStart(2, '0');
+      const month = thaiMonths[parts[1]];
+      const year = (parseInt(parts[2]) - 543).toString();
+      
+      if (month && year) {
+        return `${year}-${month}-${day}`;
+      }
+    }
+    
+    return dateStr;
   }
 
 

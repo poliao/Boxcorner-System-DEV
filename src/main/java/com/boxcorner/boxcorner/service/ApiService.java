@@ -26,7 +26,11 @@ public class ApiService {
     public Map<String, Object> getOrderData(String orderId) {
         String sessionId = login();
         String html = fetchHtml(sessionId, orderId);
-        return extractFromHtml(html);
+        String htmlValue = fetchHtmlValue(sessionId, orderId);
+        Map<String, Object> result = extractFromHtml(html);
+        Map<String, Object> formData = extractFormData(htmlValue);
+        result.put("form_data", formData);
+        return result;
     }
 
     public Map<String, Object> parseHtmlToJson(String html) {
@@ -56,6 +60,18 @@ public class ApiService {
 
     private String fetchHtml(String cookie, String orderId) {
         String url = "https://boxcornerart.net/view/order.php?action=print&oid=" + orderId;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", cookie);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        return restTemplate
+                .exchange(url, HttpMethod.GET, entity, String.class)
+                .getBody();
+    }
+
+    private String fetchHtmlValue(String cookie, String orderId) {
+        String url = "https://boxcornerart.net/view/order.php?oid=" + orderId;
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cookie", cookie);
@@ -145,6 +161,109 @@ public class ApiService {
 
     /* ===================== EXTRACTORS ===================== */
 
+    private Map<String, Object> extractFormData(String html) {
+        Document doc = Jsoup.parse(html);
+        Map<String, Object> formData = new LinkedHashMap<>();
+        
+        // ข้อมูลพื้นฐาน
+        formData.put("priority", getSelectValue(doc, "#priority"));
+        formData.put("plan_delivery", getInputValue(doc, "#plan_delivery"));
+        formData.put("dueto", getInputValue(doc, "#dueto"));
+        formData.put("screen", getInputValue(doc, "#screen"));
+        formData.put("times", getInputValue(doc, "#times"));
+        
+        // ข้อมูลการตัด
+        formData.put("day_cut", getInputValue(doc, "#day_cut"));
+        formData.put("cut_type", getInputValue(doc, "#cut_type"));
+        
+        // ข้อมูลการพิมพ์
+        formData.put("printer", getInputValue(doc, "#printer"));
+        formData.put("d_print", getInputValue(doc, "#d_print"));
+        formData.put("confirm", getSelectValue(doc, "#confirm_s"));
+        
+        // ข้อมูลสถานที่และกำหนดส่ง
+        formData.put("l_coat", getInputValue(doc, "#l_coat"));
+        formData.put("d_coat", getInputValue(doc, "#d_coat"));
+        formData.put("l_pcut", getInputValue(doc, "#l_pcut"));
+        formData.put("d_pk", getInputValue(doc, "#d_pk"));
+        formData.put("p_bk", getInputValue(doc, "#p_bk"));
+        formData.put("n_o_bk", getSelectValue(doc, "#n_o_bk"));
+        
+        // ข้อมูลปั้มนูน
+        formData.put("d_noon", getInputValue(doc, "#d_noon"));
+        formData.put("p_noon", getInputValue(doc, "#p_noon"));
+        formData.put("n_o_pd", getSelectValue(doc, "#n_o_pd"));
+        
+        // ข้อมูลปั้มไดคัท
+        formData.put("d_daicut", getInputValue(doc, "#d_daicut"));
+        formData.put("p_daicut", getInputValue(doc, "#p_daicut"));
+        formData.put("n_o_dai", getSelectValue(doc, "#n_o_dai"));
+        
+        // ข้อมูลปะกล่อง
+        formData.put("l_pa", getInputValue(doc, "#l_pa"));
+        formData.put("d_pa", getInputValue(doc, "#d_pa"));
+        
+        // ข้อมูล QC
+        formData.put("qc_num", getInputValue(doc, "#qc_num"));
+        formData.put("qa", getSelectValue(doc, "#qa"));
+        formData.put("st_num", getInputValue(doc, "#st_num"));
+        formData.put("d_qc", getInputValue(doc, "#d_qc"));
+        
+        // ข้อมูลจัดส่ง
+        formData.put("l_send", getInputValue(doc, "#l_send"));
+        formData.put("type_send", getInputValue(doc, "#type_send"));
+        formData.put("d_send", getInputValue(doc, "#d_send"));
+        formData.put("l_place", getInputValue(doc, "#l_place"));
+        
+        // หมายเหตุต่างๆ
+        formData.put("mold_remark", getTextareaValue(doc, "#mold_remark"));
+        formData.put("cut_remark", getTextareaValue(doc, "#cut_remark"));
+        formData.put("plate_remark", getTextareaValue(doc, "#plate_remark"));
+        formData.put("coating_remark", getTextareaValue(doc, "#coating_remark"));
+        formData.put("k_remark", getTextareaValue(doc, "#k_remark"));
+        formData.put("noon_remark", getTextareaValue(doc, "#noon_remark"));
+        formData.put("dai_remark", getTextareaValue(doc, "#dai_remark"));
+        formData.put("pa_remark", getTextareaValue(doc, "#pa_remark"));
+        formData.put("qc_remark", getTextareaValue(doc, "#qc_remark"));
+        
+        // ข้อมูลรูปภาพ
+        Element jobPicInput = doc.selectFirst("input[name='job_pic']");
+        if (jobPicInput != null) {
+            formData.put("job_pic", jobPicInput.attr("value"));
+        }
+        
+        Element jobPicImg = doc.selectFirst("image[src*='/image/job/']");
+        if (jobPicImg != null) {
+            formData.put("job_pic_url", jobPicImg.absUrl("src"));
+        }
+        
+        // ข้อมูลใบสั่งงาน
+        formData.put("order_no", getInputValue(doc, "#order_no"));
+        formData.put("oid", getInputValue(doc, "#oid"));
+        formData.put("qid", getInputValue(doc, "#qid"));
+        
+        return formData;
+    }
+    
+    private String getInputValue(Document doc, String selector) {
+        Element input = doc.selectFirst(selector);
+        return input != null ? input.attr("value") : "";
+    }
+    
+    private String getSelectValue(Document doc, String selector) {
+        Element select = doc.selectFirst(selector);
+        if (select != null) {
+            Element selected = select.selectFirst("option[selected]");
+            return selected != null ? selected.text() : "";
+        }
+        return "";
+    }
+    
+    private String getTextareaValue(Document doc, String selector) {
+        Element textarea = doc.selectFirst(selector);
+        return textarea != null ? textarea.text() : "";
+    }
+
     private Map<String, String> extractHeader(Document doc) {
         Map<String, String> m = new LinkedHashMap<>();
 
@@ -165,7 +284,7 @@ public class ApiService {
             m.put("customer_code", getBlueText(header, "รหัสลูกค้า:"));
             m.put("finished_size", getBlueText(header, "ขนาดสำเร็จ:"));
             m.put("receive_date", getBlueText(header, "วันที่รับงาน:"));
-            m.put("quantity", getBlueText(header, "ยอดพิมพ์:"));
+            m.put("quantity", extractNumbers(getBlueText(header, "ยอดพิมพ์:")));
             m.put("delivery_date", getBlueText(header, "วันที่ส่งงาน:"));
             m.put("producer", getBlueText(header, "ผู้สั่งผลิต:"));
         }
@@ -174,6 +293,11 @@ public class ApiService {
         m.put("image_url", img != null ? img.absUrl("src") : "");
 
         return m;
+    }
+
+    private String extractNumbers(String text) {
+        if (text == null || text.isEmpty()) return "";
+        return text.replaceAll("[^0-9,]", "").trim();
     }
 
    
