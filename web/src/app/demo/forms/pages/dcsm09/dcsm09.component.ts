@@ -47,6 +47,7 @@ export class Dcsm09Component implements OnInit {
   waitCheckFile = 0;
   waitSend = 0;
   waitSendFile = 0;
+  delivery = 0;
   isSortMode: boolean = false;
 
   tableColumns = [
@@ -76,6 +77,7 @@ export class Dcsm09Component implements OnInit {
     this.BacklogWaitCheckFile();
     this.BacklogWaitSend();
     this.BacklogWaitSendFile();
+    this.BacklogDelivery();
   }
 
   initSearchForm(): void {
@@ -262,6 +264,23 @@ export class Dcsm09Component implements OnInit {
     this.onSearch();
   }
 
+  BacklogDelivery(){
+    this.dcsm09Service.countProcessStatus('ตรวจใบสั่งผลิตแล้ว').subscribe({
+      next: (data: number) => {
+        this.delivery = data;
+      },
+      error: (err) => {
+      }
+    });
+  }
+
+  onFilterProcessStatusDelivery() {
+    this.searchForm.patchValue({
+      processStatus: 'ตรวจใบสั่งผลิตแล้ว',
+    });
+    this.onSearch();
+  }
+
   BacklogWaitCheckFile(){
     this.dcsm09Service.countProcessStatus('ตรวจไฟล์แม่พิมพ์แล้ว').subscribe({
       next: (data: number) => {
@@ -280,7 +299,7 @@ export class Dcsm09Component implements OnInit {
   }
 
   BacklogWaitSend(){
-    this.dcsm09Service.countProcessStatus('ตรวจใบสั่งผลิตแล้ว').subscribe({
+    this.dcsm09Service.countProcessStatus('ส่งข้อมูลไปตารางจัดส่ง').subscribe({
       next: (data: number) => {
         this.waitSend = data;
       },
@@ -291,7 +310,7 @@ export class Dcsm09Component implements OnInit {
 
   onFilterWaitSend() {
     this.searchForm.patchValue({
-      processStatus: 'ตรวจใบสั่งผลิตแล้ว',
+      processStatus: 'ส่งข้อมูลไปตารางจัดส่ง',
     });
     this.onSearch();
   }

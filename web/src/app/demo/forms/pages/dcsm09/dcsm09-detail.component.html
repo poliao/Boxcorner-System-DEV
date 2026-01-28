@@ -3,21 +3,25 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isCheckMold == true" (click)="updateMoldStatus()" type="submit" class="btn text-white px-5 shadow-sm"
-            style="background-color: #2ace24;">
+          <button *ngIf="isCheckMold == true" (click)="updateMoldStatus()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #2ace24;">
             ตรวจไฟล์แม่พิมพ์แล้ว
           </button>
           <button *ngIf="isOrder == true" (click)="updateOrder()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #2ace24;">
             ตรวจใบสั่งแล้ว
           </button>
-          <button *ngIf="isSendOrder == true" (click)="updateSendOrder()" type="submit" class="btn text-white px-5 shadow-sm"
-            style="background-color: #2ace24;">
+          <button *ngIf="isSendOrder == true" (click)="updateSendOrder()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #2ace24;">
             ส่งใบสั่งผลิตแล้ว
           </button>
-          <button *ngIf="isSendFile == true" (click)="updateSendFile()" type="submit" class="btn text-white px-5 shadow-sm"
-            style="background-color: #2ace24;">
+          <button *ngIf="isSendFile == true" (click)="updateSendFile()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #2ace24;">
             ส่งไฟล์แล้ว
+          </button>
+          <button *ngIf="isProduction == true" class="btn text-white px-5 shadow-sm" type="button" (click)="add()"
+            style="background-color: #00b7c4;">
+            เพิ่มข้อมูลไปตารางจัดส่ง
           </button>
         </div>
 
@@ -73,19 +77,19 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
-          <input type="text" formControlName="operatorName" class="form-control" >
+          <input type="text" formControlName="operatorName" class="form-control">
         </div>
         <div class="col-md-9">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control" >
+          <input type="text" formControlName="remarks" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <input type="text" formControlName="jobType" class="form-control" >
+          <input type="text" formControlName="jobType" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้ตรวจ</label>
-          <input type="text" formControlName="inspector" class="form-control" >
+          <input type="text" formControlName="inspector" class="form-control">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
@@ -99,4 +103,3 @@
     </div>
   </div>
 </div>
-

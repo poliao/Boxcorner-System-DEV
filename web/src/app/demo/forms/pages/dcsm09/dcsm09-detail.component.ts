@@ -23,6 +23,7 @@ export class Dcsm09DetailComponent implements OnInit {
   isOrder = false;
   isSendOrder = false;
   isSendFile = false;
+  isProduction = false;
 
   constructor(
     private fb: FormBuilder,
@@ -94,32 +95,51 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.patchValue(apiData);
   }
 
+  add() {
+    this.router.navigate(['/Dcsm20Detail'], {
+      state: {
+        referenceId: this.mainForm.getRawValue().id,
+      }
+    });
+  }
+
   checkBtn() {
-    if (this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น รอตรวจสอบ' ) {
+    if (this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น รอตรวจสอบ') {
       this.isCheckMold = true;
       this.isOrder = false;
       this.isSendOrder = false;
       this.isSendFile = false;
+      this.isProduction = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ตรวจไฟล์แม่พิมพ์แล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isOrder = true;
       this.isCheckMold = false;
       this.isSendOrder = false;
       this.isSendFile = false;
+      this.isProduction = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ตรวจใบสั่งผลิตแล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
-      this.isSendOrder = true;
+      this.isSendOrder = false;
       this.isSendFile = false;
       this.isOrder = false;
       this.isCheckMold = false;
+      this.isProduction = true;
+    } else if (this.mainForm.getRawValue().processStatus == 'ส่งข้อมูลไปตารางจัดส่ง' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
+      this.isSendFile = false;
+      this.isSendOrder = true;
+      this.isOrder = false;
+      this.isCheckMold = false;
+      this.isProduction = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ส่งใบสั่งผลิตแล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isSendFile = true;
       this.isSendOrder = false;
       this.isOrder = false;
       this.isCheckMold = false;
-    }else{
+      this.isProduction = false;
+    } else {
       this.isCheckMold = false;
       this.isOrder = false;
       this.isSendOrder = false;
       this.isSendFile = false;
+      this.isProduction = false;
     }
   }
 

@@ -59,7 +59,6 @@ export class Dcsm20Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
-    { key: 'date', label: 'วันที่' },
     { key: 'jobId', label: 'JOB ID' },
     { key: 'printingDate', label: 'วันที่ส่งพิมพ์', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },
     { key: 'printingResponsible', label: 'พิมพ์ที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },
@@ -149,7 +148,7 @@ export class Dcsm20Component implements OnInit {
 
   onRowClick(row: any) {
     if (row && row.id) {
-      this.router.navigate(['/Dcsm20Detail', row.id]);
+      this.router.navigate(['/Dcsm20DetailStatus', row.id]);
     }
   }
 

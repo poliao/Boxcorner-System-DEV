@@ -11,12 +11,12 @@ import Swal from 'sweetalert2';
 import { Dcsm09Service } from '../dcsm09/dcsm09.service';
 
 @Component({
-  selector: 'app-dcsm20-detail.component',
+  selector: 'app-dcsm20-detail-status.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule],
-  templateUrl: './dcsm20-detail.component.html',
-  styleUrl: './dcsm20-detail.component.scss'
+  templateUrl: './dcsm20-detail-status.component.html',
+  styleUrl: './dcsm20-detail-status.component.scss'
 })
-export class Dcsm20DetailComponent implements OnInit {
+export class Dcsm20DetailStatusComponent implements OnInit {
   productionForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
@@ -383,20 +383,13 @@ export class Dcsm20DetailComponent implements OnInit {
   private convertDateFormat(dateStr: string): string {
     if (!dateStr || dateStr === '-') return '';
 
-    // แปลงจาก "27/01/2026" หรือ "28/01/26" เป็น "2026-01-27"
+    // แปลงจาก "27/01/2026" เป็น "2026-01-27"
     if (dateStr.includes('/')) {
       const parts = dateStr.split('/');
       if (parts.length === 3) {
         const day = parts[0].padStart(2, '0');
         const month = parts[1].padStart(2, '0');
-        let year = parts[2];
-
-        // จัดการปีสั้น (YY)
-        if (year.length === 2) {
-          const yearNum = parseInt(year);
-          // ถ้า <= 50 ถือว่าเป็น 20xx, ถ้า > 50 ถือว่าเป็น 19xx
-          year = yearNum <= 50 ? `20${year}` : `25${year}`;
-        }
+        const year = parts[2];
 
         // ตรวจสอบว่าเป็นปีพุทธศักราชหรือคริสต์ศักราช
         const yearNum = parseInt(year);

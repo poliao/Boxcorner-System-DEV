@@ -12,25 +12,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.boxcorner.boxcorner.entity.DesignInside;
-import com.boxcorner.boxcorner.repository.DesignInsideRepository;
+import com.boxcorner.boxcorner.entity.DesignDiecut;
+import com.boxcorner.boxcorner.repository.DesignDiecutRepository;
 
 @Service
-public class DesignInsideService {
+public class DesignDiecutService {
     @Autowired
-    private DesignInsideRepository repository;
+    private DesignDiecutRepository repository;
 
-    public List<DesignInside> getAllDesigns() {
+    public List<DesignDiecut> getAllDesigns() {
         return repository.findAll();
     }
 
-    public Optional<DesignInside> getDesignById(Integer id) {
+    public Optional<DesignDiecut> getDesignById(Integer id) {
         return repository.findById(id);
     }
 
-     public DesignInside saveDesign(DesignInside designOrder, String currentUser) {
+     public DesignDiecut saveDesign(DesignDiecut designOrder, String currentUser) {
         if (designOrder.getId() != null) {
-            Optional<DesignInside> existing = repository.findById(designOrder.getId());
+            Optional<DesignDiecut> existing = repository.findById(designOrder.getId());
             if (existing.isPresent()) {
                 return repository.save(designOrder);
             } else {
@@ -47,7 +47,7 @@ public class DesignInsideService {
         repository.deleteById(id);
     }
 
-    public Page<DesignInside> getAllRecipes(String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignDiecut> getAllRecipes(String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByFilters(
             job_details,    // 1. jobDetails
@@ -61,7 +61,7 @@ public class DesignInsideService {
         );
     }
 
-    public Page<DesignInside> getAllRecipesDesign(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignDiecut> getAllRecipesDesign(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByAll(
             id,             // 1. id
@@ -77,7 +77,7 @@ public class DesignInsideService {
         );
     }
 
-    public Page<DesignInside> getAllRecipesDesignSorted(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignDiecut> getAllRecipesDesignSorted(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size);
         return repository.findByAllSorted(
             id,             // 1. id
@@ -123,9 +123,9 @@ public class DesignInsideService {
         return repository.ConfirmNative(searchTerm);
     }
 
-   public DesignInside updateDesign(int id, String currentUser) {
+   public DesignDiecut updateDesign(int id, String currentUser) {
 
-        DesignInside existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        DesignDiecut existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
 
         if (currentUser != null && !currentUser.isEmpty()) {
             existingOrder.setAssignee(currentUser);
@@ -136,38 +136,38 @@ public class DesignInsideService {
         return repository.save(existingOrder);
     }
 
-    public DesignInside updateDesignWork(int id) {
-        DesignInside existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+    public DesignDiecut updateDesignWork(int id) {
+        DesignDiecut existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("กำลังดำเนินการ");
         existingOrder.setConfirmStatus("กำลังดำเนินการ");
         return repository.save(existingOrder);
     }
 
-    public DesignInside updateDesignComplete(int id) {
-        DesignInside existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+    public DesignDiecut updateDesignComplete(int id) {
+        DesignDiecut existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("รอตรวจสอบ");
         return repository.save(existingOrder);
     }
 
-    public DesignInside updateDesignCompleteWithFile(int id, String fileName) {
-        DesignInside existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+    public DesignDiecut updateDesignCompleteWithFile(int id, String fileName) {
+        DesignDiecut existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("รอตรวจสอบ");
         existingOrder.setFileName(fileName);
         return repository.save(existingOrder);
     }
 
-    public DesignInside updateDesignApprove(int id) {
-        DesignInside existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+    public DesignDiecut updateDesignApprove(int id) {
+        DesignDiecut existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("ผ่าน");
         existingOrder.setConfirmDate(LocalDate.now());
         return repository.save(existingOrder);
     }
 
-    public DesignInside updateDesignEdit(int id) {
-        DesignInside existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+    public DesignDiecut updateDesignEdit(int id) {
+        DesignDiecut existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("รอดำเนินการแก้ไข");
         existingOrder.setConfirmStatus("ไม่ผ่าน");
         return repository.save(existingOrder);

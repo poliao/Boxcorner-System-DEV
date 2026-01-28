@@ -43,9 +43,11 @@ public class SampleOrderService {
                     return sampleOrderRepository.save(existingOrder);
                 })
                 .orElseGet(() -> {
-                    order.setJobOwner(jobOwner);
+                   
                     return sampleOrderRepository.save(order);
                 });
+        }else{
+             order.setJobOwner(jobOwner);
         }
         return sampleOrderRepository.save(order);
     }

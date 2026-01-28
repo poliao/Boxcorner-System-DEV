@@ -63,6 +63,5 @@ public class ProductionJobController {
         Page<ProductionJob> result = productionJobService.findByFilters(
                 id, jobId, customerName, printStatus, startDate, endDate, page, size);
         return ResponseEntity.ok(result);
-
     }
 }
