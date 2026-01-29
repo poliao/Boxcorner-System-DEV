@@ -44,6 +44,15 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     private sweetAlert: SweetAlertService
   ) { }
 
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+  }
+
   ngOnInit(): void {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state || history.state;
@@ -54,11 +63,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     this.initForm();
-    const resolvedData = this.route.snapshot.data['productionOrder'];
-    if (resolvedData) {
-      this.patchFormData(resolvedData);
-      this.jobImageUrl = this.productionForm.getRawValue().jobImage
-    }
     this.disableForm();
     this.checkButton();
   }
@@ -171,7 +175,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       remark: [''],
       deliveryStatus: [''],
       imageUrl: [null],
-
+      dataDalivery: [false],
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -260,7 +264,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
 
       const apiFilters = {
       id: this.referenceId,
-      processStatus: 'ส่งข้อมูลไปตารางจัดส่ง',
     };
       Swal.fire({
         title: 'บันทึกข้อมูล',
@@ -275,7 +278,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.dcsm20Service.save(data).subscribe((response) => {
-            this.dcsm09Service.updateProcessStatus(apiFilters).subscribe(() => {
+            this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
               this.patchFormData(response);
               this.loadingService.hide();
               this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
@@ -373,7 +376,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       this.productionForm.get('gluingDate')?.setValue(response.form_data.d_pa === '-' ? null : this.convertDateFormat(response.form_data.d_pa));
       this.productionForm.get('gluingResponsible')?.setValue(response.form_data.l_pa === '-' ? null : response.form_data.l_pa);
       this.productionForm.get('qcDate')?.setValue(response.form_data.d_qc === '-' ? null : this.convertDateFormat(response.form_data.d_qc));
-      this.productionForm.get('imageUrl')?.setValue(response.form_data.image_url === '-' ? null : response.form_data.image_url);
+      this.productionForm.get('imageUrl')?.setValue(response.header.image_url === '-' ? null : response.header.image_url);
       this.jobImageUrl = response.header.image_url || '';
       this.loadingService.hide();
     })

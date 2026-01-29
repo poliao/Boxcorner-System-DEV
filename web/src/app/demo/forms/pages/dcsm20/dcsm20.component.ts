@@ -148,7 +148,7 @@ export class Dcsm20Component implements OnInit {
 
   onRowClick(row: any) {
     if (row && row.id) {
-      this.router.navigate(['/Dcsm20DetailStatus', row.id]);
+      this.router.navigate(['/Dcsm20Detail', row.id]);
     }
   }
 

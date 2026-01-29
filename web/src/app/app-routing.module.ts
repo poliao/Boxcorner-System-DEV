@@ -390,9 +390,6 @@ const routes: Routes = [
         path: 'Dcsm20DetailStatus/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm20/dcsm20-detail-status.component').then((c) => c.Dcsm20DetailStatusComponent),
-        resolve: {
-          productionOrder: Dcsm20DetailResolver
-        }
       },
       {
         path: 'Dcsm20Detail/:id',

@@ -32,7 +32,7 @@ export class Dcsm20DetailComponent implements OnInit {
   isDeliveryComplete = false;
   jobImageUrl: string = '';
   isCreate = false;
-  referenceId:any
+  referenceId: any
 
   constructor(
     private fb: FormBuilder,
@@ -57,7 +57,7 @@ export class Dcsm20DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['productionOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
-      this.jobImageUrl = this.productionForm.getRawValue().jobImage
+      this.jobImageUrl = this.productionForm.getRawValue().imageUrl
     }
     this.disableForm();
     this.checkButton();
@@ -171,7 +171,6 @@ export class Dcsm20DetailComponent implements OnInit {
       remark: [''],
       deliveryStatus: [''],
       imageUrl: [null],
-
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -259,9 +258,9 @@ export class Dcsm20DetailComponent implements OnInit {
       const data = this.productionForm.getRawValue();
 
       const apiFilters = {
-      id: this.referenceId,
-      processStatus: 'ส่งข้อมูลไปตารางจัดส่ง',
-    };
+        id: this.referenceId,
+        processStatus: 'ส่งข้อมูลไปตารางจัดส่ง',
+      };
       Swal.fire({
         title: 'บันทึกข้อมูล',
         text: "ยืนยันบันทึกข้อมูล ใช่หรือไม่?",
@@ -275,13 +274,10 @@ export class Dcsm20DetailComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.dcsm20Service.save(data).subscribe((response) => {
-            this.dcsm09Service.updateProcessStatus(apiFilters).subscribe(() => {
-              this.patchFormData(response);
-              this.loadingService.hide();
-              this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-              this.router.navigate(['/Dcsm09Detail', this.referenceId]);
-            });
-
+            this.patchFormData(response);
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+            this.router.navigate(['/Dcsm20']);
           })
         }
       });

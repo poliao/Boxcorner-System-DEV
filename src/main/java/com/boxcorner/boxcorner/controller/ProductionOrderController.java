@@ -136,6 +136,7 @@ public class ProductionOrderController {
             @RequestParam(required = false, name = "moldStatus") String moldStatus,
             @RequestParam(required = false, name = "jobType") String jobType,
             @RequestParam(required = false, name = "inspector") String inspector,
+            @RequestParam(required = false, name = "dalivery") Boolean dalivery,
             @RequestParam(defaultValue = "0", name = "page") int page,
             @RequestParam(defaultValue = "10", name = "size") int size,
             @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
@@ -150,7 +151,7 @@ public class ProductionOrderController {
         } else {
             result = productionOrderService.findByProductionCheck(
                     id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                    jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, pageable);
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, dalivery, pageable);
         }
         return ResponseEntity.ok(result);
     }
@@ -159,6 +160,12 @@ public class ProductionOrderController {
     public ResponseEntity<ProductionOrder> updateProcessStatus(@RequestParam("id") Integer id,
             @RequestParam("processStatus") String processStatus) {
         return ResponseEntity.ok(productionOrderService.updateProcessStatus(id, processStatus));
+    }
+
+    @PutMapping("/updateDataDalivery")
+    public ResponseEntity<ProductionOrder> updateDataDalivery(@RequestParam("id") Integer id,
+            @RequestParam("dataDalivery") Boolean dataDalivery) {
+        return ResponseEntity.ok(productionOrderService.updateDataDalivery(id, dataDalivery));
     }
 
     @PutMapping("/updateInspector")
@@ -222,6 +229,11 @@ public class ProductionOrderController {
     @GetMapping("/countProcessStatusAll")
     public ResponseEntity<Integer> countBacklogProcessStatus(@RequestParam("processStatus") String processStatus) {
         return ResponseEntity.ok(productionOrderService.countBacklogProcessStatus(processStatus));
+    }
+
+    @GetMapping("/countBacklogDelivery")
+    public ResponseEntity<Integer> countBacklogDelivery() {
+        return ResponseEntity.ok(productionOrderService.countBacklogDelivery());
     }
 
     @GetMapping("/countBacklogMoldStatus")

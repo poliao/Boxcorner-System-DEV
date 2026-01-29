@@ -23,7 +23,7 @@ export class Dcsm09DetailComponent implements OnInit {
   isOrder = false;
   isSendOrder = false;
   isSendFile = false;
-  isProduction = false;
+  isDelivery = false;
 
   constructor(
     private fb: FormBuilder,
@@ -66,7 +66,7 @@ export class Dcsm09DetailComponent implements OnInit {
       createdAt: [''],
       updatedAt: [''],
       customerName: [''],
-
+      dataDalivery: [''],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -96,7 +96,7 @@ export class Dcsm09DetailComponent implements OnInit {
   }
 
   add() {
-    this.router.navigate(['/Dcsm20Detail'], {
+    this.router.navigate(['/Dcsm20DetailStatus', this.mainForm.getRawValue().id], {
       state: {
         referenceId: this.mainForm.getRawValue().id,
       }
@@ -109,37 +109,37 @@ export class Dcsm09DetailComponent implements OnInit {
       this.isOrder = false;
       this.isSendOrder = false;
       this.isSendFile = false;
-      this.isProduction = false;
+      this.isDelivery = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ตรวจไฟล์แม่พิมพ์แล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isOrder = true;
       this.isCheckMold = false;
       this.isSendOrder = false;
       this.isSendFile = false;
-      this.isProduction = false;
+      this.isDelivery = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ตรวจใบสั่งผลิตแล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
-      this.isSendOrder = false;
-      this.isSendFile = false;
-      this.isOrder = false;
-      this.isCheckMold = false;
-      this.isProduction = true;
-    } else if (this.mainForm.getRawValue().processStatus == 'ส่งข้อมูลไปตารางจัดส่ง' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
-      this.isSendFile = false;
       this.isSendOrder = true;
+      this.isSendFile = false;
       this.isOrder = false;
       this.isCheckMold = false;
-      this.isProduction = false;
+      this.isDelivery = false;
     } else if (this.mainForm.getRawValue().processStatus == 'ส่งใบสั่งผลิตแล้ว' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isSendFile = true;
       this.isSendOrder = false;
       this.isOrder = false;
       this.isCheckMold = false;
-      this.isProduction = false;
+      this.isDelivery = false;
+    } else if (this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' && (this.mainForm.getRawValue().dataDalivery == false || this.mainForm.getRawValue().dataDalivery == null)  && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
+      this.isSendFile = false;
+      this.isSendOrder = false;
+      this.isOrder = false;
+      this.isCheckMold = false;
+      this.isDelivery = true;
     } else {
       this.isCheckMold = false;
       this.isOrder = false;
       this.isSendOrder = false;
       this.isSendFile = false;
-      this.isProduction = false;
+      this.isDelivery = false;
     }
   }
 

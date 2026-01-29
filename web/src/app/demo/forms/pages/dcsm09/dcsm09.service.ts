@@ -91,4 +91,8 @@ export class Dcsm09Service {
   countProcessStatus(status: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countProcessStatusAll?processStatus=${status}`);
   }
+
+  countDelivery(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogDelivery`);
+  }
 }

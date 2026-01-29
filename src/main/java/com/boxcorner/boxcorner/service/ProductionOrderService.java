@@ -84,10 +84,10 @@ public class ProductionOrderService {
     public Page<ProductionOrder> findByProductionCheck(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType,String inspector, Pageable pageable) {
+            String moldStatus, String jobType,String inspector, Boolean dataDelivery, Pageable pageable) {
         return productionOrderRepository.findProductionCheck(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType,inspector, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, dataDelivery, pageable);
     }
 
     public Page<ProductionOrder> findByProductionCheckSort(Integer id, String folderName, String jobOwner,
@@ -102,6 +102,12 @@ public class ProductionOrderService {
     public ProductionOrder updateProcessStatus (Integer id , String processStatus) {
         ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus(processStatus);
+        return productionOrderRepository.save(existingOrder);
+    }
+
+    public ProductionOrder updateDataDalivery(Integer id , Boolean processStatus) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setDataDalivery(processStatus);
         return productionOrderRepository.save(existingOrder);
     }
 
@@ -157,6 +163,10 @@ public class ProductionOrderService {
 
     public Integer countBacklogProcessStatus(String processStatus) {
         return productionOrderRepository.countBacklogProcessStatus(processStatus);
+    }
+
+    public Integer countBacklogDelivery() {
+        return productionOrderRepository.countBacklogDelivery();
     }
 
     public Integer countBacklogMoldStatus(String moldStatus) {

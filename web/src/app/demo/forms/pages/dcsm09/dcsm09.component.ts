@@ -92,6 +92,7 @@ export class Dcsm09Component implements OnInit {
       jobType: [''],
       startDate: [null],
       inspector: [''],
+      dalivery: [null],
       endDate: [{ value: null, disabled: true }]
     });
   }
@@ -111,6 +112,7 @@ export class Dcsm09Component implements OnInit {
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       inspector: formValues.inspector,
+      dalivery: formValues.dalivery,
       page: this.pageIndex,
       size: this.pageSize
     };
@@ -265,7 +267,7 @@ export class Dcsm09Component implements OnInit {
   }
 
   BacklogDelivery(){
-    this.dcsm09Service.countProcessStatus('ตรวจใบสั่งผลิตแล้ว').subscribe({
+    this.dcsm09Service.countDelivery().subscribe({
       next: (data: number) => {
         this.delivery = data;
       },
@@ -276,7 +278,8 @@ export class Dcsm09Component implements OnInit {
 
   onFilterProcessStatusDelivery() {
     this.searchForm.patchValue({
-      processStatus: 'ตรวจใบสั่งผลิตแล้ว',
+      processStatus: 'ส่งไฟล์แล้ว',
+      dalivery: true,
     });
     this.onSearch();
   }
@@ -299,7 +302,7 @@ export class Dcsm09Component implements OnInit {
   }
 
   BacklogWaitSend(){
-    this.dcsm09Service.countProcessStatus('ส่งข้อมูลไปตารางจัดส่ง').subscribe({
+    this.dcsm09Service.countProcessStatus('ตรวจใบสั่งผลิตแล้ว').subscribe({
       next: (data: number) => {
         this.waitSend = data;
       },
@@ -310,7 +313,7 @@ export class Dcsm09Component implements OnInit {
 
   onFilterWaitSend() {
     this.searchForm.patchValue({
-      processStatus: 'ส่งข้อมูลไปตารางจัดส่ง',
+      processStatus: 'ตรวจใบสั่งผลิตแล้ว',
     });
     this.onSearch();
   }

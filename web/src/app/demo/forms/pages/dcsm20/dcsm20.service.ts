@@ -103,4 +103,8 @@ export class Dcsm20Service {
   getJobPAP(oid: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/pap/getJo?oid=${oid}`);
   }
+
+  updateDataDalivery(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/production/updateDataDalivery?id=${data.id}&dataDalivery=true`, {});
+  }
 }

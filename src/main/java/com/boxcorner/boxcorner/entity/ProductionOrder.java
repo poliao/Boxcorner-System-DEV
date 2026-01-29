@@ -87,4 +87,7 @@ public class ProductionOrder {
     @Column(name = "customer_name")
     private String customerName;
 
+    @Column(name = "data_dalivery")
+    private Boolean dataDalivery;
+
 }
