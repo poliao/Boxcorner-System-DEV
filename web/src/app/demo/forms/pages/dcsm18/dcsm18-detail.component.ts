@@ -81,6 +81,7 @@ export class Dcsm18DetailComponent implements OnInit {
       printingMachine: ['',Validators.required],
       inspector: [''],
       customerName: [''],
+      dataDalivery: [false]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();

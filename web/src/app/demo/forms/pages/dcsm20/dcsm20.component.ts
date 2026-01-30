@@ -70,7 +70,7 @@ export class Dcsm20Component implements OnInit {
     { key: 'gluingResponsible', label: 'ปะที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #17a2b8; color: white;' },
     { key: 'qcDate', label: 'วันที่ส่งQC', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #670097ff; color: white;' },
     { key: 'dueDate', label: 'วันที่ส่งลูกค้า' },
-    { key: 'printStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'printStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this) },
     { key: 'deliveryStatus', label: 'สถานะจัดส่ง',colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) }
   ];
 
@@ -164,6 +164,17 @@ export class Dcsm20Component implements OnInit {
     this.filterStartDate = '';
     this.filterEndDate = '';
     this.onSearchChange();
+  }
+
+  getStatusColumnStyle(columnKey: string, rowData: any): any {
+    if (columnKey === 'printStatus') {
+      const statusColor = this.statusColorService.getStatusColor(rowData.printStatus);
+      return {
+        'background-color': statusColor,
+        'color': '#ffffffff'
+      };
+    }
+    return {};
   }
 
   getColumnStyle(columnKey: string, rowData: any): any {

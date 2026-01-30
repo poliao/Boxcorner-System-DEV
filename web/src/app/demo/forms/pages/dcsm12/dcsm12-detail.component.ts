@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Dcsm12Service } from './dcsm12.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +10,7 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dcsm12-detail.component',
-  imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, MatIconModule,],
   templateUrl: './dcsm12-detail.component.html',
   styleUrl: './dcsm12-detail.component.scss'
 })
@@ -24,6 +24,9 @@ export class Dcsm12DetailComponent implements OnInit {
   showNotDeliverModal = false;
   notDeliverTime = new FormControl('');
   notDeliverDate = new FormControl('');
+
+  showCancelModal: boolean = false;
+  cancelReason: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -65,6 +68,7 @@ export class Dcsm12DetailComponent implements OnInit {
       note: [''],
       noteEdit: [''],
       customerName: [''],
+      cancelRemarks: [''],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -93,27 +97,44 @@ export class Dcsm12DetailComponent implements OnInit {
     }
   }
 
-  updateCancel() {
-      Swal.fire({
-        title: 'ยกเลิกงาน',
-        text: "ยื่นยันยกเลิกงานตัวอย่าง ใช่หรือไม่?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#1e1b4b',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'ยืนยัน',
-        cancelButtonText: 'ยกเลิก'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.loadingService.show();
-          this.dcsm12Service.updateStatusCancel(this.mainForm.getRawValue().id).subscribe((response) => {
-            this.patchFormData(response);
-            this.loadingService.hide();
-            this.checkBtn();
-            this.sweetAlert.success('Success', 'ยกเลิกงาน เสร็จสิ้น!');
-            this.router.navigate(['/Dcsm12']);
-          })
-        }
-      });
+  confirmCancel() {
+    if (!this.cancelReason?.trim()) {
+      this.sweetAlert.warning('กรุณาระบุเหตุผลในการยกเลิก');
+      return;
     }
+    Swal.fire({
+      title: 'ยกเลิกงาน',
+      text: "ยื่นยันยกเลิกงานตัวอย่าง ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')?.setValue('ยกเลิก');
+        this.mainForm.get('cancelRemarks')?.setValue(this.cancelReason);
+        this.dcsm12Service.save(this.mainForm.getRawValue()).subscribe((response) => {
+          this.patchFormData(response);
+          this.loadingService.hide();
+          this.checkBtn();
+          this.sweetAlert.success('Success', 'ยกเลิกงาน เสร็จสิ้น!');
+          this.router.navigate(['/Dcsm12']);
+        })
+      }
+    });
+  }
+
+  openCancelModal() {
+    this.cancelReason = '';
+    this.showCancelModal = true;
+  }
+
+  // ฟังก์ชันปิด modal ยกเลิกงาน
+  closeCancelModal() {
+    this.showCancelModal = false;
+    this.cancelReason = '';
+  }
 }

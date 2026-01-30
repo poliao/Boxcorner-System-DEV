@@ -39,6 +39,7 @@ public class SampleOrderService {
                     existingOrder.setNote(order.getNote());
                     existingOrder.setUpdateDateDelivery(order.getUpdateDateDelivery());
                     existingOrder.setUpdateTimeDelivery(order.getUpdateTimeDelivery());
+                    existingOrder.setCancelRemarks(order.getCancelRemarks());
                     
                     return sampleOrderRepository.save(existingOrder);
                 })

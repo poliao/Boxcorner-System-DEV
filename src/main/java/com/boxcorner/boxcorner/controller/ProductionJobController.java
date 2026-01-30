@@ -64,4 +64,36 @@ public class ProductionJobController {
                 id, jobId, customerName, printStatus, startDate, endDate, page, size);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/searchPrint")
+    public ResponseEntity<Page<ProductionJob>> searchPrint(
+            @RequestParam(required = false, name = "id") Long id,
+            @RequestParam(required = false, name = "jobId") String jobId,
+            @RequestParam(required = false, name = "customerName") String customerName,
+            @RequestParam(required = false, name = "printStatus") String printStatus,
+            @RequestParam(required = false, name = "startDate") LocalDate startDate,
+            @RequestParam(required = false, name = "endDate") LocalDate endDate,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size) {
+
+        Page<ProductionJob> result = productionJobService.findByFiltersPrint(
+                id, jobId, customerName, printStatus, startDate, endDate, page, size);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/searchCoating")
+    public ResponseEntity<Page<ProductionJob>> findByFiltersCoating(
+            @RequestParam(required = false, name = "id") Long id,
+            @RequestParam(required = false, name = "jobId") String jobId,
+            @RequestParam(required = false, name = "customerName") String customerName,
+            @RequestParam(required = false, name = "printStatus") String printStatus,
+            @RequestParam(required = false, name = "startDate") LocalDate startDate,
+            @RequestParam(required = false, name = "endDate") LocalDate endDate,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size) {
+
+        Page<ProductionJob> result = productionJobService.findByFiltersPrintingOS(
+                id, jobId, customerName, printStatus, startDate, endDate, page, size);
+        return ResponseEntity.ok(result);
+    }
 }

@@ -33,7 +33,8 @@ export class Dcsm09Service {
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
       endDate: apiFilters.endDate,
-      inspector: apiFilters.inspector
+      inspector: apiFilters.inspector,
+      dalivery: apiFilters.dalivery
     };
 
     Object.keys(params).forEach(key => {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
-import { n } from '@angular/cdk/overlay-module.d-C2CxnwqT';
+
 @Component({
   selector: 'app-dcsm07-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule, FormsModule],
@@ -23,11 +23,16 @@ export class Dcsm07DetailComponent implements OnInit {
   isSampleOrderId = true;
   isCancel = true;
   isBtnSave = false;
-  
+  isCancelRemarks = false;
+
   // ตัวแปรสำหรับ modal เปลี่ยนวันที่และเวลา
   showDeadlineModal: boolean = false;
   tempDeadlineDate: string = '';
   tempDeadlineTime: string = '';
+
+  // ตัวแปรสำหรับ modal ยกเลิกงาน
+  showCancelModal: boolean = false;
+  cancelReason: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -55,6 +60,9 @@ export class Dcsm07DetailComponent implements OnInit {
       if (this.mainForm.getRawValue().sampleOrderId == '' || this.mainForm.getRawValue().sampleOrderId == null) {
         this.isSampleOrderId = false
       }
+      if (this.mainForm.getRawValue().cancelRemarks) {
+        this.isCancelRemarks = true
+      }
     }
   }
 
@@ -80,6 +88,8 @@ export class Dcsm07DetailComponent implements OnInit {
       updatedAt: [''],
       sampleOrderId: [''],
       customerName: [''],
+      cancelRemarks: [''],
+      dataDalivery: [false]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -99,6 +109,7 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('remarks')?.disable({ emitEvent: false });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('customerName')?.disable();
+    this.mainForm.get('cancelRemarks')?.disable();
   }
 
   patchFormData(data: any): void {
@@ -110,7 +121,7 @@ export class Dcsm07DetailComponent implements OnInit {
     if (this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().jobStatus == 'รอดำเนินการ') {
       this.isCancel = false;
     }
-    if(this.mainForm.getRawValue().processStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().processStatus == 'รอดำเนินการ') {
+    if (this.mainForm.getRawValue().processStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().processStatus == 'รอดำเนินการ') {
       this.isBtnSave = true;
     }
   }
@@ -257,6 +268,42 @@ export class Dcsm07DetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  // ฟังก์ชันเปิด modal ยกเลิกงาน
+  openCancelModal() {
+    this.cancelReason = '';
+    this.showCancelModal = true;
+  }
+
+  // ฟังก์ชันปิด modal ยกเลิกงาน
+  closeCancelModal() {
+    this.showCancelModal = false;
+    this.cancelReason = '';
+  }
+
+  // ฟังก์ชันยืนยันการยกเลิก
+  confirmCancel() {
+    if (!this.cancelReason?.trim()) {
+      this.sweetAlert.warning('กรุณาระบุเหตุผลในการยกเลิก');
+      return;
+    }
+    this.loadingService.show();
+    const formData = { ...this.mainForm.getRawValue() };
+    formData.cancelRemarks = this.cancelReason;
+    formData.jobStatus = 'ยกเลิก';
+    formData.processStatus = 'ยกเลิก';
+    formData.moldStatus = 'ยกเลิก';
+
+    this.dcsm07Service.save(formData).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        this.patchFormData(response);
+        this.checkBtn();
+        this.sweetAlert.success('ยกเลิกข้อมูลสำเร็จ', 'เรียบร้อย')
+        this.router.navigate(['/Dcsm07']);
+      }
+    })
   }
 
 }

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { end } from '@popperjs/core';
 @Component({
   selector: 'app-dcsm21-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -74,18 +75,22 @@ export class Dcsm21DetailComponent implements OnInit {
 
   initForm(): void {
     this.designForm = this.fb.group({
-      id: [''],
+      id: [null],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
-      folderName: ['', Validators.required],
-      jobDetails: ['', Validators.required],
-      remarks: [''],
-      jobOwner: ['', Validators.required],
-      deadlineDate: ['', Validators.required],
-      deadlineTime: ['', Validators.required],
-      assignee: [''],
+      folderName: [null, Validators.required],
+      jobDetails: [null, Validators.required],
+      remarks: [null],
+      jobOwner: [null, Validators.required],
+      deadlineDate: [null, Validators.required],
+      deadlineTime: [null, Validators.required],
+      assignee: [null],
       processStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
       confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
-      fileName: [''],
+      fileName: [null],
+      startDate: [null],
+      startTime: [null],
+      endDate: [null],
+      endTime: [null]
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -94,6 +99,10 @@ export class Dcsm21DetailComponent implements OnInit {
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['fileName'].disable({ emitEvent: false });
+    this.designForm.controls['startDate'].disable({ emitEvent: false });
+    this.designForm.controls['startTime'].disable({ emitEvent: false });
+    this.designForm.controls['endDate'].disable({ emitEvent: false });
+    this.designForm.controls['endTime'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -141,6 +150,28 @@ export class Dcsm21DetailComponent implements OnInit {
     }
   }
 
+  calculateWorkingTime(): string {
+    const startDate = this.designForm.get('startDate')?.value;
+    const startTime = this.designForm.get('startTime')?.value;
+    const endDate = this.designForm.get('endDate')?.value;
+    const endTime = this.designForm.get('endTime')?.value;
+
+    if (!startDate || !startTime || !endDate || !endTime) {
+      return '';
+    }
+
+    const start = new Date(`${startDate}T${startTime}`);
+    const end = new Date(`${endDate}T${endTime}`);
+    const diffMs = end.getTime() - start.getTime();
+
+    if (diffMs <= 0) return '';
+
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${hours} ชั่วโมง ${minutes} นาที`;
+  }
+
   updateStatusApprove() {
     Swal.fire({
       title: 'ยืนยันการอนุมัติงาน',
@@ -154,7 +185,14 @@ export class Dcsm21DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm21Service.updateStatusApprove(this.designForm.getRawValue().id).subscribe((response) => {
+        
+        // บันทึกเวลาเริ่มงาน
+        const now = new Date();
+        const data = this.designForm.getRawValue();
+        data.startDate = now.toISOString().substring(0, 10);
+        data.startTime = now.toTimeString().substring(0, 5);
+        
+        this.dcsm21Service.updateStatusApprove(data.id).subscribe((response) => {
           this.designForm.patchValue(response);
           this.loadingService.hide();
           this.checkBtn();
@@ -215,7 +253,14 @@ export class Dcsm21DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm21Service.updateStatusApprove(this.designForm.getRawValue().id).subscribe((responses) => {
+        
+        // บันทึกเวลาจบงาน
+        const now = new Date();
+        const data = this.designForm.getRawValue();
+        data.endDate = now.toISOString().substring(0, 10);
+        data.endTime = now.toTimeString().substring(0, 5);
+        
+        this.dcsm21Service.updateStatusApprove(data.id).subscribe((responses) => {
           this.designForm.patchValue(responses);
           this.checkBtn();
           this.loadingService.hide();

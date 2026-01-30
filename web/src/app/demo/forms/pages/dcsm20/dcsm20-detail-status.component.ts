@@ -176,6 +176,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       deliveryStatus: [''],
       imageUrl: [null],
       dataDalivery: [false],
+      machineSetupCount: [''],
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -368,15 +369,16 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       this.productionForm.get('printQuantity')?.setValue(response.header.print_sheets);
       this.productionForm.get('productionQuantity')?.setValue(response.header.quantity);
       this.productionForm.get('printingDate')?.setValue(response.form_data.d_print === '-' ? null : this.convertDateFormat(response.form_data.d_print));
-      this.productionForm.get('printingResponsible')?.setValue(response.form_data.printer === '-' ? null : response.form_data.printer);
+      this.productionForm.get('printingResponsible')?.setValue(response.form_data.printer === '-' ? null : (response.form_data.printer === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.printer));
       this.productionForm.get('coatingDate')?.setValue(response.form_data.d_coat === '-' ? null : this.convertDateFormat(response.form_data.d_coat));
-      this.productionForm.get('coatingResponsible')?.setValue(response.form_data.l_coat === '-' ? null : response.form_data.l_coat);
+      this.productionForm.get('coatingResponsible')?.setValue(response.form_data.l_coat === '-' ? null : (response.form_data.l_coat === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.l_coat));
       this.productionForm.get('stampingDate')?.setValue(response.form_data.d_daicut === '-' ? null : this.convertDateFormat(response.form_data.d_daicut));
-      this.productionForm.get('stampingResponsible')?.setValue(response.form_data.l_pcut === '-' ? null : response.form_data.l_pcut);
+      this.productionForm.get('stampingResponsible')?.setValue(response.form_data.l_pcut === '-' ? null : (response.form_data.l_pcut === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.l_pcut));
       this.productionForm.get('gluingDate')?.setValue(response.form_data.d_pa === '-' ? null : this.convertDateFormat(response.form_data.d_pa));
-      this.productionForm.get('gluingResponsible')?.setValue(response.form_data.l_pa === '-' ? null : response.form_data.l_pa);
+      this.productionForm.get('gluingResponsible')?.setValue(response.form_data.l_pa === '-' ? null : (response.form_data.l_pa === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.l_pa));
       this.productionForm.get('qcDate')?.setValue(response.form_data.d_qc === '-' ? null : this.convertDateFormat(response.form_data.d_qc));
       this.productionForm.get('imageUrl')?.setValue(response.header.image_url === '-' ? null : response.header.image_url);
+      this.productionForm.get('machineSetupCount')?.setValue(response.header.machine_setup_count === '-' ? null : response.header.machine_setup_count);
       this.jobImageUrl = response.header.image_url || '';
       this.loadingService.hide();
     })

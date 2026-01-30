@@ -98,6 +98,9 @@ public class ProductionJob {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "machine_setup_count")
+    private String machineSetupCount;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

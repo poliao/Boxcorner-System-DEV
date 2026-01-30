@@ -90,45 +90,27 @@ public class ApiService {
         Map<String, Object> result = new LinkedHashMap<>();
         Map<String, String> header = extractHeader(doc);
         
-        // เพิ่มจำนวนใบพิมพ์จากส่วน cutting - หาจากคอลัมน์จำนวนใบพิมพ์
+        // เพิ่มจำนวนใบพิมพ์และจำนวนตั้งเครื่องจากส่วน cutting
         Element cuttingSection = section(doc, "แผนกงานตัด");
         if (cuttingSection != null) {
             String printSheets = "";
+            String machineSetupCount = "";
             
-            // ลองหาจากคอลัมน์ "จำนวนใบพิมพ์" ก่อน
-            Element printColumn = cuttingSection.selectFirst("div:contains(จำนวนใบพิมพ์)");
-            if (printColumn != null) {
-                Element parentRow = printColumn.parent();
-                while (parentRow != null && !parentRow.tagName().equals("tr")) {
-                    parentRow = parentRow.parent();
-                }
-                if (parentRow != null) {
-                    Element nextRow = parentRow.nextElementSibling();
-                    if (nextRow != null) {
-                        var blueElements = nextRow.select("div.f-blue");
-                        if (blueElements.size() >= 4) {
-                            printSheets = blueElements.get(3).text().trim();
-                        }
-                    }
-                }
-            }
-            // ถ้าไม่เจอ ใช้วิธีเดิม
-            if (printSheets.isEmpty()) {
-                int maxNumber = 0;
-                var allBlueTexts = cuttingSection.select("div.f-blue");
-                for (Element el : allBlueTexts) {
-                    String txt = el.text().trim();
-                    if (txt.matches("\\d+")) {
-                        int num = Integer.parseInt(txt);
-                        if (num > maxNumber) {
-                            maxNumber = num;
-                            printSheets = txt;
-                        }
-                    }
+            // หาแถวข้อมูลที่มี f-blue elements
+            var dataRows = cuttingSection.select("th:has(div.f-blue)");
+            for (Element row : dataRows) {
+                var blueElements = row.select("div.f-blue");
+                if (blueElements.size() >= 5) {
+                    // ตำแหน่งที่ 4 = จำนวนใบพิมพ์ (index 3)
+                    // ตำแหน่งที่ 5 = จำนวนตั้งเครื่อง (index 4)
+                    printSheets = blueElements.get(3).text().trim();
+                    machineSetupCount = blueElements.get(4).text().trim();
+                    break;
                 }
             }
             
             header.put("print_sheets", printSheets);
+            header.put("machine_setup_count", machineSetupCount);
         }
         
         result.put("header", header);
@@ -291,6 +273,8 @@ public class ApiService {
 
         Element img = doc.selectFirst("img[src*='/image/job/']");
         m.put("image_url", img != null ? img.absUrl("src") : "");
+        
+
 
         return m;
     }

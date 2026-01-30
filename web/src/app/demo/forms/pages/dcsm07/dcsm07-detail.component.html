@@ -8,7 +8,7 @@
             บันทึกข้อมูล
           </button>
           <button *ngIf="isCancel == true" type="button" class="btn text-white px-5 shadow-sm"
-            (click)="updateCancelStatus()" style="background-color: #ff0000;">
+            (click)="openCancelModal()" style="background-color: #ff0000;">
             ยกเลิกงานรอผลิต
           </button>
           <button type="button" class="btn text-white px-5 shadow-sm" 
@@ -96,13 +96,17 @@
             <option value="Supplier">Supplier</option>
           </select>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
           <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
         </div>
-        <div class="col-md-9">
+        <div class="col-md-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="remarks" class="form-control">
+        </div>
+        <div class="col-md-12">
+          <label class="form-label font-weight-bold">หมายเหตุที่ยกเลิกงาน</label>
+          <input type="text" formControlName="cancelRemarks" class="form-control">
         </div>
 
       </form>
@@ -140,6 +144,31 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeDeadlineModal()">ยกเลิก</button>
         <button type="button" class="btn btn-primary" (click)="updateDeadline()">บันทึกการเปลี่ยนแปลง</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal สำหรับยกเลิกงาน -->
+<div class="modal" [class.show]="showCancelModal" [style.display]="showCancelModal ? 'block' : 'none'"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ยกเลิกงานรอผลิต</h5>
+        <button type="button" class="btn-close" (click)="closeCancelModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">เหตุผลในการยกเลิก <span style="color: red;">*</span></label>
+          <textarea class="form-control" rows="4" [(ngModel)]="cancelReason" 
+            [ngModelOptions]="{standalone: true}" 
+            placeholder="กรุณาระบุเหตุผลในการยกเลิกงาน"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCancelModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-danger" (click)="confirmCancel()" [disabled]="!cancelReason?.trim()">ยืนยันการยกเลิก</button>
       </div>
     </div>
   </div>

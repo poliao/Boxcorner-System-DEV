@@ -39,7 +39,6 @@ export class Dcsm20DetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dcsm20Service: Dcsm20Service,
-    private dcsm09Service: Dcsm09Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService
   ) { }
@@ -170,6 +169,7 @@ export class Dcsm20DetailComponent implements OnInit {
       shippingAddress: [''],
       remark: [''],
       deliveryStatus: [''],
+      machineSetupCount: [''],
       imageUrl: [null],
     });
     this.productionForm.get('printStatus')?.disable();
@@ -178,6 +178,7 @@ export class Dcsm20DetailComponent implements OnInit {
     this.productionForm.get('coatingResponsible')?.disable();
     this.productionForm.get('stampingResponsible')?.disable();
     this.productionForm.get('gluingResponsible')?.disable();
+    this.productionForm.get('machineSetupCount')?.disable();
 
     // เพิ่ม listener สำหรับ printingDate
     this.productionForm.get('printingDate')?.valueChanges.subscribe(value => {
@@ -233,17 +234,30 @@ export class Dcsm20DetailComponent implements OnInit {
       this.productionForm.get('customerJobName')?.disable();
       this.productionForm.get('printQuantity')?.disable();
       this.productionForm.get('productionQuantity')?.disable();
-      this.productionForm.get('printingDate')?.disable();
       this.productionForm.get('printingResponsible')?.disable();
-      this.productionForm.get('coatingDate')?.disable();
       this.productionForm.get('coatingResponsible')?.disable();
-      this.productionForm.get('stampingDate')?.disable();
       this.productionForm.get('stampingResponsible')?.disable();
-      this.productionForm.get('gluingDate')?.disable();
       this.productionForm.get('gluingResponsible')?.disable();
-      this.productionForm.get('qcDate')?.disable();
-      this.productionForm.get('dueDate')?.disable();
       this.productionForm.get('printStatus')?.disable();
+      if (this.productionForm.getRawValue().qcDate == null) {
+        this.productionForm.get('qcDate')?.disable();
+      }
+      if (this.productionForm.getRawValue().printingDate == null) {
+        this.productionForm.get('printingDate')?.disable();
+        this.productionForm.get('printingResponsible')?.disable();
+      }
+      if (this.productionForm.getRawValue().coatingDate == null) {
+        this.productionForm.get('coatingDate')?.disable();
+        this.productionForm.get('coatingResponsible')?.disable();
+      }
+      if (this.productionForm.getRawValue().stampingDate == null) {
+        this.productionForm.get('stampingDate')?.disable();
+        this.productionForm.get('stampingResponsible')?.disable();
+      }
+      if (this.productionForm.getRawValue().gluingDate == null) {
+        this.productionForm.get('gluingDate')?.disable();
+        this.productionForm.get('gluingResponsible')?.disable();        
+      }
     } else {
       this.isCreate = true
     }
@@ -370,6 +384,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.productionForm.get('gluingResponsible')?.setValue(response.form_data.l_pa === '-' ? null : response.form_data.l_pa);
       this.productionForm.get('qcDate')?.setValue(response.form_data.d_qc === '-' ? null : this.convertDateFormat(response.form_data.d_qc));
       this.productionForm.get('imageUrl')?.setValue(response.form_data.image_url === '-' ? null : response.form_data.image_url);
+      
       this.jobImageUrl = response.header.image_url || '';
       this.loadingService.hide();
     })

@@ -15,7 +15,7 @@ export class DataTableComponent implements AfterViewInit {
   @Input() totalElements = 0;
   @Input() pageSize = 10;
   @Input() pageIndex = 0;
-  @Input() pageSizeOptions = [5, 10, 20, 50];
+  @Input() pageSizeOptions = [5, 10, 20, 50, 100, 200, 500];
   @Input() clickableColumn = '';
   @Input() headerStyle = 'background: #171851; color: white;';
   

@@ -22,6 +22,7 @@ export class Dcsm06DetailComponent implements OnInit {
   isSampleOrderId = false
   isSave = false
   isPostPone = false
+  isCancelRemarks = false
 
   constructor(
     private fb: FormBuilder,
@@ -50,6 +51,10 @@ export class Dcsm06DetailComponent implements OnInit {
       this.isSampleOrderId = true
     } else {
       this.isSampleOrderId = false
+    }
+
+    if (this.mainForm.getRawValue().cancelRemarks != null && this.mainForm.getRawValue().cancelRemarks != '') {
+      this.isCancelRemarks = true
     }
 
     if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || (this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().jobOwner)) {
@@ -90,6 +95,8 @@ export class Dcsm06DetailComponent implements OnInit {
       printingMachine: [''],
       inspector: [''],
       customerName: [''],
+      cancelRemarks: [''],
+      dataDalivery: [false]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -112,6 +119,7 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('printingMachine')?.disable({ emitEvent: false });
     this.mainForm.get('inspector')?.disable({ emitEvent: false });
     this.mainForm.get('customerName')?.disable({ emitEvent: false });
+    this.mainForm.get('cancelRemarks')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

@@ -76,4 +76,7 @@ public class SampleOrder {
 
     @Column(name = "file_name")
     private String fileName;
+
+    @Column(name = "cancel_remarks")
+    private String cancelRemarks;
 }

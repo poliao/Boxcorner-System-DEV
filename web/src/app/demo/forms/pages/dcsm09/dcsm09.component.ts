@@ -279,7 +279,7 @@ export class Dcsm09Component implements OnInit {
   onFilterProcessStatusDelivery() {
     this.searchForm.patchValue({
       processStatus: 'ส่งไฟล์แล้ว',
-      dalivery: true,
+      dalivery: false,
     });
     this.onSearch();
   }

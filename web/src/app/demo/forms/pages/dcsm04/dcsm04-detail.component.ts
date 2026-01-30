@@ -363,11 +363,12 @@ export class Dcsm04DetailComponent implements OnInit {
       responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
       status: 'รอผู้รับผิดชอบอนุมัติ',
       sampleOrderId: this.mainForm.getRawValue().id,
-      customerName: this.mainForm.getRawValue().customerName
+      customerName: this.mainForm.getRawValue().customerName,
+      dataDalivery: false
     };
     Swal.fire({
-      title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
-      text: "คุณต้องอนุมัติส่งไปตารางขึ้นตัวอย่าง ใช่หรือไม่?",
+      title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',
+      text: "อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต ใช่หรือไม่?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',

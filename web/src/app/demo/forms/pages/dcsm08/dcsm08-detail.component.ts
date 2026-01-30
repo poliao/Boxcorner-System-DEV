@@ -65,6 +65,7 @@ export class Dcsm08DetailComponent implements OnInit {
       createdAt: [''],
       updatedAt: [''],
       customerName: [''],
+      dataDalivery: [false]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

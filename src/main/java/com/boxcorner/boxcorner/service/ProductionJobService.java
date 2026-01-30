@@ -42,4 +42,20 @@ public class ProductionJobService {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return productionJobRepository.findUndeliveredJobsThisMonth(paging);
     }
+
+    public Page<ProductionJob> findByFiltersPrint(Long id, String jobId, String customerJobName,
+            String printStatus, LocalDate startDate, LocalDate endDate,
+            int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return productionJobRepository.findByFiltersPrinting(id, jobId, customerJobName, printStatus,
+                startDate, endDate, paging);
+    }
+
+    public Page<ProductionJob> findByFiltersPrintingOS(Long id, String jobId, String customerJobName,
+            String printStatus, LocalDate startDate, LocalDate endDate,
+            int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return productionJobRepository.findByFiltersPrintingOS(id, jobId, customerJobName, printStatus,
+                startDate, endDate, paging);
+    }
 }

@@ -68,6 +68,7 @@ export class Dcsm10DetailComponent implements OnInit {
       moldMakerName: [''],
       printingMachine: ['', Validators.required],
       customerName: [''],
+      dataDalivery: [false]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

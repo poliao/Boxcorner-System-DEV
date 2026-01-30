@@ -99,6 +99,10 @@
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="remarks" class="form-control" >
         </div>
+        <div *ngIf="isCancelRemarks" class="col-md-12">
+          <label class="form-label font-weight-bold">หมายเหตุที่ยกเลิกงาน</label>
+          <input type="text" formControlName="cancelRemarks" class="form-control">
+        </div>
         
         <!-- <div class="col-md-3">
           <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>

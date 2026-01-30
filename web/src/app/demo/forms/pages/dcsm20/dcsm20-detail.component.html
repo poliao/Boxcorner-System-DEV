@@ -90,6 +90,13 @@
                     class="form-control form-control-sm border-0 bg-light" placeholder="0">
                 </div>
               </div>
+              <div class="col-md-6 mt-3">
+                <div class="p-2 bg-white border rounded">
+                  <label class="form-label fw-bold small mb-1">จำนวนตั้งเครื่อง</label>
+                  <input type="number" formControlName="machineSetupCount"
+                    class="form-control form-control-sm border-0 bg-light" placeholder="0">
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -118,7 +125,7 @@
             <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-3">
 
               <div class="col">
-                <div class="p-2 border-start border-4 border-danger bg-white shadow-sm rounded">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #dc3545 !important;">
                   <label class="d-block fw-bold small text-danger">งานพิมพ์</label>
                   <input type="date" formControlName="printingDate" class="form-control form-control-sm mb-1 border-0">
                   <input type="text" formControlName="printingResponsible" class="form-control form-control-sm">
@@ -126,15 +133,15 @@
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 border-warning bg-white shadow-sm rounded">
-                  <label class="d-block fw-bold small text-warning">งานเคลือบ</label>
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #ffc107 !important;">
+                  <label class="d-block fw-bold small text-primary">งานเคลือบ</label>
                   <input type="date" formControlName="coatingDate" class="form-control form-control-sm mb-1 border-0">
                   <input type="text" formControlName="coatingResponsible" class="form-control form-control-sm">
                 </div>
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 border-primary bg-white shadow-sm rounded">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #007bff !important;">
                   <label class="d-block fw-bold small text-primary">งานปั๊ม</label>
                   <input type="date" formControlName="stampingDate" class="form-control form-control-sm mb-1 border-0">
                   <input type="text" formControlName="stampingResponsible" class="form-control form-control-sm">
@@ -142,7 +149,7 @@
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 border-info bg-white shadow-sm rounded">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #17a2b8 !important;">
                   <label class="d-block fw-bold small text-info">งานปะ</label>
                   <input type="date" formControlName="gluingDate" class="form-control form-control-sm mb-1 border-0">
                   <input type="text" formControlName="gluingResponsible" class="form-control form-control-sm">
@@ -150,16 +157,14 @@
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 border-success bg-white shadow-sm rounded">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #670097ff !important;">
                   <label class="d-block fw-bold small text-success">QC/QA</label>
                   <input type="date" formControlName="qcDate" class="form-control form-control-sm mb-1 border-0">
                 </div>
               </div>
             </div>
-           
           </div>
         </div>
-
       </form>
     </div>
   </div>

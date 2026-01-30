@@ -16,10 +16,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     @Query(value = """
             SELECT * FROM production_orders p
             WHERE
-                (p.job_status != 'ยกเลิก')
-                AND (p.process_status != 'ยกเลิก')
-                AND (p.operator_name != 'ยกเลิก')
-                AND (:id IS NULL OR p.id = :id)
+                (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
@@ -35,10 +32,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             """, countQuery = """
             SELECT count(*) FROM production_orders p
             WHERE
-                (p.job_status != 'ยกเลิก')
-                AND (p.process_status != 'ยกเลิก')
-                AND (p.operator_name != 'ยกเลิก')
-                AND (:id IS NULL OR p.id = :id)
+                (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
@@ -69,10 +63,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     @Query(value = """
             SELECT * FROM production_orders p
             WHERE
-                (p.job_status != 'ยกเลิก')
-                AND (p.process_status != 'ยกเลิก')
-                AND (p.operator_name != 'ยกเลิก')
-                AND (:id IS NULL OR p.id = :id)
+                (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
@@ -88,10 +79,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             """, countQuery = """
             SELECT count(*) FROM production_orders p
             WHERE
-                (p.job_status != 'ยกเลิก')
-                AND (p.process_status != 'ยกเลิก')
-                AND (p.operator_name != 'ยกเลิก')
-                AND (:id IS NULL OR p.id = :id)
+                (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)

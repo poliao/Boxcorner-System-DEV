@@ -90,4 +90,7 @@ public class ProductionOrder {
     @Column(name = "data_dalivery")
     private Boolean dataDalivery;
 
+    @Column(name = "cancel_remarks")
+    private String cancelRemarks;
+
 }
