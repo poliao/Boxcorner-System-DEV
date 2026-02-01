@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "colors")
-public class Colors {
+public class Colors extends BaseEntity {
     @Id
     private String colorid;
     private String recipeid;

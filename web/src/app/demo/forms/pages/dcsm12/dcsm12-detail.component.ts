@@ -69,6 +69,7 @@ export class Dcsm12DetailComponent implements OnInit {
       noteEdit: [''],
       customerName: [''],
       cancelRemarks: [''],
+      rowVersion: [null]
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -116,12 +117,18 @@ export class Dcsm12DetailComponent implements OnInit {
         this.loadingService.show();
         this.mainForm.get('status')?.setValue('ยกเลิก');
         this.mainForm.get('cancelRemarks')?.setValue(this.cancelReason);
-        this.dcsm12Service.save(this.mainForm.getRawValue()).subscribe((response) => {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'ยกเลิกงาน เสร็จสิ้น!');
-          this.router.navigate(['/Dcsm12']);
+        this.dcsm12Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.loadingService.hide();
+            this.checkBtn();
+            this.sweetAlert.success('Success', 'ยกเลิกงาน เสร็จสิ้น!');
+            this.router.navigate(['/Dcsm12']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
         })
       }
     });

@@ -31,10 +31,12 @@
             </select>
           </div>
           <div class="col-md-3">
+            <label for="text">วันที่ส่งจาก</label>
             <input type="date" class="form-control" [(ngModel)]="filterStartDate" name="filterStartDate"
               placeholder="วันที่เริ่ม" (change)="onSearchChange()">
           </div>
           <div class="col-md-3">
+            <label for="text">ถึงวันที่</label>
             <input type="date" class="form-control" [(ngModel)]="filterEndDate" name="filterEndDate"
               placeholder="วันที่สิ้นสุด" (change)="onSearchChange()">
           </div>

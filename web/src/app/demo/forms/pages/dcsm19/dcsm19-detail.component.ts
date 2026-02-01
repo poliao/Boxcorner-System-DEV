@@ -72,6 +72,7 @@ export class Dcsm19DetailComponent implements OnInit {
       note: [''],
       noteEdit: [''],
       customerName: [''],
+      rowVersion: [null]
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -125,195 +126,34 @@ export class Dcsm19DetailComponent implements OnInit {
     }
   }
 
-  updateStatusComplete() {
-    Swal.fire({
-      title: 'ยืนยันรับงาน',
-      text: "ยืนยันรับงาน ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm19Service.updateStatusConfirm(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.checkBtn();
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'รับงานสำเร็จ!');
-          this.router.navigate(['/Dcsm19']);
-        })
-      }
-    });
-  }
-
-  updateStatusDeliver() {
-    Swal.fire({
-      title: 'ยืนยันจัดส่งได้',
-      text: "ยืนยันจัดส่งได้ ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.loadingService.show();
-        this.dcsm19Service.updateStatusDeliver(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.checkBtn();
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'ยืนยันจัดส่งได้!');
-          this.router.navigate(['/Dcsm19']);
-        })
-      }
-    });
-  }
-
-  updateStatusClearFile() {
-    Swal.fire({
-      title: 'ยืนยันเคลียร์ไฟล์แล้ว',
-      text: "ยืนยันเคลียร์ไฟล์แล้ว ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm19Service.updateStatusClearFile(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.checkBtn();
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'เคลียร์ไฟล์แล้ว!');
-          this.router.navigate(['/Dcsm19']);
-        })
-      }
-    });
-  }
-
-  updateStatusInspection() {
-    Swal.fire({
-      title: 'ยืนยันเคลียร์ไฟล์แล้ว',
-      text: "ยืนยันเคลียร์ไฟล์แล้ว ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm19Service.updateStatusInspection(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.checkBtn();
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'ส่งตรวจสอบไฟล์!');
-          this.router.navigate(['/Dcsm19']);
-        })
-      }
-    });
-  }
-
-  updateStatusSamples() {
-    Swal.fire({
-      title: 'ยืนยันขึ้นตัวอย่างแล้ว',
-      text: "ยืนยันขึ้นตัวอย่างแล้ว ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm19Service.updateStatusSamples(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.checkBtn();
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'ขึ้นตัวอย่างแล้ว!');
-          this.router.navigate(['/Dcsm19']);
-        })
-      }
-    });
-  }
-
   updateStatusSucsess() {
-    Swal.fire({
-      title: 'ยืนยันเสร็จสิ้น รอตรวจสอบ',
-      text: "ยืนยันเสร็จสิ้น ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm19Service.updateStatusSucsess(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.checkBtn();
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'เสร็จสิ้น รอตรวจสอบ!');
-          this.router.navigate(['/Dcsm19']);
-        })
-      }
-    });
-  }
-
-  openNotDeliverModal() {
-    this.notDeliverTime.setValue('');
-    this.notDeliverDate.setValue(new Date().toISOString().substring(0, 10));
-    this.showNotDeliverModal = true;
-  }
-
-  closeNotDeliverModal() {
-    this.showNotDeliverModal = false;
-  }
-
-  confirmNotDeliver() {
-    const dateValue = this.notDeliverDate.value;
-    const timeValue = this.notDeliverTime.value;
-
-    Swal.fire({
-      title: 'ขอเลื่อนวันส่ง',
-      text: "คุณต้องการขอเลื่อนวันส่ง ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#b61a1a',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const data = this.mainForm.getRawValue();
-        data.updateDateDelivery = dateValue;
-        data.updateTimeDelivery = timeValue
-        data.status = 'ขอเลื่อนวันส่ง';
-        this.loadingService.show();
-        this.dcsm19Service.save(data).subscribe((response) => {
-          try {
-            this.patchFormData(response);
-            this.loadingService.hide();
-            this.checkBtn();
-            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-            this.router.navigate(['/Dcsm19']);
-          } catch (error) {
-            this.loadingService.hide();
-            this.sweetAlert.error('Save', error);
-          }
-        });
-      }
-    });
-    this.closeNotDeliverModal();
-  }
+      Swal.fire({
+        title: 'ยืนยันเสร็จสิ้น รอตรวจสอบ',
+        text: "ยืนยันเสร็จสิ้น ใช่หรือไม่?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#1e1b4b',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.loadingService.show();
+          this.mainForm.get('status')!.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
+          this.dcsm19Service.save(this.mainForm.getRawValue()).subscribe({
+            next: (response) => {
+              this.patchFormData(response);
+              this.checkBtn();
+              this.loadingService.hide();
+              this.sweetAlert.success('Success', 'เสร็จสิ้น รอตรวจสอบ!');
+              this.router.navigate(['/Dcsm05']);
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+            }
+          })
+        }
+      });
+    }
 }

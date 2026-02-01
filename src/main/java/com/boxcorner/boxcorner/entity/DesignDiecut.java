@@ -15,7 +15,7 @@ import lombok.Data;
 @Entity
 @Table(name = "design_diecut")
 @Data
-public class DesignDiecut {
+public class DesignDiecut extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

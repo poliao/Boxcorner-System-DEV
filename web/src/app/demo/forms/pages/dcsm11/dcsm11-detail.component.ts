@@ -157,12 +157,23 @@ export class Dcsm11DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm11Service.updateFileChecked(this.mainForm.getRawValue().id).subscribe((response) => {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-          this.router.navigate(['/dcsm11']);
+        if (this.mainForm.getRawValue().isCreateSample == true) {
+          this.mainForm.get('status').setValue('ไฟล์ถูกต้อง รอขึ้นตัวอย่าง')
+        } else {
+          this.mainForm.get('status').setValue('ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง')
+        }
+        this.dcsm11Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.loadingService.hide();
+            this.checkBtn();
+            this.sweetAlert.success('Success', 'เสร็จสิ้น!');
+            this.router.navigate(['/Dcsm04']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
         })
       }
     });
@@ -190,141 +201,6 @@ export class Dcsm11DetailComponent implements OnInit {
     }
   }
 
-  updateDelivery() {
-    Swal.fire({
-      title: 'อนุมัติขอเลื่อนส่ง',
-      text: "ยื่นยันอนุมัติขอเลื่อนส่ง  ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const data = this.mainForm.getRawValue();
-        data.deliveryDate = this.mainForm.getRawValue().updateDateDelivery
-        data.deliveryTime = this.mainForm.getRawValue().updateTimeDelivery
-        data.status = 'อนุมัติขอเลื่อนส่ง';
-        this.loadingService.show();
-        this.dcsm11Service.save(data).subscribe((response) => {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง') {
-            this.isUpdateDelivery = true
-          } else {
-            this.isUpdateDelivery = false
-          }
-          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-        })
-      }
-    });
-  }
-
-  updateNotDelivery() {
-    Swal.fire({
-      title: 'ไม่อนุมัติขอเลื่อนส่ง',
-      text: "ยื่นยันไม่อนุมัติขอเลื่อนส่ง ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const data = this.mainForm.getRawValue();
-        data.status = 'ไม่อนุมัติเลื่อนส่ง';
-        this.loadingService.show();
-        this.dcsm11Service.save(data).subscribe((response) => {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง') {
-            this.isUpdateDelivery = true
-          } else {
-            this.isUpdateDelivery = false
-          }
-          this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-        })
-      }
-    });
-  }
-
-  openApproveModal() {
-    const now = new Date();
-    this.deadlineDate.setValue(now.toISOString().substring(0, 10));
-    this.deadlineTime.setValue(now.toTimeString().substring(0, 5));
-    this.usedFile.setValue('');
-    this.colorSample.setValue('');
-    this.remarks.setValue('');
-    this.showApproveModal = true;
-  }
-
-  closeApproveModal() {
-    this.showApproveModal = false;
-  }
-
-  confirmApprove() {
-    const data = {
-      orderDate: new Date().toISOString().substring(0, 10),
-      folderName: this.mainForm.getRawValue().folderName,
-      usedFile: this.usedFile.value,
-      colorSample: this.colorSample.value,
-      jobOwner: null,
-      deadlineDate: this.deadlineDate.value,
-      deadlineTime: this.deadlineTime.value,
-      deliveryDate: null,
-      jobStatus: null,
-      processStatus: null,
-      operatorName: null,
-      inspectionDate: null,
-      remarks: this.remarks.value,
-      moldStatus: null,
-      jobType: null,
-      createdAt: null,
-      updatedAt: null,
-      responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
-      status: 'รอผู้รับผิดชอบอนุมัติ',
-      sampleOrderId: this.mainForm.getRawValue().id,
-    };
-    Swal.fire({
-      title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
-      text: "คุณต้องอนุมัติส่งไปตารางขึ้นตัวอย่าง ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm11Service.saveProduction(data).subscribe((response) => {
-          if (response) {
-            this.dcsm11Service.updateConfirmSample(this.mainForm.getRawValue().id).subscribe((response) => {
-              this.patchFormData(response);
-              this.loadingService.hide();
-              this.checkBtn();
-              this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-              this.router.navigate(['/dcsm11']);
-            })
-          }
-        });
-      }
-    });
-  }
-
-  openEditFileModal() {
-    this.editFileNote.setValue('');
-    this.showEditFileModal = true;
-  }
-
-  closeEditFileModal() {
-    this.showEditFileModal = false;
-  }
-
   confirmEditFile() {
     Swal.fire({
       title: 'ส่งกลับไปยังเจ้าของงาน',
@@ -338,20 +214,17 @@ export class Dcsm11DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        const data ={
-          id: this.mainForm.getRawValue().id,
-        }
-        this.dcsm11Service.updateEditFile(data).subscribe({
+        this.mainForm.get('status').setValue('รอเจ้าของงานตรวจสอบ')
+        this.dcsm11Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
-            this.closeEditFileModal();
             this.loadingService.hide();
             this.sweetAlert.success('Success', 'บันทึกข้อมูลเรียบร้อย!');
           },
-          error: (err) => {
+          error: (error) => {
             this.loadingService.hide();
-            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาด');
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
           }
         });
       }

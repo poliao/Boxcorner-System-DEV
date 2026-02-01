@@ -37,12 +37,10 @@ public class ProductionOrderController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody ProductionOrder productionOrder, HttpServletRequest httpRequest) {
         try {
-            ProductionOrder savedData = productionOrderService.save(productionOrder,
-                    tokenService.getCurrentUser(httpRequest));
+            ProductionOrder savedData = productionOrderService.save(productionOrder,tokenService.getCurrentUser(httpRequest));
             return ResponseEntity.ok(savedData);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error saving data: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -156,49 +154,6 @@ public class ProductionOrderController {
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/updateProcessStatus")
-    public ResponseEntity<ProductionOrder> updateProcessStatus(@RequestParam("id") Integer id,
-            @RequestParam("processStatus") String processStatus) {
-        return ResponseEntity.ok(productionOrderService.updateProcessStatus(id, processStatus));
-    }
-
-    @PutMapping("/updateDataDalivery")
-    public ResponseEntity<ProductionOrder> updateDataDalivery(@RequestParam("id") Integer id,
-            @RequestParam("dataDalivery") Boolean dataDalivery) {
-        return ResponseEntity.ok(productionOrderService.updateDataDalivery(id, dataDalivery));
-    }
-
-    @PutMapping("/updateInspector")
-    public ResponseEntity<ProductionOrder> updateInspector(@RequestParam("id") Integer id,
-            @RequestParam("inspector") String inspector) {
-        return ResponseEntity.ok(productionOrderService.updateInspector(id, inspector));
-    }
-
-    @PutMapping("/updateJobStatus")
-    public ResponseEntity<ProductionOrder> updateJobStatus(@RequestParam("id") Integer id,
-            @RequestParam("jobStatus") String jobStatus) {
-        return ResponseEntity.ok(productionOrderService.updateJobStatus(id, jobStatus));
-    }
-
-    @PutMapping("/updateMoldStatus")
-    public ResponseEntity<ProductionOrder> updateMoldStatus(@RequestParam("id") Integer id,
-            @RequestParam("moldStatus") String moldStatus) {
-        return ResponseEntity.ok(productionOrderService.updateMoldStatus(id, moldStatus));
-    }
-
-    @PutMapping("/updatePrintingMachine")
-    public ResponseEntity<ProductionOrder> updatePrintingMachine(@RequestParam("id") Integer id,
-            @RequestParam("printingMachine") String printingMachine) {
-        return ResponseEntity.ok(productionOrderService.updatePrintingMachine(id, printingMachine));
-    }
-
-    @PutMapping("/updateMoldMakerName")
-    public ResponseEntity<ProductionOrder> updateMoldMakerName(@RequestParam("id") Integer id,
-            HttpServletRequest httpRequest) {
-        return ResponseEntity
-                .ok(productionOrderService.updateMoldMakerName(id, tokenService.getCurrentUser(httpRequest)));
-    }
-
     @GetMapping("/countBacklog")
     public ResponseEntity<Integer> getUniqueStatus(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(productionOrderService.countBacklog(tokenService.getCurrentUser(httpRequest)));
@@ -257,31 +212,9 @@ public class ProductionOrderController {
         return ResponseEntity.ok(productionOrderService.countBacklogMachine());
     }
 
-    @PutMapping("/updatePostPoneDeadline")
-    public ResponseEntity<?> updatePostPoneDeadline(@RequestBody ProductionOrder productionOrder) {
-        try {
-            ProductionOrder savedData = productionOrderService.updatePostPoneDeadline(productionOrder);
-            return ResponseEntity.ok(savedData);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error saving data: " + e.getMessage());
-        }
-    }
-
     @GetMapping("/countBacklogPostpone")
     public ResponseEntity<Integer> countBacklogPostpone(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(productionOrderService.countBacklogPostpone(tokenService.getCurrentUser(httpRequest)));
-    }
-
-    @PutMapping("/updateKeepPostPoneDeadline")
-    public ResponseEntity<?> updateKeepPostPoneDeadline(@RequestBody ProductionOrder productionOrder) {
-        try {
-            ProductionOrder savedData = productionOrderService.updateKeepPostPoneDeadline(productionOrder);
-            return ResponseEntity.ok(savedData);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error saving data: " + e.getMessage());
-        }
     }
 
     @GetMapping("/searchSample")
@@ -307,6 +240,12 @@ public class ProductionOrderController {
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
         return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/updateDataDalivery")
+    public ResponseEntity<ProductionOrder> updateDataDalivery(@RequestParam("id") Integer id,
+            @RequestParam("dataDalivery") Boolean dataDalivery) {
+        return ResponseEntity.ok(productionOrderService.updateDataDalivery(id, dataDalivery));
     }
 
 }

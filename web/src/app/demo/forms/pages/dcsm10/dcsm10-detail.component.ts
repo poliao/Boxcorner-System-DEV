@@ -68,7 +68,9 @@ export class Dcsm10DetailComponent implements OnInit {
       moldMakerName: [''],
       printingMachine: ['', Validators.required],
       customerName: [''],
-      dataDalivery: [false]
+      dataDalivery: [false],
+      postpone: [null],
+      rowVersion: [null]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -111,16 +113,6 @@ export class Dcsm10DetailComponent implements OnInit {
   }
 
   updateMoldStart() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      moldStatus: 'กำลังทำแม่พิมพ์',
-    };
-
-    const data = {
-      id: this.mainForm.getRawValue().id,
-      printingMachine: this.mainForm.getRawValue().printingMachine
-    }
-    
     if (this.mainForm.valid) {
       Swal.fire({
         title: 'ยืนยันกำลังทำแม่พิมพ์',
@@ -134,50 +126,30 @@ export class Dcsm10DetailComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.loadingService.show();
-          this.dcsm10Service.updateMoldStatus(apiFilters).subscribe({
-            next: () => {
-              this.dcsm10Service.updateMoldMakerName(apiFilters).subscribe({
-                next: (response) => {
-                  this.dcsm10Service.updatePrintingMachine(data).subscribe({
-                    next: () => { },
-                    error: (error) => {
-                      this.loadingService.hide();
-                      const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-                      this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-                    }
-                  })
-                  this.patchFormData(response);
-                  this.checkBtn();
-                  this.loadingService.hide();
-                  this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-                  this.router.navigate(['/Dcsm10']);
-                },
-                error: (error) => {
-                  this.loadingService.hide();
-                  const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-                  this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-                }
-              });
+          this.mainForm.get('moldStatus')?.setValue('กำลังทำแม่พิมพ์');
+          this.mainForm.get('moldMakerName')?.setValue(this.tokenService.getCurrentUserFromToken());
+          this.dcsm10Service.save(this.mainForm.getRawValue()).subscribe({
+            next: (response) => {
+              this.patchFormData(response);
+              this.checkBtn();
+              this.loadingService.hide();
+              this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+              this.router.navigate(['/Dcsm10']);
             },
             error: (error) => {
               this.loadingService.hide();
-              const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+              const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
               this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
             }
-          })
+          });
         }
       });
-    }else {
+    } else {
       this.sweetAlert.warning('เกิดข้อผิดพลาด', 'กรุณากรอกข้อมูลให้ครบ');
     }
   }
 
   updateMoldSuccess() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      moldStatus: 'แม่พิมพ์เสร็จแล้ว',
-    };
-
     Swal.fire({
       title: 'ยืนยันแม่พิมพ์เสร็จแล้ว',
       text: "ยืนยันแม่พิมพ์เสร็จแล้ว ใช่หรือไม่?",
@@ -190,7 +162,8 @@ export class Dcsm10DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm10Service.updateMoldStatus(apiFilters).subscribe({
+        this.mainForm.get('moldStatus')?.setValue('แม่พิมพ์เสร็จแล้ว');
+        this.dcsm10Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -200,7 +173,7 @@ export class Dcsm10DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
@@ -209,16 +182,6 @@ export class Dcsm10DetailComponent implements OnInit {
   }
 
   updateSendMold() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      moldStatus: 'ส่งแม่พิมพ์',
-    };
-
-    const data = {
-      id: this.mainForm.getRawValue().id,
-      printingMachine: this.mainForm.getRawValue().printingMachine
-    };
-
     Swal.fire({
       title: 'ยืนยันส่งแม่พิมพ์',
       text: "ยืนยันส่งแม่พิมพ์ ใช่หรือไม่?",
@@ -231,24 +194,23 @@ export class Dcsm10DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm10Service.updateMoldStatus(apiFilters).subscribe({
+        this.mainForm.get('moldStatus')?.setValue('ส่งแม่พิมพ์');
+        this.dcsm10Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
             this.loadingService.hide();
             this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
             this.router.navigate(['/Dcsm10']);
-
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
       }
     });
   }
-
 
 }

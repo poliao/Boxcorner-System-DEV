@@ -72,30 +72,6 @@ export class Dcsm05Service {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogShif`);
   }
 
-  updateStatusConfirm(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateAssign?id=${id}`, {});
-  }
-
-  updateStatusDeliver(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusDeliver?id=${id}`, {});
-  }
-
-  updateStatusClearFile(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusClearFile?id=${id}`, {});
-  }
-
-  updateStatusInspection(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusInspection?id=${id}`, {});
-  }
-
-  updateStatusSamples(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusSamples?id=${id}`, {});
-  }
-
-  updateStatusSucsess(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateStatusSucsess?id=${id}`, {});
-  }
-
   countBacklogWaitProcess(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogWaitProcess`);
   }

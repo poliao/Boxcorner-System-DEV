@@ -15,7 +15,6 @@ export class Dcsm02Service {
 
   // ฟังก์ชันบันทึกข้อมูลตามรูปแบบที่คุณระบุ
   save(data: any): Observable<any> {
-    // ปรับ Path ให้ตรงกับ Backend ของคุณ (ตัวอย่างเช่น /designs/save)
     return this.http.post(`${this.apiUrl}/designs/save`, data);
   }
 

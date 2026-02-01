@@ -52,38 +52,6 @@ export class Dcsm03Service {
     return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
   }
 
-  getUniqueJobDetail(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownjobdetails?query=${query}`);
-  }
-
-  getUniqueOwner(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownjobowner?query=${query}`);
-  }
-
-  getUniqueAssignee(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownassignee?query=${query}`);
-  }
-
-  getUniqueProcess(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownprocess?query=${query}`);
-  }
-
-  getUniqueConfirm(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/designs/dropdownconfirm?query=${query}`);
-  }
-
-  updateStatus(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatus?id=${id}`, {});
-  }
-
-  updateStatusWork(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatusWork?id=${id}`, {});
-  }
-
-  updateStatusComplete(completeData : any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/designs/updateStatusCompleteWithFile?id=${completeData.id}&fileName=${completeData.fileName}`, {});
-  }
-
   getAllDesignOrdersSorted(
     id: string,
     folder_name: string,

@@ -63,22 +63,6 @@ export class Dcsm04Service {
 
     return this.http.get(`${this.apiUrl}/sampleOrders/search`, { params: params });
   }
-  
-  updateFileChecked(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateFileChecked?id=${id}`, {});
-  }
-
-  updateEditFile(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditFile?id=${id}`, {});
-  }
-
-  updateConfirmSample(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateConfirmSample?id=${id}`, {});
-  }
-
-  updateEditConfirmSample(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditConfirmSample?id=${id}`, {});
-  }
 
   saveProduction(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/production/save`, data);

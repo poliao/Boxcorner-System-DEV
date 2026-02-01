@@ -67,6 +67,8 @@ export class Dcsm09DetailComponent implements OnInit {
       updatedAt: [''],
       customerName: [''],
       dataDalivery: [false],
+      postpone: [null],
+      rowVersion: [null]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -128,7 +130,7 @@ export class Dcsm09DetailComponent implements OnInit {
       this.isOrder = false;
       this.isCheckMold = false;
       this.isDelivery = false;
-    } else if (this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' && (this.mainForm.getRawValue().dataDalivery == false || this.mainForm.getRawValue().dataDalivery == null)  && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
+    } else if (this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' && (this.mainForm.getRawValue().dataDalivery == false || this.mainForm.getRawValue().dataDalivery == null) && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
       this.isSendFile = false;
       this.isSendOrder = false;
       this.isOrder = false;
@@ -144,16 +146,6 @@ export class Dcsm09DetailComponent implements OnInit {
   }
 
   updateMoldStatus() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      processStatus: 'ตรวจไฟล์แม่พิมพ์แล้ว',
-    };
-
-    const formData = {
-      id: this.mainForm.getRawValue().id,
-      inspector: this.authService.getUserFromToken().sub,
-    }
-
     Swal.fire({
       title: 'ยืนยันตรวจไฟล์แม่พิมพ์แล้ว',
       text: "ยืนยันตรวจไฟล์แม่พิมพ์แล้ว ใช่หรือไม่?",
@@ -166,38 +158,28 @@ export class Dcsm09DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
+        this.mainForm.get('processStatus')?.setValue('ตรวจไฟล์แม่พิมพ์แล้ว');
+        this.mainForm.get('inspector')?.setValue(this.authService.getUserFromToken().sub);
+
+        this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
-            this.dcsm09Service.updateInspector(formData).subscribe({
-              next: (response) => {
-                this.patchFormData(response);
-                this.checkBtn();
-                this.loadingService.hide();
-                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-              },
-              error: (error) => {
-                this.loadingService.hide();
-                const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-                this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-              }
-            });
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
       }
-    });
+    })
   }
 
-  updateOrder() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      processStatus: 'ตรวจใบสั่งผลิตแล้ว',
-    };
 
+  updateOrder() {
     Swal.fire({
       title: 'ยืนยันตรวจใบสั่งผลิตแล้ว',
       text: "ยืนยันตรวจใบสั่งผลิตแล้ว ใช่หรือไม่?",
@@ -210,7 +192,8 @@ export class Dcsm09DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
+        this.mainForm.get('processStatus')?.setValue('ตรวจใบสั่งผลิตแล้ว');
+        this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -219,7 +202,7 @@ export class Dcsm09DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
@@ -228,11 +211,6 @@ export class Dcsm09DetailComponent implements OnInit {
   }
 
   updateSendOrder() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      processStatus: 'ส่งใบสั่งผลิตแล้ว',
-    };
-
     Swal.fire({
       title: 'ยืนยันส่งใบสั่งผลิตแล้ว',
       text: "ยืนยันส่งใบสั่งผลิตแล้ว ใช่หรือไม่?",
@@ -245,7 +223,8 @@ export class Dcsm09DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
+        this.mainForm.get('processStatus')?.setValue('ส่งใบสั่งผลิตแล้ว');
+        this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -254,7 +233,7 @@ export class Dcsm09DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
@@ -285,26 +264,19 @@ export class Dcsm09DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm09Service.updateProcessStatus(apiFilters).subscribe({
-          next: () => {
-            this.dcsm09Service.updateJobStatus(data).subscribe({
-              next: (response) => {
-                this.patchFormData(response);
-                this.checkBtn();
-                this.loadingService.hide();
-                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-                this.router.navigate(['/Dcsm09']);
-              },
-              error: (error) => {
-                this.loadingService.hide();
-                const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
-                this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-              }
-            });
+        this.mainForm.get('jobStatus')?.setValue('เสร็จสิ้น');
+        this.mainForm.get('processStatus')?.setValue('ส่งไฟล์แล้ว');
+
+        this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });

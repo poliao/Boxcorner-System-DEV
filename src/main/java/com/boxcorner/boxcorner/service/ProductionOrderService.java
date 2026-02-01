@@ -2,7 +2,6 @@ package com.boxcorner.boxcorner.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +19,43 @@ public class ProductionOrderService {
     private ProductionOrderRepository productionOrderRepository;
 
     @Transactional
-    public ProductionOrder save(ProductionOrder productionOrder,String jobOwner) {
-        if (productionOrder.getId() == null) {
+    public ProductionOrder save(ProductionOrder productionOrder, String jobOwner) {
+        if (productionOrder.getId() != null) {
+            ProductionOrder existingOrder = productionOrderRepository.findById(productionOrder.getId())
+                    .orElseThrow(
+                            () -> new RuntimeException("ไม่พบข้อมูลสำหรับการอัปเดต ID: " + productionOrder.getId()));
+
+            if (productionOrder.getRowVersion() != null
+                    && !existingOrder.getRowVersion().equals(productionOrder.getRowVersion())) {
+                throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
+            }
+
+            existingOrder.setFolderName(productionOrder.getFolderName());
+            existingOrder.setUsedFile(productionOrder.getUsedFile());
+            existingOrder.setColorSample(productionOrder.getColorSample());
+            existingOrder.setJobOwner(productionOrder.getJobOwner());
+            existingOrder.setDeadlineDate(productionOrder.getDeadlineDate());
+            existingOrder.setDeadlineTime(productionOrder.getDeadlineTime());
+            existingOrder.setDeliveryDate(productionOrder.getDeliveryDate());
+            existingOrder.setJobStatus(productionOrder.getJobStatus());
+            existingOrder.setProcessStatus(productionOrder.getProcessStatus());
+            existingOrder.setOperatorName(productionOrder.getOperatorName());
+            existingOrder.setInspectionDate(productionOrder.getInspectionDate());
+            existingOrder.setRemarks(productionOrder.getRemarks());
+            existingOrder.setMoldStatus(productionOrder.getMoldStatus());
+            existingOrder.setJobType(productionOrder.getJobType());
+            existingOrder.setMoldMakerName(productionOrder.getMoldMakerName());
+            existingOrder.setPrintingMachine(productionOrder.getPrintingMachine());
+            existingOrder.setInspector(productionOrder.getInspector());
+            existingOrder.setPostpone(productionOrder.getPostpone());
+            existingOrder.setCustomerName(productionOrder.getCustomerName());
+            existingOrder.setDataDalivery(productionOrder.getDataDalivery());
+            existingOrder.setCancelRemarks(productionOrder.getCancelRemarks());
+
+            existingOrder.setUpdatedAt(LocalDate.now());
+
+            return productionOrderRepository.save(existingOrder);
+        } else {
             productionOrder.setJobOwner(jobOwner);
             productionOrder.setCreatedAt(LocalDate.now());
             productionOrder.setUpdatedAt(LocalDate.now());
@@ -29,20 +63,18 @@ public class ProductionOrderService {
             productionOrder.setJobStatus("รอผู้รับผิดชอบยืนยัน");
             productionOrder.setProcessStatus("รอผู้รับผิดชอบยืนยัน");
             productionOrder.setMoldStatus("รอผู้รับผิดชอบยืนยัน");
+            return productionOrderRepository.save(productionOrder);
         }
-        if (productionOrder.getId() != null) {
-            Optional<ProductionOrder> existingOrderOpt = productionOrderRepository.findById(productionOrder.getId());
-            if (existingOrderOpt.isPresent()) {
-                ProductionOrder existingOrder = existingOrderOpt.get();
-                productionOrder.setCreatedAt(existingOrder.getCreatedAt());
-                productionOrder.setUpdatedAt(LocalDate.now());
-            }
-        }
-        return productionOrderRepository.save(productionOrder);
     }
 
     public ProductionOrder findById(Integer id) {
         return productionOrderRepository.findById(id).orElse(null);
+    }
+
+    public ProductionOrder updateDataDalivery(Integer id , Boolean processStatus) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        existingOrder.setDataDalivery(processStatus);
+        return productionOrderRepository.save(existingOrder);
     }
 
     public Page<ProductionOrder> findByFilters(Integer id, String folderName, String jobOwner,
@@ -60,7 +92,7 @@ public class ProductionOrderService {
             String moldStatus, String jobType, String postpone, Pageable pageable) {
         return productionOrderRepository.findByFiltersSort(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType,postpone, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
     }
 
     public Page<ProductionOrder> findByProductionFilters(Integer id, String folderName, String jobOwner,
@@ -84,7 +116,7 @@ public class ProductionOrderService {
     public Page<ProductionOrder> findByProductionCheck(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType,String inspector, Boolean dataDelivery, Pageable pageable) {
+            String moldStatus, String jobType, String inspector, Boolean dataDelivery, Pageable pageable) {
         return productionOrderRepository.findProductionCheck(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, dataDelivery, pageable);
@@ -93,52 +125,10 @@ public class ProductionOrderService {
     public Page<ProductionOrder> findByProductionCheckSort(Integer id, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType,String inspector, Pageable pageable) {
+            String moldStatus, String jobType, String inspector, Pageable pageable) {
         return productionOrderRepository.findProductionCheckSort(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType,inspector, pageable);
-    }
-
-    public ProductionOrder updateProcessStatus (Integer id , String processStatus) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setProcessStatus(processStatus);
-        return productionOrderRepository.save(existingOrder);
-    }
-
-    public ProductionOrder updateDataDalivery(Integer id , Boolean processStatus) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setDataDalivery(processStatus);
-        return productionOrderRepository.save(existingOrder);
-    }
-
-    public ProductionOrder updateInspector (Integer id , String inspector) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setInspector(inspector);
-        return productionOrderRepository.save(existingOrder);
-    }
-
-    public ProductionOrder updateJobStatus (Integer id , String jobStatus) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setJobStatus(jobStatus);
-        return productionOrderRepository.save(existingOrder);
-    }
-
-    public ProductionOrder updateMoldStatus (Integer id , String mold) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setMoldStatus(mold);
-        return productionOrderRepository.save(existingOrder);
-    }
-
-    public ProductionOrder updatePrintingMachine (Integer id , String printingMachine) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setPrintingMachine(printingMachine);
-        return productionOrderRepository.save(existingOrder);
-    }
-
-    public ProductionOrder updateMoldMakerName (Integer id, String name ) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setMoldMakerName(name);
-        return productionOrderRepository.save(existingOrder);
+                jobStatus, processStatus, operatorName, moldStatus, jobType, inspector, pageable);
     }
 
     public Integer countBacklog(String operatorName) {
@@ -158,7 +148,7 @@ public class ProductionOrderService {
     }
 
     public Integer countBacklogProcessStatus(String processStatus, String operatorName) {
-        return productionOrderRepository.countBacklogProcessStatus(processStatus,operatorName);
+        return productionOrderRepository.countBacklogProcessStatus(processStatus, operatorName);
     }
 
     public Integer countBacklogProcessStatus(String processStatus) {
@@ -185,20 +175,6 @@ public class ProductionOrderService {
         return productionOrderRepository.countBacklogPostpone(username);
     }
 
-    public ProductionOrder updatePostPoneDeadline (ProductionOrder ProductionOrder) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(ProductionOrder.getId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + ProductionOrder.getId()));
-        existingOrder.setDeadlineDate(ProductionOrder.getDeadlineDate());
-        existingOrder.setDeadlineTime(ProductionOrder.getDeadlineTime());
-        existingOrder.setPostpone("มีการเลื่อนเวลาส่ง");
-        return productionOrderRepository.save(existingOrder);
-    }
-
-    public ProductionOrder updateKeepPostPoneDeadline (ProductionOrder ProductionOrder) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(ProductionOrder.getId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + ProductionOrder.getId()));
-        existingOrder.setPostpone("รับทราบการเลื่อนเวลา");
-        return productionOrderRepository.save(existingOrder);
-    }
-
     public Integer countBacklogMachine() {
         return productionOrderRepository.countBacklogMachine();
     }
@@ -209,6 +185,6 @@ public class ProductionOrderService {
             String moldStatus, String jobType, String postpone, Pageable pageable) {
         return productionOrderRepository.findByFiltersSample(
                 id, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType,postpone, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
     }
 }

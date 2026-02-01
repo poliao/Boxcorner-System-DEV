@@ -88,6 +88,8 @@ export class Dcsm02DetailComponent implements OnInit {
       confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
       fileName: [''],
       customerName: [''],
+      rowVersion: [null],
+      confirmDate: [null]
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -107,18 +109,21 @@ export class Dcsm02DetailComponent implements OnInit {
     if (this.designForm.valid) {
       this.loadingService.show();
       const data = this.designForm.getRawValue();
-      this.dcsm02Service.save(data).subscribe((response) => {
-        try {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-          this.router.navigate(['/Dcsm02']);
-        } catch (error) {
-          this.loadingService.hide();
-          this.sweetAlert.error('Save', error);
+      this.dcsm02Service.save(data).subscribe(
+        {
+          next: (response) => {
+            this.patchFormData(response);
+            this.loadingService.hide();
+            this.checkBtn();
+            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+            this.router.navigate(['/Dcsm02']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
         }
-      });
+      );
     }
   }
 
@@ -143,29 +148,6 @@ export class Dcsm02DetailComponent implements OnInit {
     }
   }
 
-  updateStatusApprove() {
-    Swal.fire({
-      title: 'ยืนยันการอนุมัติงาน',
-      text: "คุณต้องการอนุมัติงาน ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm02Service.updateStatusApprove(this.designForm.getRawValue().id).subscribe((response) => {
-          this.designForm.patchValue(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'อนุมัติสำเร็จ!');
-        })
-      }
-    });
-  }
-
   updateStatusEdit() {
     Swal.fire({
       title: 'ยืนยันการส่งแก้ไข',
@@ -179,12 +161,23 @@ export class Dcsm02DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm02Service.updateStatusEdit(this.designForm.getRawValue().id).subscribe((response) => {
-          this.designForm.patchValue(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'ส่งแก้ไขสำเร็จ!');
-        })
+        this.designForm.get('processStatus').setValue('รอดำเนินการแก้ไข')
+        this.designForm.get('confirmStatus').setValue('ไม่ผ่าน')
+        this.dcsm02Service.save(this.designForm.getRawValue()).subscribe(
+          {
+            next: (response) => {
+              this.designForm.patchValue(response);
+              this.loadingService.hide();
+              this.checkBtn();
+              this.sweetAlert.success('Success', 'ส่งแก้ไขสำเร็จ!');
+              this.router.navigate(['/Dcsm02']);
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+            }
+          }
+        )
       }
     });
   }
@@ -234,21 +227,45 @@ export class Dcsm02DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm02Service.savesampleOrders(data).subscribe((response) => {
-          if (response) {
-            this.dcsm02Service.updateStatusApprove(this.designForm.getRawValue().id).subscribe((responses) => {
-              this.designForm.patchValue(responses);
-              this.checkBtn();
-               this.loadingService.hide();
-            })
-            this.closeApproveModal();
-            this.sweetAlert.success('Success', 'อนุมัติส่งไปตารางขึ้นตัวอย่างสำเร็จ!');
-            this.router.navigate(['/Dcsm02']);
+        this.designForm.get('processStatus').setValue('เสร็จสิ้น')
+        this.designForm.get('confirmStatus').setValue('ผ่าน')
+        this.designForm.get('confirmDate').setValue(new Date())
+        this.dcsm02Service.save(this.designForm.getRawValue()).subscribe({
+          next: (responses) => {
+            this.designForm.patchValue(responses);
+            this.checkBtn();
+            this.dcsm02Service.savesampleOrders(data).subscribe({
+              next: (response) => {
+                this.dcsm02Service.save(this.designForm.getRawValue()).subscribe({
+                  next: (responses) => {
+                    this.closeApproveModal();
+                    this.sweetAlert.success('Success', 'อนุมัติส่งไปตารางขึ้นตัวอย่างสำเร็จ!');
+                    this.router.navigate(['/Dcsm02']);
+                  },
+                  error: (error) => {
+                    this.loadingService.hide();
+                    this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+                  }
+                })
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+              }
+            });
+            this.loadingService.hide();
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
           }
-        });
+        })
+
       }
     });
   }
+
+
 
   openEditModal() {
     this.editNote.setValue('');
@@ -280,17 +297,17 @@ export class Dcsm02DetailComponent implements OnInit {
         data.confirmStatus = 'ไม่ผ่าน'
         this.loadingService.show();
         this.dcsm02Service.save(data).subscribe((response) => {
-        try {
-          this.patchFormData(response);
-          this.loadingService.hide();
-          this.checkBtn();
-          this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-          this.router.navigate(['/Dcsm02']);
-        } catch (error) {
-          this.loadingService.hide();
-          this.sweetAlert.error('Save', error);
-        }
-      });
+          try {
+            this.patchFormData(response);
+            this.loadingService.hide();
+            this.checkBtn();
+            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+            this.router.navigate(['/Dcsm02']);
+          } catch (error) {
+            this.loadingService.hide();
+            this.sweetAlert.error('Save', error.error);
+          }
+        });
       }
     });
   }
@@ -311,29 +328,29 @@ export class Dcsm02DetailComponent implements OnInit {
 
   onThaiDateInput(event: any, controlName: string): void {
     let value = event.target.value.replace(/[^0-9]/g, '');
-    
+
     if (value.length >= 2) {
       value = value.substring(0, 2) + '/' + value.substring(2);
     }
     if (value.length >= 5) {
       value = value.substring(0, 5) + '/' + value.substring(5, 7);
     }
-    
+
     event.target.value = value;
-    
+
     if (value.length === 8) {
       const parts = value.split('/');
       if (parts.length === 3) {
         const day = parseInt(parts[0]);
         const month = parseInt(parts[1]);
         let year = parseInt(parts[2]);
-        
+
         if (year <= 50) {
           year += 2000;
         } else {
           year += 1900;
         }
-        
+
         if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
           const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
           if (this.designForm.get(controlName)) {
@@ -351,5 +368,4 @@ export class Dcsm02DetailComponent implements OnInit {
   closeCancelModal() {
     this.showCancelModal = false;
   }
-
 }

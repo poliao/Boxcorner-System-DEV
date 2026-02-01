@@ -100,7 +100,6 @@ export class Dcsm03Component implements OnInit {
 
   ngOnInit() {
     this.loadData();
-    this.prepareDropdownData();
     this.useBacklog();
   }
 
@@ -256,78 +255,6 @@ export class Dcsm03Component implements OnInit {
     this.searchConfirmListSubject.next(value);
   }
 
-  prepareDropdownData() {
-    this.searchJobDetailsSubject.subscribe(searchValue => {
-      this.fetchJobDetailFromDB(searchValue);
-    });
-
-    this.searchOwnerListSubject.subscribe(searchValue => {
-      this.fetchOwnerListFromDB(searchValue);
-    });
-
-    this.searchAssigneeListSubject.subscribe(searchValue => {
-      this.fetchAssigneeFromDB(searchValue);
-    });
-
-    this.searchProcessListSubject.subscribe(searchValue => {
-      this.fetchProcessFromDB(searchValue);
-    });
-
-    this.searchConfirmListSubject.subscribe(searchValue => {
-      this.fetchConfirmFromDB(searchValue);
-    });
-
-    this.fetchJobDetailFromDB('');
-    this.fetchOwnerListFromDB('');
-    this.fetchAssigneeFromDB('');
-    this.fetchProcessFromDB('');
-    this.fetchConfirmFromDB('');
-  }
-
-  fetchJobDetailFromDB(query: string) {
-    this.dcsm03Service.getUniqueJobDetail(query).subscribe({
-      next: (data: string[]) => {
-        this.jobdetailsList = data;
-      },
-      error: (err) => { }
-    });
-  }
-
-  fetchOwnerListFromDB(query: string) {
-    this.dcsm03Service.getUniqueOwner(query).subscribe({
-      next: (data: string[]) => {
-        this.OwnerList = data;
-      },
-      error: (err) => { }
-    });
-  }
-
-  fetchAssigneeFromDB(query: string) {
-    this.dcsm03Service.getUniqueAssignee(query).subscribe({
-      next: (data: string[]) => {
-        this.Assignee = data;
-      },
-      error: (err) => { }
-    });
-  }
-
-  fetchProcessFromDB(query: string) {
-    this.dcsm03Service.getUniqueProcess(query).subscribe({
-      next: (data: string[]) => {
-        this.Process = data;
-      },
-      error: (err) => { }
-    });
-  }
-
-  fetchConfirmFromDB(query: string) {
-    this.dcsm03Service.getUniqueConfirm(query).subscribe({
-      next: (data: string[]) => {
-        this.Confirm = data;
-      },
-      error: (err) => { }
-    });
-  }
 
   onStartDateChange() {
     if (this.startDate && (!this.endDate || this.endDate < this.startDate)) {

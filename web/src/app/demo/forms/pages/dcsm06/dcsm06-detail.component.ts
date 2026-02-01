@@ -75,7 +75,7 @@ export class Dcsm06DetailComponent implements OnInit {
       id: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
-      usedFile: ['',Validators.required],
+      usedFile: ['', Validators.required],
       colorSample: [''],
       jobOwner: [''],
       deadlineDate: [''],
@@ -96,7 +96,9 @@ export class Dcsm06DetailComponent implements OnInit {
       inspector: [''],
       customerName: [''],
       cancelRemarks: [''],
-      dataDalivery: [false]
+      dataDalivery: [false],
+      postpone: [null],
+      rowVersion: [null]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -155,7 +157,7 @@ export class Dcsm06DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
@@ -179,29 +181,29 @@ export class Dcsm06DetailComponent implements OnInit {
 
   onThaiDateInput(event: any, controlName: string): void {
     let value = event.target.value.replace(/[^0-9]/g, '');
-    
+
     if (value.length >= 2) {
       value = value.substring(0, 2) + '/' + value.substring(2);
     }
     if (value.length >= 5) {
       value = value.substring(0, 5) + '/' + value.substring(5, 7);
     }
-    
+
     event.target.value = value;
-    
+
     if (value.length === 8) {
       const parts = value.split('/');
       if (parts.length === 3) {
         const day = parseInt(parts[0]);
         const month = parseInt(parts[1]);
         let year = parseInt(parts[2]);
-        
+
         if (year <= 50) {
           year += 2000;
         } else {
           year += 1900;
         }
-        
+
         if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
           const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
           if (this.mainForm.get(controlName)) {
@@ -229,7 +231,8 @@ export class Dcsm06DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm06Service.updateKeepPostPoneDeadline(this.mainForm.getRawValue()).subscribe({
+        this.mainForm.get('postpone').setValue('รับทราบการเลื่อนเวลา')
+        this.dcsm06Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
@@ -238,7 +241,7 @@ export class Dcsm06DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,9 +40,12 @@ public class DesignOrdersController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<DesignOrders> save(@RequestBody DesignOrders designOrder, HttpServletRequest httpRequest) {
-        String currentUser = tokenService.getCurrentUser(httpRequest);
-        return ResponseEntity.ok(service.saveDesign(designOrder,currentUser));
+    public ResponseEntity<?> save(@RequestBody DesignOrders designOrder, HttpServletRequest httpRequest) {
+        try {
+            return ResponseEntity.ok(service.saveDesign(designOrder, tokenService.getCurrentUser(httpRequest)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/deleteByid")
@@ -60,10 +64,10 @@ public class DesignOrdersController {
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
+            @RequestParam(value = "size", defaultValue = "10") int size) {
         try {
-            Page<DesignOrders> pageDesignOrders = service.getAllRecipes(job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+            Page<DesignOrders> pageDesignOrders = service.getAllRecipes(job_details, job_owner, process_status,
+                    confirm_status, assignee, startDate, endDate, page, size);
             return ResponseEntity.ok(pageDesignOrders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -83,14 +87,15 @@ public class DesignOrdersController {
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline
-    ) {
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
         try {
             Page<DesignOrders> pageDesignOrders;
             if (Boolean.TRUE.equals(sortByDeadline)) {
-                pageDesignOrders = service.getAllRecipesDesignSorted(id, folder_name, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+                pageDesignOrders = service.getAllRecipesDesignSorted(id, folder_name, job_details, job_owner,
+                        process_status, confirm_status, assignee, startDate, endDate, page, size);
             } else {
-                pageDesignOrders = service.getAllRecipesDesign(id, folder_name, job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
+                pageDesignOrders = service.getAllRecipesDesign(id, folder_name, job_details, job_owner, process_status,
+                        confirm_status, assignee, startDate, endDate, page, size);
             }
             return ResponseEntity.ok(pageDesignOrders);
         } catch (Exception e) {
@@ -99,39 +104,33 @@ public class DesignOrdersController {
     }
 
     @GetMapping("/dropdownjobdetails")
-    public ResponseEntity<List<String>> getUniqueJobDetails(@RequestParam(value = "query", defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueJobDetails(
+            @RequestParam(value = "query", defaultValue = "") String query) {
         return ResponseEntity.ok(service.findUniqueJobDetails(query));
     }
 
     @GetMapping("/dropdownjobowner")
-    public ResponseEntity<List<String>> getUniqueJobOwner(@RequestParam(value = "query", defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueJobOwner(
+            @RequestParam(value = "query", defaultValue = "") String query) {
         return ResponseEntity.ok(service.findUniqueJobOwner(query));
     }
 
     @GetMapping("/dropdownassignee")
-    public ResponseEntity<List<String>> getUniqueAssignee(@RequestParam(value = "query", defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueAssignee(
+            @RequestParam(value = "query", defaultValue = "") String query) {
         return ResponseEntity.ok(service.findUniqueAssignee(query));
     }
 
     @GetMapping("/dropdownprocess")
-    public ResponseEntity<List<String>> getUniqueProcess(@RequestParam(value = "query", defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueProcess(
+            @RequestParam(value = "query", defaultValue = "") String query) {
         return ResponseEntity.ok(service.findUniqueProcess(query));
     }
 
     @GetMapping("/dropdownconfirm")
-    public ResponseEntity<List<String>> getUniqueConfirm(@RequestParam(value = "query", defaultValue = "") String query){
+    public ResponseEntity<List<String>> getUniqueConfirm(
+            @RequestParam(value = "query", defaultValue = "") String query) {
         return ResponseEntity.ok(service.findUniqueConfirm(query));
-    }
-
-    @PutMapping("/updateStatus")
-    public ResponseEntity<DesignOrders> update(@RequestParam("id") Integer id, HttpServletRequest httpRequest) {
-        String currentUser = tokenService.getCurrentUser(httpRequest);
-        return ResponseEntity.ok(service.updateDesign(id,currentUser));
-    }
-
-    @PutMapping("/updateStatusWork")
-    public ResponseEntity<DesignOrders> updateWork(@RequestParam("id") Integer id) {
-        return ResponseEntity.ok(service.updateDesignWork(id));
     }
 
     @PutMapping("/updateStatusComplete")
@@ -140,7 +139,8 @@ public class DesignOrdersController {
     }
 
     @PutMapping("/updateStatusCompleteWithFile")
-    public ResponseEntity<DesignOrders> updateCompleteWithFile(@RequestParam("id") Integer id, @RequestParam("fileName") String fileName) {
+    public ResponseEntity<DesignOrders> updateCompleteWithFile(@RequestParam("id") Integer id,
+            @RequestParam("fileName") String fileName) {
         return ResponseEntity.ok(service.updateDesignCompleteWithFile(id, fileName));
     }
 
@@ -155,37 +155,37 @@ public class DesignOrdersController {
     }
 
     @GetMapping("/countBacklog")
-    public ResponseEntity<Integer> getUniqueStatus(){
+    public ResponseEntity<Integer> getUniqueStatus() {
         return ResponseEntity.ok(service.countBacklog());
-    } 
+    }
 
     @GetMapping("/countBacklogPending")
-    public ResponseEntity<Integer> countBacklogPending(HttpServletRequest httpRequest){
+    public ResponseEntity<Integer> countBacklogPending(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(service.countBacklogPending(tokenService.getCurrentUser(httpRequest)));
-    } 
+    }
 
     @GetMapping("/countBacklogInProgress")
-    public ResponseEntity<Integer> countBacklogInProgress(HttpServletRequest httpRequest){
+    public ResponseEntity<Integer> countBacklogInProgress(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(service.countBacklogInProgress(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogCheck")
-    public ResponseEntity<Integer> countBacklogCheck(){
+    public ResponseEntity<Integer> countBacklogCheck() {
         return ResponseEntity.ok(service.countBacklogCheck());
     }
 
     @GetMapping("/countBacklogCheckDe")
-    public ResponseEntity<Integer> countBacklogCheckDe(HttpServletRequest httpRequest){
+    public ResponseEntity<Integer> countBacklogCheckDe(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(service.countBacklogCheckDe(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogEdit")
-    public ResponseEntity<Integer> countBacklogEdit(HttpServletRequest httpRequest){
+    public ResponseEntity<Integer> countBacklogEdit(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(service.countBacklogEdit(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogComplete")
-    public ResponseEntity<Integer> countBacklogComplete(){
+    public ResponseEntity<Integer> countBacklogComplete() {
         return ResponseEntity.ok(service.countBacklogComplete());
     }
 }

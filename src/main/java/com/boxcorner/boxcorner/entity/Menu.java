@@ -6,7 +6,7 @@ import lombok.Data;
 @Entity
 @Data 
 @Table(name = "menus")
-public class Menu {
+public class Menu extends BaseEntity {
 
     @Id
     private String id;

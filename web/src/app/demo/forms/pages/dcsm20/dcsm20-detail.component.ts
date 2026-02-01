@@ -171,6 +171,7 @@ export class Dcsm20DetailComponent implements OnInit {
       deliveryStatus: [''],
       machineSetupCount: [''],
       imageUrl: [null],
+      rowVersion: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -270,11 +271,6 @@ export class Dcsm20DetailComponent implements OnInit {
   onSubmit(): void {
     if (this.productionForm.valid) {
       const data = this.productionForm.getRawValue();
-
-      const apiFilters = {
-        id: this.referenceId,
-        processStatus: 'ส่งข้อมูลไปตารางจัดส่ง',
-      };
       Swal.fire({
         title: 'บันทึกข้อมูล',
         text: "ยืนยันบันทึกข้อมูล ใช่หรือไม่?",

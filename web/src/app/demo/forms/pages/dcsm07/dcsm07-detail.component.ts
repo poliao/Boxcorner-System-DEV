@@ -89,7 +89,9 @@ export class Dcsm07DetailComponent implements OnInit {
       sampleOrderId: [''],
       customerName: [''],
       cancelRemarks: [''],
-      dataDalivery: [false]
+      dataDalivery: [false],
+      postpone: [null],
+      rowVersion: [null]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -164,7 +166,7 @@ export class Dcsm07DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
@@ -179,40 +181,6 @@ export class Dcsm07DetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading operators', err);
-      }
-    });
-  }
-
-  updateCancelStatus() {
-    Swal.fire({
-      title: 'ยกเลิก',
-      text: "การยกเลิกจะลบงานนี้ออกจากตารางรอผลิต",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.dcsm07Service.updateJobStatus(this.mainForm.getRawValue().id, 'ยกเลิก').subscribe({
-          next: (res: any) => {
-            this.dcsm07Service.updateProcessStatus(this.mainForm.getRawValue().id, 'ยกเลิก').subscribe({
-              next: (res: any) => {
-                this.dcsm07Service.updateMoldStatus(this.mainForm.getRawValue().id, 'ยกเลิก').subscribe({
-                  next: (res: any) => {
-                    this.patchFormData(res);
-                    this.checkBtn();
-                    this.loadingService.hide();
-                    this.sweetAlert.success('ยกเลิกข้อมูลสำเร็จ', 'เรียบร้อย')
-                    this.router.navigate(['/Dcsm07']);
-                  }
-                })
-              },
-            });
-          },
-        });
       }
     });
   }
@@ -252,7 +220,8 @@ export class Dcsm07DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm07Service.updatePostPoneDeadline(this.mainForm.getRawValue()).subscribe({
+        this.mainForm.get('postpone')?.setValue('มีการเลื่อนเวลาส่ง');
+        this.dcsm07Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
@@ -262,7 +231,7 @@ export class Dcsm07DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });
@@ -302,6 +271,10 @@ export class Dcsm07DetailComponent implements OnInit {
         this.checkBtn();
         this.sweetAlert.success('ยกเลิกข้อมูลสำเร็จ', 'เรียบร้อย')
         this.router.navigate(['/Dcsm07']);
+      }, error: (error) => {
+        this.loadingService.hide();
+        const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
+        this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
       }
     })
   }

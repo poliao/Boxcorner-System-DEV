@@ -28,16 +28,31 @@ public class DesignOrdersService {
         return repository.findById(id);
     }
 
-     public DesignOrders saveDesign(DesignOrders designOrder, String currentUser) {
-        designOrder.setJobOwner(currentUser);
+    @Transactional
+    public DesignOrders saveDesign(DesignOrders designOrder, String currentUser) {
         if (designOrder.getId() != null) {
-            Optional<DesignOrders> existing = repository.findById(designOrder.getId());
-            if (existing.isPresent()) {
-                return repository.save(designOrder);
-            } else {
-                throw new RuntimeException("Design order not found for update");
+            DesignOrders existing = repository.findById(designOrder.getId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลสำหรับการอัปเดต ID: " + designOrder.getId()));
+
+            if (designOrder.getRowVersion() != null && !existing.getRowVersion().equals(designOrder.getRowVersion())) {
+                throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
             }
+
+            existing.setOrderDate(designOrder.getOrderDate());
+            existing.setFolderName(designOrder.getFolderName());
+            existing.setJobDetails(designOrder.getJobDetails());
+            existing.setRemarks(designOrder.getRemarks());
+            existing.setDeadlineDate(designOrder.getDeadlineDate());
+            existing.setDeadlineTime(designOrder.getDeadlineTime());
+            existing.setProcessStatus(designOrder.getProcessStatus());
+            existing.setConfirmStatus(designOrder.getConfirmStatus());
+            existing.setNoteEdit(designOrder.getNoteEdit());
+            existing.setFileName(designOrder.getFileName());
+            existing.setCustomerName(designOrder.getCustomerName());
+            existing.setAssignee(designOrder.getAssignee());
+            existing.setJobOwner(designOrder.getJobOwner());
+            return repository.save(existing);
         } else {
+            designOrder.setJobOwner(currentUser);
             designOrder.setAssignee("รอผู้รับผิดชอบยืนยัน");
             return repository.save(designOrder);
         }
@@ -47,50 +62,52 @@ public class DesignOrdersService {
         repository.deleteById(id);
     }
 
-    public Page<DesignOrders> getAllRecipes(String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignOrders> getAllRecipes(String job_details, String job_owner, String process_status,
+            String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByFilters(
-            job_details,    // 1. jobDetails
-            job_owner,      // 2. jobOwner
-            assignee,       // 3. assignee (สลับกลับมาตรงนี้)
-            process_status, // 4. processStatus (สลับกลับมาตรงนี้)
-            confirm_status, // 5. confirm
-            startDate,      // 6. startDate
-            endDate,        // 7. endDate
-            paging
-        );
+                job_details, // 1. jobDetails
+                job_owner, // 2. jobOwner
+                assignee, // 3. assignee (สลับกลับมาตรงนี้)
+                process_status, // 4. processStatus (สลับกลับมาตรงนี้)
+                confirm_status, // 5. confirm
+                startDate, // 6. startDate
+                endDate, // 7. endDate
+                paging);
     }
 
-    public Page<DesignOrders> getAllRecipesDesign(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignOrders> getAllRecipesDesign(String id, String folder_name, String job_details, String job_owner,
+            String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate,
+            int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByAll(
-            id,             // 1. id
-            folder_name,    // 2. folderName
-            job_details,    // 3. jobDetails
-            job_owner,      // 4. jobOwner
-            assignee,       // 5. assignee
-            process_status, // 6. processStatus
-            confirm_status, // 7. confirm
-            startDate,      // 8. startDate
-            endDate,        
-            paging
-        );
+                id, // 1. id
+                folder_name, // 2. folderName
+                job_details, // 3. jobDetails
+                job_owner, // 4. jobOwner
+                assignee, // 5. assignee
+                process_status, // 6. processStatus
+                confirm_status, // 7. confirm
+                startDate, // 8. startDate
+                endDate,
+                paging);
     }
 
-    public Page<DesignOrders> getAllRecipesDesignSorted(String id, String folder_name, String job_details, String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<DesignOrders> getAllRecipesDesignSorted(String id, String folder_name, String job_details,
+            String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate,
+            LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size);
         return repository.findByAllSorted(
-            id,             // 1. id
-            folder_name,    // 2. folderName
-            job_details,    // 3. jobDetails
-            job_owner,      // 4. jobOwner
-            assignee,       // 5. assignee
-            process_status, // 6. processStatus
-            confirm_status, // 7. confirm
-            startDate,      // 8. startDate
-            endDate,        // 9. endDate
-            paging
-        );
+                id, // 1. id
+                folder_name, // 2. folderName
+                job_details, // 3. jobDetails
+                job_owner, // 4. jobOwner
+                assignee, // 5. assignee
+                process_status, // 6. processStatus
+                confirm_status, // 7. confirm
+                startDate, // 8. startDate
+                endDate, // 9. endDate
+                paging);
     }
 
     @Transactional(readOnly = true)
@@ -123,35 +140,17 @@ public class DesignOrdersService {
         return repository.ConfirmNative(searchTerm);
     }
 
-   public DesignOrders updateDesign(int id, String currentUser) {
-
-        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-
-        if (currentUser != null && !currentUser.isEmpty()) {
-            existingOrder.setAssignee(currentUser);
-        }
-
-        existingOrder.setProcessStatus("รอดำเนินการ");
-        existingOrder.setConfirmStatus("รอดำเนินการ");
-        return repository.save(existingOrder);
-    }
-
-    public DesignOrders updateDesignWork(int id) {
-        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        existingOrder.setProcessStatus("กำลังดำเนินการ");
-        existingOrder.setConfirmStatus("กำลังดำเนินการ");
-        return repository.save(existingOrder);
-    }
-
     public DesignOrders updateDesignComplete(int id) {
-        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        DesignOrders existingOrder = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("รอตรวจสอบ");
         return repository.save(existingOrder);
     }
 
     public DesignOrders updateDesignCompleteWithFile(int id, String fileName) {
-        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        DesignOrders existingOrder = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("รอตรวจสอบ");
         existingOrder.setFileName(fileName);
@@ -159,7 +158,8 @@ public class DesignOrdersService {
     }
 
     public DesignOrders updateDesignApprove(int id) {
-        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        DesignOrders existingOrder = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("ผ่าน");
         existingOrder.setConfirmDate(LocalDate.now());
@@ -167,7 +167,8 @@ public class DesignOrdersService {
     }
 
     public DesignOrders updateDesignEdit(int id) {
-        DesignOrders existingOrder = repository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        DesignOrders existingOrder = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("รอดำเนินการแก้ไข");
         existingOrder.setConfirmStatus("ไม่ผ่าน");
         return repository.save(existingOrder);
@@ -185,19 +186,19 @@ public class DesignOrdersService {
         return repository.countBacklogInProgress(assignee);
     }
 
-    public Integer countBacklogCheck(){
+    public Integer countBacklogCheck() {
         return repository.countBacklogCheck();
     }
 
-    public Integer countBacklogCheckDe(String assignee){
+    public Integer countBacklogCheckDe(String assignee) {
         return repository.countBacklogCheckDe(assignee);
     }
-    
-    public Integer countBacklogEdit(String assignee){
+
+    public Integer countBacklogEdit(String assignee) {
         return repository.countBacklogEdit(assignee);
     }
 
-    public Integer countBacklogComplete(){
+    public Integer countBacklogComplete() {
         return repository.countBacklogComplete();
     }
 }

@@ -73,30 +73,3 @@
     </div>
   </div>
 </div>
-
-<div class="modal fade show d-block" tabindex="-1" *ngIf="showNotDeliverModal"
-  style="background-color: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">ระบุเวลาที่จัดส่งได้</h5>
-        <button type="button" class="btn-close" (click)="closeNotDeliverModal()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="failTime" class="form-label">วันที่</label>
-          <input type="date" class="form-control" [formControl]="notDeliverDate">
-        </div>
-        <div class="mb-3">
-          <label for="failTime" class="form-label">เวลา</label>
-          <input type="time" class="form-control" [formControl]="notDeliverTime">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeNotDeliverModal()">ยกเลิก</button>
-        <button type="button" class="btn btn-primary" (click)="confirmNotDeliver()"
-          style="background-color: #1e1b4b;">ยืนยัน</button>
-      </div>
-    </div>
-  </div>
-</div>

@@ -81,7 +81,9 @@ export class Dcsm18DetailComponent implements OnInit {
       printingMachine: ['',Validators.required],
       inspector: [''],
       customerName: [''],
-      dataDalivery: [false]
+      dataDalivery: [false],
+      postpone: [null],
+      rowVersion: [null]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -139,7 +141,7 @@ export class Dcsm18DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            const msg = error.error?.message || 'ไม่สามารถบันทึกข้อมูลได้';
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
             this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
           }
         });

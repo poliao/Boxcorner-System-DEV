@@ -22,35 +22,37 @@ public class SampleOrderService {
 
     @Transactional
     public SampleOrder saveOrUpdateOrder(SampleOrder order, String jobOwner) {
-        
         if (order.getId() != null) {
-            return sampleOrderRepository.findById(order.getId())
-                .map(existingOrder -> {
-                    existingOrder.setOrderDate(order.getOrderDate());
-                    existingOrder.setFolderName(order.getFolderName());
-                    existingOrder.setJobOwner(order.getJobOwner());
-                    existingOrder.setDeliveryDate(order.getDeliveryDate());
-                    existingOrder.setDeliveryTime(order.getDeliveryTime());
-                    existingOrder.setResponsiblePerson(order.getResponsiblePerson());
-                    existingOrder.setQuantity(order.getQuantity());
-                    existingOrder.setUnit(order.getUnit());
-                    existingOrder.setIsCreateSample(order.getIsCreateSample());
-                    existingOrder.setStatus(order.getStatus());
-                    existingOrder.setNote(order.getNote());
-                    existingOrder.setUpdateDateDelivery(order.getUpdateDateDelivery());
-                    existingOrder.setUpdateTimeDelivery(order.getUpdateTimeDelivery());
-                    existingOrder.setCancelRemarks(order.getCancelRemarks());
-                    
-                    return sampleOrderRepository.save(existingOrder);
-                })
-                .orElseGet(() -> {
-                   
-                    return sampleOrderRepository.save(order);
-                });
-        }else{
-             order.setJobOwner(jobOwner);
+            SampleOrder existingOrder = sampleOrderRepository.findById(order.getId())
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลสำหรับการอัปเดต ID: " + order.getId()));
+            
+            if (order.getRowVersion() != null && !existingOrder.getRowVersion().equals(order.getRowVersion())) {
+                throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
+            }
+            
+            existingOrder.setOrderDate(order.getOrderDate());
+            existingOrder.setFolderName(order.getFolderName());
+            existingOrder.setJobOwner(order.getJobOwner());
+            existingOrder.setDeliveryDate(order.getDeliveryDate());
+            existingOrder.setDeliveryTime(order.getDeliveryTime());
+            existingOrder.setResponsiblePerson(order.getResponsiblePerson());
+            existingOrder.setQuantity(order.getQuantity());
+            existingOrder.setUnit(order.getUnit());
+            existingOrder.setIsCreateSample(order.getIsCreateSample());
+            existingOrder.setStatus(order.getStatus());
+            existingOrder.setNote(order.getNote());
+            existingOrder.setNoteEdit(order.getNoteEdit());
+            existingOrder.setUpdateDateDelivery(order.getUpdateDateDelivery());
+            existingOrder.setUpdateTimeDelivery(order.getUpdateTimeDelivery());
+            existingOrder.setCustomerName(order.getCustomerName());
+            existingOrder.setFileName(order.getFileName());
+            existingOrder.setCancelRemarks(order.getCancelRemarks());
+            
+            return sampleOrderRepository.save(existingOrder);
+        } else {
+            order.setJobOwner(jobOwner);
+            return sampleOrderRepository.save(order);
         }
-        return sampleOrderRepository.save(order);
     }
 
     @Transactional
@@ -145,15 +147,6 @@ public class SampleOrderService {
             endDate,
             paging
         );
-    }
-
-    public SampleOrder updatesampleOrderStatus(int id, String status, String assignee) {
-        SampleOrder sampleOrder = sampleOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
-        if (assignee != null) {
-            sampleOrder.setResponsiblePerson(assignee);
-        }
-        sampleOrder.setStatus(status);
-        return sampleOrderRepository.save(sampleOrder);
     }
 
     public SampleOrder updatesampleOrderNoteEdit(Integer id, String note) {

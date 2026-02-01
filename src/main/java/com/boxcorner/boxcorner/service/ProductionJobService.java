@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.boxcorner.boxcorner.entity.ProductionJob;
 import com.boxcorner.boxcorner.repository.ProductionJobRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 
 @Service
@@ -16,9 +18,45 @@ public class ProductionJobService {
 
     @Autowired
     private ProductionJobRepository productionJobRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public ProductionJob save(ProductionJob productionJob) {
+        if (productionJob.getId() != null) {
+            ProductionJob existing = productionJobRepository.findById(productionJob.getId()).orElse(null);
+            if (existing != null) {
+                if (productionJob.getRowVersion() != null && 
+                    !existing.getRowVersion().equals(productionJob.getRowVersion())) {
+                    throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
+                }
+                
+                existing.setDate(productionJob.getDate());
+                existing.setJobId(productionJob.getJobId());
+                existing.setCustomerJobName(productionJob.getCustomerJobName());
+                existing.setPrintQuantity(productionJob.getPrintQuantity());
+                existing.setProductionQuantity(productionJob.getProductionQuantity());
+                existing.setPrintingDate(productionJob.getPrintingDate());
+                existing.setPrintingResponsible(productionJob.getPrintingResponsible());
+                existing.setCoatingDate(productionJob.getCoatingDate());
+                existing.setCoatingResponsible(productionJob.getCoatingResponsible());
+                existing.setStampingDate(productionJob.getStampingDate());
+                existing.setStampingResponsible(productionJob.getStampingResponsible());
+                existing.setGluingDate(productionJob.getGluingDate());
+                existing.setGluingResponsible(productionJob.getGluingResponsible());
+                existing.setQcDate(productionJob.getQcDate());
+                existing.setQcStatus(productionJob.getQcStatus());
+                existing.setDueDate(productionJob.getDueDate());
+                existing.setPrintStatus(productionJob.getPrintStatus());
+                existing.setShippingAddress(productionJob.getShippingAddress());
+                existing.setRemark(productionJob.getRemark());
+                existing.setDeliveryStatus(productionJob.getDeliveryStatus());
+                existing.setImageUrl(productionJob.getImageUrl());
+                existing.setMachineSetupCount(productionJob.getMachineSetupCount());
+                return productionJobRepository.save(existing);
+            }
+        }
         return productionJobRepository.save(productionJob);
     }
 

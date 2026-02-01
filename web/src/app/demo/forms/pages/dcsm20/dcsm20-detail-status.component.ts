@@ -265,6 +265,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
 
       const apiFilters = {
       id: this.referenceId,
+      dataDalivery: true
     };
       Swal.fire({
         title: 'บันทึกข้อมูล',
