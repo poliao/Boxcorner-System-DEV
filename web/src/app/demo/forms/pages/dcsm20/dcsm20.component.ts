@@ -168,6 +168,18 @@ export class Dcsm20Component implements OnInit {
 
   getStatusColumnStyle(columnKey: string, rowData: any): any {
     if (columnKey === 'printStatus') {
+      const status = rowData.printStatus;
+      
+      // หาขั้นตอนสุดท้ายของงานนี้
+      const isLastStep = this.isLastStepForJob(rowData, status);
+      
+      if (isLastStep) {
+        return {
+          'background-color': '#6c757d',
+          'color': '#ffffff'
+        };
+      }
+      
       const statusColor = this.statusColorService.getStatusColor(rowData.printStatus);
       return {
         'background-color': statusColor,
@@ -175,6 +187,28 @@ export class Dcsm20Component implements OnInit {
       };
     }
     return {};
+  }
+
+  // เช็คว่าสถานะปัจจุบันเป็นขั้นตอนสุดท้ายของงานนี้หรือไม่
+  isLastStepForJob(rowData: any, currentStatus: string): boolean {
+    const steps = [
+      { status: 'พิมพ์แล้ว', hasData: rowData.printingDate || rowData.printingResponsible },
+      { status: 'เคลือบแล้ว', hasData: rowData.coatingDate || rowData.coatingResponsible },
+      { status: 'ปั้มแล้ว', hasData: rowData.stampingDate || rowData.stampingResponsible },
+      { status: 'ปะแล้ว', hasData: rowData.gluingDate || rowData.gluingResponsible },
+      { status: 'Qcแล้ว', hasData: rowData.qcDate }
+    ];
+    
+    // หาขั้นตอนสุดท้ายที่มีข้อมูล
+    let lastStepWithData = null;
+    for (let i = steps.length - 1; i >= 0; i--) {
+      if (steps[i].hasData) {
+        lastStepWithData = steps[i].status;
+        break;
+      }
+    }
+    
+    return currentStatus === lastStepWithData;
   }
 
   getColumnStyle(columnKey: string, rowData: any): any {

@@ -65,6 +65,7 @@ export class Dcsm26DetailComponent implements OnInit {
       imageUrl: [null],
       dataDalivery: [false],
       machineSetupCount: [''],
+      rowVersion: [null]
     });
     this.printingForm.get('date')?.disable();
     this.printingForm.get('jobId')?.disable();

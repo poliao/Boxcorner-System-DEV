@@ -15,10 +15,14 @@ import Swal from 'sweetalert2';
 })
 export class Dcsm25DetailComponent implements OnInit {
   printingForm: FormGroup;
+  printingStartForm: FormGroup;
+  printingEndForm: FormGroup;
   id: string | null = null;
   isEditMode = false;
   isPrint = false;
   isInPrint = false;
+  showPrintingModal = false;
+  showPrintingEndModal = false;
 
   constructor(
     private fb: FormBuilder,
@@ -31,6 +35,8 @@ export class Dcsm25DetailComponent implements OnInit {
 
   ngOnInit() {
     this.createForm();
+    this.createPrintingStartForm();
+    this.createPrintingEndForm();
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     const resolvedData = this.route.snapshot.data['designDiecut'];
@@ -65,6 +71,8 @@ export class Dcsm25DetailComponent implements OnInit {
       imageUrl: [null],
       dataDalivery: [false],
       machineSetupCount: [''],
+      rowVersion: [null],
+      printingRecordId: [null],
     });
     this.printingForm.get('date')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -74,6 +82,22 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingForm.get('printingDate')?.disable();
     this.printingForm.get('printingResponsible')?.disable();
     this.printingForm.get('printStatus')?.disable();
+  }
+
+  createPrintingStartForm() {
+    this.printingStartForm = this.fb.group({
+      meter4colorStart: [0, Validators.required],
+      meterBwStart: [0, Validators.required],
+      workType: ['', Validators.required],
+      printerName: ['', Validators.required]
+    });
+  }
+
+  createPrintingEndForm() {
+    this.printingEndForm = this.fb.group({
+      meter4colorEnd: [0, Validators.required],
+      meterBwEnd: [0, Validators.required]
+    });
   }
 
   calculateTotalTime() {
@@ -94,6 +118,138 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   onUpdatePrint(status: string): void {
+    if (status === 'inPrint') {
+      this.openPrintingModal();
+    } else if (status === 'Print') {
+      this.openPrintingEndModal();
+    } else {
+      this.updatePrintStatus(status);
+    }
+  }
+
+  openPrintingModal(): void {
+    this.showPrintingModal = true;
+  }
+
+  closePrintingModal(): void {
+    this.showPrintingModal = false;
+    this.printingStartForm.reset();
+  }
+
+  openPrintingEndModal(): void {
+    this.showPrintingEndModal = true;
+  }
+
+  closePrintingEndModal(): void {
+    this.showPrintingEndModal = false;
+    this.printingEndForm.reset();
+  }
+
+  onStartPrinting(): void {
+    if (this.printingStartForm.valid) {
+      const printingData = this.printingStartForm.value;
+      this.startPrinting(printingData);
+      this.closePrintingModal();
+    } else {
+      this.markPrintingFormTouched();
+    }
+  }
+
+  onEndPrinting(): void {
+    if (this.printingEndForm.valid) {
+      const endData = this.printingEndForm.value;
+      this.endPrinting(endData);
+      this.closePrintingEndModal();
+    } else {
+      this.markPrintingEndFormTouched();
+    }
+  }
+
+  private markPrintingFormTouched(): void {
+    Object.keys(this.printingStartForm.controls).forEach(key => {
+      const control = this.printingStartForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  private markPrintingEndFormTouched(): void {
+    Object.keys(this.printingEndForm.controls).forEach(key => {
+      const control = this.printingEndForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  private endPrinting(endData: any): void {
+    this.loadingService.show();
+    this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
+    
+    const printingRecord = {
+      jobId: this.printingForm.get('jobId')?.value,
+      meter4colorEnd: endData.meter4colorEnd,
+      meterBwEnd: endData.meterBwEnd,
+      endDatetime: new Date().toISOString()
+    };
+    
+    this.dcsm25Service.saveRecord(printingRecord).subscribe({
+      next: (printingResponse) => {
+        const data = this.printingForm.getRawValue();
+        this.dcsm25Service.save(data).subscribe({
+          next: (response) => {
+            this.checkbntPrint();
+            this.printingForm.patchValue(response);
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้นเรียบร้อย!');
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+          }
+        });
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
+      }
+    });
+  }
+
+  private startPrinting(printingData: any): void {
+    this.loadingService.show();
+    this.printingForm.get('printStatus')?.setValue('กำลังพิมพ์');
+    
+    const printingRecord = {
+      jobId: this.printingForm.get('jobId')?.value,
+      meter4colorStart: printingData.meter4colorStart,
+      meterBwStart: printingData.meterBwStart,
+      workType: printingData.workType,
+      printerName: printingData.printerName,
+      startDatetime: new Date().toISOString()
+    };
+    
+    this.dcsm25Service.saveRecord(printingRecord).subscribe({
+      next: (response) => {
+        this.printingForm.get('printingRecordId')?.setValue(response.id);
+        this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.checkbntPrint();
+            this.printingForm.patchValue(response);
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'เริ่มการพิมพ์เรียบร้อย!');
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+          }
+        });
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
+      }
+    });
+  }
+
+  private updatePrintStatus(status: string): void {
     if (this.printingForm.valid) {
       Swal.fire({
         title: 'ยืนยันอัพเดตสถานะ',
@@ -106,13 +262,9 @@ export class Dcsm25DetailComponent implements OnInit {
         cancelButtonText: 'ยกเลิก'
       }).then((result) => {
         if (result.isConfirmed) {
-
           this.loadingService.show();
           if (status === 'Print') {
             this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
-          }
-          if (status === 'inPrint') {
-            this.printingForm.get('printStatus')?.setValue('กำลังพิมพ์');
           }
           const data = this.printingForm.getRawValue();
 

@@ -8,6 +8,8 @@ import lombok.Builder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.checkerframework.checker.units.qual.C;
+
 @Entity
 @Table(name = "production_jobs")
 @Builder
@@ -100,6 +102,9 @@ public class ProductionJob extends BaseEntity {
 
     @Column(name = "machine_setup_count")
     private String machineSetupCount;
+
+    @Column(name = "printing_record_id")
+    private LocalDate printingRecordId;
 
     @PrePersist
     protected void onCreate() {

@@ -177,6 +177,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       imageUrl: [null],
       dataDalivery: [false],
       machineSetupCount: [''],
+      rowVersion: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();

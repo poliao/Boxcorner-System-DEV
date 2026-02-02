@@ -86,6 +86,7 @@ export class Dcsm23DetailComponent implements OnInit {
       processStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
       confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
       fileName: [''],
+      rowVersion: [null]
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });

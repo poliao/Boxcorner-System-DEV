@@ -94,7 +94,8 @@ export class Dcsm17DetailComponent implements OnInit {
       note: [''],
       designOrderId: [''],
       updateDateDelivery: [today],
-      updateTimeDelivery: []
+      updateTimeDelivery: [],
+      rowVersion: [null]
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });

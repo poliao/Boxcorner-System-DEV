@@ -69,8 +69,8 @@ export class Dcsm24DetailComponent implements OnInit {
       startDate: [null],
       startTime: [null],
       endDate:[null],
-      endTime:[null]
-      
+      endTime:[null],
+      rowVersion: [null]
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
