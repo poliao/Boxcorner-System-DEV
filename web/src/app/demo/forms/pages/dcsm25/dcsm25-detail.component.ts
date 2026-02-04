@@ -6,6 +6,7 @@ import { Dcsm25Service } from './dcsm25.service';
 import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm25-detail',
@@ -15,8 +16,7 @@ import Swal from 'sweetalert2';
 })
 export class Dcsm25DetailComponent implements OnInit {
   printingForm: FormGroup;
-  printingStartForm: FormGroup;
-  printingEndForm: FormGroup;
+  printingFormRecord: FormGroup;
   id: string | null = null;
   isEditMode = false;
   isPrint = false;
@@ -30,17 +30,20 @@ export class Dcsm25DetailComponent implements OnInit {
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
     this.createForm();
-    this.createPrintingStartForm();
-    this.createPrintingEndForm();
+    this.createPrintingFormRecord();
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     const resolvedData = this.route.snapshot.data['designDiecut'];
     if (resolvedData) {
+      if (resolvedData.printingRecordId != null) {
+        this.getRecord(resolvedData.printingRecordId);
+      }
       this.printingForm.patchValue(resolvedData);
     }
     this.checkbntPrint();
@@ -73,6 +76,7 @@ export class Dcsm25DetailComponent implements OnInit {
       machineSetupCount: [''],
       rowVersion: [null],
       printingRecordId: [null],
+      
     });
     this.printingForm.get('date')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -84,37 +88,32 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingForm.get('printStatus')?.disable();
   }
 
-  createPrintingStartForm() {
-    this.printingStartForm = this.fb.group({
-      meter4colorStart: [0, Validators.required],
-      meterBwStart: [0, Validators.required],
-      workType: ['', Validators.required],
-      printerName: ['', Validators.required]
+  createPrintingFormRecord() {
+    this.printingFormRecord = this.fb.group({
+      id: [null],
+      referenceId: [null],
+      deliveryTableId: [null],
+      jobId: [null],
+      meter4colorStart: [null],
+      meter4colorEnd: [null],
+      meterBwStart: [null],
+      meterBwEnd: [null],
+      issueFound: [null],
+      issueCause: [null],
+      workType: [null],
+      printerName: [null],
+      jobCategory: [null],
+      printQty4color: [null],
+      printQtyBw: [null],
+      printQtyTotal: [null],
+      orderPrintQty: [null],
+      orderProduceQty: [null],
+      startDatetime: [null],
+      endDatetime: [null],
+      responsiblePerson: [null],
+      rowVersion: [null],
+      createdAt: [null],
     });
-  }
-
-  createPrintingEndForm() {
-    this.printingEndForm = this.fb.group({
-      meter4colorEnd: [0, Validators.required],
-      meterBwEnd: [0, Validators.required]
-    });
-  }
-
-  calculateTotalTime() {
-    const start = this.printingForm.get('startTime')?.value;
-    const end = this.printingForm.get('endTime')?.value;
-
-    if (start && end) {
-      const startTime = new Date(`2000-01-01 ${start}`);
-      const endTime = new Date(`2000-01-01 ${end}`);
-      const diff = endTime.getTime() - startTime.getTime();
-
-      if (diff > 0) {
-        const hours = Math.floor(diff / 3600000);
-        const minutes = Math.floor((diff % 3600000) / 60000);
-        this.printingForm.patchValue({ totalTime: `${hours}:${minutes.toString().padStart(2, '0')}` });
-      }
-    }
   }
 
   onUpdatePrint(status: string): void {
@@ -128,27 +127,32 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   openPrintingModal(): void {
+    this.setStartPrintingValidators();
     this.showPrintingModal = true;
   }
 
   closePrintingModal(): void {
     this.showPrintingModal = false;
-    this.printingStartForm.reset();
+    this.printingFormRecord.reset();
   }
 
   openPrintingEndModal(): void {
+    this.setEndPrintingValidators();
     this.showPrintingEndModal = true;
   }
 
   closePrintingEndModal(): void {
     this.showPrintingEndModal = false;
-    this.printingEndForm.reset();
+    this.printingFormRecord.reset();
   }
 
   onStartPrinting(): void {
-    if (this.printingStartForm.valid) {
-      const printingData = this.printingStartForm.value;
-      this.startPrinting(printingData);
+    if (this.printingFormRecord.valid) {
+      this.printingFormRecord.get('workType')?.setValue('OD');
+      this.printingFormRecord.get('printerName')?.setValue(this.printingForm.getRawValue().printingResponsible);
+      this.printingFormRecord.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
+      this.printingFormRecord.get('startDatetime')?.setValue(new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16));
+      this.startPrinting(this.printingFormRecord.getRawValue());
       this.closePrintingModal();
     } else {
       this.markPrintingFormTouched();
@@ -156,9 +160,8 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   onEndPrinting(): void {
-    if (this.printingEndForm.valid) {
-      const endData = this.printingEndForm.value;
-      this.endPrinting(endData);
+    if (this.printingFormRecord.valid) {
+      this.endPrinting();
       this.closePrintingEndModal();
     } else {
       this.markPrintingEndFormTouched();
@@ -166,32 +169,29 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   private markPrintingFormTouched(): void {
-    Object.keys(this.printingStartForm.controls).forEach(key => {
-      const control = this.printingStartForm.get(key);
+    Object.keys(this.printingFormRecord.controls).forEach(key => {
+      const control = this.printingFormRecord.get(key);
       control?.markAsTouched();
     });
   }
 
   private markPrintingEndFormTouched(): void {
-    Object.keys(this.printingEndForm.controls).forEach(key => {
-      const control = this.printingEndForm.get(key);
+    Object.keys(this.printingFormRecord.controls).forEach(key => {
+      const control = this.printingFormRecord.get(key);
       control?.markAsTouched();
     });
   }
 
-  private endPrinting(endData: any): void {
+  private endPrinting(): void {
     this.loadingService.show();
     this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
-    
-    const printingRecord = {
-      jobId: this.printingForm.get('jobId')?.value,
-      meter4colorEnd: endData.meter4colorEnd,
-      meterBwEnd: endData.meterBwEnd,
-      endDatetime: new Date().toISOString()
-    };
-    
-    this.dcsm25Service.saveRecord(printingRecord).subscribe({
-      next: (printingResponse) => {
+    this.printingFormRecord.get('printQty4color')?.setValue(this.printingFormRecord.getRawValue().meter4colorEnd - this.printingFormRecord.getRawValue().meter4colorStart);
+    this.printingFormRecord.get('printQtyBw')?.setValue(this.printingFormRecord.getRawValue().meterBwEnd - this.printingFormRecord.getRawValue().meterBwStart);
+    this.printingFormRecord.get('printQtyTotal')?.setValue(this.printingFormRecord.getRawValue().printQty4color + this.printingFormRecord.getRawValue().printQtyBw);
+    this.printingFormRecord.get('endDatetime')?.setValue(new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16));
+    this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
+      next: (response) => {
+        this.printingFormRecord.patchValue(response);
         const data = this.printingForm.getRawValue();
         this.dcsm25Service.save(data).subscribe({
           next: (response) => {
@@ -216,18 +216,10 @@ export class Dcsm25DetailComponent implements OnInit {
   private startPrinting(printingData: any): void {
     this.loadingService.show();
     this.printingForm.get('printStatus')?.setValue('กำลังพิมพ์');
-    
-    const printingRecord = {
-      jobId: this.printingForm.get('jobId')?.value,
-      meter4colorStart: printingData.meter4colorStart,
-      meterBwStart: printingData.meterBwStart,
-      workType: printingData.workType,
-      printerName: printingData.printerName,
-      startDatetime: new Date().toISOString()
-    };
-    
-    this.dcsm25Service.saveRecord(printingRecord).subscribe({
+    this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().jobId);
+    this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
       next: (response) => {
+        this.printingFormRecord.patchValue(response);
         this.printingForm.get('printingRecordId')?.setValue(response.id);
         this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
           next: (response) => {
@@ -238,13 +230,13 @@ export class Dcsm25DetailComponent implements OnInit {
           },
           error: (error) => {
             this.loadingService.hide();
-            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+            this.sweetAlert.error('Error', error.error);
           }
         });
       },
       error: (error) => {
         this.loadingService.hide();
-        this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
+        this.sweetAlert.error('Error', error.error);
       }
     });
   }
@@ -290,15 +282,41 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   checkbntPrint(){
-    if ( this.printingForm.get('printStatus')?.value === '' || this.printingForm.get('printStatus')?.value === null) {
+    if(this.printingForm.get('printStatus')?.value === '' || this.printingForm.get('printStatus')?.value === null) {
       this.isInPrint = true;
       this.isPrint =false;
-    }else if(this.printingForm.get('printStatus')?.value === 'กำลังพิมพ์') {
-       this.isPrint = true;
-       this.isInPrint = false;
-    }else{
+    } else if (this.printingForm.get('printStatus')?.value === 'กำลังพิมพ์') {
+      this.isPrint = true;
+      this.isInPrint = false;
+    } else {
       this.isPrint = false;
       this.isInPrint = false;
     }
+  }
+
+  private setStartPrintingValidators(): void {
+    this.printingFormRecord.get('meter4colorStart')?.setValidators([Validators.required]);
+    this.printingFormRecord.get('meter4colorEnd')?.clearValidators();
+    this.printingFormRecord.get('meter4colorStart')?.updateValueAndValidity();
+    this.printingFormRecord.get('meter4colorEnd')?.updateValueAndValidity();
+  }
+
+  private setEndPrintingValidators(): void {
+    this.printingFormRecord.get('meter4colorEnd')?.setValidators([Validators.required]);
+    this.printingFormRecord.get('meter4colorStart')?.clearValidators();
+    this.printingFormRecord.get('meter4colorStart')?.updateValueAndValidity();
+    this.printingFormRecord.get('meter4colorEnd')?.updateValueAndValidity();
+  }
+
+  getRecord(id): void {
+    this.loadingService.show();
+    this.dcsm25Service.getRecordById(id).subscribe((response) => {
+      this.printingFormRecord.patchValue(response);
+      this.loadingService.hide();
+    },
+    error => {
+      this.loadingService.hide();
+    }
+    )
   }
 }

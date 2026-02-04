@@ -53,14 +53,14 @@
         <h5 class="modal-title" id="printingModalLabel">เริ่มต้นการพิมพ์</h5>
         <button type="button" class="btn-close" (click)="closePrintingModal()" aria-label="Close"></button>
       </div>
-      <form [formGroup]="printingStartForm" (ngSubmit)="onStartPrinting()">
+      <form [formGroup]="printingFormRecord" (ngSubmit)="onStartPrinting()">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="meter4colorStart" class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น <span class="text-danger">*</span></label>
               <input type="number" class="form-control" id="meter4colorStart" 
                      formControlName="meter4colorStart" placeholder="ค่ามิเตอร์ 4 สี เริ่มต้น"
-                     [class.is-invalid]="printingStartForm.get('meter4colorStart')?.invalid && printingStartForm.get('meter4colorStart')?.touched">
+                     [class.is-invalid]="printingFormRecord.get('meter4colorStart')?.invalid && printingFormRecord.get('meter4colorStart')?.touched">
               <div class="invalid-feedback">
                 กรุณากรอกค่ามิเตอร์ 4 สี เริ่มต้น
               </div>
@@ -69,36 +69,26 @@
               <label for="meterBwStart" class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น<span class="text-danger">*</span></label>
               <input type="number" class="form-control" id="meterBwStart" 
                      formControlName="meterBwStart" placeholder="ค่ามิเตอร์ขาวดำ เริ่มต้น"
-                     [class.is-invalid]="printingStartForm.get('meterBwStart')?.invalid && printingStartForm.get('meterBwStart')?.touched">
+                     [class.is-invalid]="printingFormRecord.get('meterBwStart')?.invalid && printingFormRecord.get('meterBwStart')?.touched">
               <div class="invalid-feedback">
                 กรุณากรอกค่ามิเตอร์ขาวดำ เริ่มต้น
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="workType" class="form-label">ประเภทงาน<span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="workType" 
-                     formControlName="workType" placeholder="ประเภทงาน"
-                     [class.is-invalid]="printingStartForm.get('workType')?.invalid && printingStartForm.get('workType')?.touched">
-              <div class="invalid-feedback">
-                กรุณากรอกประเภทงาน
-              </div>
+            <div class="col-12 mb-3">
+              <label for="issueFound" class="form-label">ปัญหาที่เจอ</label>
+              <textarea class="form-control" id="issueFound" rows="3"
+                        formControlName="issueFound" placeholder="ระบุปัญหาที่เจอ (ถ้ามี)"></textarea>
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="printerName" class="form-label">ชื่อเครื่องพิมพ์<span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="printerName" 
-                     formControlName="printerName" placeholder="ชื่อเครื่องพิมพ์"
-                     [class.is-invalid]="printingStartForm.get('printerName')?.invalid && printingStartForm.get('printerName')?.touched">
-              <div class="invalid-feedback">
-                กรุณากรอกชื่อเครื่องพิมพ์
-              </div>
+            <div class="col-12 mb-3">
+              <label for="issueCause" class="form-label">สาเหตุของปัญหา</label>
+              <textarea class="form-control" id="issueCause" rows="3"
+                        formControlName="issueCause" placeholder="ระบุสาเหตุของปัญหา (ถ้ามี)"></textarea>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closePrintingModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary" [disabled]="printingStartForm.invalid">เริ่มพิมพ์</button>
+          <button type="submit" class="btn btn-primary" [disabled]="printingFormRecord.invalid">เริ่มพิมพ์</button>
         </div>
       </form>
     </div>
@@ -113,14 +103,14 @@
         <h5 class="modal-title" id="printingEndModalLabel">พิมพ์เสร็จสิ้น</h5>
         <button type="button" class="btn-close" (click)="closePrintingEndModal()" aria-label="Close"></button>
       </div>
-      <form [formGroup]="printingEndForm" (ngSubmit)="onEndPrinting()">
+      <form [formGroup]="printingFormRecord" (ngSubmit)="onEndPrinting()">
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="meter4colorEnd" class="form-label">ค่ามิเตอร์ 4 สี สิ้นสุด <span class="text-danger">*</span></label>
               <input type="number" class="form-control" id="meter4colorEnd" 
                      formControlName="meter4colorEnd" placeholder="ค่ามิเตอร์ 4 สี สิ้นสุด"
-                     [class.is-invalid]="printingEndForm.get('meter4colorEnd')?.invalid && printingEndForm.get('meter4colorEnd')?.touched">
+                     [class.is-invalid]="printingFormRecord.get('meter4colorEnd')?.invalid && printingFormRecord.get('meter4colorEnd')?.touched">
               <div class="invalid-feedback">
                 กรุณากรอกค่ามิเตอร์ 4 สี สิ้นสุด
               </div>
@@ -129,16 +119,26 @@
               <label for="meterBwEnd" class="form-label">ค่ามิเตอร์ขาวดำ สิ้นสุด <span class="text-danger">*</span></label>
               <input type="number" class="form-control" id="meterBwEnd" 
                      formControlName="meterBwEnd" placeholder="ค่ามิเตอร์ขาวดำ สิ้นสุด"
-                     [class.is-invalid]="printingEndForm.get('meterBwEnd')?.invalid && printingEndForm.get('meterBwEnd')?.touched">
+                     [class.is-invalid]="printingFormRecord.get('meterBwEnd')?.invalid && printingFormRecord.get('meterBwEnd')?.touched">
               <div class="invalid-feedback">
                 กรุณากรอกค่ามิเตอร์ขาวดำ สิ้นสุด
               </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label for="issueFound" class="form-label">ปัญหาที่เจอ</label>
+              <textarea class="form-control" id="issueFound" rows="3"
+                        formControlName="issueFound" placeholder="ระบุปัญหาที่เจอ (ถ้ามี)"></textarea>
+            </div>
+            <div class="col-12 mb-3">
+              <label for="issueCause" class="form-label">สาเหตุของปัญหา</label>
+              <textarea class="form-control" id="issueCause" rows="3"
+                        formControlName="issueCause" placeholder="ระบุสาเหตุของปัญหา (ถ้ามี)"></textarea>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closePrintingEndModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-success" [disabled]="printingEndForm.invalid">พิมพ์เสร็จ</button>
+          <button type="submit" class="btn btn-success" [disabled]="printingFormRecord.invalid">พิมพ์เสร็จ</button>
         </div>
       </form>
     </div>

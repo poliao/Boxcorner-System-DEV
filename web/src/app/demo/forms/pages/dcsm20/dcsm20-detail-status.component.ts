@@ -32,7 +32,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   isDeliveryComplete = false;
   jobImageUrl: string = '';
   isCreate = false;
-  referenceId:any
+  referenceId: any
 
   constructor(
     private fb: FormBuilder,
@@ -263,11 +263,11 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   onSubmit(): void {
     if (this.productionForm.valid) {
       const data = this.productionForm.getRawValue();
-
       const apiFilters = {
-      id: this.referenceId,
-      dataDalivery: true
-    };
+        id: this.referenceId,
+        dataDalivery: true
+      };
+    
       Swal.fire({
         title: 'บันทึกข้อมูล',
         text: "ยืนยันบันทึกข้อมูล ใช่หรือไม่?",
@@ -276,7 +276,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
         confirmButtonColor: '#1e1b4b',
         cancelButtonColor: '#d33',
         confirmButtonText: 'ยืนยัน',
-        cancelButtonText: 'ยกเลิก'
+        cancelButtonText: 'ยกเลิก',
       }).then((result) => {
         if (result.isConfirmed) {
           this.loadingService.show();
@@ -287,7 +287,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
               this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
               this.router.navigate(['/Dcsm09Detail', this.referenceId]);
             });
-
           })
         }
       });
@@ -362,7 +361,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   onFetchData(): void {
     this.loadingService.show();
     const oidPapValue = this.productionForm.get('oidPap')?.value;
-
     this.dcsm20Service.getJobPAP(oidPapValue).subscribe((response) => {
       this.loadingService.show();
       this.productionForm.get('jobId')?.setValue(response.header.job_code);
@@ -384,13 +382,11 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       this.jobImageUrl = response.header.image_url || '';
       this.loadingService.hide();
     })
-
   }
 
   private convertDateFormat(dateStr: string): string {
     if (!dateStr || dateStr === '-') return '';
 
-    // แปลงจาก "27/01/2026" เป็น "2026-01-27"
     if (dateStr.includes('/')) {
       const parts = dateStr.split('/');
       if (parts.length === 3) {
@@ -398,7 +394,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
         const month = parts[1].padStart(2, '0');
         const year = parts[2];
 
-        // ตรวจสอบว่าเป็นปีพุทธศักราชหรือคริสต์ศักราช
         const yearNum = parseInt(year);
         const convertedYear = yearNum > 2500 ? (yearNum - 543).toString() : year;
 
@@ -406,7 +401,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       }
     }
 
-    // แปลงจาก "29 ม.ค. 2569" เป็น "2026-01-29"
     const thaiMonths: { [key: string]: string } = {
       'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03', 'เม.ย.': '04',
       'พ.ค.': '05', 'มิ.ย.': '06', 'ก.ค.': '07', 'ส.ค.': '08',

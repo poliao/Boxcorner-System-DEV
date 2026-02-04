@@ -1,14 +1,19 @@
 package com.boxcorner.boxcorner.entity;
-import jakarta.persistence.*; 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.checkerframework.checker.units.qual.C;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "production_jobs")
@@ -30,7 +35,6 @@ public class ProductionJob extends BaseEntity {
 
     @Column(name = "customer_job_name", nullable = false)
     private String customerJobName; 
-
 
     @Column(name = "print_quantity")
     private Integer printQuantity;
@@ -104,7 +108,7 @@ public class ProductionJob extends BaseEntity {
     private String machineSetupCount;
 
     @Column(name = "printing_record_id")
-    private LocalDate printingRecordId;
+    private String printingRecordId;
 
     @PrePersist
     protected void onCreate() {

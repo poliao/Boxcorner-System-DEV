@@ -79,4 +79,34 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "cancel_remarks")
     private String cancelRemarks;
+
+    @Column(name = "job_type")
+    private String jobType;
+
+    @Column(name = "print_type")
+    private String printType;
+    
+    @Column(name = "paper_type")
+    private String paperType;
+    
+    @Column(name = "diecutting_type")
+    private String diecuttingType;
+
+    @Column(name = "coat_type")
+    private String coatType;
+    
+    @Column(name = "system_print")
+    private String systemPrint;
+
+    @Column(name = "color_print")
+    private String colorPrint;
+
+    @Column(name = "paper_gram")
+    private String paperGram;
+
+    @Column(name = "job_id")
+    private String jobId;
+
+    @Column(name = "qt_id")
+    private String qtId;
 }

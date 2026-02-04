@@ -41,6 +41,10 @@ export class Dcsm25Service {
     return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
   }
 
+  getRecordById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/printing-records/getById?id=${id}`);
+  }
+
   saveRecord(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/printing-records/save`, data);
   }

@@ -2,6 +2,7 @@
   <div class="card total-income-card warning overflow-hidden">
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
+
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
           <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
@@ -19,13 +20,35 @@
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไม่อนุมัติเลื่อนวันส่ง
           </button>
-          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไฟล์ถูกต้อง
           </button>
+          <button *ngIf="isBtnApproveSample == true" (click)="openRejectModal()" type="button"
+            class="btn btn-danger text-white px-5 shadow-sm">
+            ไม่ผ่าน
+          </button>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ID</label>
+          <div class="input-group">
+            <input type="text" formControlName="searchId" class="form-control" placeholder="กรอกเลข ID">
+            <button type="button" class="btn btn-primary" (click)="fetchData()">
+              ดึงข้อมูล
+            </button>
+          </div>
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">JobId</label>
+          <input type="text" formControlName="jobId" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">QtId</label>
+          <input type="text" formControlName="qtId" class="form-control">
         </div>
         <div *ngIf="isDesign" class="col-md-6">
           <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
@@ -100,6 +123,49 @@
   </div>
 </div>
 
+<div class="card-body">
+  <div class="card total-income-card info overflow-hidden">
+    <div style="padding: 10px;">
+      <h5 class="card-title mb-3">รายละเอียดงานพิมพ์</h5>
+      <form [formGroup]="mainForm" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="jobType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ระบบพิมพ์</label>
+          <input type="text" formControlName="systemPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานพิมพ์</label>
+          <input type="text" formControlName="printType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">สีที่พิมพ์</label>
+          <input type="text" formControlName="colorPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ขนาดกระดาษ</label>
+          <input type="text" formControlName="paperType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">แกรมกระดาษ</label>
+          <input type="text" formControlName="paperGram" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานเคลือบ</label>
+          <input type="text" formControlName="coatType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
+          <input type="text" formControlName="diecuttingType" class="form-control">
+        </div>
+      </form>
+      <br>
+    </div>
+  </div><br>
+</div>
+
 <div class="modal fade show d-block" tabindex="-1" *ngIf="showApproveModal" style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -161,11 +227,11 @@
         <h5 class="modal-title">อนุมัติข้อมูลไปยัง ตารางคอนเฟิร์มรอผลิต</h5>
         <button type="button" class="btn-close" (click)="closeApproveModal()"></button>
       </div>
-      <div class="modal-body">  
-      <div class="row mb-3">
+      <div class="modal-body">
+        <div class="row mb-3">
           <div class="col-6">
             <label class="form-label font-weight-bold">ใช้ไฟล์ <span style="color: red;">*</span></label>
-            <input type="text" class="form-control" [formControl]="usedFile" 
+            <input type="text" class="form-control" [formControl]="usedFile"
               [class.is-invalid]="usedFile.invalid && usedFile.touched">
           </div>
           <div class="col-6">
@@ -177,7 +243,7 @@
 
         <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า  <span style="color: red;">*</span></label>
+            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า <span style="color: red;">*</span></label>
             <input type="date" class="form-control" [formControl]="deadlineDate"
               [class.is-invalid]="deadlineDate.invalid && deadlineDate.touched">
           </div>
@@ -192,17 +258,43 @@
           <div class="col-12 ">
             <label class="form-label font-weight-bold">หมายเหตุ </label>
             <textarea class="form-control" rows="3" [formControl]="remarks"
-            placeholder="หมายเหตุเพิ่มเติม..."></textarea>
+              placeholder="หมายเหตุเพิ่มเติม..."></textarea>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
-        
+
         <button type="button" class="btn btn-success" (click)="confirmApprove()"
           [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid">
           ยืนยันอนุมัติ
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showRejectModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ไม่ผ่าน - เลือกหน่วยงาน</h5>
+        <button type="button" class="btn-close" (click)="closeRejectModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-4">เลือกหน่วยงานที่ต้องการส่งต่อ:</p>
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-warning btn-lg" (click)="sendToDesign()">
+            ส่งไปฝ่ายออกแบบ
+          </button>
+          <button type="button" class="btn btn-info btn-lg" (click)="sendToPlan()">
+            ส่งไปฝ่ายแผน
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">ยกเลิก</button>
       </div>
     </div>
   </div>

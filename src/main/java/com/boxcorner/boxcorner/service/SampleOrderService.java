@@ -47,6 +47,16 @@ public class SampleOrderService {
             existingOrder.setCustomerName(order.getCustomerName());
             existingOrder.setFileName(order.getFileName());
             existingOrder.setCancelRemarks(order.getCancelRemarks());
+            existingOrder.setJobType(order.getJobType());
+            existingOrder.setPrintType(order.getPrintType());
+            existingOrder.setPaperType(order.getPaperType());
+            existingOrder.setDiecuttingType(order.getDiecuttingType());
+            existingOrder.setCoatType(order.getCoatType());
+            existingOrder.setSystemPrint(order.getSystemPrint());
+            existingOrder.setColorPrint(order.getColorPrint());
+            existingOrder.setPaperGram(order.getPaperGram());
+            existingOrder.setJobId(order.getJobId());
+            existingOrder.setQtId(order.getQtId());
             
             return sampleOrderRepository.save(existingOrder);
         } else {

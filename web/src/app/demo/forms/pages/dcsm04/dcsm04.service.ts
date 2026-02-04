@@ -15,6 +15,7 @@ export class Dcsm04Service {
   save(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
   }
+  
   getById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
   }
@@ -82,5 +83,9 @@ export class Dcsm04Service {
 
   countBacklogSampleCheck(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSampleCheck`);
+  }
+
+  getSobPAP(oid: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/pap/getSamplePap?oid=${oid}`);
   }
 }

@@ -52,6 +52,21 @@ export class Dcsm02DetailComponent implements OnInit {
     this.isEditMode = !!this.id;
 
     this.initForm();
+    
+    // Listen to isCreateSample changes
+    this.isCreateSample.valueChanges.subscribe(value => {
+      if (value) {
+        this.approveQty.setValidators([Validators.required]);
+        this.approveUnit.setValidators([Validators.required]);
+      } else {
+        this.approveQty.clearValidators();
+        this.approveUnit.clearValidators();
+      }
+      
+      this.approveQty.updateValueAndValidity();
+      this.approveUnit.updateValueAndValidity();
+    });
+    
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
