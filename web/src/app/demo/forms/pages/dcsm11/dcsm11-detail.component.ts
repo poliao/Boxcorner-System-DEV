@@ -68,6 +68,7 @@ export class Dcsm11DetailComponent implements OnInit {
   initForm(): void {
     this.mainForm = this.fb.group({
       id: [''],
+      searchId: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
       jobOwner: [''],
@@ -76,32 +77,55 @@ export class Dcsm11DetailComponent implements OnInit {
       responsiblePerson: ['รอผู้รับผิดชอบอนุมัติ'],
       quantity: ['', Validators.required],
       unit: ['', Validators.required],
-      isCreateSample: [false],
+      isCreateSample: [true],
       status: ['รอผู้รับผิดชอบอนุมัติ'],
       note: [''],
+      noteEdit: [''],
+      fileName: [''],
       designOrderId: [''],
       updateDateDelivery: [new Date().toISOString().substring(0, 10)],
       updateTimeDelivery: [''],
-      noteEdit: [''],
       customerName: [''],
+      jobType: [null],
+      printType: [null],
+      paperType: [null],
+      diecuttingType: [null],
+      coatType: [null],
+      systemPrint: [null],
+      colorPrint: [null],
+      paperGram: [null],
+      rowVersion: [null],
+      jobId: [null],
+      qtId: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
-    this.mainForm.controls['jobOwner'].disable({ emitEvent: false });
-    this.mainForm.controls['responsiblePerson'].disable({ emitEvent: false });
-    this.mainForm.controls['status'].disable({ emitEvent: false });
-    this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
-    this.mainForm.controls['updateDateDelivery'].disable({ emitEvent: false });
-    this.mainForm.controls['updateTimeDelivery'].disable({ emitEvent: false });
     this.mainForm.controls['folderName'].disable({ emitEvent: false });
+    this.mainForm.controls['jobOwner'].disable({ emitEvent: false });
     this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
     this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
+    this.mainForm.controls['responsiblePerson'].disable({ emitEvent: false });
     this.mainForm.controls['quantity'].disable({ emitEvent: false });
     this.mainForm.controls['unit'].disable({ emitEvent: false });
     this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
+    this.mainForm.controls['status'].disable({ emitEvent: false });
     this.mainForm.controls['note'].disable({ emitEvent: false });
     this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
     this.mainForm.controls['customerName'].disable({ emitEvent: false });
+    this.mainForm.controls['fileName'].disable({ emitEvent: false });
+    this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
+    this.mainForm.controls['updateDateDelivery'].disable({ emitEvent: false });
+    this.mainForm.controls['updateTimeDelivery'].disable({ emitEvent: false });
+    this.mainForm.controls['jobType'].disable({ emitEvent: false });
+    this.mainForm.controls['printType'].disable({ emitEvent: false });
+    this.mainForm.controls['paperType'].disable({ emitEvent: false });
+    this.mainForm.controls['diecuttingType'].disable({ emitEvent: false });
+    this.mainForm.controls['coatType'].disable({ emitEvent: false });
+    this.mainForm.controls['systemPrint'].disable({ emitEvent: false });
+    this.mainForm.controls['colorPrint'].disable({ emitEvent: false });
+    this.mainForm.controls['paperGram'].disable({ emitEvent: false });
+    this.mainForm.controls['jobId'].disable({ emitEvent: false });
+    this.mainForm.controls['qtId'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

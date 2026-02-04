@@ -83,6 +83,7 @@ export class Dcsm03DetailComponent implements OnInit {
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['noteEdit'].disable({ emitEvent: false });
     this.designForm.controls['customerName'].disable({ emitEvent: false });
+    this.designForm.controls['fileName'].disable({ emitEvent: false });
   }
   patchFormData(data: any): void {
     const apiData = data as any;
@@ -212,6 +213,7 @@ export class Dcsm03DetailComponent implements OnInit {
       if (result.isConfirmed) {
         if (this.latestFileName.valid) {
           this.loadingService.show();
+          this.designForm.get('fileName')?.setValue(this.latestFileName.value);
           this.designForm.get('processStatus')?.setValue('เสร็จสิ้น');
           this.designForm.get('confirmStatus')?.setValue('รอตรวจสอบ');
 

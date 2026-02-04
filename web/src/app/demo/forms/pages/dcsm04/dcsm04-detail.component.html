@@ -285,7 +285,7 @@
       <div class="modal-body text-center">
         <p class="mb-4">เลือกหน่วยงานที่ต้องการส่งต่อ:</p>
         <div class="d-grid gap-2">
-          <button type="button" class="btn btn-warning btn-lg" (click)="sendToDesign()">
+          <button type="button" class="btn btn-warning btn-lg" (click)="openDesignModal()">
             ส่งไปฝ่ายออกแบบ
           </button>
           <button type="button" class="btn btn-info btn-lg" (click)="sendToPlan()">
@@ -295,6 +295,47 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Design Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showDesignModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ส่งไปฝ่ายออกแบบ</h5>
+        <button type="button" class="btn-close" (click)="closeDesignModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">วันที่ต้องส่ง <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" [formControl]="designDate"
+              [class.is-invalid]="designDate.invalid && designDate.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">เวลาที่ต้องส่ง <span class="text-danger">*</span></label>
+            <input type="time" class="form-control" [formControl]="designTime"
+              [class.is-invalid]="designTime.invalid && designTime.touched">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">หมายเหตุในการขอแก้ไข <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" [formControl]="designRemarks"
+              placeholder="ระบุหมายเหตุในการขอแก้ไข..."
+              [class.is-invalid]="designRemarks.invalid && designRemarks.touched"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDesignModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-warning" (click)="confirmSendToDesign()"
+          [disabled]="designDate.invalid || designTime.invalid || designRemarks.invalid">
+          ยืนยันส่ง
+        </button>
       </div>
     </div>
   </div>

@@ -18,6 +18,14 @@
           <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
           <input type="text" formControlName="designOrderId" class="form-control">
         </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">JobId</label>
+          <input type="text" formControlName="jobId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QtId</label>
+          <input type="text" formControlName="qtId" class="form-control">
+        </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
@@ -86,4 +94,47 @@
       </form>
     </div>
   </div>
+</div>
+
+<div class="card-body">
+  <div class="card total-income-card info overflow-hidden">
+    <div style="padding: 10px;">
+      <h5 class="card-title mb-3">รายละเอียดงานพิมพ์</h5>
+      <form [formGroup]="mainForm" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="jobType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ระบบพิมพ์</label>
+          <input type="text" formControlName="systemPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานพิมพ์</label>
+          <input type="text" formControlName="printType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">สีที่พิมพ์</label>
+          <input type="text" formControlName="colorPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ขนาดกระดาษ</label>
+          <input type="text" formControlName="paperType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">แกรมกระดาษ</label>
+          <input type="text" formControlName="paperGram" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานเคลือบ</label>
+          <input type="text" formControlName="coatType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
+          <input type="text" formControlName="diecuttingType" class="form-control">
+        </div>
+      </form>
+      <br>
+    </div>
+  </div><br>
 </div>

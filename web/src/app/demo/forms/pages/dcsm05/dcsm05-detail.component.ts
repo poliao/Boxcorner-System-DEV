@@ -62,22 +62,35 @@ export class Dcsm05DetailComponent implements OnInit {
   initForm(): void {
     this.mainForm = this.fb.group({
       id: [''],
+      searchId: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
       jobOwner: [''],
-      deliveryDate: [''],
-      deliveryTime: [''],
+      deliveryDate: ['', Validators.required],
+      deliveryTime: ['', Validators.required],
       responsiblePerson: ['รอผู้รับผิดชอบอนุมัติ'],
       quantity: ['', Validators.required],
       unit: ['', Validators.required],
-      isCreateSample: [false],
+      isCreateSample: [true],
       status: ['รอผู้รับผิดชอบอนุมัติ'],
       note: [''],
       noteEdit: [''],
-      customerName: [''],
       fileName: [''],
-      designOrderId: [null],
-      rowVersion: [null]
+      designOrderId: [''],
+      updateDateDelivery: [new Date().toISOString().substring(0, 10)],
+      updateTimeDelivery: [''],
+      customerName: [''],
+      jobType: [null],
+      printType: [null],
+      paperType: [null],
+      diecuttingType: [null],
+      coatType: [null],
+      systemPrint: [null],
+      colorPrint: [null],
+      paperGram: [null],
+      rowVersion: [null],
+      jobId: [null],
+      qtId: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -95,6 +108,18 @@ export class Dcsm05DetailComponent implements OnInit {
     this.mainForm.controls['customerName'].disable({ emitEvent: false });
     this.mainForm.controls['fileName'].disable({ emitEvent: false });
     this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
+    this.mainForm.controls['updateDateDelivery'].disable({ emitEvent: false });
+    this.mainForm.controls['updateTimeDelivery'].disable({ emitEvent: false });
+    this.mainForm.controls['jobType'].disable({ emitEvent: false });
+    this.mainForm.controls['printType'].disable({ emitEvent: false });
+    this.mainForm.controls['paperType'].disable({ emitEvent: false });
+    this.mainForm.controls['diecuttingType'].disable({ emitEvent: false });
+    this.mainForm.controls['coatType'].disable({ emitEvent: false });
+    this.mainForm.controls['systemPrint'].disable({ emitEvent: false });
+    this.mainForm.controls['colorPrint'].disable({ emitEvent: false });
+    this.mainForm.controls['paperGram'].disable({ emitEvent: false });
+    this.mainForm.controls['jobId'].disable({ emitEvent: false });
+    this.mainForm.controls['qtId'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -111,7 +136,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = false;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไม่อนุมัติเลื่อนส่ง') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'อนุมัติขอเลื่อนส่ง')) {
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไม่อนุมัติเลื่อนส่ง') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'อนุมัติขอเลื่อนส่ง') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอเคลียร์ไฟล์ใหม่')) {
       this.confirm = false;
       this.confirmDeliver = true;
       this.notDeliver = true;

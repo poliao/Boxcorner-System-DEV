@@ -10,6 +10,7 @@ export class StatusColorService {
       // สถานะเริ่มต้น
       case 'รอผู้รับผิดชอบอนุมัติ': return '#9e9e9e'; // สีเทา
       case 'รอผู้รับผิดชอบยืนยัน': return '#9e9e9e'; // สีเทา
+      case 'แก้ไขงานตัวอย่าง': return '#ff0000'
       case 'รอดำเนินการ': return '#ff9800'; // สีส้ม
       case 'กำลังดำเนินการ': return '#2196f3'; // สีน้ำเงิน
       case 'เสร็จสิ้น': return '#4caf50'; // สีเขียว

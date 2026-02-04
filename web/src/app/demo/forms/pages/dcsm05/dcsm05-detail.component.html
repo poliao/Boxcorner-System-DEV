@@ -42,7 +42,15 @@
           <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
           <input type="text" formControlName="designOrderId" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">JobId</label>
+          <input type="text" formControlName="jobId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QtId</label>
+          <input type="text" formControlName="qtId" class="form-control">
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
@@ -52,11 +60,11 @@
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched" style="background-color: #ffee00; color: #000000;">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
           <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
         </div>
@@ -106,6 +114,49 @@
       </form>
     </div>
   </div>
+</div>
+
+<div class="card-body">
+  <div class="card total-income-card info overflow-hidden">
+    <div style="padding: 10px;">
+      <h5 class="card-title mb-3">รายละเอียดงานพิมพ์</h5>
+      <form [formGroup]="mainForm" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="jobType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ระบบพิมพ์</label>
+          <input type="text" formControlName="systemPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานพิมพ์</label>
+          <input type="text" formControlName="printType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">สีที่พิมพ์</label>
+          <input type="text" formControlName="colorPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ขนาดกระดาษ</label>
+          <input type="text" formControlName="paperType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">แกรมกระดาษ</label>
+          <input type="text" formControlName="paperGram" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานเคลือบ</label>
+          <input type="text" formControlName="coatType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
+          <input type="text" formControlName="diecuttingType" class="form-control">
+        </div>
+      </form>
+      <br>
+    </div>
+  </div><br>
 </div>
 
 <div class="modal fade show d-block" tabindex="-1" *ngIf="showNotDeliverModal"
