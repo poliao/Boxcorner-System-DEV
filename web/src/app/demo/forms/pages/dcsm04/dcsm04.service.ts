@@ -25,10 +25,10 @@ export class Dcsm04Service {
       page: page.toString(),
       size: size.toString(),
       id: filters.id || '',
-      folderName: filters.folderName || '',           // เดิม job_details
-      jobOwner: filters.jobOwner || '',               // เดิม job_owner
-      responsiblePerson: filters.responsiblePerson || '', // เดิม assignee
-      status: filters.status || '',                   // เดิม process_status
+      folderName: filters.folderName || '',
+      jobOwner: filters.jobOwner || '',
+      responsiblePerson: filters.responsiblePerson || '',
+      status: filters.status || '',
       startDate: filters.startDate || '',
       endDate: filters.endDate || ''
     };

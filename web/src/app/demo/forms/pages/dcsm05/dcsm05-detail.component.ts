@@ -339,20 +339,54 @@ export class Dcsm05DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
+        const data = {
+          id: '',
+          createdAt: new Date(),
+          jobId: this.mainForm.getRawValue().jobId,
+          deliveryDate: this.mainForm.getRawValue().deliveryDate,
+          deliveryTime: this.mainForm.getRawValue().deliveryTime,
+          customerJobName: this.mainForm.getRawValue().customerName,
+          jobStatus: null,
+          totalPrintSheets: null,
+          productionQty: this.mainForm.getRawValue().quantity,
+          printerName: null,
+          setupWaste: null,
+          sampleRefNo: this.mainForm.getRawValue().id,
+          issample: true,
+          jobType: this.mainForm.getRawValue().jobType,
+          printType: this.mainForm.getRawValue().printType,
+          paperType: this.mainForm.getRawValue().paperType,
+          diecuttingType: this.mainForm.getRawValue().diecuttingType,
+          coatType: this.mainForm.getRawValue().coatType,
+          systemPrint: this.mainForm.getRawValue().systemPrint,
+          colorPrint: this.mainForm.getRawValue().colorPrint,
+          paperGram: this.mainForm.getRawValue().paperGram,
+          sampleId: this.mainForm.getRawValue().id
+        };
+
         this.mainForm.get('status')!.setValue('ขึ้นตัวอย่างแล้ว');
-        this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+        this.dcsm05Service.savePrintJob(data).subscribe({
           next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('Success', 'ขึ้นตัวอย่างแล้ว!');
-            this.router.navigate(['/Dcsm05']);
+            this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+              next: (response) => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'ขึ้นตัวอย่างแล้ว!');
+                this.router.navigate(['/Dcsm05']);
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+              }
+            })
           },
           error: (error) => {
             this.loadingService.hide();
             this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
           }
         })
+
       }
     });
   }

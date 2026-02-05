@@ -52,22 +52,24 @@ export class Dcsm25DetailComponent implements OnInit {
   createForm() {
     this.printingForm = this.fb.group({
       id: [null],
-      date: [new Date().toISOString().substring(0, 10), Validators.required],
-      jobId: ['', Validators.required],
+      createdAt: [null, Validators.required],
+      jobId: [null, Validators.required],
       customerJobName: ['', Validators.required],
-      printQuantity: [0],
-      productionQuantity: [0],
-      printingDate: [null],
-      printingResponsible: [''],
-      coatingDate: [null],
-      coatingResponsible: [''],
+      totalPrintSheets: [0],
+      productionQty: [0],
+      printerName: [null],
+      setupWaste: [null],
+      sampleId: [null],
+      deliveryDate: [null],
+      deliveryTime: [null],
+      printingResponsible: ['', Validators.required],
       stampingDate: [null],
       stampingResponsible: [''],
       gluingDate: [null],
       gluingResponsible: [''],
       qcDate: [null],
       dueDate: ['', Validators.required],
-      printStatus: [''],
+      jobStatus: [''],
       shippingAddress: [''],
       remark: [''],
       deliveryStatus: [''],
@@ -76,16 +78,51 @@ export class Dcsm25DetailComponent implements OnInit {
       machineSetupCount: [''],
       rowVersion: [null],
       printingRecordId: [null],
-      
+      issample: [false],
+      jobType: [null],
+      printType: [null],
+      paperType: [null],
+      diecuttingType: [null],
+      coatType: [null],
+      systemPrint: [null],
+      colorPrint: [null],
+      paperGram: [null],
     });
-    this.printingForm.get('date')?.disable();
+    this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
     this.printingForm.get('customerJobName')?.disable();
-    this.printingForm.get('printQuantity')?.disable();
-    this.printingForm.get('productionQuantity')?.disable();
-    this.printingForm.get('printingDate')?.disable();
+    this.printingForm.get('totalPrintSheets')?.disable();
+    this.printingForm.get('productionQty')?.disable();
+    this.printingForm.get('printerName')?.disable();
+    this.printingForm.get('setupWaste')?.disable();
+    this.printingForm.get('sampleId')?.disable();
+    this.printingForm.get('deliveryDate')?.disable();
+    this.printingForm.get('deliveryTime')?.disable();
     this.printingForm.get('printingResponsible')?.disable();
-    this.printingForm.get('printStatus')?.disable();
+    this.printingForm.get('stampingDate')?.disable();
+    this.printingForm.get('stampingResponsible')?.disable();
+    this.printingForm.get('gluingDate')?.disable();
+    this.printingForm.get('gluingResponsible')?.disable();
+    this.printingForm.get('qcDate')?.disable();
+    this.printingForm.get('dueDate')?.disable();
+    this.printingForm.get('jobStatus')?.disable();
+    this.printingForm.get('shippingAddress')?.disable();
+    this.printingForm.get('remark')?.disable();
+    this.printingForm.get('deliveryStatus')?.disable();
+    this.printingForm.get('imageUrl')?.disable();
+    this.printingForm.get('dataDalivery')?.disable();
+    this.printingForm.get('machineSetupCount')?.disable();
+    this.printingForm.get('rowVersion')?.disable();
+    this.printingForm.get('printingRecordId')?.disable();
+    this.printingForm.get('issample')?.disable();
+    this.printingForm.get('jobType')?.disable();
+    this.printingForm.get('printType')?.disable();
+    this.printingForm.get('paperType')?.disable();
+    this.printingForm.get('diecuttingType')?.disable();
+    this.printingForm.get('coatType')?.disable();
+    this.printingForm.get('systemPrint')?.disable();
+    this.printingForm.get('colorPrint')?.disable();
+    this.printingForm.get('paperGram')?.disable();
   }
 
   createPrintingFormRecord() {
@@ -149,7 +186,6 @@ export class Dcsm25DetailComponent implements OnInit {
   onStartPrinting(): void {
     if (this.printingFormRecord.valid) {
       this.printingFormRecord.get('workType')?.setValue('OD');
-      this.printingFormRecord.get('printerName')?.setValue(this.printingForm.getRawValue().printingResponsible);
       this.printingFormRecord.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
       this.printingFormRecord.get('startDatetime')?.setValue(new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16));
       this.startPrinting(this.printingFormRecord.getRawValue());
@@ -184,7 +220,7 @@ export class Dcsm25DetailComponent implements OnInit {
 
   private endPrinting(): void {
     this.loadingService.show();
-    this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
+    this.printingForm.get('jobStatus')?.setValue('พิมพ์แล้ว');
     this.printingFormRecord.get('printQty4color')?.setValue(this.printingFormRecord.getRawValue().meter4colorEnd - this.printingFormRecord.getRawValue().meter4colorStart);
     this.printingFormRecord.get('printQtyBw')?.setValue(this.printingFormRecord.getRawValue().meterBwEnd - this.printingFormRecord.getRawValue().meterBwStart);
     this.printingFormRecord.get('printQtyTotal')?.setValue(this.printingFormRecord.getRawValue().printQty4color + this.printingFormRecord.getRawValue().printQtyBw);
@@ -192,9 +228,9 @@ export class Dcsm25DetailComponent implements OnInit {
     this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
       next: (response) => {
         this.printingFormRecord.patchValue(response);
-        const data = this.printingForm.getRawValue();
-        this.dcsm25Service.save(data).subscribe({
+        this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
           next: (response) => {
+            this.updateSampleStatus();
             this.checkbntPrint();
             this.printingForm.patchValue(response);
             this.loadingService.hide();
@@ -215,11 +251,12 @@ export class Dcsm25DetailComponent implements OnInit {
 
   private startPrinting(printingData: any): void {
     this.loadingService.show();
-    this.printingForm.get('printStatus')?.setValue('กำลังพิมพ์');
+    this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์');
     this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().jobId);
     this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
       next: (response) => {
         this.printingFormRecord.patchValue(response);
+        this.printingForm.get('printerName')?.setValue(this.printingFormRecord.getRawValue().printerName);
         this.printingForm.get('printingRecordId')?.setValue(response.id);
         this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
           next: (response) => {
@@ -281,11 +318,11 @@ export class Dcsm25DetailComponent implements OnInit {
     });
   }
 
-  checkbntPrint(){
-    if(this.printingForm.get('printStatus')?.value === '' || this.printingForm.get('printStatus')?.value === null) {
+  checkbntPrint() {
+    if (this.printingForm.get('jobStatus')?.value === '' || this.printingForm.get('jobStatus')?.value === null) {
       this.isInPrint = true;
-      this.isPrint =false;
-    } else if (this.printingForm.get('printStatus')?.value === 'กำลังพิมพ์') {
+      this.isPrint = false;
+    } else if (this.printingForm.get('jobStatus')?.value === 'กำลังพิมพ์') {
       this.isPrint = true;
       this.isInPrint = false;
     } else {
@@ -318,5 +355,15 @@ export class Dcsm25DetailComponent implements OnInit {
       this.loadingService.hide();
     }
     )
+  }
+
+  updateSampleStatus() {
+    this.dcsm25Service.getByIdSample(this.printingForm.getRawValue().sampleOrderId).subscribe((response) => {
+      response.status = 'สำเร็จ รออนุมัติไปตารางรอผลิต';
+      this.dcsm25Service.saveSample(response).subscribe((response) => {
+        this.loadingService.hide();
+        this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
+      })
+    })
   }
 }

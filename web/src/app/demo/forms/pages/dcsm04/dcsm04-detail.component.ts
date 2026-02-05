@@ -32,6 +32,7 @@ export class Dcsm04DetailComponent implements OnInit {
   showApproveModal = false;
   showRejectModal = false;
   showDesignModal = false;
+  showPlanModal = false;
   usedFile = new FormControl('', Validators.required);
   colorSample = new FormControl('');
   deadlineDate = new FormControl('');
@@ -40,6 +41,9 @@ export class Dcsm04DetailComponent implements OnInit {
   designDate = new FormControl('', Validators.required);
   designTime = new FormControl('', Validators.required);
   designRemarks = new FormControl('', Validators.required);
+  planDate = new FormControl('', Validators.required);
+  planTime = new FormControl('', Validators.required);
+  planRemarks = new FormControl('', Validators.required);
 
   constructor(
     private fb: FormBuilder,
@@ -175,8 +179,6 @@ export class Dcsm04DetailComponent implements OnInit {
         this.mainForm.get('systemPrint')?.setValue(response.job_specifications.print_system);
         this.mainForm.get('colorPrint')?.setValue(response.job_specifications.print_colors);
         this.mainForm.get('paperGram')?.setValue(response.job_specifications.paper_weight);
-        this.mainForm.get('customerName')?.setValue(response.customer_info.name);
-        this.mainForm.get('folderName')?.setValue(response.document_info.doc_no + ' ' + response.job_specifications.job_name);
         this.mainForm.get('jobId')?.setValue(response.document_info.doc_no);
         this.checkBtn();
         this.sweetAlert.success('ดึงข้อมูลสำเร็จ');
@@ -264,7 +266,7 @@ export class Dcsm04DetailComponent implements OnInit {
     const formValue = this.mainForm.getRawValue();
     const currentUser = this.getCurrentUserFromToken();
     if (
-      !formValue.id || (currentUser === formValue.jobOwner && formValue.status === 'รอผู้รับผิดชอบอนุมัติ') || (currentUser === formValue.jobOwner && formValue.status === 'รอดำเนินการ')
+      !formValue.id || (currentUser === formValue.jobOwner && formValue.status === 'รอผู้รับผิดชอบอนุมัติ') || (currentUser === formValue.jobOwner && formValue.status === 'รอดำเนินการ' || (currentUser === formValue.jobOwner && formValue.status === 'รอเคลียร์ไฟล์ใหม่'))
     ) {
       this.isBtnSave = true;
       this.isBtnApprove = false;
@@ -657,6 +659,66 @@ export class Dcsm04DetailComponent implements OnInit {
               });
             }
           })
+        }
+      });
+    }
+  }
+
+  openPlanModal() {
+    this.planDate.setValue('');
+    this.planTime.setValue('');
+    this.planRemarks.setValue('');
+    this.showPlanModal = true;
+  }
+
+  closePlanModal() {
+    this.showPlanModal = false;
+  }
+
+  confirmSendToPlan() {
+    if (this.planDate.valid && this.planTime.valid && this.planRemarks.valid) {
+      Swal.fire({
+        title: 'ส่งไปฝ่ายแผน',
+        text: "ยืนยันส่งงานไปฝ่ายแผน ใช่หรือไม่?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#1e1b4b',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.loadingService.show();
+          this.mainForm.get('status')?.setValue('แก้ไขงานตัวอย่าง');
+          this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+            next: (response) => {
+              this.loadingService.hide();
+              this.mainForm.get('id')?.setValue(null)
+              this.mainForm.get('status')?.setValue('รอเคลียร์ไฟล์ใหม่');
+              this.mainForm.get('deliveryDate')?.setValue(this.planDate.value);
+              this.mainForm.get('deliveryTime')?.setValue(this.planTime.value);
+              this.mainForm.get('note')?.setValue(this.planRemarks.value);
+              this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+                next: (response) => {
+                  this.loadingService.hide();
+                  this.patchFormData(response);
+                  this.checkBtn();
+                  this.closePlanModal();
+                  this.closeRejectModal();
+                  this.sweetAlert.success('ส่งไปฝ่ายแผนสำเร็จ');
+                  this.router.navigate(['/Dcsm04']);
+                },
+                error: (error) => {
+                  this.loadingService.hide();
+                  this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+                }
+              });
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+            }
+          });
         }
       });
     }

@@ -288,7 +288,7 @@
           <button type="button" class="btn btn-warning btn-lg" (click)="openDesignModal()">
             ส่งไปฝ่ายออกแบบ
           </button>
-          <button type="button" class="btn btn-info btn-lg" (click)="sendToPlan()">
+          <button type="button" class="btn btn-info btn-lg" (click)="openPlanModal()">
             ส่งไปฝ่ายแผน
           </button>
         </div>
@@ -334,6 +334,47 @@
         <button type="button" class="btn btn-secondary" (click)="closeDesignModal()">ยกเลิก</button>
         <button type="button" class="btn btn-warning" (click)="confirmSendToDesign()"
           [disabled]="designDate.invalid || designTime.invalid || designRemarks.invalid">
+          ยืนยันส่ง
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Plan Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showPlanModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ส่งไปฝ่ายแผน</h5>
+        <button type="button" class="btn-close" (click)="closePlanModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">วันที่ต้องส่ง <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" [formControl]="planDate"
+              [class.is-invalid]="planDate.invalid && planDate.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">เวลาที่ต้องส่ง <span class="text-danger">*</span></label>
+            <input type="time" class="form-control" [formControl]="planTime"
+              [class.is-invalid]="planTime.invalid && planTime.touched">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">หมายเหตุ <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" [formControl]="planRemarks"
+              placeholder="ระบุหมายเหตุ..."
+              [class.is-invalid]="planRemarks.invalid && planRemarks.touched"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closePlanModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-info" (click)="confirmSendToPlan()"
+          [disabled]="planDate.invalid || planTime.invalid || planRemarks.invalid">
           ยืนยันส่ง
         </button>
       </div>

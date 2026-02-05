@@ -186,7 +186,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     this.productionForm.get('stampingResponsible')?.disable();
     this.productionForm.get('gluingResponsible')?.disable();
 
-    // เพิ่ม listener สำหรับ printingDate
     this.productionForm.get('printingDate')?.valueChanges.subscribe(value => {
       if (value) {
         this.productionForm.get('printingResponsible')?.setValidators([Validators.required]);
@@ -361,6 +360,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   onFetchData(): void {
     this.loadingService.show();
     const oidPapValue = this.productionForm.get('oidPap')?.value;
+
     this.dcsm20Service.getJobPAP(oidPapValue).subscribe((response) => {
       this.loadingService.show();
       this.productionForm.get('jobId')?.setValue(response.header.job_code);
@@ -382,6 +382,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       this.jobImageUrl = response.header.image_url || '';
       this.loadingService.hide();
     })
+
   }
 
   private convertDateFormat(dateStr: string): string {

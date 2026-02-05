@@ -19,12 +19,12 @@ import { StatusColorService } from 'src/app/shared/services/status-color.service
 })
 export class Dcsm25Component implements OnInit {
   
-  filterId: string = '';
-  filterJobId: string = '';
-  filterCustomerName: string = '';
-  filterPrintStatus: string = '';
-  filterStartDate: string = '';
-  filterEndDate: string = '';
+  filterId: string = null;
+  filterJobId: string = null;
+  filterCustomerName: string = null;
+  filterPrintStatus: string = null;
+  filterStartDate: string = null;
+  filterEndDate: string = null;
 
   totalElements = 0;
   pageSize = 10;
@@ -40,8 +40,7 @@ export class Dcsm25Component implements OnInit {
     { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน'},  
     { key: 'printingDate', label: 'วันที่ส่งพิมพ์',},
     { key: 'printingResponsible', label: 'พิมพ์ที่',},
-    { key: 'dueDate', label: 'วันที่ส่งลูกค้า' },
-    { key: 'printStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this)  },
+    { key: 'jobStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this)  },
   ];
 
 
@@ -59,12 +58,11 @@ export class Dcsm25Component implements OnInit {
 
   loadData() {
     this.loadingService.show();
-
     const filters = {
       id: this.filterId,
       jobId: this.filterJobId,
-      customerName: this.filterCustomerName,
-      printStatus: this.filterPrintStatus,
+      customerJobName: this.filterCustomerName,
+      printerName: this.filterPrintStatus,
       startDate: this.filterStartDate,
       endDate: this.filterEndDate
     };
@@ -142,5 +140,4 @@ export class Dcsm25Component implements OnInit {
     this.filterEndDate = '';
     this.onSearchChange();
   }
-
 }

@@ -15,6 +15,10 @@ export class Dcsm05Service {
   save(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
   }
+
+  savePrintJob(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/print-job/save`, data);
+  }
   getById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
   }
@@ -110,4 +114,6 @@ export class Dcsm05Service {
   countBacklogSendBack(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSendBack`);
   }
+
+  
 }

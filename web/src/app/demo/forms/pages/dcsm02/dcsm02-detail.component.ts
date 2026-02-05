@@ -52,7 +52,7 @@ export class Dcsm02DetailComponent implements OnInit {
     this.isEditMode = !!this.id;
 
     this.initForm();
-    
+
     // Listen to isCreateSample changes
     this.isCreateSample.valueChanges.subscribe(value => {
       if (value) {
@@ -62,11 +62,11 @@ export class Dcsm02DetailComponent implements OnInit {
         this.approveQty.clearValidators();
         this.approveUnit.clearValidators();
       }
-      
+
       this.approveQty.updateValueAndValidity();
       this.approveUnit.updateValueAndValidity();
     });
-    
+
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
@@ -244,38 +244,29 @@ export class Dcsm02DetailComponent implements OnInit {
         this.loadingService.show();
         this.designForm.get('processStatus').setValue('เสร็จสิ้น')
         this.designForm.get('confirmStatus').setValue('ผ่าน')
-        this.designForm.get('confirmDate').setValue(new Date())
-        this.dcsm02Service.save(this.designForm.getRawValue()).subscribe({
-          next: (responses) => {
-            this.designForm.patchValue(responses);
-            this.checkBtn();
-            this.dcsm02Service.savesampleOrders(data).subscribe({
-              next: (response) => {
-                this.dcsm02Service.save(this.designForm.getRawValue()).subscribe({
-                  next: (responses) => {
-                    this.closeApproveModal();
-                    this.sweetAlert.success('Success', 'อนุมัติส่งไปตารางขึ้นตัวอย่างสำเร็จ!');
-                    this.router.navigate(['/Dcsm02']);
-                  },
-                  error: (error) => {
-                    this.loadingService.hide();
-                    this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
-                  }
-                })
+        this.designForm.get('confirmDate').setValue(new Date());
+        this.dcsm02Service.savesampleOrders(data).subscribe({
+          next: (response) => {
+            this.dcsm02Service.save(this.designForm.getRawValue()).subscribe({
+              next: (responses) => {
+                this.designForm.patchValue(responses);
+                this.closeApproveModal();
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'อนุมัติส่งไปตารางขึ้นตัวอย่างสำเร็จ!');
+                this.checkBtn();
+                this.router.navigate(['/Dcsm02']);
               },
               error: (error) => {
                 this.loadingService.hide();
                 this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
               }
-            });
-            this.loadingService.hide();
+            })
           },
           error: (error) => {
             this.loadingService.hide();
             this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
           }
-        })
-
+        });
       }
     });
   }

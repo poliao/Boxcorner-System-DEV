@@ -29,23 +29,21 @@
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="designForm.get('folder_name')?.invalid && designForm.get('folder_name')?.touched">
         </div>
-
         <div class="col-md-4">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        </div>
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">รายละเอียดงาน<span style="color: red;">*</span></label>
           <input type="text" formControlName="jobDetails" class="form-control" placeholder="ระบุรายละเอียดงาน">
         </div>
 
-        <div class="col-12">
-          <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
-        </div>
+
 
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันส่ง<span style="color: red;">*</span></label>
-          <input type="text" #deadlineDateInput class="form-control" 
-            (input)="onThaiDateInput($event, 'deadlineDate')" 
-            [value]="getThaiDateInput('deadlineDate')"
-            [disabled]="designForm.get('deadlineDate')?.disabled"
+          <input type="text" #deadlineDateInput class="form-control" (input)="onThaiDateInput($event, 'deadlineDate')"
+            [value]="getThaiDateInput('deadlineDate')" [disabled]="designForm.get('deadlineDate')?.disabled"
             placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
 
@@ -82,12 +80,12 @@
 
         <div class="col-md-12" *ngIf="isFileName">
           <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
-          <input type="text" formControlName="fileName" class="form-control" style="background-color: #ff7b00; color: white;">
+          <input type="text" formControlName="fileName" class="form-control"
+            style="background-color: #ff7b00; color: white;">
         </div>
-
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
-          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        <div class="col-12">
+          <label class="form-label font-weight-bold">หมายเหตุ</label>
+          <input type="text" formControlName="remarks" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
         </div>
       </form>
     </div>
