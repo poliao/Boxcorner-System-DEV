@@ -23,6 +23,7 @@ export class Dcsm25DetailComponent implements OnInit {
   isInPrint = false;
   showPrintingModal = false;
   showPrintingEndModal = false;
+  isSample = false;
 
   constructor(
     private fb: FormBuilder,
@@ -45,6 +46,11 @@ export class Dcsm25DetailComponent implements OnInit {
         this.getRecord(resolvedData.printingRecordId);
       }
       this.printingForm.patchValue(resolvedData);
+      if (this.printingForm.getRawValue().issample == true) {
+        this.isSample = true
+      }else {
+        this.isSample = false
+      }
     }
     this.checkbntPrint();
   }
@@ -52,7 +58,6 @@ export class Dcsm25DetailComponent implements OnInit {
   createForm() {
     this.printingForm = this.fb.group({
       id: [null],
-      createdAt: [null, Validators.required],
       jobId: [null, Validators.required],
       customerJobName: ['', Validators.required],
       totalPrintSheets: [0],
@@ -351,14 +356,14 @@ export class Dcsm25DetailComponent implements OnInit {
       this.printingFormRecord.patchValue(response);
       this.loadingService.hide();
     },
-    error => {
-      this.loadingService.hide();
-    }
+      error => {
+        this.loadingService.hide();
+      }
     )
   }
 
   updateSampleStatus() {
-    this.dcsm25Service.getByIdSample(this.printingForm.getRawValue().sampleOrderId).subscribe((response) => {
+    this.dcsm25Service.getByIdSample(this.printingForm.getRawValue().sampleId).subscribe((response) => {
       response.status = 'สำเร็จ รออนุมัติไปตารางรอผลิต';
       this.dcsm25Service.saveSample(response).subscribe((response) => {
         this.loadingService.hide();

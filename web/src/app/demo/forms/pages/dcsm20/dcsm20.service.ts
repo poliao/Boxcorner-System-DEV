@@ -16,6 +16,10 @@ export class Dcsm20Service {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
   }
 
+  savePrintJob(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/print-job/save`, data);
+  }
+
   getById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
   }

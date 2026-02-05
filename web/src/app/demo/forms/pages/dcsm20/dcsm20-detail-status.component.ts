@@ -266,7 +266,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
         id: this.referenceId,
         dataDalivery: true
       };
-    
+
       Swal.fire({
         title: 'บันทึกข้อมูล',
         text: "ยืนยันบันทึกข้อมูล ใช่หรือไม่?",
@@ -280,6 +280,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.dcsm20Service.save(data).subscribe((response) => {
+            this.checkJob()
             this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
               this.patchFormData(response);
               this.loadingService.hide();
@@ -421,6 +422,67 @@ export class Dcsm20DetailStatusComponent implements OnInit {
 
     return dateStr;
   }
+
+  checkJob() {
+    if(this.productionForm.getRawValue().printingDate != null){
+      this.setPrintJob();
+    }else if(this.productionForm.getRawValue().coatingDate != null){
+      this.setCoatJob();
+    }else if(this.productionForm.getRawValue().stampingDate != null){
+      this.setStampingJob();
+    }else if(this.productionForm.getRawValue().gluingDate != null){
+      this.setGluingJob();
+    }else if(this.productionForm.getRawValue().qcDate != null){
+      this.setQcJob();
+    }
+  }
+
+  setPrintJob() {
+    const DataJob = {
+      id: '',
+      createdAt: new Date(),
+      jobId: this.productionForm.getRawValue().jobId,
+      deliveryDate: this.productionForm.getRawValue().printingDate,
+      customerJobName: this.productionForm.getRawValue().customerJobName,
+      jobStatus: null,
+      totalPrintSheets: this.productionForm.getRawValue().printQuantity,
+      productionQty: this.productionForm.getRawValue().productionQuantity,
+      printerName: this.productionForm.getRawValue().printingResponsible,
+      setupWaste: this.productionForm.getRawValue().machineSetupCount,
+      issample: false,
+      jobType: null,
+      printType: null,
+      paperType: null,
+      diecuttingType: null,
+      coatType: null,
+      systemPrint: null,
+      colorPrint: null,
+      paperGram: null,
+      sampleId: null,
+    }
+    this.dcsm20Service.savePrintJob(DataJob).subscribe({
+      next: (response) => {
+      }
+    })
+  }
+
+  setCoatJob(){
+
+  }
+
+  setStampingJob(){
+    
+  }
+
+  setGluingJob(){
+    
+  }
+
+  setQcJob(){
+    
+  }
+
+
 
 
 }

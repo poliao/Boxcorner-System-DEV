@@ -351,7 +351,6 @@ export class Dcsm05DetailComponent implements OnInit {
           productionQty: this.mainForm.getRawValue().quantity,
           printerName: null,
           setupWaste: null,
-          sampleRefNo: this.mainForm.getRawValue().id,
           issample: true,
           jobType: this.mainForm.getRawValue().jobType,
           printType: this.mainForm.getRawValue().printType,

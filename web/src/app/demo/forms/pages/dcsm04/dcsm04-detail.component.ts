@@ -99,6 +99,7 @@ export class Dcsm04DetailComponent implements OnInit {
       isCreateSample: [true],
       status: ['รอผู้รับผิดชอบอนุมัติ'],
       note: [''],
+      fileName: [''],
       designOrderId: [''],
       updateDateDelivery: [new Date().toISOString().substring(0, 10)],
       updateTimeDelivery: [''],
