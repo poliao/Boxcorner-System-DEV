@@ -92,6 +92,7 @@ export class Dcsm25DetailComponent implements OnInit {
       systemPrint: [null],
       colorPrint: [null],
       paperGram: [null],
+      productionJobId: [null],
     });
     this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -369,6 +370,17 @@ export class Dcsm25DetailComponent implements OnInit {
         this.loadingService.hide();
         this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
       })
+    })
+  }
+
+  updateProductionJob(status){
+    this.dcsm25Service.getByIdProductionJob(this.printingForm.getRawValue().productionJobId).subscribe((response) => {
+      if(status === 'inPrint'){
+        response.printStatus = 'กำลังพิมพ์';
+      }else{
+        
+      }
+      
     })
   }
 }

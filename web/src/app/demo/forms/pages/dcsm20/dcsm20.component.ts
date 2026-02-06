@@ -189,7 +189,6 @@ export class Dcsm20Component implements OnInit {
     return {};
   }
 
-  // เช็คว่าสถานะปัจจุบันเป็นขั้นตอนสุดท้ายของงานนี้หรือไม่
   isLastStepForJob(rowData: any, currentStatus: string): boolean {
     const steps = [
       { status: 'พิมพ์แล้ว', hasData: rowData.printingDate || rowData.printingResponsible },
@@ -199,7 +198,6 @@ export class Dcsm20Component implements OnInit {
       { status: 'Qcแล้ว', hasData: rowData.qcDate }
     ];
     
-    // หาขั้นตอนสุดท้ายที่มีข้อมูล
     let lastStepWithData = null;
     for (let i = steps.length - 1; i >= 0; i--) {
       if (steps[i].hasData) {
@@ -227,11 +225,11 @@ export class Dcsm20Component implements OnInit {
     
     let highlightUntil = -1;
     
-    if (status === 'พิมพ์แล้ว') highlightUntil = 1;
-    else if (status === 'เคลือบแล้ว') highlightUntil = 3;
-    else if (status === 'ปั้มแล้ว') highlightUntil = 5;
-    else if (status === 'ปะแล้ว') highlightUntil = 7;
-    else if (status === 'Qcแล้ว') highlightUntil = 8;
+    if (status === 'กำลังเคลือบ') highlightUntil = 1;
+    else if (status === 'กำลังปั้ม') highlightUntil = 3;
+    else if (status === 'กำลังปั้ม') highlightUntil = 5;
+    else if (status === 'กำลังปะ') highlightUntil = 7;
+    else if (status === 'เสร็จสิ้น') highlightUntil = 8;
 
     if (currentIndex <= highlightUntil) {
       return { 'background-color': '#222222ff', 'color': '#777777ff' };

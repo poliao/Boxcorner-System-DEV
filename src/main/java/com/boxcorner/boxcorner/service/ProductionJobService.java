@@ -72,7 +72,7 @@ public class ProductionJobService {
     public Page<ProductionJob> findByFilters(Long id, String jobId, String customerJobName,
             String printStatus, LocalDate startDate, LocalDate endDate,
             int page, int size) {
-        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable paging = PageRequest.of(page, size, Sort.unsorted());
         return productionJobRepository.findByFilters(id, jobId, customerJobName, printStatus,
                 startDate, endDate, paging);
     }

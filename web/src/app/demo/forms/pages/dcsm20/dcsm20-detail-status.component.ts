@@ -280,7 +280,8 @@ export class Dcsm20DetailStatusComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.dcsm20Service.save(data).subscribe((response) => {
-            this.checkJob()
+            console.log(response);
+            this.checkJob(response.id)
             this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
               this.patchFormData(response);
               this.loadingService.hide();
@@ -423,21 +424,23 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     return dateStr;
   }
 
-  checkJob() {
+  checkJob(id) {
+    console.log(id);
+    
     if(this.productionForm.getRawValue().printingDate != null){
-      this.setPrintJob();
+      this.setPrintJob(id);
     }else if(this.productionForm.getRawValue().coatingDate != null){
-      this.setCoatJob();
+      this.setCoatJob(id);
     }else if(this.productionForm.getRawValue().stampingDate != null){
-      this.setStampingJob();
+      this.setStampingJob(id);
     }else if(this.productionForm.getRawValue().gluingDate != null){
-      this.setGluingJob();
+      this.setGluingJob(id);
     }else if(this.productionForm.getRawValue().qcDate != null){
-      this.setQcJob();
+      this.setQcJob(id);
     }
   }
 
-  setPrintJob() {
+  setPrintJob(id) {
     const DataJob = {
       id: '',
       createdAt: new Date(),
@@ -459,6 +462,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       colorPrint: null,
       paperGram: null,
       sampleId: null,
+      productionJobId: id
     }
     this.dcsm20Service.savePrintJob(DataJob).subscribe({
       next: (response) => {
@@ -466,19 +470,19 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     })
   }
 
-  setCoatJob(){
+  setCoatJob(id){
 
   }
 
-  setStampingJob(){
+  setStampingJob(id){
     
   }
 
-  setGluingJob(){
+  setGluingJob(id){
     
   }
 
-  setQcJob(){
+  setQcJob(id){
     
   }
 

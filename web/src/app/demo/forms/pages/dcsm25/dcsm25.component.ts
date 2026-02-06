@@ -38,8 +38,8 @@ export class Dcsm25Component implements OnInit {
     { key: 'id', label: 'ลำดับ'},
     { key: 'jobId', label: 'JOB ID'},
     { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน'},  
-    { key: 'printingDate', label: 'วันที่ส่งพิมพ์',},
-    { key: 'printingResponsible', label: 'พิมพ์ที่',},
+    { key: 'deliveryDate', label: 'วันที่ส่งพิมพ์',},
+    { key: 'printerName', label: 'พิมพ์ที่',},
     { key: 'jobStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this)  },
   ];
 

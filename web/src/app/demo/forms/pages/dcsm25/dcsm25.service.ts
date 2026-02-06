@@ -54,4 +54,8 @@ export class Dcsm25Service {
   getByIdSample(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
   }
+
+  getByIdProductionJob(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
+  }
 }

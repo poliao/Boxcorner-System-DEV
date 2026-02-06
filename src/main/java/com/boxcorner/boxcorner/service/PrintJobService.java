@@ -59,6 +59,7 @@ public class PrintJobService {
             existing.setPaperGram(printJob.getPaperGram());
             existing.setPrintingRecordId(printJob.getPrintingRecordId());
             existing.setSampleId(printJob.getSampleId());
+            existing.setProductionJobId(printJob.getProductionJobId());
 
             return repository.save(existing);
         }
