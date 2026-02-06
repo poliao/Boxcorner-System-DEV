@@ -22,4 +22,5 @@ public class Recipe extends BaseEntity {
     private BigDecimal lightness;
     private BigDecimal greenred;
     private BigDecimal blueyellow;
+    private BigDecimal density;
 }

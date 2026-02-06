@@ -66,6 +66,7 @@ public class RecipeService {
         recipe.setLightness(req.getLightness());
         recipe.setGreenred(req.getGreenred());
         recipe.setBlueyellow(req.getBlueyellow());
+        recipe.setDensity(req.getDensity());
         recipeRepository.save(recipe);
 
         colorsRepository.deleteByRecipeid(req.getRecipeid());
@@ -93,6 +94,7 @@ public class RecipeService {
         response.setLightness(recipe.getLightness());
         response.setGreenred(recipe.getGreenred());
         response.setBlueyellow(recipe.getBlueyellow());
+        response.setDensity(recipe.getDensity());
 
         List<ColorResponse> colorResponses = colorsList.stream().map(c -> {
             ColorResponse cr = new ColorResponse();
@@ -126,6 +128,7 @@ public class RecipeService {
             response.put("lightness", recipe.getLightness());
             response.put("greenred", recipe.getGreenred());
             response.put("blueyellow", recipe.getBlueyellow());
+            response.put("density", recipe.getDensity());
             response.put("colors", colors);
         }
 

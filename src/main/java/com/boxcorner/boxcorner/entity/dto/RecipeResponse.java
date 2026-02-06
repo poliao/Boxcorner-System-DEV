@@ -16,6 +16,7 @@ public class RecipeResponse {
     private BigDecimal lightness;
     private BigDecimal greenred;
     private BigDecimal blueyellow;
+    private BigDecimal density;
 
     private List<ColorResponse> colors;
 }

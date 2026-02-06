@@ -91,7 +91,7 @@ export class Dcsm01DetailComponent implements OnInit {
       lightness: [null],
       greenred: [null],
       blueyellow: [null],
-
+      density: [null],
       colors: this.fb.array([])
     })
     this.docForm.controls['recipeid'].disable({ emitEvent: false });
@@ -192,7 +192,8 @@ export class Dcsm01DetailComponent implements OnInit {
       reqtotalweight: recipe.reqtotalweight,
       lightness: recipe.lightness,
       greenred: recipe.greenred,
-      blueyellow: recipe.blueyellow
+      blueyellow: recipe.blueyellow,
+      density: recipe.density
     });
 
     const colorControl = this.docForm.get('colors') as FormArray;

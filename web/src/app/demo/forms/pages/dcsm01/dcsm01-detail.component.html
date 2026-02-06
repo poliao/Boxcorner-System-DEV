@@ -188,24 +188,29 @@
         
         <div class="row g-3 align-items-center">
           
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">ค่า L (Lightness)</label>
             <input type="number" class="form-control" formControlName="lightness" placeholder="0 - 100">
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">ค่า A (Green-Red)</label>
             <input type="number" class="form-control" formControlName="greenred" placeholder="-128 ถึง 127">
           </div>
 
           <!-- ช่องกรอก B -->
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label class="form-label">ค่า B (Blue-Yellow)</label>
             <input type="number" class="form-control" formControlName="blueyellow" placeholder="-128 ถึง 127">
           </div>
 
+          <div class="col-md-2">
+            <label class="form-label">ค่า Density</label>
+            <input type="number" class="form-control" formControlName="density" placeholder="-128 ถึง 127">
+          </div>
+
           <!-- กล่องแสดงตัวอย่างสี -->
-          <div class="col-md-3 text-center">
+          <div class="col-md-4 text-center">
             <label class="form-label d-block">ตัวอย่างสี (Preview)</label>
             <div class="color-preview-box shadow-sm border" 
                  [style.background-color]="labColorString"
