@@ -111,4 +111,5 @@ export class Dcsm20Service {
   updateDataDalivery(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateDataDalivery?id=${data.id}&dataDalivery=true`, {});
   }
+  
 }

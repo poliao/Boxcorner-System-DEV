@@ -227,12 +227,43 @@ export class Dcsm20Component implements OnInit {
     
     if (status === 'กำลังเคลือบ') highlightUntil = 1;
     else if (status === 'กำลังปั้ม') highlightUntil = 3;
-    else if (status === 'กำลังปั้ม') highlightUntil = 5;
-    else if (status === 'กำลังปะ') highlightUntil = 7;
+    else if (status === 'กำลังปะ') highlightUntil = 5;
+    else if (status === 'กำลังQc') highlightUntil = 7;
     else if (status === 'เสร็จสิ้น') highlightUntil = 8;
 
+    // ถ้าเป็นคอลัมน์ที่ถูกปิดดำแล้ว
     if (currentIndex <= highlightUntil) {
       return { 'background-color': '#222222ff', 'color': '#777777ff' };
+    }
+    
+    // ตรวจสอบวันที่สำหรับคอลัมน์วันที่แต่ละขั้นตอน
+    const dateColumns = ['printingDate', 'coatingDate', 'stampingDate', 'gluingDate', 'qcDate'];
+    if (dateColumns.includes(columnKey)) {
+      const columnDate = rowData[columnKey];
+      if (columnDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        // แปลงวันที่จาก DD/MM/YYYY เป็น Date object
+        const dateParts = columnDate.split('/');
+        if (dateParts.length === 3) {
+          const targetDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+          targetDate.setHours(0, 0, 0, 0);
+          
+          // ถ้าต้องส่งวันนี้ ให้เป็นสีแดง
+          if (targetDate.getTime() === today.getTime()) {
+            return { 'background-color': '#dc3545', 'color': '#ffffff' };
+          }
+          
+          // ถ้าต้องส่งพรุ่งนี้ ให้เป็นสีเหลือง
+          if (targetDate.getTime() === tomorrow.getTime()) {
+            return { 'background-color': '#ffc107', 'color': '#000000' };
+          }
+        }
+      }
     }
     
     return {};

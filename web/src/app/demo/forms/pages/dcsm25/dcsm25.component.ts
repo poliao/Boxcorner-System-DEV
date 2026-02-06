@@ -40,6 +40,7 @@ export class Dcsm25Component implements OnInit {
     { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน'},  
     { key: 'deliveryDate', label: 'วันที่ส่งพิมพ์',},
     { key: 'printerName', label: 'พิมพ์ที่',},
+    { key: 'issample', label: 'เป็นตัวอย่าง', valueFunction: this.formatIsSample.bind(this) },
     { key: 'jobStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this)  },
   ];
 
@@ -139,5 +140,9 @@ export class Dcsm25Component implements OnInit {
     this.filterStartDate = '';
     this.filterEndDate = '';
     this.onSearchChange();
+  }
+
+  formatIsSample(value: boolean): string {
+    return value ? 'เป็น' : 'ไม่เป็น';
   }
 }

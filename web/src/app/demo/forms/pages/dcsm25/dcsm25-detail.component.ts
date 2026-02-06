@@ -38,6 +38,7 @@ export class Dcsm25DetailComponent implements OnInit {
   ngOnInit() {
     this.createForm();
     this.createPrintingFormRecord();
+
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     const resolvedData = this.route.snapshot.data['designDiecut'];
@@ -48,7 +49,7 @@ export class Dcsm25DetailComponent implements OnInit {
       this.printingForm.patchValue(resolvedData);
       if (this.printingForm.getRawValue().issample == true) {
         this.isSample = true
-      }else {
+      } else {
         this.isSample = false
       }
     }
@@ -236,9 +237,13 @@ export class Dcsm25DetailComponent implements OnInit {
         this.printingFormRecord.patchValue(response);
         this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
           next: (response) => {
-            this.updateSampleStatus();
-            this.checkbntPrint();
             this.printingForm.patchValue(response);
+            this.checkbntPrint();
+            if (this.printingForm.getRawValue().issample == true) {
+              this.updateSampleStatus();
+            } else {
+              this.updateProductionJob();
+            }
             this.loadingService.hide();
             this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้นเรียบร้อย!');
           },
@@ -259,6 +264,11 @@ export class Dcsm25DetailComponent implements OnInit {
     this.loadingService.show();
     this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์');
     this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().jobId);
+    if (this.printingForm.getRawValue().issample == true) {
+      this.printingFormRecord.get('jobCategory')?.setValue('งานตัวอย่าง');
+    }else {
+      this.printingFormRecord.get('jobCategory')?.setValue('งานผลิตจริง');
+    }
     this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
       next: (response) => {
         this.printingFormRecord.patchValue(response);
@@ -373,14 +383,32 @@ export class Dcsm25DetailComponent implements OnInit {
     })
   }
 
-  updateProductionJob(status){
+  updateProductionJob() {
     this.dcsm25Service.getByIdProductionJob(this.printingForm.getRawValue().productionJobId).subscribe((response) => {
-      if(status === 'inPrint'){
-        response.printStatus = 'กำลังพิมพ์';
-      }else{
-        
+      if (response.coatingDate != null) {
+        response.printStatus = 'กำลังเคลือบ';
+        this.sendToProductJob(response);
+      } else if (response.stampingDate != null) {
+        response.printStatus = 'กำลังปั้ม';
+        this.sendToProductJob(response);
+      } else if (response.gluingDate != null) {
+        response.printStatus = 'กำลังปะ';
+        this.sendToProductJob(response);
+      } else if (response.qcDate != null) {
+        response.printStatus = 'กำลังQc';
+        this.sendToProductJob(response);
       }
-      
     })
+  }
+
+  sendToProductJob(data: any) {
+    this.dcsm25Service.saveProductionJob(data).subscribe({
+      next: (response) => {
+      },
+      error: (error) => {
+        this.sweetAlert.error('Error', error.error);
+      }
+    });
+
   }
 }

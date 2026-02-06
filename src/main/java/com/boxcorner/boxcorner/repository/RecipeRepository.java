@@ -40,4 +40,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, String> {
             "WHERE (:query = '' OR UPPER(r.jobid) LIKE CONCAT('%', UPPER(:query), '%')) " +
             "ORDER BY r.jobid ASC LIMIT 20", nativeQuery = true)
     List<String> findUniqueJobIds(@Param("query") String query);
+
+    List<Recipe> findByJobid(String jobid);
 }

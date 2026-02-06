@@ -19,6 +19,7 @@ export class Dcsm26DetailComponent implements OnInit {
   isEditMode = false;
   isPrint = false;
   isInPrint = false;
+  recipeList: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -36,6 +37,7 @@ export class Dcsm26DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designDiecut'];
     if (resolvedData) {
       this.printingForm.patchValue(resolvedData);
+      this.loadRecipeList(resolvedData.jobId);
     }
     this.checkbntPrint();
   }
@@ -149,5 +151,48 @@ export class Dcsm26DetailComponent implements OnInit {
       this.isPrint = false;
       this.isInPrint = false;
     }
+  }
+
+  loadRecipeList(jobId: string) {
+    if (jobId) {
+      this.dcsm26Service.getRecipesByJobId(jobId).subscribe({
+        next: (data) => {
+          this.recipeList = data;
+        },
+        error: (err) => {
+          console.error('Error loading recipes:', err);
+        }
+      });
+    }
+  }
+
+  getLabColor(l: number, a: number, b: number): string {
+    if (l == null || a == null || b == null) return '#ffffff';
+    
+    const y = (l + 16) / 116;
+    const x = a / 500 + y;
+    const z = y - b / 200;
+
+    const xn = x > 0.206897 ? x ** 3 : (x - 16 / 116) / 7.787;
+    const yn = y > 0.206897 ? y ** 3 : (y - 16 / 116) / 7.787;
+    const zn = z > 0.206897 ? z ** 3 : (z - 16 / 116) / 7.787;
+
+    const X = xn * 95.047;
+    const Y = yn * 100.000;
+    const Z = zn * 108.883;
+
+    let r = X * 0.032406 + Y * -0.015372 + Z * -0.004986;
+    let g = X * -0.009689 + Y * 0.018758 + Z * 0.000415;
+    let bl = X * 0.000557 + Y * -0.002040 + Z * 0.010570;
+
+    r = r > 0.0031308 ? 1.055 * r ** (1 / 2.4) - 0.055 : 12.92 * r;
+    g = g > 0.0031308 ? 1.055 * g ** (1 / 2.4) - 0.055 : 12.92 * g;
+    bl = bl > 0.0031308 ? 1.055 * bl ** (1 / 2.4) - 0.055 : 12.92 * bl;
+
+    const red = Math.max(0, Math.min(255, Math.round(r * 255)));
+    const green = Math.max(0, Math.min(255, Math.round(g * 255)));
+    const blue = Math.max(0, Math.min(255, Math.round(bl * 255)));
+
+    return `rgb(${red}, ${green}, ${blue})`;
   }
 }

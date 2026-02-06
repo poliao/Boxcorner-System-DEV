@@ -41,5 +41,7 @@ export class Dcsm26Service {
     return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
   }
 
-  
+  getRecipesByJobId(jobId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/recipes/detailByJo?jobId=${jobId}`);
+  }
 }
