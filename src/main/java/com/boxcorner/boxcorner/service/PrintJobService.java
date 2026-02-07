@@ -60,7 +60,7 @@ public class PrintJobService {
             existing.setPrintingRecordId(printJob.getPrintingRecordId());
             existing.setSampleId(printJob.getSampleId());
             existing.setProductionJobId(printJob.getProductionJobId());
-
+            
             return repository.save(existing);
         }
         return repository.save(printJob);
@@ -74,6 +74,11 @@ public class PrintJobService {
     public Page<PrintJob> getAllDetail(Long id, String jobId, String customerJobName, String printerName, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByFiltersAll(id, jobId, customerJobName, printerName, paging);
+    }
+
+    public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return repository.findByFiltersOS(id, jobId, customerJobName, printerName, paging);
     }
 
 }

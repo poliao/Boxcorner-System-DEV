@@ -25,9 +25,9 @@ export class Dcsm04DetailComponent implements OnInit {
   isBtnApprove = false
   isBtnReject = false
   isBtnApproveSample = false
-  isBtnRejectSample = false
+  isBtnSampleProve = false
   isUpdateDelivery = false
-
+  isPap = true
 
   showApproveModal = false;
   showRejectModal = false;
@@ -77,6 +77,19 @@ export class Dcsm04DetailComponent implements OnInit {
       this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
       this.mainForm.controls['note'].disable({ emitEvent: false });
       this.mainForm.controls['customerName'].disable({ emitEvent: false });
+      this.mainForm.controls['typeJob'].disable({ emitEvent: false });
+      this.mainForm.controls['jobType'].disable({ emitEvent: false });
+      this.mainForm.controls['printType'].disable({ emitEvent: false });
+      this.mainForm.controls['paperType'].disable({ emitEvent: false });
+      this.mainForm.controls['diecuttingType'].disable({ emitEvent: false });
+      this.mainForm.controls['coatType'].disable({ emitEvent: false });
+      this.mainForm.controls['systemPrint'].disable({ emitEvent: false });
+      this.mainForm.controls['colorPrint'].disable({ emitEvent: false });
+      this.mainForm.controls['paperGram'].disable({ emitEvent: false });
+      this.mainForm.controls['jobId'].disable({ emitEvent: false });
+      this.mainForm.controls['qtId'].disable({ emitEvent: false });
+      this.mainForm.controls['qtId'].disable({ emitEvent: false });
+      this.isPap = false
     }
     this.checkBtn();
     if (this.mainForm.getRawValue().status == 'ขอเลื่อนวันส่ง' && this.getCurrentUserFromToken() == this.mainForm.getRawValue().jobOwner) {
@@ -115,6 +128,8 @@ export class Dcsm04DetailComponent implements OnInit {
       rowVersion: [null],
       jobId: [null],
       qtId: [null],
+      typeJob: [null],
+      machineName: [null],
     });
 
     // Listen to isCreateSample changes
@@ -142,6 +157,7 @@ export class Dcsm04DetailComponent implements OnInit {
     this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
     this.mainForm.controls['updateDateDelivery'].disable({ emitEvent: false });
     this.mainForm.controls['updateTimeDelivery'].disable({ emitEvent: false });
+    this.mainForm.controls['machineName'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -273,26 +289,27 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnApprove = false;
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
-      this.isBtnRejectSample = false;
+      this.isBtnSampleProve = false;
     } else if (currentUser === formValue.jobOwner && formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต') {
+      if (this.mainForm.getRawValue().typeJob == 'OS') {
+        this.isBtnSampleProve = true;
+      }
       this.isBtnSave = false;
       this.isBtnApprove = false;
       this.isBtnReject = false;
       this.isBtnApproveSample = true;
-      this.isBtnRejectSample = true;
     } else if (currentUser === formValue.jobOwner && formValue.status === 'รอเจ้าของงานตรวจสอบ') {
       this.isBtnSave = false;
       this.isBtnApprove = true;
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
-      this.isBtnRejectSample = false;
-    }
-    else {
+      this.isBtnSampleProve = false;
+    } else {
       this.isBtnSave = false;
       this.isBtnApprove = false;
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
-      this.isBtnRejectSample = false;
+      this.isBtnSampleProve = false;
     }
   }
 

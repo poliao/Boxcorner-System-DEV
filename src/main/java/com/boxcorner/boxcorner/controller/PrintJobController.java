@@ -50,6 +50,26 @@ public class PrintJobController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/searchOs")
+    public ResponseEntity<Page<PrintJob>> findByFiltersOS(
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "jobId", required = false) String jobId,
+            @RequestParam(value = "customerJobName", required = false) String customerJobName,
+            @RequestParam(value = "printerName", required = false) String printerName,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+        Page<PrintJob> result;
+        result = printJobService.findByFiltersOS(
+                id,
+                jobId,
+                customerJobName,
+                printerName,
+                page,
+                size);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/getById")
     public ResponseEntity<PrintJob> getById(@RequestParam("id") Long id) {
         return printJobService.getJobById(id)

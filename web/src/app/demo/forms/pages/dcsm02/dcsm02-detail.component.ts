@@ -62,7 +62,6 @@ export class Dcsm02DetailComponent implements OnInit {
         this.approveQty.clearValidators();
         this.approveUnit.clearValidators();
       }
-
       this.approveQty.updateValueAndValidity();
       this.approveUnit.updateValueAndValidity();
     });
@@ -79,7 +78,7 @@ export class Dcsm02DetailComponent implements OnInit {
       this.designForm.controls['deadlineDate'].disable({ emitEvent: false });
       this.designForm.controls['deadlineTime'].disable({ emitEvent: false });
       this.designForm.controls['customerName'].disable({ emitEvent: false });
-
+      this.designForm.controls['jobType'].disable({ emitEvent: false });
       this.isBtnSave = false;
     }
     if (this.designForm.getRawValue().processStatus == 'เสร็จสิ้น') {
@@ -104,7 +103,8 @@ export class Dcsm02DetailComponent implements OnInit {
       fileName: [''],
       customerName: [''],
       rowVersion: [null],
-      confirmDate: [null]
+      confirmDate: [null],
+      jobType: ['']
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -113,6 +113,7 @@ export class Dcsm02DetailComponent implements OnInit {
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['fileName'].disable({ emitEvent: false });
+    
   }
 
   patchFormData(data: any): void {
@@ -121,7 +122,17 @@ export class Dcsm02DetailComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.designForm.valid) {
+    Swal.fire({
+      title: 'ยืนยันบันทึก',
+      text: "คุณต้องการบันทึก ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (this.designForm.valid) {
       this.loadingService.show();
       const data = this.designForm.getRawValue();
       this.dcsm02Service.save(data).subscribe(
@@ -140,6 +151,9 @@ export class Dcsm02DetailComponent implements OnInit {
         }
       );
     }
+    });
+
+    
   }
 
   checkBtn() {
@@ -228,7 +242,8 @@ export class Dcsm02DetailComponent implements OnInit {
       status: 'รอผู้รับผิดชอบอนุมัติ',
       designOrderId: this.designForm.getRawValue().id,
       customerName: this.designForm.getRawValue().customerName,
-      fileName: this.designForm.getRawValue().fileName
+      fileName: this.designForm.getRawValue().fileName,
+      typeJob: this.designForm.getRawValue().jobType,
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',

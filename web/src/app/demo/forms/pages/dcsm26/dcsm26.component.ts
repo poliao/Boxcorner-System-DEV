@@ -18,7 +18,7 @@ import { StatusColorService } from 'src/app/shared/services/status-color.service
   styleUrls: ['./dcsm26.component.scss']
 })
 export class Dcsm26Component implements OnInit {
-  
+
   filterId: string = '';
   filterJobId: string = '';
   filterCustomerName: string = '';
@@ -35,13 +35,13 @@ export class Dcsm26Component implements OnInit {
 
 
   tableColumns = [
-    { key: 'id', label: 'ลำดับ'},
-    { key: 'jobId', label: 'JOB ID'},
-    { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน'},  
-    { key: 'printingDate', label: 'วันที่ส่งพิมพ์',},
-    { key: 'printingResponsible', label: 'พิมพ์ที่',},
-    { key: 'dueDate', label: 'วันที่ส่งลูกค้า' },
-    { key: 'printStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this)  },
+    { key: 'id', label: 'ลำดับ' },
+    { key: 'jobId', label: 'JOB ID' },
+    { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน' },
+    { key: 'deliveryDate', label: 'วันที่ส่งพิมพ์', },
+    { key: 'printerName', label: 'พิมพ์ที่', },
+    { key: 'issample', label: 'เป็นตัวอย่าง' },
+    { key: 'printStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this) },
   ];
 
 
@@ -80,7 +80,8 @@ export class Dcsm26Component implements OnInit {
             stampingDate: this.formatDate(item.stampingDate),
             gluingDate: this.formatDate(item.gluingDate),
             qcDate: this.formatDate(item.qcDate),
-            dueDate: this.formatDate(item.dueDate)
+            dueDate: this.formatDate(item.dueDate),
+            issample: item.issample ? 'เป็น' : 'ไม่เป็น'
           }));
           this.totalElements = response.totalElements;
           this.loadingService.hide();

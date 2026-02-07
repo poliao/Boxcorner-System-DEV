@@ -97,6 +97,8 @@ export class Dcsm11DetailComponent implements OnInit {
       rowVersion: [null],
       jobId: [null],
       qtId: [null],
+      typeJob: [null],
+      machineName: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -126,6 +128,8 @@ export class Dcsm11DetailComponent implements OnInit {
     this.mainForm.controls['paperGram'].disable({ emitEvent: false });
     this.mainForm.controls['jobId'].disable({ emitEvent: false });
     this.mainForm.controls['qtId'].disable({ emitEvent: false });
+    this.mainForm.controls['typeJob'].disable({ emitEvent: false });
+    this.mainForm.controls['machineName'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -192,7 +196,6 @@ export class Dcsm11DetailComponent implements OnInit {
             this.loadingService.hide();
             this.checkBtn();
             this.sweetAlert.success('Success', 'เสร็จสิ้น!');
-            this.router.navigate(['/Dcsm04']);
           },
           error: (error) => {
             this.loadingService.hide();

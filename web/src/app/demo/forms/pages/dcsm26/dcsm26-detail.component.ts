@@ -15,11 +15,14 @@ import Swal from 'sweetalert2';
 })
 export class Dcsm26DetailComponent implements OnInit {
   printingForm: FormGroup;
+  checklistForm: FormGroup;
   id: string | null = null;
   isEditMode = false;
   isPrint = false;
   isInPrint = false;
   recipeList: any[] = [];
+  showChecklistModal = false;
+  isSample = false;
 
   constructor(
     private fb: FormBuilder,
@@ -32,6 +35,7 @@ export class Dcsm26DetailComponent implements OnInit {
 
   ngOnInit() {
     this.createForm();
+    this.createChecklistForm();
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     const resolvedData = this.route.snapshot.data['designDiecut'];
@@ -39,44 +43,116 @@ export class Dcsm26DetailComponent implements OnInit {
       this.printingForm.patchValue(resolvedData);
       this.loadRecipeList(resolvedData.jobId);
     }
+    if (this.printingForm.getRawValue().issample == true) {
+      this.isSample = true
+    } else {
+      this.isSample = false
+    }
     this.checkbntPrint();
   }
 
   createForm() {
     this.printingForm = this.fb.group({
       id: [null],
-      date: [new Date().toISOString().substring(0, 10), Validators.required],
-      jobId: ['', Validators.required],
+      jobId: [null, Validators.required],
       customerJobName: ['', Validators.required],
-      printQuantity: [0],
-      productionQuantity: [0],
-      printingDate: [null],
-      printingResponsible: [''],
-      coatingDate: [null],
-      coatingResponsible: [''],
+      totalPrintSheets: [0],
+      productionQty: [0],
+      printerName: [null],
+      setupWaste: [null],
+      sampleId: [null],
+      deliveryDate: [null],
+      deliveryTime: [null],
+      printingResponsible: ['', Validators.required],
       stampingDate: [null],
       stampingResponsible: [''],
       gluingDate: [null],
       gluingResponsible: [''],
       qcDate: [null],
       dueDate: ['', Validators.required],
-      printStatus: [''],
+      jobStatus: [''],
       shippingAddress: [''],
       remark: [''],
       deliveryStatus: [''],
       imageUrl: [null],
       dataDalivery: [false],
       machineSetupCount: [''],
-      rowVersion: [null]
+      rowVersion: [null],
+      printingRecordId: [null],
+      issample: [false],
+      jobType: [null],
+      printType: [null],
+      paperType: [null],
+      diecuttingType: [null],
+      coatType: [null],
+      systemPrint: [null],
+      colorPrint: [null],
+      paperGram: [null],
+      productionJobId: [null],
     });
-    this.printingForm.get('date')?.disable();
+    this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
     this.printingForm.get('customerJobName')?.disable();
-    this.printingForm.get('printQuantity')?.disable();
-    this.printingForm.get('productionQuantity')?.disable();
-    this.printingForm.get('printingDate')?.disable();
+    this.printingForm.get('totalPrintSheets')?.disable();
+    this.printingForm.get('productionQty')?.disable();
+    this.printingForm.get('printerName')?.disable();
+    this.printingForm.get('setupWaste')?.disable();
+    this.printingForm.get('sampleId')?.disable();
+    this.printingForm.get('deliveryDate')?.disable();
+    this.printingForm.get('deliveryTime')?.disable();
     this.printingForm.get('printingResponsible')?.disable();
-    this.printingForm.get('printStatus')?.disable();
+    this.printingForm.get('stampingDate')?.disable();
+    this.printingForm.get('stampingResponsible')?.disable();
+    this.printingForm.get('gluingDate')?.disable();
+    this.printingForm.get('gluingResponsible')?.disable();
+    this.printingForm.get('qcDate')?.disable();
+    this.printingForm.get('dueDate')?.disable();
+    this.printingForm.get('jobStatus')?.disable();
+    this.printingForm.get('shippingAddress')?.disable();
+    this.printingForm.get('remark')?.disable();
+    this.printingForm.get('deliveryStatus')?.disable();
+    this.printingForm.get('imageUrl')?.disable();
+    this.printingForm.get('dataDalivery')?.disable();
+    this.printingForm.get('machineSetupCount')?.disable();
+    this.printingForm.get('rowVersion')?.disable();
+    this.printingForm.get('printingRecordId')?.disable();
+    this.printingForm.get('issample')?.disable();
+    this.printingForm.get('jobType')?.disable();
+    this.printingForm.get('printType')?.disable();
+    this.printingForm.get('paperType')?.disable();
+    this.printingForm.get('diecuttingType')?.disable();
+    this.printingForm.get('coatType')?.disable();
+    this.printingForm.get('systemPrint')?.disable();
+    this.printingForm.get('colorPrint')?.disable();
+    this.printingForm.get('paperGram')?.disable();
+  }
+
+  createChecklistForm() {
+    this.checklistForm = this.fb.group({
+      waterTemp: [''],
+      ipaValue: [''],
+      conductivity: [''],
+      airPressure: [''],
+      hasCMYK: [false],
+      hasSpecial: [false],
+      isNewInk: [false],
+      isOldInk: [false],
+      cLotNo: [''],
+      cBrand: [''],
+      mLotNo: [''],
+      mBrand: [''],
+      yLotNo: [''],
+      yBrand: [''],
+      kLotNo: [''],
+      kBrand: [''],
+      plateCondition: [false],
+      rubberCondition: [false],
+      cleanedBed: [false],
+      colorMatchProof: [false],
+      colorMatchDigital: [false],
+      colorMatchPrevious: [false],
+      colorNotSerious: [false],
+    });
   }
 
   calculateTotalTime() {
@@ -97,6 +173,11 @@ export class Dcsm26DetailComponent implements OnInit {
   }
 
   onUpdatePrint(status: string): void {
+    if (status === 'inPrint') {
+      this.showChecklistModal = true;
+      return;
+    }
+
     if (this.printingForm.valid) {
       Swal.fire({
         title: 'ยืนยันอัพเดตสถานะ',
@@ -109,13 +190,9 @@ export class Dcsm26DetailComponent implements OnInit {
         cancelButtonText: 'ยกเลิก'
       }).then((result) => {
         if (result.isConfirmed) {
-
           this.loadingService.show();
           if (status === 'Print') {
             this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
-          }
-          if (status === 'inPrint') {
-            this.printingForm.get('printStatus')?.setValue('กำลังพิมพ์');
           }
           const data = this.printingForm.getRawValue();
 
@@ -140,14 +217,14 @@ export class Dcsm26DetailComponent implements OnInit {
     });
   }
 
-  checkbntPrint(){
-    if ( this.printingForm.get('printStatus')?.value === '' || this.printingForm.get('printStatus')?.value === null) {
+  checkbntPrint() {
+    if (this.printingForm.get('jobStatus')?.value === '' || this.printingForm.get('jobStatus')?.value === null) {
       this.isInPrint = true;
-      this.isPrint =false;
-    }else if(this.printingForm.get('printStatus')?.value === 'กำลังพิมพ์') {
-       this.isPrint = true;
-       this.isInPrint = false;
-    }else{
+      this.isPrint = false;
+    } else if (this.printingForm.get('jobStatus')?.value === 'กำลังพิมพ์') {
+      this.isPrint = true;
+      this.isInPrint = false;
+    } else {
       this.isPrint = false;
       this.isInPrint = false;
     }
@@ -168,7 +245,7 @@ export class Dcsm26DetailComponent implements OnInit {
 
   getLabColor(l: number, a: number, b: number): string {
     if (l == null || a == null || b == null) return '#ffffff';
-    
+
     const y = (l + 16) / 116;
     const x = a / 500 + y;
     const z = y - b / 200;
@@ -194,5 +271,31 @@ export class Dcsm26DetailComponent implements OnInit {
     const blue = Math.max(0, Math.min(255, Math.round(bl * 255)));
 
     return `rgb(${red}, ${green}, ${blue})`;
+  }
+
+  closeChecklistModal() {
+    this.showChecklistModal = false;
+  }
+
+  submitChecklist() {
+    if (this.printingForm.valid) {
+      this.loadingService.show();
+      this.printingForm.get('printStatus')?.setValue('กำลังพิมพ์');
+      const data = {
+        ...this.printingForm.getRawValue(),
+        checklist: this.checklistForm.value
+      };
+
+      this.dcsm26Service.save(data).subscribe((response) => {
+        this.checkbntPrint();
+        this.printingForm.patchValue(response);
+        this.loadingService.hide();
+        this.showChecklistModal = false;
+        this.sweetAlert.success('Success', 'เริ่มพิมพ์สำเร็จ!');
+      });
+    } else {
+      this.markFormGroupTouched();
+      this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+    }
   }
 }

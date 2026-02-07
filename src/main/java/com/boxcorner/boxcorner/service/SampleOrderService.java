@@ -57,6 +57,8 @@ public class SampleOrderService {
             existingOrder.setPaperGram(order.getPaperGram());
             existingOrder.setJobId(order.getJobId());
             existingOrder.setQtId(order.getQtId());
+            existingOrder.setTypeJob(order.getTypeJob());
+            existingOrder.setMachineName(order.getMachineName());
             
             return sampleOrderRepository.save(existingOrder);
         } else {

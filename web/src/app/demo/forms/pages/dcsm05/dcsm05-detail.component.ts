@@ -57,6 +57,10 @@ export class Dcsm05DetailComponent implements OnInit {
         this.isDesign = true
       }
     }
+    if (this.mainForm.getRawValue().machineName != null) {
+       this.mainForm.controls['machineName'].disable({ emitEvent: false });
+    }
+    
   }
 
   initForm(): void {
@@ -91,6 +95,8 @@ export class Dcsm05DetailComponent implements OnInit {
       rowVersion: [null],
       jobId: [null],
       qtId: [null],
+      typeJob: [null],
+      machineName: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -120,6 +126,7 @@ export class Dcsm05DetailComponent implements OnInit {
     this.mainForm.controls['paperGram'].disable({ emitEvent: false });
     this.mainForm.controls['jobId'].disable({ emitEvent: false });
     this.mainForm.controls['qtId'].disable({ emitEvent: false });
+    this.mainForm.controls['typeJob'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -349,7 +356,7 @@ export class Dcsm05DetailComponent implements OnInit {
           jobStatus: null,
           totalPrintSheets: null,
           productionQty: this.mainForm.getRawValue().quantity,
-          printerName: null,
+          printerName: this.mainForm.getRawValue().machineName,
           setupWaste: null,
           issample: true,
           jobType: this.mainForm.getRawValue().jobType,

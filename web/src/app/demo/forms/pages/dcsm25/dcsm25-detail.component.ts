@@ -269,6 +269,7 @@ export class Dcsm25DetailComponent implements OnInit {
     }else {
       this.printingFormRecord.get('jobCategory')?.setValue('งานผลิตจริง');
     }
+    this.printingFormRecord.get('printerName')?.setValue(this.printingForm.getRawValue().printerName);
     this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
       next: (response) => {
         this.printingFormRecord.patchValue(response);

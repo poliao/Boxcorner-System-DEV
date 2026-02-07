@@ -64,6 +64,19 @@
           <label class="form-label font-weight-bold">หน่วยนับ<span style="color: red;">*</span></label>
           <input type="text" formControlName="unit" class="form-control">
         </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="typeJob" class="form-control" style="color: black;">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">เครื่องพิมพ์</label>
+          <select formControlName="machineName" class="form-select" style="color: black;">
+            <option value="">เลือกเครื่องพิมพ์</option>
+            <option value="Canon">Canon</option>
+            <option value="Ricoh">Ricoh</option>
+            <option value="Bluesky">Bluesky</option>
+          </select>
+        </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
           <input style="background-color: rgb(255, 136, 0); color: white;" type="date" formControlName="updateDateDelivery" class="form-control">

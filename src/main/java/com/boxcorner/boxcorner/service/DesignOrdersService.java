@@ -50,6 +50,7 @@ public class DesignOrdersService {
             existing.setCustomerName(designOrder.getCustomerName());
             existing.setAssignee(designOrder.getAssignee());
             existing.setJobOwner(designOrder.getJobOwner());
+            existing.setJobType(designOrder.getJobType());
             return repository.save(existing);
         } else {
             designOrder.setJobOwner(currentUser);

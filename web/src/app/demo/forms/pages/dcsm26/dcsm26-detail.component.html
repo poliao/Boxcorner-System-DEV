@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h1 class="mb-0">งานรอพิมพ์ OD</h1>
+    <h1 class="mb-0">งานรอพิมพ์ OS</h1>
     <button *ngIf="isPrint" (click)="onUpdatePrint('Print')" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
     <button *ngIf="isInPrint" (click)="onUpdatePrint('inPrint')" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
   </div>
@@ -9,16 +9,12 @@
     <form [formGroup]="printingForm">
       <div class="row g-3">
         <div class="col-md-4">
-          <label class="form-label">วันที่ </label>
-          <input type="date" formControlName="date" class="form-control">
-        </div>
-        <div class="col-md-4">
           <label class="form-label">JOB ID</label>
           <input type="text" formControlName="jobId" class="form-control">
         </div>
         <div class="col-md-4">
           <label class="form-label" style=" color: red;">วันที่ต้องส่งงานพิมพ์</label>
-          <input type="date" formControlName="printingDate" class="form-control" style="background-color: red; color: #ffffff;">
+          <input type="date" formControlName="deliveryDate" class="form-control" style="background-color: red; color: #ffffff;">
         </div>
         <div class="col-12">
           <label class="form-label">ชื่อลูกค้า/ชื่องาน</label>
@@ -26,66 +22,226 @@
         </div>
         <div class="col-md-2">
           <label class="form-label">สถานะงาน</label>
-          <input type="text" formControlName="printStatus" class="form-control">
+          <input type="text" formControlName="jobStatus" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">ตั้งเครื่อง</label>
+          <input type="number" formControlName="setupWaste" class="form-control" placeholder="0">
         </div>
         <div class="col-md-2">
           <label class="form-label">ยอดใบพิมพ์</label>
-          <input type="number" formControlName="printQuantity" class="form-control" placeholder="0">
+          <input type="number" formControlName="totalPrintSheets" class="form-control" placeholder="0">
         </div>
         <div class="col-md-2">
           <label class="form-label">ยอดผลิต/กล่อง</label>
-          <input type="number" formControlName="productionQuantity" class="form-control" placeholder="0">
+          <input type="number" formControlName="productionQty" class="form-control" placeholder="0">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label">เครื่องพิมพ์</label>
-          <input type="text" formControlName="printingResponsible" class="form-control">
+          <input type="text" formControlName="printerName" class="form-control">
         </div>
       </div>
     </form>
   </div>
 </div>
 
+
+<div class="card-body" *ngIf="isSample">
+  <div class="card total-income-card info overflow-hidden">
+    <div style="padding: 10px;">
+      <h5 class="card-title mb-3">รายละเอียดงานพิมพ์</h5>
+      <form [formGroup]="printingForm" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="jobType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ระบบพิมพ์</label>
+          <input type="text" formControlName="systemPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานพิมพ์</label>
+          <input type="text" formControlName="printType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">สีที่พิมพ์</label>
+          <input type="text" formControlName="colorPrint" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ขนาดกระดาษ</label>
+          <input type="text" formControlName="paperType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">แกรมกระดาษ</label>
+          <input type="text" formControlName="paperGram" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานเคลือบ</label>
+          <input type="text" formControlName="coatType" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
+          <input type="text" formControlName="diecuttingType" class="form-control">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <div class="card mt-4" *ngIf="recipeList && recipeList.length > 0">
   <div class="card-header">
     <h5 class="mb-0">ค่าสี LAB</h5>
   </div>
   <div class="card-body">
-    <div class="row g-3">
-      <div class="col-md-4" *ngFor="let recipe of recipeList">
-        <div class="card border shadow-sm">
-          <div class="card-body">
-            <h6 class="card-title text-primary">{{ recipe.recipeid }}</h6>
-            <p class="card-text text-muted small mb-3">{{ recipe.jobname }}</p>
-            
-            <div class="row g-2">
-              <div class="col-4 text-center">
-                <div class="border rounded p-2 bg-light">
-                  <small class="text-muted d-block">L</small>
-                  <strong>{{ recipe.lightness }}</strong>
-                </div>
-              </div>
-              <div class="col-4 text-center">
-                <div class="border rounded p-2 bg-light">
-                  <small class="text-muted d-block">A</small>
-                  <strong>{{ recipe.greenred }}</strong>
-                </div>
-              </div>
-              <div class="col-4 text-center">
-                <div class="border rounded p-2 bg-light">
-                  <small class="text-muted d-block">B</small>
-                  <strong>{{ recipe.blueyellow }}</strong>
-                </div>
-              </div>
-            </div>
-            
-            <div class="mt-3">
-              <small class="text-muted d-block mb-1">ตัวอย่างสี</small>
-              <div class="border rounded" 
-                   [style.background-color]="getLabColor(recipe.lightness, recipe.greenred, recipe.blueyellow)"
-                   style="height: 60px; width: 100%;"></div>
-            </div>
+    <div class="d-flex flex-wrap gap-2">
+      <div *ngFor="let recipe of recipeList" class="border rounded p-2 bg-light" style="min-width: 180px;">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <span class="badge bg-primary" style="font-size: 0.65rem;">{{ recipe.recipeid }}</span>
+          <small class="text-muted" style="font-size: 0.7rem;">{{ recipe.jobname }}</small>
+        </div>
+        <div class="d-flex gap-1 mb-1">
+          <div class="text-center px-1">
+            <div class="text-muted" style="font-size: 0.6rem;">L</div>
+            <div class="fw-bold" style="font-size: 0.75rem;">{{ recipe.lightness }}</div>
+          </div>
+          <div class="text-center px-1">
+            <div class="text-muted" style="font-size: 0.6rem;">A</div>
+            <div class="fw-bold" style="font-size: 0.75rem;">{{ recipe.greenred }}</div>
+          </div>
+          <div class="text-center px-1">
+            <div class="text-muted" style="font-size: 0.6rem;">B</div>
+            <div class="fw-bold" style="font-size: 0.75rem;">{{ recipe.blueyellow }}</div>
           </div>
         </div>
+        <div class="rounded" 
+             [style.background-color]="getLabColor(recipe.lightness, recipe.greenred, recipe.blueyellow)"
+             style="height: 30px; width: 100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Checklist -->
+<div class="modal" [class.show]="showChecklistModal" [style.display]="showChecklistModal ? 'block' : 'none'" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ตรวจสอบก่อนเริ่มพิมพ์</h5>
+        <button type="button" class="btn-close" (click)="closeChecklistModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="checklistForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">อุณหภูมิน้ำยา/ตู้น้ำ (°C)</label>
+              <input type="number" formControlName="waterTemp" class="form-control" placeholder="ระบุอุณหภูมิ">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่า IPA (ไม่เกิน 10%)</label>
+              <input type="number" formControlName="ipaValue" class="form-control" placeholder="ระบุค่า IPA" max="10">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่า Conductivity (8,000 - 12,000 µS)</label>
+              <input type="number" formControlName="conductivity" class="form-control" placeholder="8000-12000">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">แรงดันลม (8-10 bar)</label>
+              <input type="number" formControlName="airPressure" class="form-control" placeholder="8-10">
+            </div>
+            
+            <div class="col-12">
+              <label class="form-label d-block">หมึก</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" formControlName="hasCMYK" id="hasCMYK">
+                <label class="form-check-label" for="hasCMYK">มี CMYK</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" formControlName="hasSpecial" id="hasSpecial">
+                <label class="form-check-label" for="hasSpecial">พิเศษ</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" formControlName="isNewInk" id="isNewInk">
+                <label class="form-check-label" for="isNewInk">หมึกใหม่</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" formControlName="isOldInk" id="isOldInk">
+                <label class="form-check-label" for="isOldInk">หมึกเก่า</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">C Lot No.</label>
+              <input type="text" formControlName="cLotNo" class="form-control" placeholder="Lot No.">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">C Brand</label>
+              <input type="text" formControlName="cBrand" class="form-control" placeholder="Brand">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">M Lot No.</label>
+              <input type="text" formControlName="mLotNo" class="form-control" placeholder="Lot No.">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">M Brand</label>
+              <input type="text" formControlName="mBrand" class="form-control" placeholder="Brand">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Y Lot No.</label>
+              <input type="text" formControlName="yLotNo" class="form-control" placeholder="Lot No.">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Y Brand</label>
+              <input type="text" formControlName="yBrand" class="form-control" placeholder="Brand">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">K Lot No.</label>
+              <input type="text" formControlName="kLotNo" class="form-control" placeholder="Lot No.">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">K Brand</label>
+              <input type="text" formControlName="kBrand" class="form-control" placeholder="Brand">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label d-block">การตรวจสอบ</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="plateCondition" id="plateCondition">
+                <label class="form-check-label" for="plateCondition">เพลทสภาพสมบูรณ์</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="rubberCondition" id="rubberCondition">
+                <label class="form-check-label" for="rubberCondition">ยางไม่แข็ง / ไม่ลื่น</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="cleanedBed" id="cleanedBed">
+                <label class="form-check-label" for="cleanedBed">ล้างแท่นก่อนรันแล้ว</label>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label d-block">เทียบสีจาก</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="colorMatchProof" id="colorMatchProof">
+                <label class="form-check-label" for="colorMatchProof">ใบปรู๊ฟ</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="colorMatchDigital" id="colorMatchDigital">
+                <label class="form-check-label" for="colorMatchDigital">ไฟล์ดิจิทัล</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="colorMatchPrevious" id="colorMatchPrevious">
+                <label class="form-check-label" for="colorMatchPrevious">งานเดิม</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="colorNotSerious" id="colorNotSerious">
+                <label class="form-check-label" for="colorNotSerious">ลูกค้าไม่ซีเรียสสี</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeChecklistModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="submitChecklist()">ยืนยันเริ่มพิมพ์</button>
       </div>
     </div>
   </div>

@@ -9,6 +9,10 @@
             {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
           </button>
           <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #ff9900;">
+            ปรู๊ฟหน้าแท่น
+          </button>
+          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             อนุมัติ
           </button>
@@ -29,7 +33,7 @@
             ไม่ผ่าน
           </button>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" *ngIf="isPap">
           <label class="form-label font-weight-bold">ID</label>
           <div class="input-group">
             <input type="text" formControlName="searchId" class="form-control" placeholder="กรอกเลข ID">
@@ -65,6 +69,10 @@
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
         <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        </div>
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
@@ -94,6 +102,7 @@
           <label class="form-label font-weight-bold">หน่วยนับ<span style="color: red;">*</span></label>
           <input type="text" formControlName="unit" class="form-control">
         </div>
+
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
           <input style="background-color: rgb(255, 136, 0); color: white;" type="text"
@@ -108,14 +117,28 @@
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="note" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
         </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
-          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <select formControlName="typeJob" class="form-select" style="color: black;">
+            <option value="">เลือกประเภทงาน</option>
+            <option value="OS">OS</option>
+            <option value="OD">OD</option>
+          </select>
         </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">เครื่องพิมพ์</label>
+          <select formControlName="machineName" class="form-select" style="color: black;">
+            <option value="">เลือกเครื่องพิมพ์</option>
+            <option value="Canon">Canon</option>
+            <option value="Ricoh">Ricoh</option>
+            <option value="Bluesky">Bluesky</option>
+          </select>
+        </div>
+
         <div class="col-md-12">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
               class="form-check-input" id="isCreateSampleSwitch">
-            <label class="form-check-label" for="isCreateSampleSwitch">ขึ้นตัวอย่าง</label>
+            <label class="form-check-label" for="isCreateSampleSwitch">ขึ้นตัวอย่าง </label>
           </div>
         </div>
       </form>
@@ -365,8 +388,7 @@
         <div class="row mb-3">
           <div class="col-12">
             <label class="form-label font-weight-bold">หมายเหตุ <span class="text-danger">*</span></label>
-            <textarea class="form-control" rows="3" [formControl]="planRemarks"
-              placeholder="ระบุหมายเหตุ..."
+            <textarea class="form-control" rows="3" [formControl]="planRemarks" placeholder="ระบุหมายเหตุ..."
               [class.is-invalid]="planRemarks.invalid && planRemarks.touched"></textarea>
           </div>
         </div>

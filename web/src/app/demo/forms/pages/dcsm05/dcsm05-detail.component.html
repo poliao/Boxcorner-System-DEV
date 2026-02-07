@@ -88,6 +88,27 @@
           <label class="form-label font-weight-bold">หน่วยนับ</label>
           <input type="text" formControlName="unit" class="form-control">
         </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ประเภทงาน</label>
+          <input type="text" formControlName="typeJob" class="form-control" style="color: #000000;">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">เครื่องพิมพ์</label>
+          <select formControlName="machineName" class="form-select" style="color: #000000;">
+            <option value="">เลือกเครื่องพิมพ์</option>
+            <option value="Canon">Canon</option>
+            <option value="Ricoh">Ricoh</option>
+            <option value="Bluesky">Bluesky</option>
+          </select>
+        </div>
+          <div class="col-md-5">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        </div>
+         <div class="col-md-5">
+          <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
+          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="fileName" class="form-control" >
+        </div>
         <div class="col-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="note" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
@@ -97,14 +118,7 @@
           <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="noteEdit"
             class="form-control">
         </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
-          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
-        </div>
-         <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
-          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="fileName" class="form-control" >
-        </div>
+      
         <div class="col-md-12">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
               class="form-check-input" id="isCreateSampleSwitch">

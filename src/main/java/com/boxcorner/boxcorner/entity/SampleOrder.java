@@ -3,6 +3,8 @@ package com.boxcorner.boxcorner.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.checkerframework.checker.units.qual.C;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -109,4 +111,10 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "qt_id")
     private String qtId;
+
+    @Column(name = "type_job")
+    private String typeJob;
+
+    @Column(name = "machine_name")
+    private String machineName;
 }

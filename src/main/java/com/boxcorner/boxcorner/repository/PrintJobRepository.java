@@ -13,25 +13,42 @@ import com.boxcorner.boxcorner.entity.PrintJob;
 
 @Repository
 public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
-    // ค้นหาคิวงานตามเครื่องพิมพ์
-    List<PrintJob> findByPrinterName(String printerName);
+        // ค้นหาคิวงานตามเครื่องพิมพ์
+        List<PrintJob> findByPrinterName(String printerName);
 
-    // ค้นหาตามสถานะงาน
-    List<PrintJob> findByJobStatus(String status);
+        // ค้นหาตามสถานะงาน
+        List<PrintJob> findByJobStatus(String status);
 
-    @Query(value = """
-            SELECT * FROM print_jobs pj WHERE
-            (:id IS NULL OR pj.id = :id)
-            AND (:jobId IS NULL OR pj.job_id = :jobId)
-            AND (:customerJobName IS NULL OR :customerJobName = '' OR UPPER(pj.customer_job_name) LIKE UPPER(CONCAT('%', :customerJobName, '%')))
-            AND (:printerName IS NULL OR :printerName = '' OR UPPER(pj.printer_name) LIKE UPPER(CONCAT('%', :printerName, '%')))
-            ORDER BY pj.id DESC
-            """, nativeQuery = true)
-    Page<PrintJob> findByFiltersAll(
-            @Param("id") Long id,
-            @Param("jobId") String jobId,
-            @Param("customerJobName") String customerJobName,
-            @Param("printerName") String printerName,
-            Pageable pageable);
+        @Query(value = """
+                        SELECT * FROM print_jobs pj WHERE
+                        pj.printer_name in ('Canon','Ricoh','OD') 
+                        AND(:id IS NULL OR pj.id = :id)
+                        AND (:jobId IS NULL OR pj.job_id = :jobId)
+                        AND (:customerJobName IS NULL OR :customerJobName = '' OR UPPER(pj.customer_job_name) LIKE UPPER(CONCAT('%', :customerJobName, '%')))
+                        AND (:printerName IS NULL OR :printerName = '' OR UPPER(pj.printer_name) LIKE UPPER(CONCAT('%', :printerName, '%')))
+                        ORDER BY pj.id DESC
+                        """, nativeQuery = true)
+        Page<PrintJob> findByFiltersAll(
+                        @Param("id") Long id,
+                        @Param("jobId") String jobId,
+                        @Param("customerJobName") String customerJobName,
+                        @Param("printerName") String printerName,
+                        Pageable pageable);
+
+        @Query(value = """
+                        SELECT * FROM print_jobs pj WHERE
+                        pj.printer_name in ('CD','SM','OS')
+                        AND(:id IS NULL OR pj.id = :id)
+                        AND (:jobId IS NULL OR pj.job_id = :jobId)
+                        AND (:customerJobName IS NULL OR :customerJobName = '' OR UPPER(pj.customer_job_name) LIKE UPPER(CONCAT('%', :customerJobName, '%')))
+                        AND (:printerName IS NULL OR :printerName = '' OR UPPER(pj.printer_name) LIKE UPPER(CONCAT('%', :printerName, '%')))
+                        ORDER BY pj.id DESC
+                        """, nativeQuery = true)
+        Page<PrintJob> findByFiltersOS(
+                        @Param("id") Long id,
+                        @Param("jobId") String jobId,
+                        @Param("customerJobName") String customerJobName,
+                        @Param("printerName") String printerName,
+                        Pageable pageable);
 
 }
