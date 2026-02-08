@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "printing_logs")
-public class PrintingRecordOs {
+public class PrintingRecordOs extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -32,7 +32,7 @@ public class PrintingRecordOs {
     private String paperType;
 
     @Column(name = "paper_gram")
-    private Integer paperGram;
+    private String paperGram;
 
     @Column(name = "paper_lot", length = 100)
     private String paperLot;
@@ -103,9 +103,4 @@ public class PrintingRecordOs {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 }

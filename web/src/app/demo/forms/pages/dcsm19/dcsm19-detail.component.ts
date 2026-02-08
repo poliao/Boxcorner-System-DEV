@@ -50,29 +50,42 @@ export class Dcsm19DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
       this.checkBtn();
-      if (this.mainForm.getRawValue().noteEdit) {
-        this.isNoteEdit = true
-      }
     }
   }
 
   initForm(): void {
     this.mainForm = this.fb.group({
       id: [''],
+      searchId: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
       jobOwner: [''],
-      deliveryDate: [''],
-      deliveryTime: [''],
+      deliveryDate: ['', Validators.required],
+      deliveryTime: ['', Validators.required],
       responsiblePerson: ['รอผู้รับผิดชอบอนุมัติ'],
       quantity: ['', Validators.required],
       unit: ['', Validators.required],
-      isCreateSample: [false],
+      isCreateSample: [true],
       status: ['รอผู้รับผิดชอบอนุมัติ'],
       note: [''],
-      noteEdit: [''],
+      fileName: [''],
+      designOrderId: [''],
+      updateDateDelivery: [new Date().toISOString().substring(0, 10)],
+      updateTimeDelivery: [''],
       customerName: [''],
-      rowVersion: [null]
+      jobType: [null],
+      printType: [null],
+      paperType: [null],
+      diecuttingType: [null],
+      coatType: [null],
+      systemPrint: [null],
+      colorPrint: [null],
+      paperGram: [null],
+      rowVersion: [null],
+      jobId: [null],
+      qtId: [null],
+      typeJob: [null],
+      machineName: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -86,7 +99,6 @@ export class Dcsm19DetailComponent implements OnInit {
     this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
     this.mainForm.controls['status'].disable({ emitEvent: false });
     this.mainForm.controls['note'].disable({ emitEvent: false });
-    this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
     this.mainForm.controls['customerName'].disable({ emitEvent: false });
   }
 

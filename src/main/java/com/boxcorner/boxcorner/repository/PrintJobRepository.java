@@ -21,7 +21,7 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
 
         @Query(value = """
                         SELECT * FROM print_jobs pj WHERE
-                        pj.printer_name in ('Canon','Ricoh','OD') 
+                        pj.printer_name in ('Canon','Ricoh','Bluesky') 
                         AND(:id IS NULL OR pj.id = :id)
                         AND (:jobId IS NULL OR pj.job_id = :jobId)
                         AND (:customerJobName IS NULL OR :customerJobName = '' OR UPPER(pj.customer_job_name) LIKE UPPER(CONCAT('%', :customerJobName, '%')))
@@ -37,7 +37,7 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
 
         @Query(value = """
                         SELECT * FROM print_jobs pj WHERE
-                        pj.printer_name in ('CD','SM','OS')
+                        pj.printer_name in ('CD','SM')
                         AND(:id IS NULL OR pj.id = :id)
                         AND (:jobId IS NULL OR pj.job_id = :jobId)
                         AND (:customerJobName IS NULL OR :customerJobName = '' OR UPPER(pj.customer_job_name) LIKE UPPER(CONCAT('%', :customerJobName, '%')))

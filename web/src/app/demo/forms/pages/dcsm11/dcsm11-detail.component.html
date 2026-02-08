@@ -3,6 +3,10 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+
+          <button *ngIf="checkProof == true" (click)="confirmFileProof()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #d000ff;">
+            ไฟล์ Proof ถูกต้อง
+          </button>
           <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไฟล์ถูกต้อง
           </button>

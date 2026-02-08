@@ -27,6 +27,9 @@ export class Dcsm05DetailComponent implements OnInit {
   inspection = false;
   samples = false;
   deadline = false;
+  inFileProof = false;
+  checkFileProof = false;
+  sendFileProof = false;
 
   showNotDeliverModal = false;
   notDeliverTime = new FormControl('', Validators.required);
@@ -57,10 +60,12 @@ export class Dcsm05DetailComponent implements OnInit {
         this.isDesign = true
       }
     }
-    if (this.mainForm.getRawValue().machineName != null) {
-       this.mainForm.controls['machineName'].disable({ emitEvent: false });
+    if (this.mainForm.getRawValue().status == 'ขอปรู๊ฟหน้าแท่น') {
+      this.mainForm.controls['machineName'].enable;
+    } else if (this.mainForm.getRawValue().machineName != null) {
+      this.mainForm.controls['machineName'].disable({ emitEvent: false });
     }
-    
+
   }
 
   initForm(): void {
@@ -96,7 +101,7 @@ export class Dcsm05DetailComponent implements OnInit {
       jobId: [null],
       qtId: [null],
       typeJob: [null],
-      machineName: [null],
+      machineName: [null, Validators.required],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -192,6 +197,24 @@ export class Dcsm05DetailComponent implements OnInit {
       this.samples = false;
       this.deadline = false;
     }
+
+    if (this.mainForm.getRawValue().status == 'ขอปรู๊ฟหน้าแท่น') {
+      this.inFileProof = true
+      this.checkFileProof = false
+      this.sendFileProof = false
+    } else if (this.mainForm.getRawValue().status == 'เริ่มเคลียร์ไฟล์ Proof') {
+      this.inFileProof = false
+      this.checkFileProof = true
+      this.sendFileProof = false
+    } else if (this.mainForm.getRawValue().status == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์') {
+      this.inFileProof = false
+      this.checkFileProof = false
+      this.sendFileProof = true
+    }
+  }
+
+  CheckBtnProof() {
+    
   }
 
   private getCurrentUserFromToken(): string | null {
@@ -478,5 +501,157 @@ export class Dcsm05DetailComponent implements OnInit {
       }
     });
     this.closeNotDeliverModal();
+  }
+
+  proofStatusClearFile() {
+    Swal.fire({
+      title: 'เริ่มเคลียร์ไฟล์',
+      text: "ยืนยันเริ่มเคลียร์ไฟล์ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')?.setValue('เริ่มเคลียร์ไฟล์ Proof');
+        this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.router.navigate(['/Dcsm05']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+          }
+        });
+      }
+    });
+  }
+
+  proofStatusFileComplet() {
+    Swal.fire({
+      title: 'ส่งตรวจไฟล์ Proof',
+      text: "ยืนยันส่งตรวจไฟล์ Proof ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')?.setValue('ไฟล์Proofเสร็จ รอตรวจ');
+        this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.router.navigate(['/Dcsm05']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+          }
+        });
+      }
+    });
+  }
+
+
+  proofStatusSend() {
+    Swal.fire({
+      title: 'ยืนยันขึ้นตัวอย่างแล้ว',
+      text: "ยืนยันขึ้นตัวอย่างแล้ว ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        const data = {
+          id: '',
+          createdAt: new Date(),
+          jobId: this.mainForm.getRawValue().jobId,
+          deliveryDate: this.mainForm.getRawValue().deliveryDate,
+          deliveryTime: this.mainForm.getRawValue().deliveryTime,
+          customerJobName: this.mainForm.getRawValue().customerName,
+          jobStatus: null,
+          totalPrintSheets: null,
+          productionQty: this.mainForm.getRawValue().quantity,
+          printerName: this.mainForm.getRawValue().machineName,
+          setupWaste: null,
+          issample: true,
+          jobType: this.mainForm.getRawValue().jobType,
+          printType: this.mainForm.getRawValue().printType,
+          paperType: this.mainForm.getRawValue().paperType,
+          diecuttingType: this.mainForm.getRawValue().diecuttingType,
+          coatType: this.mainForm.getRawValue().coatType,
+          systemPrint: this.mainForm.getRawValue().systemPrint,
+          colorPrint: this.mainForm.getRawValue().colorPrint,
+          paperGram: this.mainForm.getRawValue().paperGram,
+          sampleId: this.mainForm.getRawValue().id
+        };
+
+        this.mainForm.get('status')!.setValue('ส่งProofหน้าแท่นแล้ว');
+        this.dcsm05Service.savePrintJob(data).subscribe({
+          next: (response) => {
+            this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+              next: (response) => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'ขึ้นตัวอย่างแล้ว!');
+                this.router.navigate(['/Dcsm05']);
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+              }
+            })
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        })
+
+      }
+    });
+  }
+
+  proofStatusSendห() {
+    Swal.fire({
+      title: 'ส่งตรวจไฟล์ Proof',
+      text: "ยืนยันส่งตรวจไฟล์ Proof ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')?.setValue('ส่งไปช่างพิมพ์แล้ว');
+        this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.router.navigate(['/Dcsm05']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+          }
+        });
+      }
+    });
   }
 }

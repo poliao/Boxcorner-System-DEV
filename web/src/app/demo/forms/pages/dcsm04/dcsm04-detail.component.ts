@@ -25,7 +25,7 @@ export class Dcsm04DetailComponent implements OnInit {
   isBtnApprove = false
   isBtnReject = false
   isBtnApproveSample = false
-  isBtnSampleProve = false
+  isBtnSampleProof = false
   isUpdateDelivery = false
   isPap = true
 
@@ -68,7 +68,7 @@ export class Dcsm04DetailComponent implements OnInit {
       }
     }
 
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'รอเจ้าของงานตรวจสอบ') {
+    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'รอเจ้าของงานตรวจสอบ'|| this.mainForm.getRawValue().status === 'ส่งProofหน้าแท่นแล้ว' || this.mainForm.getRawValue().status === 'เริ่มเคลียร์ไฟล์ Proof' || this.mainForm.getRawValue().status === 'ไฟล์Proofเสร็จ รอตรวจ' || this.mainForm.getRawValue().status == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
@@ -126,7 +126,7 @@ export class Dcsm04DetailComponent implements OnInit {
       colorPrint: [null],
       paperGram: [null],
       rowVersion: [null],
-      jobId: [null],
+      jobId: [null, Validators.required],
       qtId: [null],
       typeJob: [null],
       machineName: [null],
@@ -289,10 +289,10 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnApprove = false;
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
-      this.isBtnSampleProve = false;
-    } else if (currentUser === formValue.jobOwner && formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต') {
-      if (this.mainForm.getRawValue().typeJob == 'OS') {
-        this.isBtnSampleProve = true;
+      this.isBtnSampleProof = false;
+    } else if (currentUser === formValue.jobOwner && (formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || formValue.status === 'Proofสำเร็จ รออนุมัติไปตารางรอผลิต')) {
+      if (this.mainForm.getRawValue().typeJob == 'OS' && formValue.status != 'Proofสำเร็จ รออนุมัติไปตารางรอผลิต' ) {
+        this.isBtnSampleProof = true;
       }
       this.isBtnSave = false;
       this.isBtnApprove = false;
@@ -303,13 +303,13 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnApprove = true;
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
-      this.isBtnSampleProve = false;
+      this.isBtnSampleProof = false;
     } else {
       this.isBtnSave = false;
       this.isBtnApprove = false;
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
-      this.isBtnSampleProve = false;
+      this.isBtnSampleProof = false;
     }
   }
 
@@ -741,4 +741,36 @@ export class Dcsm04DetailComponent implements OnInit {
       });
     }
   }
+
+  proofStatus(){
+    Swal.fire({
+        title: 'ส่งขอปรู๊บ',
+        text: "ยืนยันขอปรู๊บไปฝ่ายแผน ใช่หรือไม่?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#1e1b4b',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.loadingService.show();
+          this.mainForm.get('status')?.setValue('ขอปรู๊ฟหน้าแท่น');
+          this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+            next: (response) => {
+              this.loadingService.hide();
+              this.patchFormData(response);
+              this.router.navigate(['/Dcsm04']);
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+            }
+          });
+        }
+      });
+  }
+
+  
+  
 }

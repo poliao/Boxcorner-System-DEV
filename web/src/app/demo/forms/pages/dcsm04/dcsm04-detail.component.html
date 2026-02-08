@@ -8,7 +8,7 @@
             style="background-color: #1e1b4b;">
             {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
           </button>
-          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit"
+          <button *ngIf="isBtnSampleProof == true" (click)="proofStatus()" type="submit"
             class="btn text-white px-5 shadow-sm" style="background-color: #ff9900;">
             ปรู๊ฟหน้าแท่น
           </button>
@@ -47,8 +47,9 @@
           <input type="text" formControlName="id" class="form-control">
         </div>
         <div class="col-md-6">
-          <label class="form-label font-weight-bold">JobId</label>
-          <input type="text" formControlName="jobId" class="form-control">
+          <label class="form-label font-weight-bold">JobId <span style="color: red;">*</span></label>
+          <input type="text" formControlName="jobId" class="form-control"
+          [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">QtId</label>

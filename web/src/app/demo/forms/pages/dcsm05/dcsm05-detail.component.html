@@ -31,6 +31,18 @@
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             กำหนดส่งกลับ
           </button>
+          <button *ngIf="inFileProof == true" type="submit" (click)="proofStatusClearFile()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #d000ff;">
+            เริ่มทำไฟล์Proof
+          </button>
+          <button *ngIf="checkFileProof == true" type="submit" (click)="proofStatusFileComplet()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #d000ff;">
+            ส่งตรวจไฟล์Proof
+          </button>
+          <button *ngIf="sendFileProof == true" type="submit" (click)="proofStatusSend()"
+            class="btn text-white px-5 shadow-sm" style="background-color: #d000ff;">
+            ส่งProofหน้าแท่น
+          </button>
 
 
         </div>
@@ -93,12 +105,14 @@
           <input type="text" formControlName="typeJob" class="form-control" style="color: #000000;">
         </div>
         <div class="col-md-4">
-          <label class="form-label font-weight-bold">เครื่องพิมพ์</label>
+          <label class="form-label font-weight-bold">เครื่องพิมพ์<span style="color: red;">*</span></label>
           <select formControlName="machineName" class="form-select" style="color: #000000;">
             <option value="">เลือกเครื่องพิมพ์</option>
             <option value="Canon">Canon</option>
             <option value="Ricoh">Ricoh</option>
             <option value="Bluesky">Bluesky</option>
+            <option value="SM">SM</option>
+            <option value="CD">CD</option>
           </select>
         </div>
           <div class="col-md-5">

@@ -12,8 +12,17 @@ export class Dcsm26Service {
 
   constructor(private http: HttpClient) { }
   
+
   save(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/print-job/save`, data);
+  }
+
+  saveProduction(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
+  }
+
+  saveRecordOS(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/printing-record-os/save`, data);
   }
  
   getOrdersWithSearch(page: number, size: number, filters: any): Observable<any> {
@@ -41,5 +50,13 @@ export class Dcsm26Service {
 
   getRecipesByJobId(jobId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/recipes/detailByJo?jobId=${jobId}`);
+  }
+
+  saveSample(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
+  }
+
+  getByIdSample(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
   }
 }

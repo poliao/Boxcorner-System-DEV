@@ -25,7 +25,7 @@ public class PrintJob extends BaseEntity {
     @Column(name = "job_id", nullable = false, length = 50)
     private String jobId;
 
-    @Column(name = "delivery_date", nullable = false)
+    @Column(name = "delivery_date")
     private LocalDate deliveryDate;
 
     @Column(name = "customer_job_name", columnDefinition = "TEXT")

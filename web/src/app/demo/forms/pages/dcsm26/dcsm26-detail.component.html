@@ -1,7 +1,7 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h1 class="mb-0">งานรอพิมพ์ OS</h1>
-    <button *ngIf="isPrint" (click)="onUpdatePrint('Print')" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
+    <button *ngIf="isPrint" (click)="updatePrintStatus('Print')" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
     <button *ngIf="isInPrint" (click)="onUpdatePrint('inPrint')" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
   </div>
   
@@ -241,7 +241,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeChecklistModal()">ยกเลิก</button>
-        <button type="button" class="btn btn-primary" (click)="submitChecklist()">ยืนยันเริ่มพิมพ์</button>
+        <button type="button" class="btn btn-primary" (click)="submitChecklist('inPrint')">ยืนยันเริ่มพิมพ์</button>
       </div>
     </div>
   </div>

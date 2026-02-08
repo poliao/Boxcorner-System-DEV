@@ -27,6 +27,7 @@ export class Dcsm11DetailComponent implements OnInit {
   isBtnRejectSample = false
   isUpdateDelivery = false
   isNoteEdit = false
+  checkProof = false
 
   showEditFileModal = false;
   editFileNote = new FormControl('', Validators.required);
@@ -226,6 +227,12 @@ export class Dcsm11DetailComponent implements OnInit {
       this.isBtnApproveSample = false;
       this.isBtnRejectSample = false;
     }
+
+    if (this.mainForm.getRawValue().status == 'ไฟล์Proofเสร็จ รอตรวจ') {
+      this.checkProof = true
+    }else{
+      this.checkProof = false
+    }
   }
 
   confirmEditFile() {
@@ -242,6 +249,36 @@ export class Dcsm11DetailComponent implements OnInit {
       if (result.isConfirmed) {
         this.loadingService.show();
         this.mainForm.get('status').setValue('รอเจ้าของงานตรวจสอบ')
+        this.dcsm11Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'บันทึกข้อมูลเรียบร้อย!');
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        });
+      }
+    });
+  }
+
+  confirmFileProof() {
+    Swal.fire({
+      title: 'ส่งกลับไปยังเจ้าของงาน',
+      text: "ส่งกลับไปยังเจ้าของงานตรวจสอบ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status').setValue('ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์')
         this.dcsm11Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);

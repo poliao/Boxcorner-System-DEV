@@ -175,38 +175,6 @@ export class Dcsm26DetailComponent implements OnInit {
   onUpdatePrint(status: string): void {
     if (status === 'inPrint') {
       this.showChecklistModal = true;
-      return;
-    }
-
-    if (this.printingForm.valid) {
-      Swal.fire({
-        title: 'ยืนยันอัพเดตสถานะ',
-        text: "ยืนยันอัพเดตสถานะ ใช่หรือไม่?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#1e1b4b',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'ยืนยัน',
-        cancelButtonText: 'ยกเลิก'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.loadingService.show();
-          if (status === 'Print') {
-            this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
-          }
-          const data = this.printingForm.getRawValue();
-
-          this.dcsm26Service.save(data).subscribe((response) => {
-            this.checkbntPrint();
-            this.printingForm.patchValue(response);
-            this.loadingService.hide();
-            this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
-          })
-        }
-      });
-    } else {
-      this.markFormGroupTouched();
-      this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
     }
   }
 
@@ -277,25 +245,121 @@ export class Dcsm26DetailComponent implements OnInit {
     this.showChecklistModal = false;
   }
 
-  submitChecklist() {
+  submitChecklist(status) {
     if (this.printingForm.valid) {
       this.loadingService.show();
-      this.printingForm.get('printStatus')?.setValue('กำลังพิมพ์');
-      const data = {
-        ...this.printingForm.getRawValue(),
-        checklist: this.checklistForm.value
-      };
-
-      this.dcsm26Service.save(data).subscribe((response) => {
-        this.checkbntPrint();
-        this.printingForm.patchValue(response);
-        this.loadingService.hide();
-        this.showChecklistModal = false;
-        this.sweetAlert.success('Success', 'เริ่มพิมพ์สำเร็จ!');
+      if (status === 'inPrint') {
+        this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์');
+      }
+      this.dcsm26Service.save(this.printingForm.getRawValue()).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ');
+          this.router.navigate(['/Dcsm26']);
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+        }
       });
+      this.saveRecordOs()
+      this.checkbntPrint();
     } else {
       this.markFormGroupTouched();
       this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
     }
   }
+
+  saveRecordOs() {
+    const checklist = this.checklistForm.value;
+    const form = this.printingForm.getRawValue();
+
+    const data = {
+      startDatetime: new Date().toISOString(),
+      jobNumber: form.jobId,
+      customerName: form.customerJobName,
+      machineName: form.printerName,
+      technicianName: form.printingResponsible,
+      paperType: form.paperType,
+      paperGram: form.paperGram,
+      paperLot: null,
+      waterTempCelsius: checklist.waterTemp,
+      ipaPercent: checklist.ipaValue,
+      conductivityUs: checklist.conductivity,
+      airPressureBar: checklist.airPressure,
+      hasCmyk: checklist.hasCMYK,
+      hasSpecialColor: checklist.hasSpecial,
+      inkAgeType: checklist.isNewInk ? 'NEW' : (checklist.isOldInk ? 'OLD' : null),
+      clotNo: checklist.cLotNo,
+      cbrand: checklist.cBrand,
+      mlotNo: checklist.mLotNo,
+      mbrand: checklist.mBrand,
+      ylotNo: checklist.yLotNo,
+      ybrand: checklist.yBrand,
+      klotNo: checklist.kLotNo,
+      kbrand: checklist.kBrand,
+      isPlatePerfect: checklist.plateCondition,
+      isBlanketOk: checklist.rubberCondition,
+      isMachineCleaned: checklist.cleanedBed,
+      colorReferenceSource: checklist.colorMatchProof ? 'PROOF' :
+        (checklist.colorMatchDigital ? 'DIGITAL' :
+          (checklist.colorMatchPrevious ? 'PREVIOUS' : null)),
+      decisionAuthority: checklist.colorNotSerious ? 'TECHNICIAN' : null,
+      deciderName: form.printingResponsible,
+      decisionRemark: null,
+      createdAt: new Date().toISOString()
+    };
+
+    this.dcsm26Service.saveRecordOS(data).subscribe({
+      next: (response) => {
+        this.showChecklistModal = false;
+      },
+      error: (error) => {
+        console.error('Error saving printing record:', error);
+      }
+    });
+  }
+
+  updateSampleStatus() {
+    this.dcsm26Service.getByIdSample(this.printingForm.getRawValue().sampleId).subscribe((response) => {
+      response.status = 'Proofสำเร็จ รออนุมัติไปตารางรอผลิต';
+      this.dcsm26Service.saveSample(response).subscribe((response) => {
+        this.loadingService.hide();
+        this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
+      })
+    })
+  }
+
+  updatePrintStatus(status: string): void {
+    Swal.fire({
+      title: 'ยืนยันอัพเดตสถานะ',
+      text: "ยืนยันอัพเดตสถานะ ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        if (status === 'Print') {
+          this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
+        }
+        if (this.printingForm.getRawValue().issample == true) {
+          this.updateSampleStatus()
+        }
+        const data = this.printingForm.getRawValue();
+        this.dcsm26Service.save(data).subscribe((response) => {
+          this.checkbntPrint();
+          this.printingForm.patchValue(response);
+          this.loadingService.hide();
+          this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
+        })
+      }
+    });
+
+  }
+
+
 }
