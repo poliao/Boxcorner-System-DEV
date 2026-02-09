@@ -344,7 +344,7 @@ export class Dcsm26DetailComponent implements OnInit {
       if (result.isConfirmed) {
         this.loadingService.show();
         if (status === 'Print') {
-          this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
+          this.printingForm.get('jobStatus')?.setValue('พิมพ์แล้ว');
         }
         if (this.printingForm.getRawValue().issample == true) {
           this.updateSampleStatus()

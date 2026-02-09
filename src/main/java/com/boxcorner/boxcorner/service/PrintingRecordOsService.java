@@ -56,13 +56,11 @@ public class PrintingRecordOsService {
             existing.setYBrand(printingRecord.getYBrand());
             existing.setKLotNo(printingRecord.getKLotNo());
             existing.setKBrand(printingRecord.getKBrand());
-
             // Checklist
             existing.setIsPlatePerfect(printingRecord.getIsPlatePerfect());
             existing.setIsBlanketOk(printingRecord.getIsBlanketOk());
             existing.setIsMachineCleaned(printingRecord.getIsMachineCleaned());
 
-            // การตัดสินใจ
             existing.setColorReferenceSource(printingRecord.getColorReferenceSource());
             existing.setDecisionAuthority(printingRecord.getDecisionAuthority());
             existing.setDeciderName(printingRecord.getDeciderName());

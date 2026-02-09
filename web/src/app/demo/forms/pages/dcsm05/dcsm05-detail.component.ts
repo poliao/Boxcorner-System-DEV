@@ -229,6 +229,12 @@ export class Dcsm05DetailComponent implements OnInit {
   }
 
   updateStatusComplete() {
+    if (this.mainForm.invalid) {
+      this.mainForm.markAllAsTouched();
+      this.sweetAlert.warning('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+      return;
+    }
+    
     Swal.fire({
       title: 'ยืนยันรับงาน',
       text: "ยืนยันรับงาน ใช่หรือไม่?",

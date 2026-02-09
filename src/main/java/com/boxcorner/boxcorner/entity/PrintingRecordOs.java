@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "printing_logs")
+@Table(name = "printing_record_os")
 public class PrintingRecordOs extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

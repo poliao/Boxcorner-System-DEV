@@ -235,10 +235,10 @@ export class Dcsm20DetailComponent implements OnInit {
       this.productionForm.get('customerJobName')?.disable();
       this.productionForm.get('printQuantity')?.disable();
       this.productionForm.get('productionQuantity')?.disable();
-      this.productionForm.get('printingResponsible')?.disable();
-      this.productionForm.get('coatingResponsible')?.disable();
-      this.productionForm.get('stampingResponsible')?.disable();
-      this.productionForm.get('gluingResponsible')?.disable();
+      // this.productionForm.get('printingResponsible')?.disable();
+      // this.productionForm.get('coatingResponsible')?.disable();
+      // this.productionForm.get('stampingResponsible')?.disable();
+      // this.productionForm.get('gluingResponsible')?.disable();
       this.productionForm.get('printStatus')?.disable();
       if (this.productionForm.getRawValue().qcDate == null) {
         this.productionForm.get('qcDate')?.disable();

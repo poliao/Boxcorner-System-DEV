@@ -22,7 +22,7 @@ public class PrintJob extends BaseEntity {
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDate createdAt;
 
-    @Column(name = "job_id", nullable = false, length = 50)
+    @Column(name = "job_id", length = 50)
     private String jobId;
 
     @Column(name = "delivery_date")
