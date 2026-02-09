@@ -43,6 +43,9 @@ public class PrintingRecordService {
             existing.setPrintQty4color(printingRecord.getPrintQty4color());
             existing.setPrintQtyBw(printingRecord.getPrintQtyBw());
             existing.setPrintQtyTotal(printingRecord.getPrintQtyTotal());
+            existing.setMeterWStart(printingRecord.getMeterWStart());
+            existing.setMeterWEnd(printingRecord.getMeterWEnd());
+
             return printingRecordRepository.save(existing);
         } else {
             return printingRecordRepository.save(printingRecord);

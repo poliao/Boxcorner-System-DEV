@@ -84,4 +84,10 @@ public class PrintingRecord extends BaseEntity{
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "meter_w_start")
+    private Integer meterWStart = 0;
+
+    @Column(name = "meter_w_end")
+    private Integer meterWEnd = 0;
+
 }

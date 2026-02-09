@@ -1,10 +1,14 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h1 class="mb-0">งานรอพิมพ์ OD</h1>
-    <button *ngIf="isPrint" (click)="onUpdatePrint('Print')" class="btn text-white px-5 shadow-sm"
-      style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
-    <button *ngIf="isInPrint" (click)="onUpdatePrint('inPrint')" class="btn text-white px-5 shadow-sm"
-      style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
+    <div class="d-flex gap-2">
+      <button *ngIf="isPrint" (click)="onUpdatePrint('Print')" class="btn text-white px-5 shadow-sm"
+        style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
+      <button *ngIf="isInPrint" (click)="onUpdatePrint('inPrint')" class="btn text-white px-5 shadow-sm"
+        style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
+      <button *ngIf="isPrint" (click)="onUpdatePrint('inPrint')" class="btn text-white px-5 shadow-sm"
+        style="background-color: #ff2d2d;">หยุดพิมพ์ชั่วคราว</button>
+    </div>
   </div>
 
   <div class="card-body">
@@ -113,8 +117,8 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="meter4colorStart" class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น <span
-                  class="text-danger">*</span></label>
+              <label for="meter4colorStart" class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น <span class="text-danger"
+                  style="color: #ff0000;">*</span></label>
               <input type="number" class="form-control" id="meter4colorStart" formControlName="meter4colorStart"
                 placeholder="ค่ามิเตอร์ 4 สี เริ่มต้น"
                 [class.is-invalid]="printingFormRecord.get('meter4colorStart')?.invalid && printingFormRecord.get('meter4colorStart')?.touched">
@@ -123,13 +127,21 @@
               </div>
             </div>
             <div class="col-md-6 mb-3">
-              <label for="meterBwStart" class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น<span
-                  class="text-danger">*</span></label>
+              <label for="meterBwStart" class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
               <input type="number" class="form-control" id="meterBwStart" formControlName="meterBwStart"
                 placeholder="ค่ามิเตอร์ขาวดำ เริ่มต้น"
                 [class.is-invalid]="printingFormRecord.get('meterBwStart')?.invalid && printingFormRecord.get('meterBwStart')?.touched">
               <div class="invalid-feedback">
                 กรุณากรอกค่ามิเตอร์ขาวดำ เริ่มต้น
+              </div>
+            </div>
+            <div class="col-md-6 mb-3" *ngIf="printerName === 'Ricoh'">
+              <label for="meterWStart" class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <input type="number" class="form-control" id="meterWStart" formControlName="meterWStart"
+                placeholder="ค่ามิเตอร์ขาว เริ่มต้น"
+                [class.is-invalid]="printingFormRecord.get('meterWStart')?.invalid && printingFormRecord.get('meterWStart')?.touched">
+              <div class="invalid-feedback">
+                กรุณากรอกค่ามิเตอร์ขาว เริ่มต้น
               </div>
             </div>
           </div>
@@ -172,6 +184,15 @@
                 [class.is-invalid]="printingFormRecord.get('meterBwEnd')?.invalid && printingFormRecord.get('meterBwEnd')?.touched">
               <div class="invalid-feedback">
                 กรุณากรอกค่ามิเตอร์ขาวดำ สิ้นสุด
+              </div>
+            </div>
+            <div class="col-md-6 mb-3" *ngIf="printerName === 'Ricoh'">
+              <label for="meterWEnd" class="form-label">ค่ามิเตอร์ขาว สิ้นสุด<span class="text-danger">*</span></label>
+              <input type="number" class="form-control" id="meterWEnd" formControlName="meterWEnd"
+                placeholder="ค่ามิเตอร์ขาว สิ้นสุด"
+                [class.is-invalid]="printingFormRecord.get('meterWEnd')?.invalid && printingFormRecord.get('meterWEnd')?.touched">
+              <div class="invalid-feedback">
+                กรุณากรอกค่ามิเตอร์ขาว สิ้นสุด
               </div>
             </div>
             <div class="col-12 mb-3">

@@ -24,6 +24,7 @@ export class Dcsm25DetailComponent implements OnInit {
   showPrintingModal = false;
   showPrintingEndModal = false;
   isSample = false;
+  printerName: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -47,6 +48,7 @@ export class Dcsm25DetailComponent implements OnInit {
         this.getRecord(resolvedData.printingRecordId);
       }
       this.printingForm.patchValue(resolvedData);
+      this.printerName = resolvedData.printerName || '';
       if (this.printingForm.getRawValue().issample == true) {
         this.isSample = true
       } else {
@@ -157,6 +159,8 @@ export class Dcsm25DetailComponent implements OnInit {
       responsiblePerson: [null],
       rowVersion: [null],
       createdAt: [null],
+      meterWStart: [null],
+      meterWEnd: [null],
     });
   }
 
@@ -228,6 +232,41 @@ export class Dcsm25DetailComponent implements OnInit {
   private endPrinting(): void {
     this.loadingService.show();
     this.printingForm.get('jobStatus')?.setValue('พิมพ์แล้ว');
+    this.printingFormRecord.get('printQty4color')?.setValue(this.printingFormRecord.getRawValue().meter4colorEnd - this.printingFormRecord.getRawValue().meter4colorStart);
+    this.printingFormRecord.get('printQtyBw')?.setValue(this.printingFormRecord.getRawValue().meterBwEnd - this.printingFormRecord.getRawValue().meterBwStart);
+    this.printingFormRecord.get('printQtyTotal')?.setValue(this.printingFormRecord.getRawValue().printQty4color + this.printingFormRecord.getRawValue().printQtyBw);
+    this.printingFormRecord.get('endDatetime')?.setValue(new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16));
+    this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
+      next: (response) => {
+        this.printingFormRecord.patchValue(response);
+        this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.printingForm.patchValue(response);
+            this.checkbntPrint();
+            if (this.printingForm.getRawValue().issample == true) {
+              this.updateSampleStatus();
+            } else {
+              this.updateProductionJob();
+            }
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้นเรียบร้อย!');
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+          }
+        });
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
+      }
+    });
+  }
+
+  private stopPrinting(): void {
+    this.loadingService.show();
+    this.printingForm.get('jobStatus')?.setValue('หยุดพิมพ์ชั่วคราว');
     this.printingFormRecord.get('printQty4color')?.setValue(this.printingFormRecord.getRawValue().meter4colorEnd - this.printingFormRecord.getRawValue().meter4colorStart);
     this.printingFormRecord.get('printQtyBw')?.setValue(this.printingFormRecord.getRawValue().meterBwEnd - this.printingFormRecord.getRawValue().meterBwStart);
     this.printingFormRecord.get('printQtyTotal')?.setValue(this.printingFormRecord.getRawValue().printQty4color + this.printingFormRecord.getRawValue().printQtyBw);
