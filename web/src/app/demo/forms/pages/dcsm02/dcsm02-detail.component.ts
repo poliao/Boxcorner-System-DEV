@@ -31,7 +31,9 @@ export class Dcsm02DetailComponent implements OnInit {
   approveQty = new FormControl('', Validators.required);
   approveUnit = new FormControl('', Validators.required);
   isCreateSample = new FormControl(true);
+  print2Page = new FormControl(false);
   approveRemarks = new FormControl('');
+  jobId = new FormControl('', Validators.required);
 
   showEditModal = false;
   editNote = new FormControl('', Validators.required);
@@ -53,7 +55,6 @@ export class Dcsm02DetailComponent implements OnInit {
 
     this.initForm();
 
-    // Listen to isCreateSample changes
     this.isCreateSample.valueChanges.subscribe(value => {
       if (value) {
         this.approveQty.setValidators([Validators.required]);
@@ -219,6 +220,7 @@ export class Dcsm02DetailComponent implements OnInit {
     this.approveUnit.setValue('');
     this.isCreateSample.setValue(true);
     this.approveRemarks.setValue('');
+    this.jobId.setValue('');
     this.showApproveModal = true;
   }
 
@@ -244,6 +246,8 @@ export class Dcsm02DetailComponent implements OnInit {
       customerName: this.designForm.getRawValue().customerName,
       fileName: this.designForm.getRawValue().fileName,
       typeJob: this.designForm.getRawValue().jobType,
+      jobId: this.jobId.value,
+      print2Page: this.print2Page.value
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
@@ -285,8 +289,6 @@ export class Dcsm02DetailComponent implements OnInit {
       }
     });
   }
-
-
 
   openEditModal() {
     this.editNote.setValue('');

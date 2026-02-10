@@ -17,13 +17,11 @@
             [disabled]="designForm.invalid" style="background-color: #1e1b4b;">
             {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
           </button>
-
         </div>
         <div class="col-md-4">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-
         <div class="col-md-4">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
@@ -51,39 +49,31 @@
             [value]="getThaiDateInput('deadlineDate')" [disabled]="designForm.get('deadlineDate')?.disabled"
             placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
-
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เวลาส่ง<span style="color: red;">*</span></label>
           <input type="time" formControlName="deadlineTime" class="form-control">
         </div>
-
         <div class="col-md-6">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
-
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
           <input type="text" formControlName="assignee" class="form-control" placeholder="ชื่อผู้ออกแบบ">
         </div>
-
         <div class="col-md-6">
           <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
           <input type="text" formControlName="processStatus" class="form-control">
         </div>
-
         <div class="col-md-6">
           <label class="form-label font-weight-bold">สถานะคอนเฟิร์ม</label>
           <input type="text" formControlName="confirmStatus" class="form-control">
         </div>
-
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
             [class.is-invalid]="designForm.get('orderDate')?.invalid && designForm.get('orderDate')?.touched">
         </div>
-        
-
         <div class="col-md-12" *ngIf="isFileName">
           <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
           <input type="text" formControlName="fileName" class="form-control"
@@ -106,7 +96,13 @@
         <button type="button" class="btn-close" (click)="closeApproveModal()"></button>
       </div>
       <div class="modal-body">
-
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">รหัสงาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" [formControl]="jobId"
+              [class.is-invalid]="jobId.invalid && jobId.touched">
+          </div>
+        </div>
         <div class="row mb-3">
           <div class="col-6">
             <label class="form-label font-weight-bold">วันที่ <span style="color: red;">*</span></label>
@@ -119,7 +115,6 @@
               [class.is-invalid]="approveTime.invalid && approveTime.touched">
           </div>
         </div>
-
         <div class="row mb-3" *ngIf="isCreateSample.value">
           <div class="col-6">
             <label class="form-label font-weight-bold">จำนวน <span style="color: red;">*</span></label>
@@ -132,10 +127,18 @@
               [class.is-invalid]="approveUnit.invalid && approveUnit.touched">
           </div>
         </div>
-        <div class="mb-3">
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="sampleCheck" [formControl]="isCreateSample">
-            <label class="form-check-label font-weight-bold" for="sampleCheck">ขึ้นตัวอย่าง</label>
+        <div class="row mb-3">
+          <div class="col-6">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="sampleCheck" [formControl]="isCreateSample">
+              <label class="form-check-label font-weight-bold" for="sampleCheck">ขึ้นตัวอย่าง</label>
+            </div>
+          </div>
+          <div class="col-6">
+             <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="print2Page" [formControl]="print2Page">
+            <label class="form-check-label font-weight-bold" for="print2Page">พิมพ์ 2 หน้า</label>
+          </div>
           </div>
         </div>
         <div class="mb-3">
@@ -143,13 +146,11 @@
           <textarea class="form-control" rows="3" [formControl]="approveRemarks"
             placeholder="หมายเหตุเพิ่มเติม..."></textarea>
         </div>
-
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
-
         <button type="button" class="btn btn-success" (click)="confirmApprove()"
-          [disabled]="approveDate.invalid || approveTime.invalid || (isCreateSample.value && (approveQty.invalid || approveUnit.invalid ))">
+          [disabled]="jobId.invalid || approveDate.invalid || approveTime.invalid || (isCreateSample.value && (approveQty.invalid || approveUnit.invalid ))">
           ยืนยันอนุมัติ
         </button>
       </div>

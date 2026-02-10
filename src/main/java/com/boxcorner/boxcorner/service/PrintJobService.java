@@ -60,6 +60,7 @@ public class PrintJobService {
             existing.setPrintingRecordId(printJob.getPrintingRecordId());
             existing.setSampleId(printJob.getSampleId());
             existing.setProductionJobId(printJob.getProductionJobId());
+            existing.setPrint2Page(printJob.getPrint2Page());
             
             return repository.save(existing);
         }

@@ -116,4 +116,7 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "machine_name")
     private String machineName;
+
+    @Column(name = "print2_page")
+    private Boolean print2Page;
 }

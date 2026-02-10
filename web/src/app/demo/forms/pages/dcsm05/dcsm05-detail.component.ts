@@ -102,6 +102,7 @@ export class Dcsm05DetailComponent implements OnInit {
       qtId: [null],
       typeJob: [null],
       machineName: [null, Validators.required],
+      print2Page: [false],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -396,7 +397,8 @@ export class Dcsm05DetailComponent implements OnInit {
           systemPrint: this.mainForm.getRawValue().systemPrint,
           colorPrint: this.mainForm.getRawValue().colorPrint,
           paperGram: this.mainForm.getRawValue().paperGram,
-          sampleId: this.mainForm.getRawValue().id
+          sampleId: this.mainForm.getRawValue().id,
+          print2Page: this.mainForm.getRawValue().print2Page
         };
 
         this.mainForm.get('status')!.setValue('ขึ้นตัวอย่างแล้ว');

@@ -62,6 +62,7 @@ export class Dcsm10DetailComponent implements OnInit {
       inspectionDate: [''],
       remarks: [''],
       moldStatus: [''],
+      inspector: [''],
       jobType: [''],
       createdAt: [''],
       updatedAt: [''],

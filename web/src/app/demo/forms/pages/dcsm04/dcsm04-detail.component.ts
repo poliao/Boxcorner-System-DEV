@@ -88,7 +88,7 @@ export class Dcsm04DetailComponent implements OnInit {
       this.mainForm.controls['paperGram'].disable({ emitEvent: false });
       this.mainForm.controls['jobId'].disable({ emitEvent: false });
       this.mainForm.controls['qtId'].disable({ emitEvent: false });
-      this.mainForm.controls['qtId'].disable({ emitEvent: false });
+      this.mainForm.controls['print2Page'].disable({ emitEvent: false });
       this.isPap = false
     }
     this.checkBtn();
@@ -130,9 +130,9 @@ export class Dcsm04DetailComponent implements OnInit {
       qtId: [null],
       typeJob: [null],
       machineName: [null],
+      print2Page: [false],
     });
 
-    // Listen to isCreateSample changes
     this.mainForm.get('isCreateSample')?.valueChanges.subscribe(value => {
       const quantityControl = this.mainForm.get('quantity');
       const unitControl = this.mainForm.get('unit');
@@ -197,6 +197,8 @@ export class Dcsm04DetailComponent implements OnInit {
         this.mainForm.get('colorPrint')?.setValue(response.job_specifications.print_colors);
         this.mainForm.get('paperGram')?.setValue(response.job_specifications.paper_weight);
         this.mainForm.get('jobId')?.setValue(response.document_info.doc_no);
+        this.mainForm.get('customerName')?.setValue(response.customer_info.name);
+        this.mainForm.get('folderName')?.setValue(response.job_specifications.job_name);
         this.checkBtn();
         this.sweetAlert.success('ดึงข้อมูลสำเร็จ');
       },

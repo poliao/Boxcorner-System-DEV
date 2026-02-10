@@ -86,6 +86,7 @@ export class Dcsm19DetailComponent implements OnInit {
       qtId: [null],
       typeJob: [null],
       machineName: [null],
+      print2Page: [false],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });

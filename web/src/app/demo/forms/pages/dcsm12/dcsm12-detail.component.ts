@@ -85,6 +85,8 @@ export class Dcsm12DetailComponent implements OnInit {
       jobId: [null],
       qtId: [null],
       typeJob: [null],
+      machineName: [null],
+      print2Page: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });

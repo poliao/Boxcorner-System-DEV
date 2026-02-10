@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "printing_records")
-@Data // ใช้ Lombok สำหรับ Getter/Setter
+@Data
 public class PrintingRecord extends BaseEntity{
 
     @Id
@@ -23,7 +23,6 @@ public class PrintingRecord extends BaseEntity{
     @Column(name = "job_id", nullable = false, length = 50)
     private String jobId;
 
-    // ค่ามิเตอร์
     @Column(name = "meter_4color_start")
     private Integer meter4colorStart = 0;
 
@@ -36,14 +35,12 @@ public class PrintingRecord extends BaseEntity{
     @Column(name = "meter_bw_end")
     private Integer meterBwEnd = 0;
 
-    // ปัญหาและการแก้ไข
     @Column(name = "issue_found", columnDefinition = "TEXT")
     private String issueFound;
 
     @Column(name = "issue_cause", columnDefinition = "TEXT")
     private String issueCause;
 
-    // รายละเอียดงาน
     @Column(name = "work_type", length = 20)
     private String workType;
 
@@ -53,7 +50,6 @@ public class PrintingRecord extends BaseEntity{
     @Column(name = "job_category", length = 100)
     private String jobCategory;
 
-    // จำนวนที่ผลิต (แนะนำให้คำนวณก่อน Save)
     @Column(name = "print_qty_4color")
     private Integer printQty4color = 0;
 
@@ -63,14 +59,12 @@ public class PrintingRecord extends BaseEntity{
     @Column(name = "print_qty_total")
     private Integer printQtyTotal = 0;
 
-    // ข้อมูลจากใบสั่งงาน
     @Column(name = "order_print_qty")
     private Integer orderPrintQty = 0;
 
     @Column(name = "order_produce_qty")
     private Integer orderProduceQty = 0;
 
-    // เวลา
     @Column(name = "start_datetime")
     private LocalDateTime startDatetime;
 
@@ -90,4 +84,39 @@ public class PrintingRecord extends BaseEntity{
     @Column(name = "meter_w_end")
     private Integer meterWEnd = 0;
 
+    @Column(name = "next_meter_4color_start")
+    private Integer nextMeter4colorStart = 0;
+
+    @Column(name = "next_meter_4color_end")
+    private Integer nextMeter4colorEnd = 0;
+
+    @Column(name = "next_meter_bw_start")
+    private Integer nextMeterBwStart = 0;
+
+    @Column(name = "next_meter_bw_end")
+    private Integer nextMeterBwEnd = 0;
+
+    @Column(name = "next_meter_w_start")
+    private Integer nextMeterWStart = 0;
+
+    @Column(name = "next_meter_w_end")
+    private Integer nextMeterWEnd = 0;
+
+    @Column(name = "page2_meter_4color_start")
+    private Integer page2Meter4colorStart = 0;
+
+    @Column(name = "page2_meter_4color_end")
+    private Integer page2Meter4colorEnd = 0;
+
+    @Column(name = "page2_meter_bw_start")
+    private Integer page2MeterBwStart = 0;
+
+    @Column(name = "page2_meter_bw_end")
+    private Integer page2MeterBwEnd = 0;
+
+    @Column(name = "page2_meter_w_start")
+    private Integer page2MeterWStart = 0;
+
+    @Column(name = "page2_meter_w_end")
+    private Integer page2MeterWEnd = 0;
 }

@@ -23,8 +23,17 @@ export class Dcsm25DetailComponent implements OnInit {
   isInPrint = false;
   showPrintingModal = false;
   showPrintingEndModal = false;
+  showResumePrintingModal = false;
+  showFinishPrintingModal = false;
+  showStartPage2Modal = false;
+  showFinishPage2Modal = false;
   isSample = false;
   printerName: string = '';
+  isStop = false;
+  isPrint2 = false;
+  isInPrint2 = false;
+  isPrintPage2 = false;
+  isPrint2Page = false;
 
   constructor(
     private fb: FormBuilder,
@@ -96,6 +105,7 @@ export class Dcsm25DetailComponent implements OnInit {
       colorPrint: [null],
       paperGram: [null],
       productionJobId: [null],
+      print2Page: [false],
     });
     this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -132,6 +142,7 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingForm.get('systemPrint')?.disable();
     this.printingForm.get('colorPrint')?.disable();
     this.printingForm.get('paperGram')?.disable();
+    this.printingForm.get('print2Page')?.disable();
   }
 
   createPrintingFormRecord() {
@@ -161,6 +172,18 @@ export class Dcsm25DetailComponent implements OnInit {
       createdAt: [null],
       meterWStart: [null],
       meterWEnd: [null],
+      nextMeter4colorStart: [null],
+      nextMeter4colorEnd: [null],
+      nextMeterBwStart: [null],
+      nextMeterBwEnd: [null],
+      nextMeterWStart: [null],
+      nextMeterWEnd: [null],
+      page2Meter4colorStart: [null],
+      page2Meter4colorEnd: [null],
+      page2MeterBwStart: [null],
+      page2MeterBwEnd: [null],
+      page2MeterWStart: [null],
+      page2MeterWEnd: [null],
     });
   }
 
@@ -168,9 +191,9 @@ export class Dcsm25DetailComponent implements OnInit {
     if (status === 'inPrint') {
       this.openPrintingModal();
     } else if (status === 'Print') {
-      this.openPrintingEndModal();
-    } else {
-      this.updatePrintStatus(status);
+      this.openPrintingEndModal(null);
+    } else if (status === 'Stop') {
+      this.openPrintingEndModal('Stop');
     }
   }
 
@@ -184,13 +207,58 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingFormRecord.reset();
   }
 
-  openPrintingEndModal(): void {
+  openPrintingEndModal(status: string): void {
     this.setEndPrintingValidators();
     this.showPrintingEndModal = true;
+    if (status === 'Stop') {
+      this.isStop = true;
+    } else {
+      this.isStop = false;
+    }
   }
 
   closePrintingEndModal(): void {
     this.showPrintingEndModal = false;
+    this.printingFormRecord.reset();
+  }
+
+  openResumePrintingModal(): void {
+    this.setResumePrintingValidators();
+    this.showResumePrintingModal = true;
+  }
+
+  closeResumePrintingModal(): void {
+    this.showResumePrintingModal = false;
+    this.printingFormRecord.reset();
+  }
+
+  openFinishPrintingModal(): void {
+    this.setFinishPrintingValidators();
+    this.showFinishPrintingModal = true;
+  }
+
+  closeFinishPrintingModal(): void {
+    this.showFinishPrintingModal = false;
+    this.printingFormRecord.reset();
+  }
+
+  openStartPage2Modal(): void {
+    this.setStartPrintingValidators();
+    this.showStartPage2Modal = true;
+  }
+
+  closeStartPage2Modal(): void {
+    this.showStartPage2Modal = false;
+    this.printingFormRecord.reset();
+  }
+
+  openFinishPage2Modal(): void {
+    this.setEndPrintingValidators();
+    this.showFinishPage2Modal = true;
+  }
+
+  closeFinishPage2Modal(): void {
+    this.showFinishPage2Modal = false;
     this.printingFormRecord.reset();
   }
 
@@ -215,6 +283,42 @@ export class Dcsm25DetailComponent implements OnInit {
     }
   }
 
+  onResumePrinting(): void {
+    if (this.printingFormRecord.valid) {
+      this.resumePrinting();
+      this.closeResumePrintingModal();
+    } else {
+      this.markPrintingFormTouched();
+    }
+  }
+
+  onFinishPrinting(): void {
+    if (this.printingFormRecord.valid) {
+      this.finishPrinting();
+      this.closeFinishPrintingModal();
+    } else {
+      this.markPrintingEndFormTouched();
+    }
+  }
+
+  onStartPage2(): void {
+    if (this.printingFormRecord.valid) {
+      this.startPage2Printing();
+      this.closeStartPage2Modal();
+    } else {
+      this.markPrintingFormTouched();
+    }
+  }
+
+  onFinishPage2(): void {
+    if (this.printingFormRecord.valid) {
+      this.finishPage2Printing();
+      this.closeFinishPage2Modal();
+    } else {
+      this.markPrintingEndFormTouched();
+    }
+  }
+
   private markPrintingFormTouched(): void {
     Object.keys(this.printingFormRecord.controls).forEach(key => {
       const control = this.printingFormRecord.get(key);
@@ -231,70 +335,53 @@ export class Dcsm25DetailComponent implements OnInit {
 
   private endPrinting(): void {
     this.loadingService.show();
-    this.printingForm.get('jobStatus')?.setValue('พิมพ์แล้ว');
-    this.printingFormRecord.get('printQty4color')?.setValue(this.printingFormRecord.getRawValue().meter4colorEnd - this.printingFormRecord.getRawValue().meter4colorStart);
-    this.printingFormRecord.get('printQtyBw')?.setValue(this.printingFormRecord.getRawValue().meterBwEnd - this.printingFormRecord.getRawValue().meterBwStart);
-    this.printingFormRecord.get('printQtyTotal')?.setValue(this.printingFormRecord.getRawValue().printQty4color + this.printingFormRecord.getRawValue().printQtyBw);
-    this.printingFormRecord.get('endDatetime')?.setValue(new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16));
-    this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
-      next: (response) => {
-        this.printingFormRecord.patchValue(response);
-        this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
-          next: (response) => {
-            this.printingForm.patchValue(response);
-            this.checkbntPrint();
-            if (this.printingForm.getRawValue().issample == true) {
-              this.updateSampleStatus();
-            } else {
-              this.updateProductionJob();
-            }
-            this.loadingService.hide();
-            this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้นเรียบร้อย!');
-          },
-          error: (error) => {
-            this.loadingService.hide();
-            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
-          }
-        });
-      },
-      error: (error) => {
-        this.loadingService.hide();
-        this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
-      }
-    });
-  }
+    if (this.isStop == true) {
+      this.printingForm.get('jobStatus')?.setValue('หยุดพิมพ์ชั่วคราว');
+    } else {
+      this.printingForm.get('jobStatus')?.setValue('พิมพ์แล้ว');
+    }
+    const printingFormRecord = this.printingFormRecord.getRawValue();
 
-  private stopPrinting(): void {
-    this.loadingService.show();
-    this.printingForm.get('jobStatus')?.setValue('หยุดพิมพ์ชั่วคราว');
-    this.printingFormRecord.get('printQty4color')?.setValue(this.printingFormRecord.getRawValue().meter4colorEnd - this.printingFormRecord.getRawValue().meter4colorStart);
-    this.printingFormRecord.get('printQtyBw')?.setValue(this.printingFormRecord.getRawValue().meterBwEnd - this.printingFormRecord.getRawValue().meterBwStart);
-    this.printingFormRecord.get('printQtyTotal')?.setValue(this.printingFormRecord.getRawValue().printQty4color + this.printingFormRecord.getRawValue().printQtyBw);
-    this.printingFormRecord.get('endDatetime')?.setValue(new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16));
-    this.dcsm25Service.saveRecord(this.printingFormRecord.getRawValue()).subscribe({
+    this.dcsm25Service.getRecordById(this.printingForm.getRawValue().printingRecordId).subscribe({
       next: (response) => {
-        this.printingFormRecord.patchValue(response);
-        this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+        response.printQty4color = printingFormRecord.meter4colorEnd - response.meter4colorStart;
+        response.printQtyBw = printingFormRecord.meterBwEnd - response.meterBwStart;
+        response.printQtyTotal = response.printQty4color + response.printQtyBw;
+        response.endDatetime = new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16);
+        response.meter4colorEnd = printingFormRecord.meter4colorEnd;
+        response.meterBwEnd = printingFormRecord.meterBwEnd;
+        response.meterWEnd = printingFormRecord.meterWEnd;
+
+        this.dcsm25Service.saveRecord(response).subscribe({
           next: (response) => {
-            this.printingForm.patchValue(response);
-            this.checkbntPrint();
-            if (this.printingForm.getRawValue().issample == true) {
-              this.updateSampleStatus();
-            } else {
-              this.updateProductionJob();
-            }
-            this.loadingService.hide();
-            this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้นเรียบร้อย!');
+            this.printingFormRecord.patchValue(response);
+            this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+              next: (response) => {
+                this.printingForm.patchValue(response);
+                this.checkbntPrint();
+                if (this.printingForm.getRawValue().print2Page != true) {
+                  if (this.printingForm.getRawValue().issample == true) {
+                    if (this.isStop != true && this.printingForm.getRawValue().print2Page != true) {
+                      this.updateSampleStatus();
+                    }
+                  } else {
+                    this.updateProductionJob();
+                  }
+                }
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้นเรียบร้อย!');
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error);
+              }
+            });
           },
           error: (error) => {
             this.loadingService.hide();
-            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
+            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
           }
         });
-      },
-      error: (error) => {
-        this.loadingService.hide();
-        this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
       }
     });
   }
@@ -305,7 +392,7 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().jobId);
     if (this.printingForm.getRawValue().issample == true) {
       this.printingFormRecord.get('jobCategory')?.setValue('งานตัวอย่าง');
-    }else {
+    } else {
       this.printingFormRecord.get('jobCategory')?.setValue('งานผลิตจริง');
     }
     this.printingFormRecord.get('printerName')?.setValue(this.printingForm.getRawValue().printerName);
@@ -334,56 +421,56 @@ export class Dcsm25DetailComponent implements OnInit {
     });
   }
 
-  private updatePrintStatus(status: string): void {
-    if (this.printingForm.valid) {
-      Swal.fire({
-        title: 'ยืนยันอัพเดตสถานะ',
-        text: "ยืนยันอัพเดตสถานะ ใช่หรือไม่?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#1e1b4b',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'ยืนยัน',
-        cancelButtonText: 'ยกเลิก'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.loadingService.show();
-          if (status === 'Print') {
-            this.printingForm.get('printStatus')?.setValue('พิมพ์แล้ว');
-          }
-          const data = this.printingForm.getRawValue();
-
-          this.dcsm25Service.save(data).subscribe((response) => {
-            this.checkbntPrint();
-            this.printingForm.patchValue(response);
-            this.loadingService.hide();
-            this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
-          })
-        }
-      });
-    } else {
-      this.markFormGroupTouched();
-      this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
-    }
-  }
-
-  private markFormGroupTouched(): void {
-    Object.keys(this.printingForm.controls).forEach(key => {
-      const control = this.printingForm.get(key);
-      control?.markAsTouched();
-    });
-  }
-
   checkbntPrint() {
     if (this.printingForm.get('jobStatus')?.value === '' || this.printingForm.get('jobStatus')?.value === null) {
       this.isInPrint = true;
       this.isPrint = false;
+      this.isPrint2 = false;
+      this.isInPrint2 = false;
+      this.isPrintPage2 = false;
+      this.isPrint2Page = false;
     } else if (this.printingForm.get('jobStatus')?.value === 'กำลังพิมพ์') {
       this.isPrint = true;
       this.isInPrint = false;
+      this.isPrint2 = false;
+      this.isInPrint2 = false;
+      this.isPrintPage2 = false;
+      this.isPrint2Page = false;
+    } else if (this.printingForm.get('jobStatus')?.value === 'หยุดพิมพ์ชั่วคราว') {
+      this.isPrint2 = false;
+      this.isInPrint2 = true;
+      this.isPrint = false;
+      this.isInPrint = false;
+      this.isPrintPage2 = false;
+      this.isPrint2Page = false;
+    } else if (this.printingForm.get('jobStatus')?.value === 'เริ่มพิมพ์ต่อ') {
+      this.isPrint2 = true;
+      this.isInPrint2 = false;
+      this.isPrint = false;
+      this.isInPrint = false;
+      this.isPrintPage2 = false;
+      this.isPrint2Page = false;
+    } else if (this.printingForm.get('jobStatus')?.value === 'พิมพ์แล้ว' && this.printingForm.get('print2Page')?.value == true) {
+      this.isPrint2 = false;
+      this.isInPrint2 = false;
+      this.isPrint = false;
+      this.isInPrint = false;
+      this.isPrintPage2 = true;
+      this.isPrint2Page = false;
+    } else if (this.printingForm.get('jobStatus')?.value === 'กำลังพิมพ์หน้า2' && this.printingForm.get('print2Page')?.value == true) {
+      this.isPrint2 = false;
+      this.isInPrint2 = false;
+      this.isPrint = false;
+      this.isInPrint = false;
+      this.isPrintPage2 = false;
+      this.isPrint2Page = true;
     } else {
       this.isPrint = false;
       this.isInPrint = false;
+      this.isPrint2 = false;
+      this.isInPrint2 = false;
+      this.isPrintPage2 = false;
+      this.isPrint2Page = false;
     }
   }
 
@@ -399,6 +486,16 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingFormRecord.get('meter4colorStart')?.clearValidators();
     this.printingFormRecord.get('meter4colorStart')?.updateValueAndValidity();
     this.printingFormRecord.get('meter4colorEnd')?.updateValueAndValidity();
+  }
+
+  private setResumePrintingValidators(): void {
+    this.printingFormRecord.get('nextMeter4colorStart')?.setValidators([Validators.required]);
+    this.printingFormRecord.get('nextMeter4colorStart')?.updateValueAndValidity();
+  }
+
+  private setFinishPrintingValidators(): void {
+    this.printingFormRecord.get('nextMeter4colorEnd')?.setValidators([Validators.required]);
+    this.printingFormRecord.get('nextMeter4colorEnd')?.updateValueAndValidity();
   }
 
   getRecord(id): void {
@@ -449,6 +546,160 @@ export class Dcsm25DetailComponent implements OnInit {
         this.sweetAlert.error('Error', error.error);
       }
     });
+  }
 
+  private resumePrinting(): void {
+    this.loadingService.show();
+    this.printingForm.get('jobStatus')?.setValue('เริ่มพิมพ์ต่อ');
+    const data = this.printingFormRecord.getRawValue();
+
+    this.dcsm25Service.getRecordById(this.printingForm.getRawValue().printingRecordId).subscribe({
+      next: (response) => {
+        response.nextMeter4colorStart = data.nextMeter4colorStart;
+        response.nextMeterBwStart = data.nextMeterBwStart;
+        response.nextMeterWStart = data.nextMeterWStart;
+
+        this.dcsm25Service.saveRecord(response).subscribe({
+          next: (response) => {
+            this.printingFormRecord.patchValue(response);
+            this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+              next: (response) => {
+                this.printingForm.patchValue(response);
+                this.checkbntPrint();
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'เริ่มพิมพ์ต่อเรียบร้อย!');
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error);
+              }
+            });
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error);
+          }
+        });
+      }
+    });
+  }
+
+  private finishPrinting(): void {
+    this.loadingService.show();
+    this.printingForm.get('jobStatus')?.setValue('พิมพ์แล้ว');
+    const data = this.printingFormRecord.getRawValue();
+    this.dcsm25Service.getRecordById(this.printingForm.getRawValue().printingRecordId).subscribe({
+      next: (response) => {
+        response.nextMeter4colorEnd = data.nextMeter4colorEnd;
+        response.nextMeterBwEnd = data.nextMeterBwEnd;
+        response.nextMeterWEnd = data.nextMeterWEnd;
+        this.dcsm25Service.saveRecord(response).subscribe({
+          next: (response) => {
+            this.printingFormRecord.patchValue(response);
+            this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+              next: (response) => {
+                this.printingForm.patchValue(response);
+                this.checkbntPrint();
+                if (this.printingForm.getRawValue().print2Page != true) {
+                  if (this.printingForm.getRawValue().issample == true) {
+                    this.updateSampleStatus();
+                  } else {
+                    this.updateProductionJob();
+                  }
+                }
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้นเรียบร้อย!');
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error);
+              }
+            });
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
+          }
+        });
+      }
+    });
+  }
+
+  private startPage2Printing(): void {
+    this.loadingService.show();
+    this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์หน้า2');
+
+    const data = this.printingFormRecord.getRawValue();
+    this.dcsm25Service.getRecordById(this.printingForm.getRawValue().printingRecordId).subscribe({
+      next: (response) => {
+        response.page2Meter4colorStart = data.page2Meter4colorStart;
+        response.page2MeterBwStart = data.page2MeterBwStart;
+        response.page2MeterWStart = data.page2MeterWStart;
+
+        this.dcsm25Service.saveRecord(response).subscribe({
+          next: (response) => {
+            this.printingFormRecord.patchValue(response);
+            this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+              next: (response) => {
+                this.printingForm.patchValue(response);
+                this.checkbntPrint();
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'เริ่มพิมพ์หน้า2เรียบร้อย!');
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error);
+              }
+            });
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error);
+          }
+        });
+      }
+    });
+  }
+
+  private finishPage2Printing(): void {
+    this.loadingService.show();
+    this.printingForm.get('jobStatus')?.setValue('พิมพ์หน้า2แล้ว');
+
+    const data = this.printingFormRecord.getRawValue();
+    this.dcsm25Service.getRecordById(this.printingForm.getRawValue().printingRecordId).subscribe({
+      next: (response) => {
+        response.page2Meter4colorEnd = data.meter4colorEnd;
+        response.page2MeterBwEnd = data.meterBwEnd;
+        response.page2MeterWEnd = data.meterWEnd;
+        response.endDatetime = new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().substring(0, 16);
+
+        this.dcsm25Service.saveRecord(response).subscribe({
+          next: (response) => {
+            this.printingFormRecord.patchValue(response);
+            this.dcsm25Service.save(this.printingForm.getRawValue()).subscribe({
+              next: (response) => {
+                this.printingForm.patchValue(response);
+                this.checkbntPrint();
+                if (this.printingForm.getRawValue().issample == true) {
+                  this.updateSampleStatus();
+                } else {
+                  this.updateProductionJob();
+                }
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'พิมพ์หน้า2เสร็จสิ้นเรียบร้อย!');
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error);
+              }
+            });
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูลการพิมพ์');
+          }
+        });
+      }
+    });
   }
 }

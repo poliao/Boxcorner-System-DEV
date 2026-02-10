@@ -87,4 +87,7 @@ public class PrintJob extends BaseEntity {
 
     @Column(name = "production_job_id")
     private String productionJobId;
+
+    @Column(name = "print2_page")
+    private Boolean print2Page;
 }
