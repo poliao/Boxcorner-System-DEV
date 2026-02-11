@@ -70,7 +70,8 @@
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
-            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched" style="background-color: #ffee00; color: #000000;">
+            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched"
+            style="background-color: #ffee00; color: #000000;">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
@@ -82,11 +83,13 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
-          <input type="date" formControlName="deliveryDate" class="form-control" style="background-color: #ffee00; color: #000000;">
+          <input type="date" formControlName="deliveryDate" class="form-control"
+            style="background-color: #ffee00; color: #000000;">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
-          <input type="time" formControlName="deliveryTime" class="form-control" style="background-color: #ffee00; color: #000000;">
+          <input type="time" formControlName="deliveryTime" class="form-control"
+            style="background-color: #ffee00; color: #000000;">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">สถานะ</label>
@@ -104,24 +107,14 @@
           <label class="form-label font-weight-bold">ประเภทงานจริง</label>
           <input type="text" formControlName="typeJob" class="form-control" style="color: #000000;">
         </div>
-        <div class="col-md-4">
-          <label class="form-label font-weight-bold">เครื่องพิมพ์<span style="color: red;">*</span></label>
-          <select formControlName="machineName" class="form-select" style="color: #000000;">
-            <option value="">เลือกเครื่องพิมพ์</option>
-            <option value="Canon">Canon</option>
-            <option value="Ricoh">Ricoh</option>
-            <option value="Bluesky">Bluesky</option>
-            <option value="SM">SM</option>
-            <option value="CD">CD</option>
-          </select>
-        </div>
-          <div class="col-md-5">
+        <div class="col-md-5">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
           <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
         </div>
-         <div class="col-md-5">
+        <div class="col-md-5">
           <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
-          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="fileName" class="form-control" >
+          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="fileName"
+            class="form-control">
         </div>
         <div class="col-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
@@ -132,7 +125,13 @@
           <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="noteEdit"
             class="form-control">
         </div>
-      
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เครื่องพิมพ์</label>
+          <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="machineName"
+              class="form-check-input" id="machineNameSwitch">
+            <label class="form-check-label" for="machineNameSwitch">Bluesky</label>
+          </div>
+        </div>
         <div class="col-md-12">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
               class="form-check-input" id="isCreateSampleSwitch">

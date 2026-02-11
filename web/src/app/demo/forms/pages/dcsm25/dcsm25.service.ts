@@ -24,6 +24,10 @@ export class Dcsm25Service {
       jobId: filters.jobId || null,
       customerJobName: filters.customerJobName || null,
       printerName: filters.printerName || null,
+      startDate: filters.startDate || null,
+      endDate: filters.endDate || null,
+      issample: filters.issample || null,
+      jobStatus: filters.jobStatus || null
     };
 
     Object.keys(params).forEach(key => {

@@ -128,8 +128,7 @@ export class Dcsm04DetailComponent implements OnInit {
       rowVersion: [null],
       jobId: [null, Validators.required],
       qtId: [null],
-      typeJob: [null],
-      machineName: [null],
+      typeJob: [null, Validators.required],
       print2Page: [false],
     });
 
@@ -157,7 +156,6 @@ export class Dcsm04DetailComponent implements OnInit {
     this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
     this.mainForm.controls['updateDateDelivery'].disable({ emitEvent: false });
     this.mainForm.controls['updateTimeDelivery'].disable({ emitEvent: false });
-    this.mainForm.controls['machineName'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -292,10 +290,7 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
       this.isBtnSampleProof = false;
-    } else if (currentUser === formValue.jobOwner && (formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || formValue.status === 'Proofสำเร็จ รออนุมัติไปตารางรอผลิต')) {
-      if (this.mainForm.getRawValue().typeJob == 'OS' && formValue.status != 'Proofสำเร็จ รออนุมัติไปตารางรอผลิต' ) {
-        this.isBtnSampleProof = true;
-      }
+    } else if (currentUser === formValue.jobOwner && formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' ) {
       this.isBtnSave = false;
       this.isBtnApprove = false;
       this.isBtnReject = false;
@@ -743,36 +738,4 @@ export class Dcsm04DetailComponent implements OnInit {
       });
     }
   }
-
-  proofStatus(){
-    Swal.fire({
-        title: 'ส่งขอปรู๊บ',
-        text: "ยืนยันขอปรู๊บไปฝ่ายแผน ใช่หรือไม่?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#1e1b4b',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'ยืนยัน',
-        cancelButtonText: 'ยกเลิก'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.loadingService.show();
-          this.mainForm.get('status')?.setValue('ขอปรู๊ฟหน้าแท่น');
-          this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
-            next: (response) => {
-              this.loadingService.hide();
-              this.patchFormData(response);
-              this.router.navigate(['/Dcsm04']);
-            },
-            error: (error) => {
-              this.loadingService.hide();
-              this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
-            }
-          });
-        }
-      });
-  }
-
-  
-  
 }

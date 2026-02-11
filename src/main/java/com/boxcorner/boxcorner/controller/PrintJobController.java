@@ -1,5 +1,7 @@
 package com.boxcorner.boxcorner.controller;
 
+import java.sql.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,10 @@ public class PrintJobController {
             @RequestParam(value = "jobId", required = false) String jobId,
             @RequestParam(value = "customerJobName", required = false) String customerJobName,
             @RequestParam(value = "printerName", required = false) String printerName,
+            @RequestParam(value = "startDate", required = false) Date startDate,
+            @RequestParam(value = "endDate", required = false) Date endDate,
+            @RequestParam(value = "issample", required = false) Boolean issample,
+            @RequestParam(value = "jobStatus", required = false) String jobStatus,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
@@ -45,6 +51,10 @@ public class PrintJobController {
                 jobId,
                 customerJobName,
                 printerName,
+                startDate,
+                endDate,
+                issample,
+                jobStatus,
                 page,
                 size);
         return ResponseEntity.ok(result);

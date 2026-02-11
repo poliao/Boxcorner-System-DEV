@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "printing_records")
 @Data
-public class PrintingRecord extends BaseEntity{
+public class PrintingRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -119,4 +119,37 @@ public class PrintingRecord extends BaseEntity{
 
     @Column(name = "page2_meter_w_end")
     private Integer page2MeterWEnd = 0;
+
+    @Column(name = "next_page2_meter_4color_start")
+    private Integer nextPage2Meter4colorStart = 0;
+
+    @Column(name = "next_page2_meter_4color_end")
+    private Integer nextPage2Meter4colorEnd = 0;
+
+    @Column(name = "next_page2_meter_bw_start")
+    private Integer nextPage2MeterBwStart = 0;
+
+    @Column(name = "next_page2_meter_bw_end")
+    private Integer nextPage2MeterBwEnd = 0;
+
+    @Column(name = "next_page2_meter_w_start")
+    private Integer nextPage2MeterWStart = 0;
+
+    @Column(name = "next_page2_meter_w_end")
+    private Integer nextPage2MeterWEnd = 0;
+
+    @Column(name = "issue_found_page2", columnDefinition = "TEXT")
+    private String issueFoundPage2;
+
+    @Column(name = "issue_cause_page2", columnDefinition = "TEXT")
+    private String issueCausePage2;
+
+    @Column(name = "next_printer_name", length = 100)
+    private String nextPrinterName;
+
+    @Column(name = "next_page2_printer_name", length = 100)
+    private String nextPage2PrinterName;
+
+    @Column(name = "page2_printer_name", length = 100)
+    private String page2PrinterName;
 }

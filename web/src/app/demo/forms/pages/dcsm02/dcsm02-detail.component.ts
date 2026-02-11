@@ -34,6 +34,7 @@ export class Dcsm02DetailComponent implements OnInit {
   print2Page = new FormControl(false);
   approveRemarks = new FormControl('');
   jobId = new FormControl('', Validators.required);
+  jobType = new FormControl('', Validators.required);
 
   showEditModal = false;
   editNote = new FormControl('', Validators.required);
@@ -79,7 +80,6 @@ export class Dcsm02DetailComponent implements OnInit {
       this.designForm.controls['deadlineDate'].disable({ emitEvent: false });
       this.designForm.controls['deadlineTime'].disable({ emitEvent: false });
       this.designForm.controls['customerName'].disable({ emitEvent: false });
-      this.designForm.controls['jobType'].disable({ emitEvent: false });
       this.isBtnSave = false;
     }
     if (this.designForm.getRawValue().processStatus == 'เสร็จสิ้น') {
@@ -105,7 +105,6 @@ export class Dcsm02DetailComponent implements OnInit {
       customerName: [''],
       rowVersion: [null],
       confirmDate: [null],
-      jobType: ['']
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -245,7 +244,7 @@ export class Dcsm02DetailComponent implements OnInit {
       designOrderId: this.designForm.getRawValue().id,
       customerName: this.designForm.getRawValue().customerName,
       fileName: this.designForm.getRawValue().fileName,
-      typeJob: this.designForm.getRawValue().jobType,
+      typeJob: this.jobType.value,
       jobId: this.jobId.value,
       print2Page: this.print2Page.value
     };

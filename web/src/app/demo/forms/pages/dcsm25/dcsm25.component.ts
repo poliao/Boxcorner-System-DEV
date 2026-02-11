@@ -22,6 +22,8 @@ export class Dcsm25Component implements OnInit {
   filterId: string = null;
   filterJobId: string = null;
   filterCustomerName: string = null;
+  filterPrinterName: string = null;
+  filterIssample: string = null;
   filterPrintStatus: string = null;
   filterStartDate: string = null;
   filterEndDate: string = null;
@@ -63,9 +65,11 @@ export class Dcsm25Component implements OnInit {
       id: this.filterId,
       jobId: this.filterJobId,
       customerJobName: this.filterCustomerName,
-      printerName: this.filterPrintStatus,
+      printerName: this.filterPrinterName,
       startDate: this.filterStartDate,
-      endDate: this.filterEndDate
+      endDate: this.filterEndDate,
+      issample: this.filterIssample,
+      jobStatus: this.filterPrintStatus
     };
 
     this.dcsm25Service.getOrdersWithSearch(this.pageIndex, this.pageSize, filters)
@@ -137,6 +141,8 @@ export class Dcsm25Component implements OnInit {
     this.filterId = '';
     this.filterJobId = '';
     this.filterCustomerName = '';
+    this.filterPrinterName = '';
+    this.filterIssample = '';
     this.filterPrintStatus = '';
     this.filterStartDate = '';
     this.filterEndDate = '';

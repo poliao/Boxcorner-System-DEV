@@ -4,40 +4,40 @@
     <div class="card-body bg-light">
       <form>
         <div class="row g-3">
-          <div class="col-md-3">
+          <div class="col-md-4">
             <input type="number" class="form-control" [(ngModel)]="filterId" name="filterId" placeholder="ค้นหา ลำดับ"
               (keyup.enter)="onSearchChange()">
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <input type="text" class="form-control" [(ngModel)]="filterJobId" name="filterJobId"
               placeholder="ค้นหา JOB ID" (keyup.enter)="onSearchChange()">
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
               placeholder="ค้นหา ชื่องาน/ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
+            <label class="form-label font-weight-bold">ตัวอย่างหรืองานจริง</label>
+            <select class="form-select" [(ngModel)]="filterIssample" name="filterIssample"
+              (change)="onSearchChange()">
+              <option value="">ทั้งหมด</option>
+              <option value="true">เป็นตัวอย่าง</option>
+              <option value="false">ไม่เป็นตัวอย่าง</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">สถานะพิมพ์</label>
             <select class="form-select" [(ngModel)]="filterPrintStatus" name="filterPrintStatus"
               (change)="onSearchChange()">
               <option value="">สถานะพิมพ์ ทั้งหมด</option>
               <option value="พิมพ์แล้ว">พิมพ์แล้ว</option>
-              <option value="เคลือบแล้ว">เคลือบแล้ว</option>
-              <option value="ปั้มแล้ว">ปั้มแล้ว</option>
-              <option value="ปะแล้ว">ปะแล้ว</option>
-              <option value="Qcแล้ว">QCแล้ว</option>
-              <option value="รอที่อยู่จัดส่ง">รอที่อยู่จัดส่ง</option>
-              <option value="รอจัดส่ง">รอจัดส่ง</option>
-              <option value="กำลังส่ง">กำลังส่ง</option>
-              <option value="จัดส่งเรียบร้อย">จัดส่งเรียบร้อย</option>
+              <option value="กำลังพิมพ์">กำลังพิมพ์</option>
+              <option value="หยุดพิมพ์ชั่วคราว">หยุดพิมพ์ชั่วคราว</option>
+              <option value="หยุดพิมพ์หน้า2ชั่วคราว">หยุดพิมพ์หน้า2ชั่วคราว</option>
+              <option value="เริ่มพิมพ์ต่อหน้า2">เริ่มพิมพ์ต่อหน้า2</option>
+              <option value="กำลังพิมพ์หน้า2">กำลังพิมพ์หน้า2</option>
+              <option value="พิมพ์หน้า2แล้ว">พิมพ์หน้า2แล้ว</option>
             </select>
-          </div>
-          <div class="col-md-3">
-            <input type="date" class="form-control" [(ngModel)]="filterStartDate" name="filterStartDate"
-              placeholder="วันที่เริ่ม" (change)="onSearchChange()">
-          </div>
-          <div class="col-md-3">
-            <input type="date" class="form-control" [(ngModel)]="filterEndDate" name="filterEndDate"
-              placeholder="วันที่สิ้นสุด" (change)="onSearchChange()">
           </div>
           <div class="col-12">
             <div class="row g-2">

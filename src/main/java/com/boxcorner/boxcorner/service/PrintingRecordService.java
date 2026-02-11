@@ -57,6 +57,17 @@ public class PrintingRecordService {
             existing.setPage2MeterBwEnd(printingRecord.getPage2MeterBwEnd());
             existing.setPage2MeterWStart(printingRecord.getPage2MeterWStart());
             existing.setPage2MeterWEnd(printingRecord.getPage2MeterWEnd());
+            existing.setNextPage2Meter4colorStart(printingRecord.getNextPage2Meter4colorStart());
+            existing.setNextPage2Meter4colorEnd(printingRecord.getNextPage2Meter4colorEnd());
+            existing.setNextPage2MeterBwStart(printingRecord.getNextPage2MeterBwStart());
+            existing.setNextPage2MeterBwEnd(printingRecord.getNextPage2MeterBwEnd());
+            existing.setNextPage2MeterWStart(printingRecord.getNextPage2MeterWStart());
+            existing.setNextPage2MeterWEnd(printingRecord.getNextPage2MeterWEnd());
+            existing.setIssueFoundPage2(printingRecord.getIssueFoundPage2());
+            existing.setIssueCausePage2(printingRecord.getIssueCausePage2());
+            existing.setNextPage2PrinterName(printingRecord.getNextPage2PrinterName()); // NextPage2PrinterName
+            existing.setNextPrinterName(printingRecord.getNextPrinterName());
+            existing.setPage2PrinterName(printingRecord.getPage2PrinterName());
 
             return printingRecordRepository.save(existing);
         } else {

@@ -115,7 +115,7 @@ public class SampleOrder extends BaseEntity {
     private String typeJob;
 
     @Column(name = "machine_name")
-    private String machineName;
+    private Boolean machineName;
 
     @Column(name = "print2_page")
     private Boolean print2Page;

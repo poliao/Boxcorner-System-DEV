@@ -1,5 +1,6 @@
 package com.boxcorner.boxcorner.service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +62,7 @@ public class PrintJobService {
             existing.setSampleId(printJob.getSampleId());
             existing.setProductionJobId(printJob.getProductionJobId());
             existing.setPrint2Page(printJob.getPrint2Page());
+            existing.setTypeJob(printJob.getTypeJob());
             
             return repository.save(existing);
         }
@@ -72,9 +74,9 @@ public class PrintJobService {
         repository.deleteById(id);
     }
 
-    public Page<PrintJob> getAllDetail(Long id, String jobId, String customerJobName, String printerName, int page, int size) {
+    public Page<PrintJob> getAllDetail(Long id, String jobId, String customerJobName, String printerName,Date startDate, Date endDate, Boolean issample, String jobStatus, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        return repository.findByFiltersAll(id, jobId, customerJobName, printerName, paging);
+        return repository.findByFiltersAll(id, jobId, customerJobName, printerName,startDate, endDate, issample, jobStatus, paging);
     }
 
     public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName, int page, int size) {

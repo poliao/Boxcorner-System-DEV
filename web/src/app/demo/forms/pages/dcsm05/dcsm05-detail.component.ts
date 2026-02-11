@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { F } from '@angular/cdk/scrolling-module.d-C_w4tIrZ';
 @Component({
   selector: 'app-dcsm05-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -101,7 +102,7 @@ export class Dcsm05DetailComponent implements OnInit {
       jobId: [null],
       qtId: [null],
       typeJob: [null],
-      machineName: [null, Validators.required],
+      machineName: [false, Validators.required],
       print2Page: [false],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
@@ -386,7 +387,7 @@ export class Dcsm05DetailComponent implements OnInit {
           jobStatus: null,
           totalPrintSheets: null,
           productionQty: this.mainForm.getRawValue().quantity,
-          printerName: this.mainForm.getRawValue().machineName,
+          printerName: null,
           setupWaste: null,
           issample: true,
           jobType: this.mainForm.getRawValue().jobType,
@@ -398,7 +399,8 @@ export class Dcsm05DetailComponent implements OnInit {
           colorPrint: this.mainForm.getRawValue().colorPrint,
           paperGram: this.mainForm.getRawValue().paperGram,
           sampleId: this.mainForm.getRawValue().id,
-          print2Page: this.mainForm.getRawValue().print2Page
+          print2Page: this.mainForm.getRawValue().print2Page,
+          typeJob: this.mainForm.getRawValue().typeJob
         };
 
         this.mainForm.get('status')!.setValue('ขึ้นตัวอย่างแล้ว');
@@ -423,7 +425,6 @@ export class Dcsm05DetailComponent implements OnInit {
             this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
           }
         })
-
       }
     });
   }
