@@ -93,4 +93,7 @@ public class PrintJob extends BaseEntity {
 
     @Column(name = "type_job")
     private String typeJob;
+
+    @Column(name = "production_order_id")
+    private String productionOrderId;
 }

@@ -105,7 +105,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
         @Query(value = """
             SELECT * FROM sample_orders s
             WHERE
-                (s.status != 'ยกเลิก')
+                (s.status in ('ขึ้นตัวอย่างแล้ว','สำเร็จ รออนุมัติไปตารางรอผลิต','ผ่าน'))
                 AND (:id IS NULL OR s.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
@@ -128,7 +128,7 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
         @Query(value = """
             SELECT * FROM sample_orders s
             WHERE
-                (s.status != 'ยกเลิก')
+                (s.status in ('ขึ้นตัวอย่างแล้ว','สำเร็จ รออนุมัติไปตารางรอผลิต','ผ่าน'))
                 AND (:id IS NULL OR s.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))

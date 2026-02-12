@@ -61,12 +61,11 @@ export class Dcsm05DetailComponent implements OnInit {
         this.isDesign = true
       }
     }
-    if (this.mainForm.getRawValue().status == 'ขอปรู๊ฟหน้าแท่น') {
+    if (this.mainForm.getRawValue().status == 'รอผู้รับผิดชอบอนุมัติ' || this.mainForm.getRawValue().status =='รอดำเนินการ') {
       this.mainForm.controls['machineName'].enable;
-    } else if (this.mainForm.getRawValue().machineName != null) {
+    } else {
       this.mainForm.controls['machineName'].disable({ emitEvent: false });
     }
-
   }
 
   initForm(): void {
@@ -102,7 +101,7 @@ export class Dcsm05DetailComponent implements OnInit {
       jobId: [null],
       qtId: [null],
       typeJob: [null],
-      machineName: [false, Validators.required],
+      machineName: [false],
       print2Page: [false],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
@@ -569,7 +568,6 @@ export class Dcsm05DetailComponent implements OnInit {
       }
     });
   }
-
 
   proofStatusSend() {
     Swal.fire({

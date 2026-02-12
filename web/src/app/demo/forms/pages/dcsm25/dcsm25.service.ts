@@ -66,4 +66,11 @@ export class Dcsm25Service {
   saveProductionJob(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
   }
+
+  getProductionOrderById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/getById?id=${id}`,);
+  }
+  saveProductionOrder(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/production/save`, data);
+  }
 }

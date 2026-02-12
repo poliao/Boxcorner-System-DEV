@@ -63,6 +63,7 @@ public class PrintJobService {
             existing.setProductionJobId(printJob.getProductionJobId());
             existing.setPrint2Page(printJob.getPrint2Page());
             existing.setTypeJob(printJob.getTypeJob());
+            existing.setProductionOrderId(printJob.getProductionOrderId());
             
             return repository.save(existing);
         }

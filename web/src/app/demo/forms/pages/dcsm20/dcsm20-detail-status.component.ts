@@ -280,7 +280,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.dcsm20Service.save(data).subscribe((response) => {
-            console.log(response);
             this.checkJob(response.id)
             this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
               this.patchFormData(response);
@@ -384,7 +383,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       this.jobImageUrl = response.header.image_url || '';
       this.loadingService.hide();
     })
-
   }
 
   private convertDateFormat(dateStr: string): string {
@@ -425,8 +423,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   }
 
   checkJob(id) {
-    console.log(id);
-    
     if(this.productionForm.getRawValue().printingDate != null){
       this.setPrintJob(id);
     }else if(this.productionForm.getRawValue().coatingDate != null){
@@ -462,7 +458,8 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       colorPrint: null,
       paperGram: null,
       sampleId: null,
-      productionJobId: id
+      productionJobId: id,
+      productionOrderId: this.referenceId
     }
     this.dcsm20Service.savePrintJob(DataJob).subscribe({
       next: (response) => {

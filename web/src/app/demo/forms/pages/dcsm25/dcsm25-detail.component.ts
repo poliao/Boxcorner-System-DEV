@@ -111,6 +111,7 @@ export class Dcsm25DetailComponent implements OnInit {
       paperGram: [null],
       productionJobId: [null],
       print2Page: [false],
+      productionOrderId: [null]
     });
     this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -410,11 +411,9 @@ export class Dcsm25DetailComponent implements OnInit {
                 this.checkbntPrint();
                 if (this.printingForm.getRawValue().print2Page != true) {
                   if (this.printingForm.getRawValue().issample == true) {
-                    if (this.isStop != true && this.printingForm.getRawValue().print2Page != true) {
-                      this.updateSampleStatus();
-                    }
                   } else {
                     this.updateProductionJob();
+                    
                   }
                 }
                 this.loadingService.hide();
@@ -681,9 +680,9 @@ export class Dcsm25DetailComponent implements OnInit {
                 this.checkbntPrint();
                 if (this.printingForm.getRawValue().print2Page != true) {
                   if (this.printingForm.getRawValue().issample == true) {
-                    this.updateSampleStatus();
                   } else {
                     this.updateProductionJob();
+                    
                   }
                 }
                 this.loadingService.hide();
@@ -767,9 +766,9 @@ export class Dcsm25DetailComponent implements OnInit {
                 this.checkbntPrint();
                 if (this.isStop2Page != true) {
                   if (this.printingForm.getRawValue().issample == true) {
-                    this.updateSampleStatus();
                   } else {
                     this.updateProductionJob();
+                    
                   }
                 }
                 this.loadingService.hide();
@@ -827,48 +826,38 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   isFinishPage2Valid(): boolean {
-    const page2Meter4colorEnd = this.printingFormRecord.get('page2Meter4colorEnd');
-    return page2Meter4colorEnd?.value != null && page2Meter4colorEnd?.value !== '';
+    const page2PrinterName = this.printingFormRecord.get('page2PrinterName');
+    return page2PrinterName?.value != null && page2PrinterName?.value !== '';
   }
 
   isFinishPrintingValid(): boolean {
-    const nextMeter4colorEnd = this.printingFormRecord.get('nextMeter4colorEnd');
-    return nextMeter4colorEnd?.value != null && nextMeter4colorEnd?.value !== '';
+    const nextPrinterName = this.printingFormRecord.get('nextPrinterName');
+    return nextPrinterName?.value != null && nextPrinterName?.value !== '';
   }
 
   isStartPrintingValid(): boolean {
-    const meter4colorStart = this.printingFormRecord.get('meter4colorStart');
-    return meter4colorStart?.value != null && meter4colorStart?.value !== '';
+    const printerName = this.printingFormRecord.get('printerName');
+    return printerName?.value != null && printerName?.value !== '';
   }
 
   isEndPrintingValid(): boolean {
-    const meter4colorEnd = this.printingFormRecord.get('meter4colorEnd');
-    const meterBwEnd = this.printingFormRecord.get('meterBwEnd');
-    const meterWEnd = this.printingFormRecord.get('meterWEnd');
-
-    const meter4Valid = meter4colorEnd?.value != null && meter4colorEnd?.value !== '';
-    const meterBwValid = meterBwEnd?.value != null && meterBwEnd?.value !== '';
-
-    if (this.printerName === 'Ricoh') {
-      const meterWValid = meterWEnd?.value != null && meterWEnd?.value !== '';
-      return meter4Valid && meterBwValid && meterWValid;
-    }
-    return meter4Valid && meterBwValid;
+    const printerName = this.printingFormRecord.get('printerName');
+    return printerName?.value != null && printerName?.value !== '';
   }
 
   isResumePrintingValid(): boolean {
-    const nextMeter4colorStart = this.printingFormRecord.get('nextMeter4colorStart');
-    return nextMeter4colorStart?.value != null && nextMeter4colorStart?.value !== '';
+    const nextPrinterName = this.printingFormRecord.get('nextPrinterName');
+    return nextPrinterName?.value != null && nextPrinterName?.value !== '';
   }
 
   isStartPage2Valid(): boolean {
-    const page2Meter4colorStart = this.printingFormRecord.get('page2Meter4colorStart');
-    return page2Meter4colorStart?.value != null && page2Meter4colorStart?.value !== '';
+    const page2PrinterName = this.printingFormRecord.get('page2PrinterName');
+    return page2PrinterName?.value != null && page2PrinterName?.value !== '';
   }
 
   isResumePage2Valid(): boolean {
-    const page2NextMeter4colorStart = this.printingFormRecord.get('nextPage2Meter4colorStart');
-    return page2NextMeter4colorStart?.value != null && page2NextMeter4colorStart?.value !== '';
+    const nextPage2PrinterName = this.printingFormRecord.get('nextPage2PrinterName');
+    return nextPage2PrinterName?.value != null && nextPage2PrinterName?.value !== '';
   }
 
   openFinishPage2AfterResumeModal(): void {
@@ -888,8 +877,8 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   isFinishPage2AfterResumeValid(): boolean {
-    const nextPage2Meter4colorEnd = this.printingFormRecord.get('nextPage2Meter4colorEnd');
-    return nextPage2Meter4colorEnd?.value != null && nextPage2Meter4colorEnd?.value !== '';
+    const nextPage2PrinterName = this.printingFormRecord.get('nextPage2PrinterName');
+    return nextPage2PrinterName?.value != null && nextPage2PrinterName?.value !== '';
   }
 
   private finishPage2AfterResume(): void {
@@ -913,7 +902,6 @@ export class Dcsm25DetailComponent implements OnInit {
                 this.printingForm.patchValue(response);
                 this.checkbntPrint();
                 if (this.printingForm.getRawValue().issample == true) {
-                  this.updateSampleStatus();
                 } else {
                   this.updateProductionJob();
                 }
@@ -933,5 +921,17 @@ export class Dcsm25DetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  updateStatusProductionOrder(){
+    this.dcsm25Service.getProductionOrderById(this.printingForm.getRawValue().productionOrderId).subscribe({
+      next: (response) => {
+        response.processStatus = 'เสร็จสิ้น';
+        this.dcsm25Service.saveProductionOrder(response).subscribe({
+          next: (response) => {
+          },
+        });
+      }
+    })
   }
 }

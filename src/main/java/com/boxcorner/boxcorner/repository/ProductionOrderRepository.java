@@ -241,7 +241,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             "AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%'))) " +
             "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ'))" +
             "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))" +
-            "AND (:dalivery IS NULL OR p.data_dalivery = :dalivery)" +
+            "AND (:dalivery IS NULL OR (p.data_dalivery = :dalivery AND (p.process_status = 'ส่งไฟล์แล้ว' OR p.process_status = 'เสร็จสิ้น')))" +
             "ORDER BY p.id DESC", countQuery = "SELECT count(*) FROM production_orders p " +
                     "WHERE (p.job_status != 'ยกเลิก') " +
                     "AND (p.process_status != 'ยกเลิก') " +
@@ -266,7 +266,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     +
                     "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))"
                     +
-                    "AND (:dalivery IS NULL OR p.data_dalivery = :dalivery)"
+                    "AND (:dalivery IS NULL OR (p.data_dalivery = :dalivery AND (p.process_status = 'ส่งไฟล์แล้ว' OR p.process_status = 'เสร็จสิ้น')))"
                     +
                     "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))",  nativeQuery = true)
     Page<ProductionOrder> findProductionCheck(
@@ -362,7 +362,8 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     Integer countBacklogProcessStatus(@Param("processStatus") String processStatus);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where (po.data_dalivery = false or po.data_dalivery is null) and po.process_status = 'ส่งไฟล์แล้ว'", nativeQuery = true)
+            "where (po.data_dalivery = false or po.data_dalivery is null) " +
+            "and (po.process_status = 'ส่งไฟล์แล้ว' or po.process_status = 'เสร็จสิ้น')", nativeQuery = true)
     Integer countBacklogDelivery();
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
