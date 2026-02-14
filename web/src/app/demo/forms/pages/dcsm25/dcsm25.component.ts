@@ -184,15 +184,4 @@ export class Dcsm25Component implements OnInit {
     };
   }
 
-  submitCalibrate() {
-    const data = this.calibrateData;
-    data.jobId = 'calibrate';
-    data.workType = 'calibrate';
-    data.printerName = 'Canon';
-    data.jobCategory = 'calibrate';
-    data.responsiblePerson = this.authService.getUserFromToken().sub;
-    this.dcsm25Service.saveRecord(this.calibrateData).subscribe();
-    this.sweetAlert.success('สำเร็จ', 'บันทึกข้อมูล Calibrate เรียบร้อย');
-    this.closeCalibrateModal();
-  }
 }

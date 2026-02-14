@@ -29,7 +29,7 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
                             AND (:startDate IS NULL OR pj.delivery_date >= :startDate)
                             AND (:endDate IS NULL OR pj.delivery_date <= :endDate)
                             AND (:issample IS NULL OR pj.issample = :issample)
-                            AND (:jobStatus IS NULL OR :jobStatus = '' OR pj.job_status = :jobStatus)
+                            AND (:jobStatus IS NULL OR :jobStatus = '' OR CAST(pj.job_status AS TEXT) = :jobStatus)
                         ORDER BY pj.id DESC
                         """, nativeQuery = true)
         Page<PrintJob> findByFiltersAll(

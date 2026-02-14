@@ -43,22 +43,6 @@ export class Dcsm25Service {
     return this.http.get(`${this.apiUrl}/print-job/getById?id=${id}`);
   }
 
-  getRecordById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/printing-records/getById?id=${id}`);
-  }
-
-  saveRecord(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/printing-records/save`, data);
-  }
-
-  saveSample(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
-  }
-
-  getByIdSample(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
-  }
-
   getByIdProductionJob(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
   }
@@ -67,10 +51,15 @@ export class Dcsm25Service {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
   }
 
-  getProductionOrderById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/production/getById?id=${id}`,);
+  startPrintLog(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/printing/start`, data);
   }
-  saveProductionOrder(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/production/save`, data);
+
+  stopPrintLog(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/printing/stop`, data);
+  }
+
+  getLogById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/printing/logById?logId=${id}`);
   }
 }

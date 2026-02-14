@@ -6,8 +6,20 @@ import lombok.Data;
 @MappedSuperclass
 @Data
 public abstract class BaseEntity {
-    
+
     @Version
     @Column(name = "row_version")
     private Long rowVersion;
+
+    public enum PrinterBrand {
+        CANON, RICOH
+    }
+
+    public enum PrintSide {
+        FRONT, BACK
+    }
+
+    public enum LogType {
+        NORMAL, REPRINT, TEST
+    }
 }

@@ -52,12 +52,12 @@
                   <mat-icon>refresh</mat-icon> ล้างค่า
                 </button>
               </div>
-              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+              <!-- <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #ffa600;"
                   (click)="openCalibrateModal()">
                   <mat-icon>tune</mat-icon> Calibrate
                 </button>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -69,60 +69,4 @@
     [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
     (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
-</div>
-
-<!-- Calibrate Modal -->
-<div class="modal fade" [class.show]="showCalibrateModal" [style.display]="showCalibrateModal ? 'block' : 'none'"
-  tabindex="-1" role="dialog" aria-labelledby="calibrateModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="calibrateModalLabel">
-          <mat-icon style="vertical-align: middle;">tune</mat-icon>
-          บันทึกค่ามิเตอร์
-        </h5>
-        <button type="button" class="btn-close" (click)="closeCalibrateModal()" aria-label="Close"></button>
-      </div>
-      <form (ngSubmit)="submitCalibrate()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-12 mb-3">
-              <h6 class="text-primary">ค่ามิเตอร์ 4 สี</h6>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">เริ่มต้น</label>
-              <input type="number" class="form-control" [(ngModel)]="calibrateData.meter4colorStart" 
-                name="colorMeterStart" placeholder="ค่ามิเตอร์ 4 สี เริ่มต้น">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">สิ้นสุด</label>
-              <input type="number" class="form-control" [(ngModel)]="calibrateData.meter4colorEnd" 
-                name="colorMeterEnd" placeholder="ค่ามิเตอร์ 4 สี สิ้นสุด">
-            </div>
-            <div class="col-12 mb-3">
-              <h6 class="text-secondary">ค่ามิเตอร์ขาวดำ</h6>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">เริ่มต้น</label>
-              <input type="number" class="form-control" [(ngModel)]="calibrateData.meterBwStart" 
-                name="bwMeterStart" placeholder="ค่ามิเตอร์ขาวดำ เริ่มต้น">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">สิ้นสุด</label>
-              <input type="number" class="form-control" [(ngModel)]="calibrateData.meterBwEnd" 
-                name="bwMeterEnd" placeholder="ค่ามิเตอร์ขาวดำ สิ้นสุด">
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeCalibrateModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary">บันทึก</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal-backdrop fade" [class.show]="showCalibrateModal" 
-  [style.display]="showCalibrateModal ? 'block' : 'none'">
 </div>

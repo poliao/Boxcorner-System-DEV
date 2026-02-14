@@ -2,6 +2,9 @@ package com.boxcorner.boxcorner.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +16,7 @@ import lombok.Data;
 @Entity
 @Table(name = "print_jobs")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PrintJob extends BaseEntity {
 
     @Id

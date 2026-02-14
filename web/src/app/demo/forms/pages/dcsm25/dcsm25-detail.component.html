@@ -1,27 +1,53 @@
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h1 class="mb-0">งานรอพิมพ์ OD</h1>
-    <div class="d-flex gap-2">
-      <button *ngIf="isPrint" (click)="onUpdatePrint('Print')" class="btn text-white px-5 shadow-sm"
-        style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
-      <button *ngIf="isInPrint" (click)="onUpdatePrint('inPrint')" class="btn text-white px-5 shadow-sm"
-        style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
-      <button *ngIf="isPrint" (click)="onUpdatePrint('Stop')" class="btn text-white px-5 shadow-sm"
-        style="background-color: #ff2d2d;">หยุดพิมพ์ชั่วคราว</button>
-      <button *ngIf="isInPrint2" (click)="openResumePrintingModal()" class="btn text-white px-5 shadow-sm"
-        style="background-color: #a300cc;">เริ่มพิมพ์ต่อ</button>
-      <button *ngIf="isPrint2" (click)="openFinishPrintingModal()" class="btn text-white px-5 shadow-sm"
-        style="background-color: #a300cc;">พิมพ์เสร็จ</button>
-      <button *ngIf="isPrintPage2" (click)="openStartPage2Modal()" class="btn text-white px-5 shadow-sm"
-        style="background-color: #ff7300;">เริ่มพิมพ์หน้า2</button>
-      <button *ngIf="isPrint2Page" (click)="openFinishPage2Modal('Print')" class="btn text-white px-5 shadow-sm"
-        style="background-color: #ff7300;">พิมพ์หน้า2เสร็จ</button>
-      <button *ngIf="isPrint2Page" (click)="openFinishPage2Modal('Stop')" class="btn text-white px-5 shadow-sm"
-        style="background-color: #ff2d2d;">หยุดพิมพ์ชั่วคราว</button>
-      <button *ngIf="isNextPrint2Page" (click)="openResumePage2Modal()" class="btn text-white px-5 shadow-sm"
-        style="background-color: #a300cc;">เริ่มพิมพ์ต่อหน้า2</button>
-      <button *ngIf="isNextPrint2PageEnd" (click)="openFinishPage2AfterResumeModal()"
-        class="btn text-white px-5 shadow-sm" style="background-color: #a300cc;">พิมพ์หน้า2เสร็จสิ้น</button>
+  <div class="card-header">
+    <div class="row align-items-center">
+      <div class="col-12 col-md-12">
+        <h1 class="mb-0">งานรอพิมพ์ OD</h1><br>
+      </div>
+      <div class="col-12 col-md-12" >
+        <div class="row g-2">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PENDING'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #1e1b4b;" data-bs-toggle="modal"
+              data-bs-target="#printingRecordModal">เริ่มพิมพ์
+            </button>
+          </div>
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;" data-bs-toggle="modal"
+              data-bs-target="#printingRecordModal">เริ่มพิมพ์ต่อ
+            </button>
+          </div>
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;" data-bs-toggle="modal"
+              data-bs-target="#printingStartPage2">เริ่มพิมพ์หน้าที่ 2
+            </button>
+          </div>
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED_PAGE2'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;" data-bs-toggle="modal"
+              data-bs-target="#printingStartPage2">เริ่มพิมพ์หน้าที่ 2ต่อ
+            </button>
+          </div>
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #ff8800;" data-bs-toggle="modal"
+              data-bs-target="#printingLogStop" (click)="checkPrinter()">หยุดชั่วคราว
+            </button>
+          </div>
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #ff8800;" data-bs-toggle="modal"
+              data-bs-target="#printingLogStopPage2" (click)="checkPrinter()">หยุดชั่วคราวหน้า2
+            </button>
+          </div>
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #000272;" data-bs-toggle="modal"
+              data-bs-target="#printingLogEnd" (click)="checkPrinter()">พิมพ์จบ
+            </button>
+          </div>
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2'">
+            <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;" data-bs-toggle="modal"
+              data-bs-target="#printingLogEndPage2" (click)="checkPrinter()">พิมพ์จบหน้า2
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -37,7 +63,7 @@
           <input type="date" formControlName="deliveryDate" class="form-control"
             style="background-color: red; color: #ffffff;">
         </div>
-        <div class="col-md-4" *ngIf="isSample">
+        <div class="col-md-4">
           <label class="form-label" style=" color: red;">เวลาต้องส่งงานพิมพ์</label>
           <input type="time" formControlName="deliveryTime" class="form-control"
             style="background-color: red; color: #ffffff;">
@@ -85,7 +111,7 @@
   </div>
 </div>
 
-<div class="card-body" *ngIf="isSample">
+<div class="card-body">
   <div class="card total-income-card info overflow-hidden">
     <div style="padding: 10px;">
       <h5 class="card-title mb-3">รายละเอียดงานพิมพ์</h5>
@@ -119,425 +145,247 @@
           <input type="text" formControlName="diecuttingType" class="form-control">
         </div>
       </form>
-      <br>
     </div>
   </div><br>
 </div>
 
-<div class="modal fade" [class.show]="showPrintingModal" [style.display]="showPrintingModal ? 'block' : 'none'"
-  tabindex="-1" role="dialog" aria-labelledby="printingModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+<!-- Modal printingFormRecord -->
+<div class="modal fade" id="printingRecordModal" tabindex="-1" aria-labelledby="printingRecordModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="printingModalLabel">เริ่มต้นการพิมพ์</h5>
-        <button type="button" class="btn-close" (click)="closePrintingModal()" aria-label="Close"></button>
+        <h5 class="modal-title" id="printingRecordModalLabel">บันทึกข้อมูลเริ่มพิมพ์</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onStartPrinting()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="meter4colorStart" class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น </label>
-              <input type="number" class="form-control" id="meter4colorStart" formControlName="meter4colorStart"
-                placeholder="ค่ามิเตอร์ 4 สี เริ่มต้น">
-              <div class="invalid-feedback">
-                กรุณากรอกค่ามิเตอร์ 4 สี เริ่มต้น
-              </div>
+      <div class="modal-body">
+        <form [formGroup]="printingFormRecord">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
+              <input type="number" formControlName="meterColorStart" class="form-control">
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="meterBwStart" class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
-              <input type="number" class="form-control" id="meterBwStart" formControlName="meterBwStart"
-                placeholder="ค่ามิเตอร์ขาวดำ เริ่มต้น">
-              <div class="invalid-feedback">
-                กรุณากรอกค่ามิเตอร์ขาวดำ เริ่มต้น
-              </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
+              <input type="number" formControlName="meterBwStart" class="form-control">
             </div>
-            <div class="col-md-6 mb-3" *ngIf="printerName === 'Ricoh'">
-              <label for="meterWStart" class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
-              <input type="number" class="form-control" id="meterWStart" formControlName="meterWStart"
-                placeholder="ค่ามิเตอร์ขาว เริ่มต้น">
-              <div class="invalid-feedback">
-                กรุณากรอกค่ามิเตอร์ขาว เริ่มต้น
-              </div>
+            <div class="col-md-6" *ngIf="printingFormRecord.get('printerName')?.value === 'Ricoh'">
+              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <input type="number" formControlName="meterSpecialStart" class="form-control">
             </div>
-            <div class="col-md-12">
-              <label class="form-label font-weight-bold">เลือกเครื่อง</label>
-              <select formControlName="printerName" class="form-select" (change)="onPrinterChange($event)">
-                <option value="">เลือกเครื่อง</option>
+            <div class="col-md-6">
+              <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
+              <select formControlName="printerName" class="form-select" style="color: black;">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closePrintingModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!isStartPrintingValid()">เริ่มพิมพ์</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="startPrintLog()" data-bs-dismiss="modal">บันทึก</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" [class.show]="showPrintingEndModal" [style.display]="showPrintingEndModal ? 'block' : 'none'"
-  tabindex="-1" role="dialog" aria-labelledby="printingEndModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal fade" id="printingLogEnd" tabindex="-1" aria-labelledby="printingLogEnd"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="printingEndModalLabel">พิมพ์เสร็จสิ้น</h5>
-        <button type="button" class="btn-close" (click)="closePrintingEndModal()" aria-label="Close"></button>
+        <h5 class="modal-title" id="printingLogEnd">บันทึกข้อมูลพิมพ์สิ้นสุด</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onEndPrinting()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="meter4colorEnd" class="form-label">ค่ามิเตอร์ 4 สี สิ้นสุด </label>
-              <input type="number" class="form-control" id="meter4colorEnd" formControlName="meter4colorEnd"
-                placeholder="ค่ามิเตอร์ 4 สี สิ้นสุด">
-              <div class="invalid-feedback">
-                กรุณากรอกค่ามิเตอร์ 4 สี สิ้นสุด
-              </div>
+      <div class="modal-body">
+        <form [formGroup]="printingEndLog">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี จบ</label>
+              <input type="number" formControlName="meterColorEnd" class="form-control">
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="meterBwEnd" class="form-label">ค่ามิเตอร์ขาวดำ สิ้นสุด</label>
-              <input type="number" class="form-control" id="meterBwEnd" formControlName="meterBwEnd"
-                placeholder="ค่ามิเตอร์ขาวดำ สิ้นสุด">
-              <div class="invalid-feedback">
-                กรุณากรอกค่ามิเตอร์ขาวดำ สิ้นสุด
-              </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ จบ</label>
+              <input type="number" formControlName="meterBwEnd" class="form-control">
             </div>
-            <div class="col-md-6 mb-3" *ngIf="printerName === 'Ricoh'">
-              <label for="meterWEnd" class="form-label">ค่ามิเตอร์ขาว สิ้นสุด</label>
-              <input type="number" class="form-control" id="meterWEnd" formControlName="meterWEnd"
-                placeholder="ค่ามิเตอร์ขาว สิ้นสุด">
-              <div class="invalid-feedback">
-                กรุณากรอกค่ามิเตอร์ขาว สิ้นสุด
-              </div>
+            <div class="col-md-6" *ngIf="isRicoh">
+              <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
+              <input type="number" formControlName="meterSpecialEnd" class="form-control">
             </div>
-            <div class="col-12 mb-3" *ngIf="isStop != true">
-              <label for="issueFound" class="form-label">ปัญหาที่เจอ</label>
-              <textarea class="form-control" id="issueFound" rows="3" formControlName="issueFound"
-                placeholder="ระบุปัญหาที่เจอ (ถ้ามี)"></textarea>
-            </div>
-            <div class="col-12 mb-3" *ngIf="isStop != true">
-              <label for="issueCause" class="form-label">สาเหตุของปัญหา</label>
-              <textarea class="form-control" id="issueCause" rows="3" formControlName="issueCause"
-                placeholder="ระบุสาเหตุของปัญหา (ถ้ามี)"></textarea>
+            <div class="col-md-6">
+              <label class="form-label">หมายเหตุ</label>
+              <input type="text" formControlName="note" class="form-control">
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closePrintingEndModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-success">พิมพ์เสร็จ</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="stopPrintLog('FINISH')" data-bs-dismiss="modal">บันทึก</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Modal เริ่มพิมพ์ต่อ -->
-<div class="modal fade" [class.show]="showResumePrintingModal"
-  [style.display]="showResumePrintingModal ? 'block' : 'none'" tabindex="-1" role="dialog"
-  aria-labelledby="resumePrintingModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal fade" id="printingLogStop" tabindex="-1" aria-labelledby="printingLogStop"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="resumePrintingModalLabel">เริ่มพิมพ์ต่อ</h5>
-        <button type="button" class="btn-close" (click)="closeResumePrintingModal()" aria-label="Close"></button>
+        <h5 class="modal-title" id="printingLogStop">บันทึกข้อมูลหยุดพิมพ์ชั่วคราว</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onResumePrinting()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="meter4colorStartResume" class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
-              <input type="number" class="form-control" id="meter4colorStartResume"
-                formControlName="nextMeter4colorStart" placeholder="ค่ามิเตอร์ 4 สี เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ 4 สี เริ่มต้น</div>
+      <div class="modal-body">
+        <form [formGroup]="printingEndLog">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี จบ</label>
+              <input type="number" formControlName="meterColorEnd" class="form-control">
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="meterBwStartResume" class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
-              <input type="number" class="form-control" id="meterBwStartResume" formControlName="nextMeterBwStart"
-                placeholder="ค่ามิเตอร์ขาวดำ เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาวดำ เริ่มต้น</div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ จบ</label>
+              <input type="number" formControlName="meterBwEnd" class="form-control">
             </div>
-            <div class="col-md-6 mb-3" *ngIf="printingFormRecord.get('nextPrinterName')?.value === 'Ricoh'">
-              <label for="meterWStartResume" class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
-              <input type="number" class="form-control" id="meterWStartResume" formControlName="nextMeterWStart"
-                placeholder="ค่ามิเตอร์ขาว เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาว เริ่มต้น</div>
+            <div class="col-md-6" *ngIf="isRicoh">
+              <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
+              <input type="number" formControlName="meterSpecialEnd" class="form-control">
             </div>
-            <div class="col-md-12 mb-3">
-              <label class="form-label font-weight-bold">เลือกเครื่อง</label>
-              <select formControlName="nextPrinterName" class="form-select" (change)="onNextPrinterChange($event)">
-                <option value="">เลือกเครื่อง</option>
+            <div class="col-md-6">
+              <label class="form-label">หมายเหตุ</label>
+              <input type="text" formControlName="note" class="form-control">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="stopPrintLog('PAUSE')" data-bs-dismiss="modal">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="printingLogStopPage2" tabindex="-1" aria-labelledby="printingLogStopPage2"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="printingLogStopPage2">บันทึกข้อมูลพิมพ์สิ้นสุด</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="printingEndLog">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี จบ</label>
+              <input type="number" formControlName="meterColorEnd" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ จบ</label>
+              <input type="number" formControlName="meterBwEnd" class="form-control">
+            </div>
+            <div class="col-md-6" *ngIf="isRicoh">
+              <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
+              <input type="number" formControlName="meterSpecialEnd" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">หมายเหตุ</label>
+              <input type="text" formControlName="note" class="form-control">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="stopPrintPage2Log('PAUSED_PAGE2')" data-bs-dismiss="modal">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="printingStartPage2" tabindex="-1" aria-labelledby="printingStartPage2"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="printingStartPage2">บันทึกข้อมูลเริ่มพิมพ์หน้า2</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="printingFormRecord">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
+              <input type="number" formControlName="meterColorStart" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
+              <input type="number" formControlName="meterBwStart" class="form-control">
+            </div>
+            <div class="col-md-6" *ngIf="printingFormRecord.get('printerName')?.value === 'Ricoh'">
+              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <input type="number" formControlName="meterSpecialStart" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
+              <select formControlName="printerName" class="form-select" style="color: black;">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeResumePrintingModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!isResumePrintingValid()">เริ่มพิมพ์ต่อ</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="startPrintPage2Log()" data-bs-dismiss="modal">บันทึก</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Modal พิมพ์เสร็จ (สำหรับงานที่หยุดชั่วคราว) -->
-<div class="modal fade" [class.show]="showFinishPrintingModal"
-  [style.display]="showFinishPrintingModal ? 'block' : 'none'" tabindex="-1" role="dialog"
-  aria-labelledby="finishPrintingModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal fade" id="printingLogEndPage2" tabindex="-1" aria-labelledby="printingLogEndPage2"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="finishPrintingModalLabel">พิมพ์เสร็จสิ้น</h5>
-        <button type="button" class="btn-close" (click)="closeFinishPrintingModal()" aria-label="Close"></button>
+        <h5 class="modal-title" id="printingLogEndPage2">บันทึกข้อมูลพิมพ์สิ้นสุด</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onFinishPrinting()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="meter4colorEndFinish" class="form-label">ค่ามิเตอร์ 4 สี สิ้นสุด</label>
-              <input type="number" class="form-control" id="meter4colorEndFinish" formControlName="nextMeter4colorEnd"
-                placeholder="ค่ามิเตอร์ 4 สี สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ 4 สี สิ้นสุด</div>
+      <div class="modal-body">
+        <form [formGroup]="printingEndLog">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี จบ</label>
+              <input type="number" formControlName="meterColorEnd" class="form-control">
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="meterBwEndFinish" class="form-label">ค่ามิเตอร์ขาวดำ สิ้นสุด</label>
-              <input type="number" class="form-control" id="meterBwEndFinish" formControlName="nextMeterBwEnd"
-                placeholder="ค่ามิเตอร์ขาวดำ สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาวดำ สิ้นสุด</div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ จบ</label>
+              <input type="number" formControlName="meterBwEnd" class="form-control">
             </div>
-            <div class="col-md-6 mb-3" *ngIf="printingFormRecord.get('nextPrinterName')?.value === 'Ricoh'">
-              <label for="meterWEndFinish" class="form-label">ค่ามิเตอร์ขาว สิ้นสุด</label>
-              <input type="number" class="form-control" id="meterWEndFinish" formControlName="nextMeterWEnd"
-                placeholder="ค่ามิเตอร์ขาว สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาว สิ้นสุด</div>
+            <div class="col-md-6" *ngIf="isRicoh">
+              <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
+              <input type="number" formControlName="meterSpecialEnd" class="form-control">
             </div>
-            <div class="col-12 mb-3">
-              <label for="issueFound" class="form-label">ปัญหาที่เจอ</label>
-              <textarea class="form-control" id="issueFound" rows="3" formControlName="issueFound"
-                placeholder="ระบุปัญหาที่เจอ (ถ้ามี)"></textarea>
-            </div>
-            <div class="col-12 mb-3">
-              <label for="issueCause" class="form-label">สาเหตุของปัญหา</label>
-              <textarea class="form-control" id="issueCause" rows="3" formControlName="issueCause"
-                placeholder="ระบุสาเหตุของปัญหา (ถ้ามี)"></textarea>
+            <div class="col-md-6">
+              <label class="form-label">หมายเหตุ</label>
+              <input type="text" formControlName="note" class="form-control">
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeFinishPrintingModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-success">พิมพ์เสร็จ</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal เริ่มพิมพ์หน้า2 -->
-<div class="modal fade" [class.show]="showStartPage2Modal" [style.display]="showStartPage2Modal ? 'block' : 'none'"
-  tabindex="-1" role="dialog" aria-labelledby="startPage2ModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="startPage2ModalLabel">เริ่มพิมพ์หน้า2</h5>
-        <button type="button" class="btn-close" (click)="closeStartPage2Modal()" aria-label="Close"></button>
+        </form>
       </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onStartPage2()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="page2Meter4colorStart" class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
-              <input type="number" class="form-control" id="page2Meter4colorStart" formControlName="page2Meter4colorStart" placeholder="ค่ามิเตอร์ 4 สี เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ 4 สี เริ่มต้น</div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="page2MeterBwStart" class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
-              <input type="number" class="form-control" id="page2MeterBwStart" formControlName="page2MeterBwStart"
-                placeholder="ค่ามิเตอร์ขาวดำ เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาวดำ เริ่มต้น</div>
-            </div>
-            <div class="col-md-6 mb-3" *ngIf="printingFormRecord.get('page2PrinterName')?.value === 'Ricoh'">
-              <label for="page2MeterWStart" class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
-              <input type="number" class="form-control" id="page2MeterWStart" formControlName="page2MeterWStart"
-                placeholder="ค่ามิเตอร์ขาว เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาว เริ่มต้น</div>
-            </div>
-            <div class="col-md-12">
-              <label class="form-label font-weight-bold">เลือกเครื่อง</label>
-              <select formControlName="page2PrinterName" class="form-select" (change)="onPrinterChange($event)">
-                <option value="">เลือกเครื่อง</option>
-                <option value="Canon">Canon</option>
-                <option value="Ricoh">Ricoh</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeStartPage2Modal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!isStartPage2Valid()">เริ่มพิมพ์หน้า2</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal พิมพ์หน้า2เสร็จ -->
-<div class="modal fade" [class.show]="showFinishPage2Modal" [style.display]="showFinishPage2Modal ? 'block' : 'none'"
-  tabindex="-1" role="dialog" aria-labelledby="finishPage2ModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="finishPage2ModalLabel">พิมพ์หน้า2เสร็จสิ้น</h5>
-        <button type="button" class="btn-close" (click)="closeFinishPage2Modal()" aria-label="Close"></button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="stopPrintLog('FINISH_PAGE2')" data-bs-dismiss="modal">บันทึก</button>
       </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onFinishPage2()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="page2Meter4colorEnd" class="form-label">ค่ามิเตอร์ 4 สี สิ้นสุด</label>
-              <input type="number" class="form-control" id="page2Meter4colorEnd" formControlName="page2Meter4colorEnd"
-                placeholder="ค่ามิเตอร์ 4 สี สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ 4 สี สิ้นสุด</div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="page2MeterBwEnd" class="form-label">ค่ามิเตอร์ขาวดำ สิ้นสุด</label>
-              <input type="number" class="form-control" id="page2MeterBwEnd" formControlName="page2MeterBwEnd"
-                placeholder="ค่ามิเตอร์ขาวดำ สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาวดำ สิ้นสุด</div>
-            </div>
-            <div class="col-md-6 mb-3" *ngIf="printingFormRecord.get('page2PrinterName')?.value === 'Ricoh'">
-              <label for="page2MeterWEnd" class="form-label">ค่ามิเตอร์ขาว สิ้นสุด</label>
-              <input type="number" class="form-control" id="page2MeterWEnd" formControlName="page2MeterWEnd"
-                placeholder="ค่ามิเตอร์ขาว สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาว สิ้นสุด</div>
-            </div>
-            <div class="col-12 mb-3" *ngIf="isStop2Page != true">
-              <label for="issueFound" class="form-label">ปัญหาที่เจอ</label>
-              <textarea class="form-control" id="issueFoundPage2" rows="3" formControlName="issueFoundPage2"
-                placeholder="ระบุปัญหาที่เจอ (ถ้ามี)"></textarea>
-            </div>
-            <div class="col-12 mb-3" *ngIf="isStop2Page != true">
-              <label for="issueCause" class="form-label">สาเหตุของปัญหา</label>
-              <textarea class="form-control" id="issueCausePage2" rows="3" formControlName="issueCausePage2"
-                placeholder="ระบุสาเหตุของปัญหา (ถ้ามี)"></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeFinishPage2Modal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-success" >พิมพ์หน้า2เสร็จ</button>
-        </div>
-      </form>
     </div>
   </div>
-</div>
-
-<!-- Modal เริ่มพิมพ์ต่อหน้า2 -->
-<div class="modal fade" [class.show]="showResumePage2Modal" [style.display]="showResumePage2Modal ? 'block' : 'none'"
-  tabindex="-1" role="dialog" aria-labelledby="resumePage2ModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="resumePage2ModalLabel">เริ่มพิมพ์ต่อหน้า2</h5>
-        <button type="button" class="btn-close" (click)="closeResumePage2Modal()" aria-label="Close"></button>
-      </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onResumePage2()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="nextPage2Meter4colorStart" class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
-              <input type="number" class="form-control" id="nextPage2Meter4colorStart"
-                formControlName="nextPage2Meter4colorStart" placeholder="ค่ามิเตอร์ 4 สี เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ 4 สี เริ่มต้น</div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="nextPage2MeterBwStart" class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
-              <input type="number" class="form-control" id="nextPage2MeterBwStart"
-                formControlName="nextPage2MeterBwStart" placeholder="ค่ามิเตอร์ขาวดำ เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาวดำ เริ่มต้น</div>
-            </div>
-            <div class="col-md-6 mb-3" *ngIf="printingFormRecord.get('nextPage2PrinterName')?.value === 'Ricoh'">
-              <label for="nextPage2MeterWStart" class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
-              <input type="number" class="form-control" id="nextPage2MeterWStart" formControlName="nextPage2MeterWStart"
-                placeholder="ค่ามิเตอร์ขาว เริ่มต้น">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาว เริ่มต้น</div>
-            </div>
-            <div class="col-md-12">
-              <label class="form-label font-weight-bold">เลือกเครื่อง</label>
-              <select formControlName="nextPage2PrinterName" class="form-select" (change)="onPrinterChange($event)">
-                <option value="">เลือกเครื่อง</option>
-                <option value="Canon">Canon</option>
-                <option value="Ricoh">Ricoh</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeResumePage2Modal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!isResumePage2Valid()">เริ่มพิมพ์ต่อหน้า2</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal พิมพ์หน้า2เสร็จสิ้น (หลังเริ่มพิมพ์ต่อ) -->
-<div class="modal fade" [class.show]="showFinishPage2AfterResumeModal"
-  [style.display]="showFinishPage2AfterResumeModal ? 'block' : 'none'" tabindex="-1" role="dialog"
-  aria-labelledby="finishPage2AfterResumeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="finishPage2AfterResumeModalLabel">พิมพ์หน้า2เสร็จสิ้น</h5>
-        <button type="button" class="btn-close" (click)="closeFinishPage2AfterResumeModal()"
-          aria-label="Close"></button>
-      </div>
-      <form [formGroup]="printingFormRecord" (ngSubmit)="onFinishPage2AfterResume()">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="nextPage2Meter4colorEnd" class="form-label">ค่ามิเตอร์ 4 สี สิ้นสุด </label>
-              <input type="number" class="form-control" id="nextPage2Meter4colorEnd"
-                formControlName="nextPage2Meter4colorEnd" placeholder="ค่ามิเตอร์ 4 สี สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ 4 สี สิ้นสุด</div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="nextPage2MeterBwEnd" class="form-label">ค่ามิเตอร์ขาวดำ สิ้นสุด</label>
-              <input type="number" class="form-control" id="nextPage2MeterBwEnd" formControlName="nextPage2MeterBwEnd"
-                placeholder="ค่ามิเตอร์ขาวดำ สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาวดำ สิ้นสุด</div>
-            </div>
-            <div class="col-md-6 mb-3" *ngIf="printingFormRecord.get('nextPage2PrinterName')?.value === 'Ricoh'">
-              <label for="nextPage2MeterWEnd" class="form-label">ค่ามิเตอร์ขาว สิ้นสุด</label>
-              <input type="number" class="form-control" id="nextPage2MeterWEnd" formControlName="nextPage2MeterWEnd"
-                placeholder="ค่ามิเตอร์ขาว สิ้นสุด">
-              <div class="invalid-feedback">กรุณากรอกค่ามิเตอร์ขาว สิ้นสุด</div>
-            </div>
-            <div class="col-12 mb-3">
-              <label for="issueFound" class="form-label">ปัญหาที่เจอ</label>
-              <textarea class="form-control" id="issueFoundPage2" rows="3" formControlName="issueFoundPage2"
-                placeholder="ระบุปัญหาที่เจอ (ถ้ามี)"></textarea>
-            </div>
-            <div class="col-12 mb-3">
-              <label for="issueCause" class="form-label">สาเหตุของปัญหา</label>
-              <textarea class="form-control" id="issueCausePage2" rows="3" formControlName="issueCausePage2"
-                placeholder="ระบุสาเหตุของปัญหา (ถ้ามี)"></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeFinishPage2AfterResumeModal()">ยกเลิก</button>
-          <button type="submit" class="btn btn-success" >พิมพ์หน้า2เสร็จสิ้น</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal-backdrop fade"
-  [class.show]="showPrintingModal || showPrintingEndModal || showResumePrintingModal || showFinishPrintingModal || showStartPage2Modal || showFinishPage2Modal || showResumePage2Modal || showFinishPage2AfterResumeModal"
-  [style.display]="showPrintingModal || showPrintingEndModal || showResumePrintingModal || showFinishPrintingModal || showStartPage2Modal || showFinishPage2Modal || showResumePage2Modal || showFinishPage2AfterResumeModal ? 'block' : 'none'">
 </div>
