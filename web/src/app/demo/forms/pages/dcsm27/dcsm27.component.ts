@@ -1,38 +1,48 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
+import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
+import { Dcsm27Service } from './dcsm27.service';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
-import { Dcsm25Service } from './dcsm25.service';
+import { delay, Subject } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
-import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
-  selector: 'app-dcsm25',
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatDialogModule, DataTableComponent],
-  templateUrl: './dcsm25.component.html',
-  styleUrls: ['./dcsm25.component.scss']
+  selector: 'app-dcsm27.component',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatIconModule,
+    DataTableComponent,
+    MatButtonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatAutocompleteModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+  ],
+  templateUrl: './dcsm27.component.html',
+  styleUrl: './dcsm27.component.scss'
 })
-export class Dcsm25Component implements OnInit {
-
-  showCalibrateModal = false;
-  calibrateData = {
-    meter4colorStart: null,
-    meter4colorEnd: null,
-    meterBwStart: null,
-    meterBwEnd: null,
-    jobId: null,
-    workType: null,
-    printerName: null,
-    jobCategory: null,
-    responsiblePerson: null
-  };
+export class Dcsm27Component implements OnInit {
 
   filterId: string = null;
   filterJobId: string = null;
@@ -43,13 +53,15 @@ export class Dcsm25Component implements OnInit {
   filterStartDate: string = null;
   filterEndDate: string = null;
 
-  totalElements = 0;
-  pageSize = 10;
-  pageIndex = 0;
-
-  tableData: any[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  constructor(
+    private http: HttpClient,
+    private dcsm27Service: Dcsm27Service,
+    private router: Router,
+    private loadingService: LoadingService,
+    private sweetAlert: SweetAlertService,
+    private statusColorService: StatusColorService,) { }
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
@@ -61,18 +73,15 @@ export class Dcsm25Component implements OnInit {
     { key: 'jobStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this) },
   ];
 
+  tableData: any[] = [];
 
-  constructor(
-    private dcsm25Service: Dcsm25Service,
-    private router: Router,
-    private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService,
-    private statusColorService: StatusColorService,
-    private authService: AuthService
-  ) { }
+  totalElements = 0;
+  pageSize = 10;
+  pageIndex = 0;
 
   ngOnInit() {
     this.loadData();
+
   }
 
   loadData() {
@@ -88,7 +97,7 @@ export class Dcsm25Component implements OnInit {
       jobStatus: this.filterPrintStatus
     };
 
-    this.dcsm25Service.getOrdersWithSearch(this.pageIndex, this.pageSize, filters)
+    this.dcsm27Service.getOrdersWithSearch(this.pageIndex, this.pageSize, filters)
       .subscribe({
         next: (response: any) => {
           this.tableData = response.content.map((item: any) => ({
@@ -122,10 +131,15 @@ export class Dcsm25Component implements OnInit {
     return `${day}/${month}/${year}`;
   }
 
-  onPageChange(event: { pageIndex: number, pageSize: number }) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.loadData();
+  getStatusColumnStyle(columnKey: string, rowData: any): any {
+    if (columnKey === 'printStatus') {
+      const statusColor = this.statusColorService.getStatusColor(rowData.printStatus);
+      return {
+        'background-color': statusColor,
+        'color': '#ffffffff'
+      };
+    }
+    return {};
   }
 
   onSearchChange() {
@@ -136,21 +150,16 @@ export class Dcsm25Component implements OnInit {
     this.loadData();
   }
 
-  onRowClick(row: any) {
-    if (row && row.id) {
-      this.router.navigate(['/Dcsm25Detail', row.id]);
-    }
+  onPageChange(event: { pageIndex: number, pageSize: number }) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadData();
   }
 
-  getStatusColumnStyle(columnKey: string, rowData: any): any {
-    if (columnKey === 'printStatus') {
-      const statusColor = this.statusColorService.getStatusColor(rowData.printStatus);
-      return {
-        'background-color': statusColor,
-        'color': '#ffffffff'
-      };
+  onRowClick(row: any) {
+    if (row && row.id) {
+      this.router.navigate(['/Dcsm27Detail', row.id]);
     }
-    return {};
   }
 
   clearAllFilters() {
@@ -165,34 +174,7 @@ export class Dcsm25Component implements OnInit {
     this.onSearchChange();
   }
 
-  openCalibrateModal() {
-    this.showCalibrateModal = true;
-  }
-
-  closeCalibrateModal() {
-    this.showCalibrateModal = false;
-    this.calibrateData = {
-      meter4colorStart: null,
-      meter4colorEnd: null,
-      meterBwStart: null,
-      meterBwEnd: null,
-      jobId: null,
-      workType: null,
-      printerName: null,
-      jobCategory: null,
-      responsiblePerson: null
-    };
-  }
-
-  submitCalibrate() {
-    const data = this.calibrateData;
-    data.jobId = 'calibrate';
-    data.workType = 'calibrate';
-    data.printerName = 'Canon';
-    data.jobCategory = 'calibrate';
-    data.responsiblePerson = this.authService.getUserFromToken().sub;
-    this.dcsm25Service.saveRecord(this.calibrateData).subscribe();
-    this.sweetAlert.success('สำเร็จ', 'บันทึกข้อมูล Calibrate เรียบร้อย');
-    this.closeCalibrateModal();
+  createOD() {
+    this.router.navigate(['/Dcsm27Detail']);
   }
 }

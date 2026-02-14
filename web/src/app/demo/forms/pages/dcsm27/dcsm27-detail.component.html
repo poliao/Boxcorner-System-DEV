@@ -1,0 +1,71 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h1 class="mb-0">งานรอพิมพ์ OD</h1>
+    <button mat-flat-button *ngIf="!isEditMode" (click)="onSave()" [disabled]="printingForm.invalid" style="background-color: #ff4800; color: white;">
+      <mat-icon>save</mat-icon> บันทึก
+    </button>
+  </div>
+
+  <div class="card-body">
+    <form [formGroup]="printingForm">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">JOB ID</label>
+          <input type="text" formControlName="jobId" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" style=" color: red;">วันที่ต้องส่งงานพิมพ์</label>
+          <input type="date" formControlName="deliveryDate" class="form-control"
+            style="background-color: red; color: #ffffff;">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" style=" color: red;">เวลาต้องส่งงานพิมพ์</label>
+          <input type="time" formControlName="deliveryTime" class="form-control"
+            style="background-color: red; color: #ffffff;">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">ชื่อลูกค้า/ชื่องาน</label>
+          <input type="text" formControlName="customerJobName" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">สถานะงาน</label>
+          <input type="text" formControlName="jobStatus" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">ยอดใบพิมพ์</label>
+          <input type="number" formControlName="totalPrintSheets" class="form-control" placeholder="0">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">ยอดผลิต/กล่อง</label>
+          <input type="number" formControlName="productionQty" class="form-control" placeholder="0">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">เครื่องพิมพ์</label>
+          <select formControlName="printerName" class="form-select">
+            <option value="">เลือกเครื่อง</option>
+            <option value="Canon">Canon</option>
+            <option value="Ricoh">Ricoh</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">งานตัวอย่าง</label>
+          <div class="form-check">
+            <input type="checkbox" formControlName="issample" class="form-check-input" id="issample">
+            <label class="form-check-label" for="issample">
+              เป็นงานตัวอย่าง
+            </label>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">พิมพ์</label>
+          <div class="form-check">
+            <input type="checkbox" formControlName="print2Page" class="form-check-input" id="print2Page">
+            <label class="form-check-label" for="print2Page">
+              พิมพ์2หน้า
+            </label>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

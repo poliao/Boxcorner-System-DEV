@@ -22,13 +22,14 @@ import { Dcsm16DetailResolver } from './demo/forms/pages/dcsm16/dcsm16-detail.re
 import { Dcsm17DetailResolver } from './demo/forms/pages/dcsm17/dcsm17-detail.resolver';
 import { Dcsm18DetailResolver } from './demo/forms/pages/dcsm18/dcsm18-detail.resolver';
 import { Dcsm19DetailResolver } from './demo/forms/pages/dcsm19/dcsm19-detail.resolver';
-import { Dcsm26DetailResolver } from './demo/forms/pages/dcsm26/dcsm26-detail.resolver';
+import { Dcsm27DetailResolver } from './demo/forms/pages/dcsm27/dcsm27-detail.resolver';
 import { Dcsm20DetailResolver } from './demo/forms/pages/dcsm20/dcsm20-detail.resolver';
 import { Dcsm21DetailResolver } from './demo/forms/pages/dcsm21/dcsm21-detail.resolver';
 import { Dcsm22DetailResolver } from './demo/forms/pages/dcsm22/dcsm22-detail.resolver';
 import { Dcsm23DetailResolver } from './demo/forms/pages/dcsm23/dcsm23-detail.resolver';
 import { Dcsm24DetailResolver } from './demo/forms/pages/dcsm24/dcsm24-detail.resolver';
 import { Dcsm25DetailResolver } from './demo/forms/pages/dcsm25/dcsm25-detail.resolver';
+import { Dcsm26DetailResolver } from './demo/forms/pages/dcsm26/dcsm26-detail.resolver';
 
 const routes: Routes = [
   {
@@ -499,8 +500,8 @@ const routes: Routes = [
         path: 'Dcsm25',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm25/dcsm25.component').then((c) => c.Dcsm25Component)
-      },
-      {
+      }
+      ,{
         path: 'Dcsm26Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm26/dcsm26-detail.component').then((c) => c.Dcsm26DetailComponent),
@@ -517,7 +518,26 @@ const routes: Routes = [
         path: 'Dcsm26',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm26/dcsm26.component').then((c) => c.Dcsm26Component)
-      }
+      },
+      {
+        path: 'Dcsm27Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm27/dcsm27-detail.component').then((c) => c.Dcsm27DetailComponent),
+        resolve: {
+          designDiecut: Dcsm27DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm27Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm27/dcsm27-detail.component').then((c) => c.Dcsm27DetailComponent)
+      },
+      {
+        path: 'Dcsm27',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm27/dcsm27.component').then((c) => c.Dcsm27Component)
+      },
+      
     ]
   },
   {

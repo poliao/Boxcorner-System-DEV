@@ -16,6 +16,7 @@ import { Dcsm09Service } from '../dcsm09/dcsm09.service';
   templateUrl: './dcsm20-detail-status.component.html',
   styleUrl: './dcsm20-detail-status.component.scss'
 })
+
 export class Dcsm20DetailStatusComponent implements OnInit {
   productionForm!: FormGroup;
   isEditMode = false;

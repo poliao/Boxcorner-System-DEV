@@ -69,11 +69,11 @@ public class RecipeService {
         recipe.setDensity(req.getDensity());
         recipeRepository.save(recipe);
 
-        colorsRepository.deleteByRecipeid(req.getRecipeid());
+        colorsRepository.deleteByRecipeid(recipe.getRecipeid());
         for (ColorRequest c : req.getColors()) {
             Colors color = new Colors();
             color.setColorid(generateNextColorId());
-            color.setRecipeid(req.getRecipeid());
+            color.setRecipeid(recipe.getRecipeid());
             color.setColorname(c.getColor());
             color.setWeight(c.getWeight());
             color.setLot(c.getLot());
