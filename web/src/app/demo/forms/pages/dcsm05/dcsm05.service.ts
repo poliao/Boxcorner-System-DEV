@@ -115,5 +115,7 @@ export class Dcsm05Service {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSendBack`);
   }
 
-  
+  countEditSample(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countEditSample`);
+  }
 }

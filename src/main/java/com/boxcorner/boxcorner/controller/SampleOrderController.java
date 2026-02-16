@@ -296,4 +296,10 @@ public class SampleOrderController {
         return ResponseEntity.ok(
                 sampleOrderService.countBacklogStatus("รอเจ้าของงานตรวจสอบ", tokenService.getCurrentUser(httpRequest)));
     }
+
+    @GetMapping("/countEditSample")
+    public ResponseEntity<Integer> countEditSample(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(
+                sampleOrderService.countBacklogStatus("รอเคลียร์ไฟล์ใหม่", tokenService.getCurrentUser(httpRequest)));
+    }
 }
