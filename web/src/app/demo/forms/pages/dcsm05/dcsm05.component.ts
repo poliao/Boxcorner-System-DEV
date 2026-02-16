@@ -17,6 +17,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm05',
@@ -57,6 +58,7 @@ export class Dcsm05Component implements OnInit {
   waitSample = 0;
   waitProcess = 0;
   backSample = 0;
+  countEdit = 0;
   back = 0;
 
   tableColumns = [
@@ -74,7 +76,8 @@ export class Dcsm05Component implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private dcsm05Service: Dcsm05Service,
-    private statusColorService: StatusColorService
+    private statusColorService: StatusColorService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit(): void {
@@ -90,6 +93,7 @@ export class Dcsm05Component implements OnInit {
     this.countBacklogWaitProcess();
     this.countBacklogBackSample();
     this.countBacklogSendBack();
+    this.countEditSample();
   }
 
   initSearchForm(): void {
@@ -266,6 +270,7 @@ export class Dcsm05Component implements OnInit {
   onFilterApproveShif() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('อนุมัติขอเลื่อนส่ง');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -280,6 +285,7 @@ export class Dcsm05Component implements OnInit {
   onFilterNotApproveShif() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('ไม่อนุมัติเลื่อนส่ง');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -294,6 +300,7 @@ export class Dcsm05Component implements OnInit {
   onFilterClearFile() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('จัดส่งได้ รอเคลียร์ไฟล์');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -308,6 +315,7 @@ export class Dcsm05Component implements OnInit {
   onFilterInClearFile() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('กำลังเคลียร์ไฟล์');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -322,6 +330,7 @@ export class Dcsm05Component implements OnInit {
   onFilterCheckFile() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('ไฟล์เสร็จ รอตรวจสอบไฟล์');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -336,6 +345,7 @@ export class Dcsm05Component implements OnInit {
   onFilterWaitSample() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('ไฟล์ถูกต้อง รอขึ้นตัวอย่าง');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -350,6 +360,7 @@ export class Dcsm05Component implements OnInit {
   onFilterBackSample() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('ขึ้นตัวอย่างแล้ว');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -364,6 +375,22 @@ export class Dcsm05Component implements OnInit {
   onFilterSample() {
     this.onClearAll()
     this.searchForm.get('status')?.setValue('ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
+    this.onSearch();
+  }
+
+  countEditSample() {
+    this.dcsm05Service.countEditSample().subscribe({
+      next: (data: number) => {
+        this.countEdit = data;
+      },
+    });
+  }
+
+  onFilterEditSample() {
+    this.onClearAll()
+    this.searchForm.get('status')?.setValue('รอเคลียร์ไฟล์ใหม่');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 }
