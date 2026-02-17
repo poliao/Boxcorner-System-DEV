@@ -62,4 +62,16 @@ export class Dcsm25Service {
   getLogById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/printing/logById?logId=${id}`);
   }
+
+  saveCalibrateLog(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/printing/saveCalibrateLog`, data);
+  }
+
+  getPrinters(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/printer/getAll`);
+  }
+
+  saveCalibrate(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/printing/saveCalibrate`, data);
+  }
 }

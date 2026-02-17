@@ -98,7 +98,8 @@ export class Dcsm06DetailComponent implements OnInit {
       cancelRemarks: [''],
       dataDalivery: [false],
       postpone: [null],
-      rowVersion: [null]
+      rowVersion: [null],
+      decisionAuthority: [null]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();

@@ -16,10 +16,14 @@ public abstract class BaseEntity {
     }
 
     public enum PrintSide {
-        FRONT, BACK
+        FRONT, BACK, CALIBRATE
     }
 
     public enum LogType {
-        NORMAL, REPRINT, TEST
+        NORMAL, REPRINT, TEST, CALIBRATE
+    }
+
+    public enum JobStatus {
+        PENDING, IN_PROGRESS, COMPLETED, PAUSED, WAITPAGE2, IN_PROGRESS_PAGE2, PAUSED_PAGE2
     }
 }

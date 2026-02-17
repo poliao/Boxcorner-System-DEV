@@ -1,13 +1,19 @@
 package com.boxcorner.boxcorner.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.boxcorner.boxcorner.entity.PrintLog;
+import com.boxcorner.boxcorner.entity.dto.CalibrateRequest;
 import com.boxcorner.boxcorner.entity.dto.StartPrintRequest;
 import com.boxcorner.boxcorner.entity.dto.StopPrintRequest;
+import com.boxcorner.boxcorner.security.jwt.TokenService;
 import com.boxcorner.boxcorner.service.PrintingService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;
 
@@ -19,14 +25,16 @@ public class PrintingController {
 
     private final PrintingService printingService;
 
+    @Autowired
+    private TokenService tokenService;
     // =================================================================
     // 1. เริ่มงาน (Start / Resume)
     // URL: POST /api/printing/start
     // =================================================================
     @PostMapping("/start")
-    public ResponseEntity<?> startJob(@RequestBody StartPrintRequest request) {
+    public ResponseEntity<?> startJob(@RequestBody StartPrintRequest request, HttpServletRequest httpRequest) {
         try {
-            PrintLog newLog = printingService.startPrinting(request);
+            PrintLog newLog = printingService.startPrinting(request,tokenService.getCurrentUser(httpRequest) );
             
             return ResponseEntity.ok(Map.of(
                 "status", "STARTED",
@@ -80,4 +88,15 @@ public class PrintingController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/saveCalibrate")
+    public ResponseEntity<?> saveCalibrate(@RequestBody CalibrateRequest request) {
+        try {
+            PrintLog saved = printingService.saveCalibrate(request);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

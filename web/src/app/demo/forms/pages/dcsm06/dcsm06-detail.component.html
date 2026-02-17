@@ -111,5 +111,50 @@
       </form>
     </div>
   </div>
+
+  <!-- Decision Authority Card -->
+  <div class="card total-income-card warning overflow-hidden mt-3">
+    <div class="card-header" style="background-color: #1e1b4b; color: white; padding: 15px;">
+      <h6 class="mb-0 font-weight-bold">
+        <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
+      </h6>
+    </div>
+    <div class="card-body" style="padding: 15px;">
+      <form [formGroup]="mainForm">
+        <div class="d-flex flex-wrap gap-2">
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="customerOnSite" style="border-left: 4px solid #0d6efd !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="customerOnSite" id="customerOnSite" style="top: 10px; right: 10px;">
+            <strong class="text-primary d-block" style="font-size: 0.9rem;">ลูกค้าเข้าดูงานหน้างาน</strong>
+            <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
+            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
+          </label>
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="sampleToCustomer" style="border-left: 4px solid #198754 !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="sampleToCustomer" id="sampleToCustomer" style="top: 10px; right: 10px;">
+            <strong class="text-success d-block" style="font-size: 0.9rem;">ขึ้นตัวอย่างส่งลูกค้าตรวจ</strong>
+            <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
+            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
+          </label>
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="salesDecision" style="border-left: 4px solid #ffc107 !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="salesDecision" id="salesDecision" style="top: 10px; right: 10px;">
+            <strong class="text-warning d-block" style="font-size: 0.9rem;">เซลล์ตัดสินใจแทนลูกค้า</strong>
+            <span class="badge bg-warning text-dark mt-1" style="font-size: 0.7rem;">เซลล์</span>
+            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามคำสั่งเซลล์ ไม่ปรับนอกคำสั่ง</small>
+          </label>
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="planningDecision" style="border-left: 4px solid #6c757d !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="planningDecision" id="planningDecision" style="top: 10px; right: 10px;">
+            <strong class="text-secondary d-block" style="font-size: 0.9rem;">ฝ่ายแผนตัดสินใจ</strong>
+            <span class="badge bg-secondary mt-1" style="font-size: 0.7rem;">ฝ่ายแผน</span>
+            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามใบปรู๊ฟและมาตรฐาน</small>
+          </label>
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="operatorQaDecision" style="border-left: 4px solid #dc3545 !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="operatorQaDecision" id="operatorQaDecision" style="top: 10px; right: 10px;">
+            <strong class="text-danger d-block" style="font-size: 0.9rem;">ช่างพิมพ์ + QA ร่วมกัน</strong>
+            <span class="badge bg-danger mt-1" style="font-size: 0.7rem;">ช่าง/QA</span>
+            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">ปรับสีให้อยู่ในมาตรฐาน บันทึกเหตุผล</small>
+          </label>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 

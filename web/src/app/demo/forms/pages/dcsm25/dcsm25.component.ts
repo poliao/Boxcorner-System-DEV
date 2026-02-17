@@ -23,16 +23,14 @@ export class Dcsm25Component implements OnInit {
 
   showCalibrateModal = false;
   calibrateData = {
-    meter4colorStart: null,
-    meter4colorEnd: null,
+    printerId: null,
+    meterColorStart: null,
+    meterColorEnd: null,
     meterBwStart: null,
     meterBwEnd: null,
-    jobId: null,
-    workType: null,
-    printerName: null,
-    jobCategory: null,
-    responsiblePerson: null
+    note: null
   };
+  printers: any[] = [];
 
   filterId: string = null;
   filterJobId: string = null;
@@ -58,7 +56,7 @@ export class Dcsm25Component implements OnInit {
     { key: 'deliveryDate', label: 'วันที่ส่งพิมพ์', },
     { key: 'printerName', label: 'พิมพ์ที่', },
     { key: 'issample', label: 'เป็นตัวอย่าง' },
-    { key: 'jobStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this) },
+    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
   ];
 
 
@@ -141,18 +139,7 @@ export class Dcsm25Component implements OnInit {
       this.router.navigate(['/Dcsm25Detail', row.id]);
     }
   }
-
-  getStatusColumnStyle(columnKey: string, rowData: any): any {
-    if (columnKey === 'printStatus') {
-      const statusColor = this.statusColorService.getStatusColor(rowData.printStatus);
-      return {
-        'background-color': statusColor,
-        'color': '#ffffffff'
-      };
-    }
-    return {};
-  }
-
+  
   clearAllFilters() {
     this.filterId = '';
     this.filterJobId = '';
@@ -166,22 +153,59 @@ export class Dcsm25Component implements OnInit {
   }
 
   openCalibrateModal() {
+    this.loadPrinters();
     this.showCalibrateModal = true;
   }
 
   closeCalibrateModal() {
     this.showCalibrateModal = false;
     this.calibrateData = {
-      meter4colorStart: null,
-      meter4colorEnd: null,
+      printerId: null,
+      meterColorStart: null,
+      meterColorEnd: null,
       meterBwStart: null,
       meterBwEnd: null,
-      jobId: null,
-      workType: null,
-      printerName: null,
-      jobCategory: null,
-      responsiblePerson: null
+      note: null
     };
+  }
+
+  loadPrinters() {
+    this.dcsm25Service.getPrinters().subscribe({
+      next: (data) => this.printers = data,
+      error: (err) => console.error('Error loading printers:', err)
+    });
+  }
+
+  submitCalibrate() {
+    if (!this.calibrateData.printerId) {
+      this.sweetAlert.warning('คำเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
+    this.loadingService.show();
+    const payload = {
+      printerId: this.calibrateData.printerId,
+      printSide: 'CALIBRATE',
+      logType: 'CALIBRATE',
+      meterColorStart: this.calibrateData.meterColorStart,
+      meterColorEnd: this.calibrateData.meterColorEnd,
+      meterBwStart: this.calibrateData.meterBwStart,
+      meterBwEnd: this.calibrateData.meterBwEnd,
+      note: this.calibrateData.note 
+    };
+
+    this.dcsm25Service.saveCalibrate(payload).subscribe({
+      next: () => {
+        this.loadingService.hide();
+        this.sweetAlert.success('สำเร็จ', 'บันทึก Calibrate เรียบร้อย');
+        this.closeCalibrateModal();
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('ผิดพลาด', 'ไม่สามารถบันทึก Calibrate ได้');
+        console.error('Error saving calibrate:', err);
+      }
+    });
   }
 
 }

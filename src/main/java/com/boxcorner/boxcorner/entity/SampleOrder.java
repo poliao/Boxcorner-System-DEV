@@ -111,9 +111,6 @@ public class SampleOrder extends BaseEntity {
     @Column(name = "qt_id")
     private String qtId;
 
-    @Column(name = "type_job")
-    private String typeJob;
-
     @Column(name = "machine_name")
     private Boolean machineName;
 

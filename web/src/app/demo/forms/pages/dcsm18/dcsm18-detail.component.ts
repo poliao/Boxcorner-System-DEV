@@ -83,7 +83,8 @@ export class Dcsm18DetailComponent implements OnInit {
       customerName: [''],
       dataDalivery: [false],
       postpone: [null],
-      rowVersion: [null]
+      rowVersion: [null],
+      decisionAuthority: [null],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();

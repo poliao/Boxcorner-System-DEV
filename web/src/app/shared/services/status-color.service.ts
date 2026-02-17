@@ -74,7 +74,14 @@ export class StatusColorService {
       case 'รอจัดส่ง': return '#7f36f4ff'; // สีแดง
       case 'กำลังส่ง': return '#ff05acff'; // สีเทา
       case 'จัดส่งเรียบร้อย': return '#00af0fff';
-     
+
+      case 'PENDING': return '#ff9800'; // สีส้ม
+      case 'IN_PROGRESS': return '#cddb00ff';
+      case 'COMPLETED': return '#2bff00ff';
+      case 'PAUSED': return '#ff2600ff';
+      case 'WAITPAGE2': return '#ff9800';
+      case 'PAUSED_PAGE2': return '#ff2600ff';
+      case 'IN_PROGRESS_PAGE2': return '#cddb00ff';
 
       default: return '#9e9e9e'; // สีเทาเป็นค่าเริ่มต้น
     }

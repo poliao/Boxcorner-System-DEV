@@ -93,4 +93,13 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "cancel_remarks")
     private String cancelRemarks;
 
+    @Column(name = "job_id")
+    private String jobId;
+
+    @Column(name = "qt_id")
+    private String qtId;
+
+    @Column(name = "decision_authority")
+    private String decisionAuthority;
+
 }

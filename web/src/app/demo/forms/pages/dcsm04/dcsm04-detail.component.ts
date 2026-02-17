@@ -38,6 +38,7 @@ export class Dcsm04DetailComponent implements OnInit {
   deadlineDate = new FormControl('');
   deadlineTime = new FormControl('');
   remarks = new FormControl('');
+  decisionAuthority = new FormControl('', Validators.required);
   designDate = new FormControl('', Validators.required);
   designTime = new FormControl('', Validators.required);
   designRemarks = new FormControl('', Validators.required);
@@ -77,7 +78,6 @@ export class Dcsm04DetailComponent implements OnInit {
       this.mainForm.controls['isCreateSample'].disable({ emitEvent: false });
       this.mainForm.controls['note'].disable({ emitEvent: false });
       this.mainForm.controls['customerName'].disable({ emitEvent: false });
-      this.mainForm.controls['typeJob'].disable({ emitEvent: false });
       this.mainForm.controls['jobType'].disable({ emitEvent: false });
       this.mainForm.controls['printType'].disable({ emitEvent: false });
       this.mainForm.controls['paperType'].disable({ emitEvent: false });
@@ -128,7 +128,6 @@ export class Dcsm04DetailComponent implements OnInit {
       rowVersion: [null],
       jobId: [null, Validators.required],
       qtId: [null],
-      typeJob: [null, Validators.required],
       print2Page: [false],
     });
 
@@ -385,6 +384,7 @@ export class Dcsm04DetailComponent implements OnInit {
     this.usedFile.setValue('');
     this.colorSample.setValue('');
     this.remarks.setValue('');
+    this.decisionAuthority.setValue('');
     this.showApproveModal = true;
   }
 
@@ -415,7 +415,8 @@ export class Dcsm04DetailComponent implements OnInit {
       status: 'รอผู้รับผิดชอบอนุมัติ',
       sampleOrderId: this.mainForm.getRawValue().id,
       customerName: this.mainForm.getRawValue().customerName,
-      dataDalivery: false
+      dataDalivery: false,
+      decisionAuthority: this.decisionAuthority.value
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',

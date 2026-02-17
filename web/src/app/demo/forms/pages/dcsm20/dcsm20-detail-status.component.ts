@@ -424,22 +424,28 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   }
 
   checkJob(id) {
-    if(this.productionForm.getRawValue().printingDate != null){
+    const printingDate = this.productionForm.getRawValue().printingDate;
+    const coatingDate = this.productionForm.getRawValue().coatingDate;
+    const stampingDate = this.productionForm.getRawValue().stampingDate;
+    const gluingDate = this.productionForm.getRawValue().gluingDate;
+    const qcDate = this.productionForm.getRawValue().qcDate;
+
+    if(printingDate && printingDate !== '' && printingDate !== null){
       this.setPrintJob(id);
-    }else if(this.productionForm.getRawValue().coatingDate != null){
+    }else if(coatingDate && coatingDate !== '' && coatingDate !== null){
       this.setCoatJob(id);
-    }else if(this.productionForm.getRawValue().stampingDate != null){
+    }else if(stampingDate && stampingDate !== '' && stampingDate !== null){
       this.setStampingJob(id);
-    }else if(this.productionForm.getRawValue().gluingDate != null){
+    }else if(gluingDate && gluingDate !== '' && gluingDate !== null){
       this.setGluingJob(id);
-    }else if(this.productionForm.getRawValue().qcDate != null){
+    }else if(qcDate && qcDate !== '' && qcDate !== null){
       this.setQcJob(id);
     }
   }
 
   setPrintJob(id) {
     const DataJob = {
-      id: '',
+      id: null,
       createdAt: new Date(),
       jobId: this.productionForm.getRawValue().jobId,
       deliveryDate: this.productionForm.getRawValue().printingDate,
@@ -483,8 +489,4 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   setQcJob(id){
     
   }
-
-
-
-
 }

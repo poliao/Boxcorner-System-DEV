@@ -18,17 +18,17 @@ public class PrintLog extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_id", nullable = false)
+    @JoinColumn(name = "job_id", nullable = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private PrintJob job;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "printer_id", nullable = false)
+    @JoinColumn(name = "printer_id", nullable = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Printer printer;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "print_side", nullable = false)
+    @Column(name = "print_side", nullable = true)
     private PrintSide printSide;
 
     @Enumerated(EnumType.STRING)
@@ -62,6 +62,8 @@ public class PrintLog extends BaseEntity {
     private Long meterSpecialEnd;
 
     // --- Paper Requisition ---
+    @Column(name = "operator_name")
+    private String operatorName;
 
     @Column(name = "paper_req_start", length = 50)
     private String paperReqStart;

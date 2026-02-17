@@ -18,6 +18,7 @@ import { V } from '@angular/cdk/scrolling-module.d-C_w4tIrZ';
 export class Dcsm25DetailComponent implements OnInit {
   printingForm: FormGroup;
   printingFormRecord: FormGroup;
+  printingFormRecord2: FormGroup;
   printingEndLog: FormGroup;
   id: string | null = null;
   isEditMode = false;
@@ -37,6 +38,8 @@ export class Dcsm25DetailComponent implements OnInit {
   ngOnInit() {
     this.createForm();
     this.createPrintingFormRecord();
+    this.createPrintingFormRecord2();
+
     this.fromPrintLogEnd();
 
     this.id = this.route.snapshot.paramMap.get('id');
@@ -152,19 +155,20 @@ export class Dcsm25DetailComponent implements OnInit {
     });
   }
 
-  private markPrintingFormTouched(): void {
-    Object.keys(this.printingFormRecord.controls).forEach(key => {
-      const control = this.printingFormRecord.get(key);
-      control?.markAsTouched();
+  createPrintingFormRecord2() {
+    this.printingFormRecord2 = this.fb.group({
+      jobId: [null],
+      printerId: [null],
+      printSide: [null],
+      logType: [null],
+      meterColorStart: [null],
+      meterBwStart: [null],
+      meterSpecialStart: [null],
+      paperReqStart: [null],
+      printerName: [null, Validators.required],
     });
   }
 
-  private markPrintingEndFormTouched(): void {
-    Object.keys(this.printingFormRecord.controls).forEach(key => {
-      const control = this.printingFormRecord.get(key);
-      control?.markAsTouched();
-    });
-  }
 
   updateProductionJob() {
     this.dcsm25Service.getByIdProductionJob(this.printingForm.getRawValue().productionJobId).subscribe((response) => {
@@ -202,6 +206,14 @@ export class Dcsm25DetailComponent implements OnInit {
     }
   }
 
+  chengePringterAuto2(printer: any) {
+    if (printer == 'Canon') {
+      this.printingFormRecord2.get('printerId')?.setValue(2);
+    } else {
+      this.printingFormRecord2.get('printerId')?.setValue(1);
+    }
+  }
+
   startPrintLog() {
     if (this.printingFormRecord.valid) {
       this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
@@ -231,12 +243,12 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   startPrintPage2Log() {
-    if (this.printingFormRecord.valid) {
-      this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
-      this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
-      this.printingFormRecord.get('logType')?.setValue('NORMAL');
-      this.printingFormRecord.get('printSide')?.setValue('BACK');
-      const recordData = this.printingFormRecord.value;
+    if (this.printingFormRecord2.valid) {
+      this.chengePringterAuto2(this.printingFormRecord2.getRawValue().printerName);
+      this.printingFormRecord2.get('jobId')?.setValue(this.printingForm.getRawValue().id);
+      this.printingFormRecord2.get('logType')?.setValue('NORMAL');
+      this.printingFormRecord2.get('printSide')?.setValue('BACK');
+      const recordData = this.printingFormRecord2.value;
       this.dcsm25Service.startPrintLog(recordData).subscribe({
         next: (responseLog) => {
           console.log(responseLog);
@@ -275,7 +287,7 @@ export class Dcsm25DetailComponent implements OnInit {
             this.dcsm25Service.save(response).subscribe({
               next: (response) => {
                 this.printingForm.patchValue(response);
-                if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus != 'PAUSED') {
+                if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus == 'COMPLETED') {
                   this.updateProductionJob();
                 }
               }
@@ -308,7 +320,7 @@ export class Dcsm25DetailComponent implements OnInit {
             this.dcsm25Service.save(response).subscribe({
               next: (response) => {
                 this.printingForm.patchValue(response);
-                if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus != 'PAUSED') {
+                if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus == 'COMPLETED') {
                   this.updateProductionJob();
                 }
               }

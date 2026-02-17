@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,7 +18,7 @@ import lombok.Data;
 @Entity
 @Table(name = "print_jobs")
 @Data
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class PrintJob extends BaseEntity {
 
     @Id
@@ -35,8 +37,9 @@ public class PrintJob extends BaseEntity {
     @Column(name = "customer_job_name", columnDefinition = "TEXT")
     private String customerJobName;
 
-    @Column(name = "job_status", length = 50)
-    private String jobStatus = "Pending";
+    @Enumerated(EnumType.STRING) 
+    @Column(name = "job_status")
+    private JobStatus jobStatus;
 
     @Column(name = "total_print_sheets")
     private Integer totalPrintSheets = 0;
@@ -64,16 +67,16 @@ public class PrintJob extends BaseEntity {
 
     @Column(name = "print_type")
     private String printType;
-    
+
     @Column(name = "paper_type")
     private String paperType;
-    
+
     @Column(name = "diecutting_type")
     private String diecuttingType;
 
     @Column(name = "coat_type")
     private String coatType;
-    
+
     @Column(name = "system_print")
     private String systemPrint;
 

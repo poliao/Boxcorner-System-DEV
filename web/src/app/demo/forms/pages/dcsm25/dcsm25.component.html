@@ -29,13 +29,13 @@
             <select class="form-select" [(ngModel)]="filterPrintStatus" name="filterPrintStatus"
               (change)="onSearchChange()">
               <option value="">สถานะพิมพ์ ทั้งหมด</option>
-              <option value="พิมพ์แล้ว">พิมพ์แล้ว</option>
-              <option value="กำลังพิมพ์">กำลังพิมพ์</option>
-              <option value="หยุดพิมพ์ชั่วคราว">หยุดพิมพ์ชั่วคราว</option>
-              <option value="หยุดพิมพ์หน้า2ชั่วคราว">หยุดพิมพ์หน้า2ชั่วคราว</option>
-              <option value="เริ่มพิมพ์ต่อหน้า2">เริ่มพิมพ์ต่อหน้า2</option>
-              <option value="กำลังพิมพ์หน้า2">กำลังพิมพ์หน้า2</option>
-              <option value="พิมพ์หน้า2แล้ว">พิมพ์หน้า2แล้ว</option>
+              <option value="PENDING">PENDING</option>
+              <option value="PAUSED">PAUSED</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="WAITPAGE2">WAITPAGE2</option>
+              <option value="PAUSED_PAGE2">PAUSED_PAGE2</option>
+              <option value="IN_PROGRESS_PAGE2">IN_PROGRESS_PAGE2</option>
+              <option value="COMPLETED">COMPLETED</option>
             </select>
           </div>
           <div class="col-12">
@@ -52,12 +52,12 @@
                   <mat-icon>refresh</mat-icon> ล้างค่า
                 </button>
               </div>
-              <!-- <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #ffa600;"
                   (click)="openCalibrateModal()">
                   <mat-icon>tune</mat-icon> Calibrate
                 </button>
-              </div> -->
+              </div>
             </div>
           </div>
         </div>
@@ -70,3 +70,54 @@
     (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
 </div>
+
+<!-- Calibrate Modal -->
+<div class="modal fade" [class.show]="showCalibrateModal" [style.display]="showCalibrateModal ? 'block' : 'none'"
+  tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Calibrate เครื่องพิมพ์</h5>
+        <button type="button" class="btn-close" (click)="closeCalibrateModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
+            <select class="form-select" [(ngModel)]="calibrateData.printerId" name="printerId" required>
+              <option value="2">Canon</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">ค่า 4 สี เริ่มต้น</label>
+            <input type="number" class="form-control" [(ngModel)]="calibrateData.meterColorStart" name="meterColorStart"
+              required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">ค่า 4 สี สิ้นสุด</label>
+            <input type="number" class="form-control" [(ngModel)]="calibrateData.meterColorEnd" name="meterColorEnd"
+              required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">ค่าขาวดำ เริ่มต้น</label>
+            <input type="number" class="form-control" [(ngModel)]="calibrateData.meterBwStart" name="meterBwStart"
+              required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">ค่าขาวดำ สิ้นสุด</label>
+            <input type="number" class="form-control" [(ngModel)]="calibrateData.meterBwEnd" name="meterBwEnd" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">หมายเหตุ</label>
+            <input type="text" class="form-control" [(ngModel)]="calibrateData.note" name="note">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCalibrateModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="submitCalibrate()">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showCalibrateModal" *ngIf="showCalibrateModal"></div>

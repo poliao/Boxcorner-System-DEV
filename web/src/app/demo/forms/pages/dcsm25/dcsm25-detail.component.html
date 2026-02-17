@@ -318,7 +318,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="printingFormRecord">
+        <form [formGroup]="printingFormRecord2">
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
@@ -328,7 +328,7 @@
               <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
               <input type="number" formControlName="meterBwStart" class="form-control">
             </div>
-            <div class="col-md-6" *ngIf="printingFormRecord.get('printerName')?.value === 'Ricoh'">
+            <div class="col-md-6" *ngIf="printingFormRecord2.get('printerName')?.value === 'Ricoh'">
               <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
               <input type="number" formControlName="meterSpecialStart" class="form-control">
             </div>

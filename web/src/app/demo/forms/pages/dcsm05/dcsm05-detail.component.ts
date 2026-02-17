@@ -403,6 +403,10 @@ export class Dcsm05DetailComponent implements OnInit {
         };
 
         this.mainForm.get('status')!.setValue('ขึ้นตัวอย่างแล้ว');
+        if (this.mainForm.getRawValue().machineName == true) {
+          data.printerName = 'Bluesky';
+        }
+
         this.dcsm05Service.savePrintJob(data).subscribe({
           next: (response) => {
             this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
@@ -589,7 +593,7 @@ export class Dcsm05DetailComponent implements OnInit {
           deliveryDate: this.mainForm.getRawValue().deliveryDate,
           deliveryTime: this.mainForm.getRawValue().deliveryTime,
           customerJobName: this.mainForm.getRawValue().customerName,
-          jobStatus: null,
+          jobStatus: 'PENDING',
           totalPrintSheets: null,
           productionQty: this.mainForm.getRawValue().quantity,
           printerName: this.mainForm.getRawValue().machineName,

@@ -53,6 +53,10 @@ public class ProductionOrderService {
             existingOrder.setCancelRemarks(productionOrder.getCancelRemarks());
 
             existingOrder.setUpdatedAt(LocalDate.now());
+            existingOrder.setJobId(productionOrder.getJobId());
+            existingOrder.setQtId(productionOrder.getQtId());
+            existingOrder.setDecisionAuthority(productionOrder.getDecisionAuthority());
+
 
             return productionOrderRepository.save(existingOrder);
         } else {

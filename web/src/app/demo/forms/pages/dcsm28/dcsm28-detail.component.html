@@ -1,0 +1,130 @@
+<div class="card">
+  <div class="card-header">
+    <div class="row align-items-center">
+      <div class="col-12 col-md-6">
+        <h1 class="mb-2 mb-md-0">การขาย</h1>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="d-grid d-md-flex justify-content-md-end gap-2">
+          <button mat-flat-button *ngIf="isEditMode && !hasQuotation" (click)="addQuotation()" style="background-color: #ff4800; color: white;">
+            <mat-icon>add</mat-icon> เพิ่มใบเสนอราคา
+          </button>
+          <button mat-flat-button *ngIf="isEditMode && hasQuotation" (click)="editQuotation()" style="background-color: #ff9800; color: white;">
+            <mat-icon>edit</mat-icon> แก้ไขใบเสนอราคา
+          </button>
+          <button mat-flat-button *ngIf="!isEditMode" (click)="onSave()" style="background-color: #1e1b4b; color: white;">
+            <mat-icon>save</mat-icon> บันทึก
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <form [formGroup]="activityForm">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">วันที่ </label>
+          <input type="date" formControlName="activityDate" class="form-control"
+            [class.is-invalid]="activityForm.get('activityDate')?.invalid && activityForm.get('activityDate')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า <span style="color: red;">*</span></label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า"
+            [class.is-invalid]="activityForm.get('customerName')?.invalid && activityForm.get('customerName')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ผู้ติดต่อ <span style="color: red;">*</span></label>
+          <input type="text" formControlName="contactPerson" class="form-control" placeholder="ชื่อผู้ติดต่อ"
+          [class.is-invalid]="activityForm.get('contactPerson')?.invalid && activityForm.get('contactPerson')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">เบอร์โทร/ช่องทางติดต่อ<span style="color: red;">*</span></label>
+          <input type="text" formControlName="contact" class="form-control" placeholder="เบอร์โทร/ช่องทางติดต่อ"
+          [class.is-invalid]="activityForm.get('contact')?.invalid && activityForm.get('contact')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ช่องทางพบ <span style="color: red;">*</span></label>
+          <select formControlName="contactChannel" class="form-select" [class.is-invalid]="activityForm.get('contactChannel')?.invalid && activityForm.get('contactChannel')?.touched">
+            <option value="">เลือกช่องทาง</option>
+            <option value="MsTeam">MsTeam</option>
+            <option value="ZOOM">ZOOM</option>
+            <option value="อีเมล">อีเมล</option>
+            <option value="โทร">โทร</option>
+            <option value="พบหน้างาน">พบหน้างาน</option>
+            <option value="Line">Line</option>
+            <option value="Facebook">Facebook</option>
+            <option value="Instagram">Instagram</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label font-weight-bold">วัตถุประสงค์ <span style="color: red;">*</span></label>
+          <textarea formControlName="objective" class="form-control" rows="3" placeholder="วัตถุประสงค์ของการติดต่อ" [class.is-invalid]="activityForm.get('objective')?.invalid && activityForm.get('objective')?.touched"></textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label font-weight-bold">ผลการพูดคุย <span style="color: red;">*</span></label>
+          <textarea formControlName="discussionResult" class="form-control" rows="3" placeholder="สรุปผลการพูดคุย" [class.is-invalid]="activityForm.get('discussionResult')?.invalid && activityForm.get('discussionResult')?.touched"></textarea>
+        </div>
+        <div class="col-md-6">
+          <div class="form-check">
+            <input type="checkbox" formControlName="isNewCustomer" class="form-check-input" id="isNewCustomer" >
+            <label class="form-check-label font-weight-bold" for="isNewCustomer" >
+             ลูกค้าใหม่
+            </label>
+          </div>
+        </div>
+       
+        <div class="col-12">
+          <label class="form-label font-weight-bold">นัดครั้งถัดไป</label>
+          <input formControlName="nextStep" class="form-control" rows="3" placeholder="นัดครั้งถัดไป">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Quotation Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showQuotationModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ hasQuotation ? 'แก้ไขใบเสนอราคา' : 'เพิ่มใบเสนอราคา' }}</h5>
+        <button type="button" class="btn-close" (click)="closeQuotationModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="quotationForm">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label font-weight-bold">เลขที่ใบเสนอราคา <span class="text-danger">*</span></label>
+              <input type="text" formControlName="quoteNumber" class="form-control" placeholder="QT-69001"
+                [class.is-invalid]="quotationForm.get('quoteNumber')?.invalid && quotationForm.get('quoteNumber')?.touched">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-weight-bold">ยอดขาย (บาท) <span class="text-danger">*</span></label>
+              <input type="number" formControlName="amount" class="form-control" placeholder="0.00" step="0.01"
+                [class.is-invalid]="quotationForm.get('amount')?.invalid && quotationForm.get('amount')?.touched">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-weight-bold">ต้นทุน (บาท)</label>
+              <input type="number" formControlName="cost" class="form-control" placeholder="0.00" step="0.01">
+            </div>
+            <div class="col-12">
+              <label class="form-label font-weight-bold">หมายเหตุ</label>
+              <textarea formControlName="remark" class="form-control" rows="3" placeholder="หมายเหตุเพิ่มเติม..."></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="row w-100 g-2">
+          <div class="col-12 col-md-6">
+            <button type="button" class="btn btn-secondary w-100" (click)="closeQuotationModal()">ยกเลิก</button>
+          </div>
+          <div class="col-12 col-md-6">
+            <button type="button" class="btn btn-success w-100" (click)="saveQuotation()">บันทึก</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -30,6 +30,7 @@ import { Dcsm23DetailResolver } from './demo/forms/pages/dcsm23/dcsm23-detail.re
 import { Dcsm24DetailResolver } from './demo/forms/pages/dcsm24/dcsm24-detail.resolver';
 import { Dcsm25DetailResolver } from './demo/forms/pages/dcsm25/dcsm25-detail.resolver';
 import { Dcsm26DetailResolver } from './demo/forms/pages/dcsm26/dcsm26-detail.resolver';
+import { Dcsm28DetailResolver } from './demo/forms/pages/dcsm28/dcsm28-detail.resolver';
 
 const routes: Routes = [
   {
@@ -464,7 +465,7 @@ const routes: Routes = [
         path: 'Dcsm23',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm23/dcsm23.component').then((c) => c.Dcsm23Component)
-      }, 
+      },
       {
         path: 'Dcsm24Detail/:id',
         canActivate: [MenuGuard],
@@ -501,7 +502,7 @@ const routes: Routes = [
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm25/dcsm25.component').then((c) => c.Dcsm25Component)
       }
-      ,{
+      , {
         path: 'Dcsm26Detail/:id',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm26/dcsm26-detail.component').then((c) => c.Dcsm26DetailComponent),
@@ -537,7 +538,24 @@ const routes: Routes = [
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm27/dcsm27.component').then((c) => c.Dcsm27Component)
       },
-      
+      {
+        path: 'Dcsm28Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm28/dcsm28-detail.component').then((c) => c.Dcsm28DetailComponent),
+        resolve: {
+          salesActivity: Dcsm28DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm28Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm28/dcsm28-detail.component').then((c) => c.Dcsm28DetailComponent)
+      },
+      {
+        path: 'Dcsm28',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm28/dcsm28.component').then((c) => c.Dcsm28Component)
+      },
     ]
   },
   {

@@ -63,6 +63,4 @@ public class DesignOrders extends BaseEntity {
     @Column(name = "customer_name")
     private String customerName;
 
-    @Column(name = "job_type")
-    private String jobType;
 }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.boxcorner.boxcorner.entity.BaseEntity.JobStatus;
 import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.repository.PrintJobRepository;
 
@@ -67,6 +68,7 @@ public class PrintJobService {
             
             return repository.save(existing);
         }
+        printJob.setJobStatus(JobStatus.PENDING);
         return repository.save(printJob);
     }
 
