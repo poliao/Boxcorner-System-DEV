@@ -84,7 +84,6 @@ export class Dcsm28DetailComponent implements OnInit {
     this.quotationForm = this.fb.group({
       quoteNumber: ['', Validators.required],
       amount: [null, Validators.required],
-      cost: [null],
       remark: ['']
     });
 

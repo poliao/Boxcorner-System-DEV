@@ -89,6 +89,7 @@ export class Dcsm08DetailComponent implements OnInit {
     this.mainForm.get('operatorName')?.disable();
     this.mainForm.get('remarks')?.disable();
     this.mainForm.get('customerName')?.disable();
+    this.mainForm.get('decisionAuthority')?.disable();
   }
 
   patchFormData(data: any): void {
