@@ -65,6 +65,7 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('folderName')?.enable();
       this.mainForm.get('remarks')?.enable();
       this.mainForm.get('customerName')?.enable();
+      this.mainForm.get('decisionAuthority')?.enable();
       this.isSave = true
     }
 
