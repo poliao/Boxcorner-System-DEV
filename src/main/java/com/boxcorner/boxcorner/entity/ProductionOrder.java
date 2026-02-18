@@ -102,4 +102,9 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "decision_authority")
     private String decisionAuthority;
 
+    @Column(name = "decision_authority_remarks")
+    private String decisionAuthorityRemarks;
+
+    @Column(name = "print2_page")
+    private Boolean print2Page;
 }

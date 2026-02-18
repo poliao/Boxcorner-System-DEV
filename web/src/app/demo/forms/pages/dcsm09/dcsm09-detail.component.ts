@@ -70,6 +70,7 @@ export class Dcsm09DetailComponent implements OnInit {
       postpone: [null],
       rowVersion: [null],
       decisionAuthority: [null],
+      decisionAuthorityRemarks: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -91,6 +92,8 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.get('remarks')?.disable();
     this.mainForm.get('inspector')?.disable();
     this.mainForm.get('customerName')?.disable();
+    this.mainForm.get('decisionAuthority')?.disable();
+    this.mainForm.get('decisionAuthorityRemarks')?.disable();
   }
 
   patchFormData(data: any): void {
@@ -102,6 +105,8 @@ export class Dcsm09DetailComponent implements OnInit {
     this.router.navigate(['/Dcsm20DetailStatus', this.mainForm.getRawValue().id], {
       state: {
         referenceId: this.mainForm.getRawValue().id,
+        decisionAuthority: this.mainForm.getRawValue().decisionAuthority,
+        decisionAuthorityRemarks: this.mainForm.getRawValue().decisionAuthorityRemarks
       }
     });
   }

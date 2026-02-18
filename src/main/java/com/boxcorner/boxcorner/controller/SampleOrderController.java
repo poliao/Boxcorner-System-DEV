@@ -232,6 +232,13 @@ public class SampleOrderController {
         return ResponseEntity.ok(
                 sampleOrderService.countBacklogStatus("อนุมัติขอเลื่อนส่ง", tokenService.getCurrentUser(httpRequest)));
     }
+    
+    @GetMapping("/countBacklogApproveShifAdmin")
+    public ResponseEntity<Integer> getUniqueStatusCheckAdmin(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(
+                sampleOrderService.countBacklogStatusAdmin("อนุมัติขอเลื่อนส่ง", tokenService.getCurrentUser(httpRequest)));
+    }
+    
 
     @GetMapping("/countBacklogNotApproveShif")
     public ResponseEntity<Integer> countBacklogNotApproveShif(HttpServletRequest httpRequest) {
@@ -291,10 +298,22 @@ public class SampleOrderController {
                 tokenService.getCurrentUser(httpRequest)));
     }
 
+    @GetMapping("/countBacklogApproveSampleAdmin")
+    public ResponseEntity<Integer> countBacklogApproveSampleAdmin(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatusAdmin("สำเร็จ รออนุมัติไปตารางรอผลิต",
+                tokenService.getCurrentUser(httpRequest)));
+    }
+
     @GetMapping("/countBacklogSampleCheck")
     public ResponseEntity<Integer> countBacklogSampleCheck(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(
                 sampleOrderService.countBacklogStatus("รอเจ้าของงานตรวจสอบ", tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countBacklogSampleCheckAdmin")
+    public ResponseEntity<Integer> countBacklogSampleCheckAdmin(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(
+                sampleOrderService.countBacklogStatusAdmin("รอเจ้าของงานตรวจสอบ", tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countEditSample")

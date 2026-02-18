@@ -16,6 +16,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm04',
@@ -68,7 +69,8 @@ export class Dcsm04Component implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private dcsm04Service: Dcsm04Service,
-    private statusColorService: StatusColorService
+    private statusColorService: StatusColorService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -214,6 +216,7 @@ export class Dcsm04Component implements OnInit {
 
   onFilterUnassigned() {
     this.searchForm.get('status')?.setValue('ขอเลื่อนวันส่ง');
+    this.searchForm.get('jobOwner')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -227,6 +230,7 @@ export class Dcsm04Component implements OnInit {
 
   onFilterApproveSample() {
     this.searchForm.get('status')?.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
+    this.searchForm.get('jobOwner')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 
@@ -240,6 +244,7 @@ export class Dcsm04Component implements OnInit {
 
   onFilterSampleCheck() {
     this.searchForm.get('status')?.setValue('รอเจ้าของงานตรวจสอบ');
+    this.searchForm.get('jobOwner')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }
 

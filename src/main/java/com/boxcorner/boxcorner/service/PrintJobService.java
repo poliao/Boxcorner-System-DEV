@@ -65,7 +65,9 @@ public class PrintJobService {
             existing.setPrint2Page(printJob.getPrint2Page());
             existing.setTypeJob(printJob.getTypeJob());
             existing.setProductionOrderId(printJob.getProductionOrderId());
-            
+            existing.setDecisionAuthority(printJob.getDecisionAuthority());
+            existing.setDecisionAuthorityRemarks(printJob.getDecisionAuthorityRemarks());
+
             return repository.save(existing);
         }
         printJob.setJobStatus(JobStatus.PENDING);

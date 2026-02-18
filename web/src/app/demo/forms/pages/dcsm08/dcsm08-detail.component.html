@@ -150,6 +150,11 @@
           <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">ปรับสีให้อยู่ในมาตรฐาน บันทึกเหตุผล</small>
         </label>
       </div>
+      <div class="mt-3" *ngIf="mainForm.get('decisionAuthority')?.value">
+        <label class="form-label font-weight-bold">หมายเหตุผู้มีอำนาจตัดสินใจ</label>
+        <textarea formControlName="decisionAuthorityRemarks" class="form-control" rows="2"
+          placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+      </div>
     </form>
   </div>
 </div>

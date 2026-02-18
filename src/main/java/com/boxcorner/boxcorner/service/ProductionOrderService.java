@@ -51,12 +51,12 @@ public class ProductionOrderService {
             existingOrder.setCustomerName(productionOrder.getCustomerName());
             existingOrder.setDataDalivery(productionOrder.getDataDalivery());
             existingOrder.setCancelRemarks(productionOrder.getCancelRemarks());
-
             existingOrder.setUpdatedAt(LocalDate.now());
             existingOrder.setJobId(productionOrder.getJobId());
             existingOrder.setQtId(productionOrder.getQtId());
             existingOrder.setDecisionAuthority(productionOrder.getDecisionAuthority());
-
+            existingOrder.setDecisionAuthorityRemarks(productionOrder.getDecisionAuthorityRemarks());
+            existingOrder.setPrint2Page(productionOrder.getPrint2Page());
 
             return productionOrderRepository.save(existingOrder);
         } else {

@@ -171,6 +171,10 @@ public class SampleOrderService {
         return sampleOrderRepository.countBacklogStatus(status,responsiblePerson);
     }
 
+    public Integer countBacklogStatusAdmin(String status ,String responsiblePerson) {
+        return sampleOrderRepository.countBacklogStatusAdmin(status,responsiblePerson);
+    }
+
     public Integer countStatus(String status) {
         return sampleOrderRepository.countStatus(status);
     }

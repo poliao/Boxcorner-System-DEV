@@ -74,15 +74,15 @@ export class Dcsm04Service {
   }
 
   countBacklogApproveShif(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShif`);
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShifAdmin`);
   }
 
   countBacklogApproveSample(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveSample`);
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveSampleAdmin`);
   }
 
   countBacklogSampleCheck(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSampleCheck`);
+    return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSampleCheckAdmin`);
   }
 
   getSobPAP(oid: number): Observable<any> {

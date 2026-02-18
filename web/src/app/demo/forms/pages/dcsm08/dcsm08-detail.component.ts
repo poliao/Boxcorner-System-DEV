@@ -69,6 +69,7 @@ export class Dcsm08DetailComponent implements OnInit {
       postpone: [null],
       rowVersion: [null],
       decisionAuthority: [null],
+      decisionAuthorityRemarks: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -90,6 +91,7 @@ export class Dcsm08DetailComponent implements OnInit {
     this.mainForm.get('remarks')?.disable();
     this.mainForm.get('customerName')?.disable();
     this.mainForm.get('decisionAuthority')?.disable();
+    this.mainForm.get('decisionAuthorityRemarks')?.disable();
   }
 
   patchFormData(data: any): void {

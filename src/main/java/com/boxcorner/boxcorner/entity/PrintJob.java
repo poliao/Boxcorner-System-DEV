@@ -103,4 +103,10 @@ public class PrintJob extends BaseEntity {
 
     @Column(name = "production_order_id")
     private String productionOrderId;
+
+    @Column(name = "decision_authority")
+    private String decisionAuthority;
+
+    @Column(name = "decision_authority_remarks")
+    private String decisionAuthorityRemarks;
 }

@@ -24,6 +24,10 @@ export class Dcsm26Service {
   saveRecordOS(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/printing-record-os/save`, data);
   }
+
+  savePrintLogOs(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/print-log-os/save`, data);
+  }
  
   getOrdersWithSearch(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
@@ -58,5 +62,17 @@ export class Dcsm26Service {
 
   getByIdSample(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
+  }
+
+  getByIdProductionJob(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
+  }
+
+  saveProductionJob(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/production-job/save`, data);
+  }
+
+   getLogById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/print-log-os/getById?logId=${id}`);
   }
 }

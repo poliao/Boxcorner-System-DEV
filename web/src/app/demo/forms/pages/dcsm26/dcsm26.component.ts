@@ -41,7 +41,7 @@ export class Dcsm26Component implements OnInit {
     { key: 'deliveryDate', label: 'วันที่ส่งพิมพ์', },
     { key: 'printerName', label: 'พิมพ์ที่', },
     { key: 'issample', label: 'เป็นตัวอย่าง' },
-    { key: 'jobStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this) },
+    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService)  },
   ];
 
 

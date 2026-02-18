@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Dcsm26Service } from './dcsm26.service';
 import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -89,6 +90,10 @@ export class Dcsm26DetailComponent implements OnInit {
       colorPrint: [null],
       paperGram: [null],
       productionJobId: [null],
+      print2Page: [false],
+      productionOrderId: [null],
+      decisionAuthority: [null],
+      decisionAuthorityRemarks: [null]
     });
     this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -125,10 +130,12 @@ export class Dcsm26DetailComponent implements OnInit {
     this.printingForm.get('systemPrint')?.disable();
     this.printingForm.get('colorPrint')?.disable();
     this.printingForm.get('paperGram')?.disable();
+    this.printingForm.get('decisionAuthority')?.disable();
   }
 
   createChecklistForm() {
     this.checklistForm = this.fb.group({
+      machineType: [''],
       waterTemp: [''],
       ipaValue: [''],
       conductivity: [''],
@@ -186,10 +193,11 @@ export class Dcsm26DetailComponent implements OnInit {
   }
 
   checkbntPrint() {
-    if (this.printingForm.get('jobStatus')?.value === '' || this.printingForm.get('jobStatus')?.value === null) {
+    const status = this.printingForm.get('jobStatus')?.value;
+    if (status === '' || status === null || status === 'PENDING') {
       this.isInPrint = true;
       this.isPrint = false;
-    } else if (this.printingForm.get('jobStatus')?.value === 'กำลังพิมพ์') {
+    } else if (status === 'IN_PROGRESS') {
       this.isPrint = true;
       this.isInPrint = false;
     } else {
@@ -248,86 +256,76 @@ export class Dcsm26DetailComponent implements OnInit {
   submitChecklist(status) {
     if (this.printingForm.valid) {
       this.loadingService.show();
+
+      // Set job status before saving
       if (status === 'inPrint') {
-        this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์');
+        this.printingForm.get('jobStatus')?.setValue('IN_PROGRESS');
+      } else if (status === 'Print') {
+        this.printingForm.get('jobStatus')?.setValue('COMPLETED');
       }
-      this.dcsm26Service.save(this.printingForm.getRawValue()).subscribe({
+
+      this.saveRecordOs().subscribe({
         next: (response) => {
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ');
-          this.router.navigate(['/Dcsm26']);
+          this.printingForm.get('printingRecordId')?.setValue(response.id);
+          this.dcsm26Service.save(this.printingForm.getRawValue()).subscribe({
+            next: (response) => {
+              this.loadingService.hide();
+              this.showChecklistModal = false;
+              this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ');
+              this.checkbntPrint();
+              this.printingForm.patchValue(response);
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+            }
+          });
         },
         error: (error) => {
           this.loadingService.hide();
-          this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+          this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึก Log');
         }
       });
-      this.saveRecordOs()
-      this.checkbntPrint();
     } else {
       this.markFormGroupTouched();
       this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
     }
   }
 
-  saveRecordOs() {
+  saveRecordOs(): Observable<any> {
     const checklist = this.checklistForm.value;
     const form = this.printingForm.getRawValue();
 
     const data = {
-      startDatetime: new Date().toISOString(),
-      jobNumber: form.jobId,
-      customerName: form.customerJobName,
-      machineName: form.printerName,
-      technicianName: form.printingResponsible,
-      paperType: form.paperType,
-      paperGram: form.paperGram,
-      paperLot: null,
-      waterTempCelsius: checklist.waterTemp,
+      jobId: form.id,
+      machineName: checklist.machineType,
+      tempFountain: checklist.waterTemp,
       ipaPercent: checklist.ipaValue,
-      conductivityUs: checklist.conductivity,
-      airPressureBar: checklist.airPressure,
-      hasCmyk: checklist.hasCMYK,
-      hasSpecialColor: checklist.hasSpecial,
-      inkAgeType: checklist.isNewInk ? 'NEW' : (checklist.isOldInk ? 'OLD' : null),
-      clotNo: checklist.cLotNo,
+      conductivity: checklist.conductivity,
+      airPressure: checklist.airPressure,
+      flagHasCmyk: checklist.hasCMYK,
+      flagSpecialColor: checklist.hasSpecial,
+      flagInkNew: checklist.isNewInk,
+      flagInkOld: checklist.isOldInk,
+      clot: checklist.cLotNo,
       cbrand: checklist.cBrand,
-      mlotNo: checklist.mLotNo,
+      mlot: checklist.mLotNo,
       mbrand: checklist.mBrand,
-      ylotNo: checklist.yLotNo,
+      ylot: checklist.yLotNo,
       ybrand: checklist.yBrand,
-      klotNo: checklist.kLotNo,
+      klot: checklist.kLotNo,
       kbrand: checklist.kBrand,
-      isPlatePerfect: checklist.plateCondition,
-      isBlanketOk: checklist.rubberCondition,
-      isMachineCleaned: checklist.cleanedBed,
-      colorReferenceSource: checklist.colorMatchProof ? 'PROOF' :
-        (checklist.colorMatchDigital ? 'DIGITAL' :
-          (checklist.colorMatchPrevious ? 'PREVIOUS' : null)),
-      decisionAuthority: checklist.colorNotSerious ? 'TECHNICIAN' : null,
-      deciderName: form.printingResponsible,
-      decisionRemark: null,
-      createdAt: new Date().toISOString()
+      checkPlateCondition: checklist.plateCondition,
+      checkBlanketCondition: checklist.rubberCondition,
+      checkMachineWashed: checklist.cleanedBed,
+      refProof: checklist.colorMatchProof,
+      refDigital: checklist.colorMatchDigital,
+      refOldJob: checklist.colorMatchPrevious,
+      refNotSerious: checklist.colorNotSerious,
+      status: 'RUNNING',
     };
 
-    this.dcsm26Service.saveRecordOS(data).subscribe({
-      next: (response) => {
-        this.showChecklistModal = false;
-      },
-      error: (error) => {
-        console.error('Error saving printing record:', error);
-      }
-    });
-  }
-
-  updateSampleStatus() {
-    this.dcsm26Service.getByIdSample(this.printingForm.getRawValue().sampleId).subscribe((response) => {
-      response.status = 'Proofสำเร็จ รออนุมัติไปตารางรอผลิต';
-      this.dcsm26Service.saveSample(response).subscribe((response) => {
-        this.loadingService.hide();
-        this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
-      })
-    })
+    return this.dcsm26Service.savePrintLogOs(data);
   }
 
   updatePrintStatus(status: string): void {
@@ -343,14 +341,22 @@ export class Dcsm26DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        if (status === 'Print') {
-          this.printingForm.get('jobStatus')?.setValue('พิมพ์แล้ว');
-        }
-        if (this.printingForm.getRawValue().issample == true) {
-          this.updateSampleStatus()
+        if (status === 'Print' && this.printingForm.getRawValue().print2Page != true) {
+          this.printingForm.get('jobStatus')?.setValue('COMPLETED');
+        } else {
+          this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
         }
         const data = this.printingForm.getRawValue();
+        this.dcsm26Service.getLogById(this.printingForm.getRawValue().printingRecordId).subscribe((response) => {
+          const now = new Date();
+          const offset = 7 * 60 * 60 * 1000;
+          response.endTime = new Date(now.getTime() + offset);
+          this.dcsm26Service.savePrintLogOs(response).subscribe({next: () => {}});
+        })
         this.dcsm26Service.save(data).subscribe((response) => {
+          if (this.printingForm.getRawValue().print2Page != true) {
+            this.updateProductionJob()
+          }
           this.checkbntPrint();
           this.printingForm.patchValue(response);
           this.loadingService.hide();
@@ -358,8 +364,105 @@ export class Dcsm26DetailComponent implements OnInit {
         })
       }
     });
-
   }
 
+  getDecisionAuthorityLabel(): string {
+    const value = this.printingForm.get('decisionAuthority')?.value;
+    const labels = {
+      'customerOnSite': 'ลูกค้าเข้าดูงานหน้างาน',
+      'sampleToCustomer': 'ขึ้นตัวอย่างส่งลูกค้าตรวจ',
+      'salesDecision': 'เซลล์ตัดสินใจแทนลูกค้า',
+      'planningDecision': 'ฝ่ายแผนตัดสินใจ',
+      'operatorQaDecision': 'ช่างพิมพ์ + QA ร่วมกัน'
+    };
+    return labels[value] || '';
+  }
 
+  getDecisionAuthorityBadge(): string {
+    const value = this.printingForm.get('decisionAuthority')?.value;
+    const badges = {
+      'customerOnSite': 'ลูกค้า',
+      'sampleToCustomer': 'ลูกค้า',
+      'salesDecision': 'เซลล์',
+      'planningDecision': 'ฝ่ายแผน',
+      'operatorQaDecision': 'ช่าง/QA'
+    };
+    return badges[value] || '';
+  }
+
+  getDecisionAuthorityDescription(): string {
+    const value = this.printingForm.get('decisionAuthority')?.value;
+    const descriptions = {
+      'customerOnSite': 'รันตามที่ลูกค้าอนุมัติหน้าแท่น',
+      'sampleToCustomer': 'รันตามที่ลูกค้าอนุมัติหน้าแท่น',
+      'salesDecision': 'รันตามคำสั่งเซลล์ ไม่ปรับนอกคำสั่ง',
+      'planningDecision': 'รันตามใบปรู๊ฟและมาตรฐาน',
+      'operatorQaDecision': 'ปรับสีให้อยู่ในมาตรฐาน บันทึกเหตุผล'
+    };
+    return descriptions[value] || '';
+  }
+
+  getDecisionAuthorityColor(): string {
+    const value = this.printingForm.get('decisionAuthority')?.value;
+    const colors = {
+      'customerOnSite': '#0d6efd',
+      'sampleToCustomer': '#198754',
+      'salesDecision': '#ffc107',
+      'planningDecision': '#6c757d',
+      'operatorQaDecision': '#dc3545'
+    };
+    return colors[value] || '#6c757d';
+  }
+
+  getDecisionAuthorityClass(): string {
+    const value = this.printingForm.get('decisionAuthority')?.value;
+    const classes = {
+      'customerOnSite': 'text-primary',
+      'sampleToCustomer': 'text-success',
+      'salesDecision': 'text-warning',
+      'planningDecision': 'text-secondary',
+      'operatorQaDecision': 'text-danger'
+    };
+    return classes[value] || 'text-secondary';
+  }
+
+  getDecisionAuthorityBadgeClass(): string {
+    const value = this.printingForm.get('decisionAuthority')?.value;
+    const classes = {
+      'customerOnSite': 'bg-info text-dark',
+      'sampleToCustomer': 'bg-info text-dark',
+      'salesDecision': 'bg-warning text-dark',
+      'planningDecision': 'bg-secondary',
+      'operatorQaDecision': 'bg-danger'
+    };
+    return classes[value] || 'bg-secondary';
+  }
+
+  updateProductionJob() {
+    this.dcsm26Service.getByIdProductionJob(this.printingForm.getRawValue().productionJobId).subscribe((response) => {
+      if (response.coatingDate != null) {
+        response.printStatus = 'กำลังเคลือบ';
+        this.sendToProductJob(response);
+      } else if (response.stampingDate != null) {
+        response.printStatus = 'กำลังปั้ม';
+        this.sendToProductJob(response);
+      } else if (response.gluingDate != null) {
+        response.printStatus = 'กำลังปะ';
+        this.sendToProductJob(response);
+      } else if (response.qcDate != null) {
+        response.printStatus = 'กำลังQc';
+        this.sendToProductJob(response);
+      }
+    })
+  }
+
+  sendToProductJob(data: any) {
+    this.dcsm26Service.saveProductionJob(data).subscribe({
+      next: (response) => {
+      },
+      error: (error) => {
+        this.sweetAlert.error('Error', error.error);
+      }
+    });
+  }
 }

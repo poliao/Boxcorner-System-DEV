@@ -66,9 +66,10 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('remarks')?.enable();
       this.mainForm.get('customerName')?.enable();
       this.mainForm.get('decisionAuthority')?.enable();
+      this.mainForm.get('decisionAuthorityRemarks')?.enable();
+      this.mainForm.get('print2Page')?.enable();
       this.isSave = true
     }
-
   }
 
   initForm(): void {
@@ -100,7 +101,9 @@ export class Dcsm06DetailComponent implements OnInit {
       dataDalivery: [false],
       postpone: [null],
       rowVersion: [null],
-      decisionAuthority: [null]
+      decisionAuthority: [null],
+      decisionAuthorityRemarks: [null],
+      print2Page: [false],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -124,6 +127,9 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('inspector')?.disable({ emitEvent: false });
     this.mainForm.get('customerName')?.disable({ emitEvent: false });
     this.mainForm.get('cancelRemarks')?.disable({ emitEvent: false });
+    this.mainForm.get('decisionAuthority')?.disable({ emitEvent: false });
+    this.mainForm.get('decisionAuthorityRemarks')?.disable({ emitEvent: false });
+    this.mainForm.get('print2Page')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -251,5 +257,10 @@ export class Dcsm06DetailComponent implements OnInit {
     });
   }
 
-
+  clearDecisionAuthority() {
+    this.mainForm.patchValue({
+      decisionAuthority: null,
+      decisionAuthorityRemarks: null
+    });
+  }
 }

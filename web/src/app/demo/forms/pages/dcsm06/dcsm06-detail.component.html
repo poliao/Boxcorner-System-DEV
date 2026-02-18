@@ -99,6 +99,10 @@
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="remarks" class="form-control" >
         </div>
+        <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="print2Page"
+              class="form-check-input" id="print2Page">
+            <label class="form-check-label" for="print2Page">พิมพ์ 2 หน้า </label>
+          </div>
         <div *ngIf="isCancelRemarks" class="col-md-12">
           <label class="form-label font-weight-bold">หมายเหตุที่ยกเลิกงาน</label>
           <input type="text" formControlName="cancelRemarks" class="form-control">
@@ -114,10 +118,13 @@
 
   <!-- Decision Authority Card -->
   <div class="card total-income-card warning overflow-hidden mt-3">
-    <div class="card-header" style="background-color: #1e1b4b; color: white; padding: 15px;">
+    <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #1e1b4b; color: white; padding: 15px;">
       <h6 class="mb-0 font-weight-bold">
         <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
       </h6>
+      <button *ngIf="mainForm.get('decisionAuthority')?.value" type="button" class="btn btn-sm btn-light" (click)="clearDecisionAuthority()">
+        <i class="fas fa-times me-1"></i>ล้างค่า
+      </button>
     </div>
     <div class="card-body" style="padding: 15px;">
       <form [formGroup]="mainForm">
@@ -152,6 +159,10 @@
             <span class="badge bg-danger mt-1" style="font-size: 0.7rem;">ช่าง/QA</span>
             <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">ปรับสีให้อยู่ในมาตรฐาน บันทึกเหตุผล</small>
           </label>
+        </div>
+        <div class="mt-3" *ngIf="mainForm.get('decisionAuthority')?.value">
+          <label class="form-label font-weight-bold">หมายเหตุผู้มีอำนาจตัดสินใจ</label>
+          <textarea formControlName="decisionAuthorityRemarks" class="form-control" rows="2" placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
         </div>
       </form>
     </div>
