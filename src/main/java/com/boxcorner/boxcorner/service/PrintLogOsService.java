@@ -1,7 +1,6 @@
 package com.boxcorner.boxcorner.service;
 
 import com.boxcorner.boxcorner.entity.PrintLogOs;
-import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.repository.PrintLogOsRepository;
 import com.boxcorner.boxcorner.repository.PrintJobRepository;
 import lombok.RequiredArgsConstructor;

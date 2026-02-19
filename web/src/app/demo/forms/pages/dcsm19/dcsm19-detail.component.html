@@ -13,6 +13,15 @@
           <input type="text" formControlName="id" class="form-control">
         </div>
         <div class="col-md-6">
+          <label class="form-label font-weight-bold">JobId <span style="color: red;">*</span></label>
+          <input type="text" formControlName="jobId" class="form-control"
+            [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">QtId</label>
+          <input type="text" formControlName="qtId" class="form-control">
+        </div>
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">

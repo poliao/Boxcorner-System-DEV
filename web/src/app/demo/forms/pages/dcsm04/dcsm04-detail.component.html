@@ -45,7 +45,7 @@
         <div class="col-md-6">
           <label class="form-label font-weight-bold">JobId <span style="color: red;">*</span></label>
           <input type="text" formControlName="jobId" class="form-control"
-          [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
+            [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">QtId</label>
@@ -114,7 +114,7 @@
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <input type="text" formControlName="note" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
         </div>
-        <div class="col-md-">
+        <div class="col-md-12">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
               class="form-check-input" id="isCreateSampleSwitch">
             <label class="form-check-label" for="isCreateSampleSwitch">ขึ้นตัวอย่าง </label>
@@ -182,7 +182,7 @@
       <div class="modal-body">
         <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">ใช้ไฟล์ <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">ใช้ไฟล์ <span style="color: red;">*</span></label>
             <input type="text" class="form-control" [formControl]="usedFile"
               [class.is-invalid]="usedFile.invalid && usedFile.touched">
           </div>
@@ -208,54 +208,69 @@
 
         <div class="row mb-3">
           <div class="col-12">
-            <label class="form-label font-weight-bold">เงื่อนไขการรันงาน (ผู้มีอำนาจตัดสินใจ) <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">หมายเหตุ </label>
+            <textarea class="form-control" rows="3" [formControl]="remarks" placeholder="หมายเหตุเพิ่มเติม..."
+              [class.is-invalid]="remarks.invalid && remarks.touched"></textarea>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">เงื่อนไขการรันงาน (ผู้มีอำนาจตัดสินใจ) </label>
             <div class="border rounded p-3" style="background-color: #f8f9fa;">
               <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="customerOnSite" id="customerOnSite">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="customerOnSite"
+                  id="customerOnSite">
                 <label class="form-check-label" for="customerOnSite">
                   <strong>ลูกค้าเข้าดูงานหน้างาน</strong> <span class="text-muted">(ผู้ตัดสินใจ: ลูกค้า)</span><br>
                   <small class="text-muted">รันตามที่ลูกค้าอนุมัติหน้าแท่น ถือว่ายอมรับสภาพงานขณะนั้น</small>
                 </label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="sampleToCustomer" id="sampleToCustomer">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="sampleToCustomer"
+                  id="sampleToCustomer">
                 <label class="form-check-label" for="sampleToCustomer">
-                  <strong>ขึ้นตัวอย่างหน้าแท่นส่งให้ลูกค้าตรวจ</strong> <span class="text-muted">(ผู้ตัดสินใจ: ลูกค้า)</span><br>
+                  <strong>ขึ้นตัวอย่างหน้าแท่นส่งให้ลูกค้าตรวจ</strong> <span class="text-muted">(ผู้ตัดสินใจ:
+                    ลูกค้า)</span><br>
                   <small class="text-muted">รันตามที่ลูกค้าอนุมัติหน้าแท่น ถือว่ายอมรับสภาพงานขณะนั้น</small>
                 </label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="salesDecision" id="salesDecision">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="salesDecision"
+                  id="salesDecision">
                 <label class="form-check-label" for="salesDecision">
                   <strong>เซลล์ตัดสินใจแทนลูกค้า</strong> <span class="text-muted">(ผู้ตัดสินใจ: เซลล์)</span><br>
                   <small class="text-muted">รันตามคำสั่งเซลล์ ช่างและ QA ไม่ปรับนอกเหนือคำสั่ง</small>
                 </label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="planningDecision" id="planningDecision">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="planningDecision"
+                  id="planningDecision">
                 <label class="form-check-label" for="planningDecision">
                   <strong>ฝ่ายแผนตัดสินใจ</strong> <span class="text-muted">(ผู้ตัดสินใจ: ฝ่ายแผน)</span><br>
                   <small class="text-muted">รันตามใบปรู๊ฟและมาตรฐานโรงงาน</small>
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="technicianQaDecision" id="technicianQaDecision">
-                <label class="form-check-label" for="technicianQaDecision">
-                  <strong>ช่างพิมพ์ + QA ตัดสินใจร่วมกัน</strong> <span class="text-muted">(ผู้ตัดสินใจ: ช่างพิมพ์ / QA)</span><br>
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority"
+                  value="operatorQaDecision" id="operatorQaDecision">
+                <label class="form-check-label" for="operatorQaDecision">
+                  <strong>ช่างพิมพ์ + QA ตัดสินใจร่วมกัน</strong> <span class="text-muted">(ผู้ตัดสินใจ: ช่างพิมพ์ /
+                    QA)</span><br>
                   <small class="text-muted">ปรับสีให้อยู่ในกรอบมาตรฐานโรงงาน ต้องบันทึกเหตุผล</small>
                 </label>
               </div>
             </div>
           </div>
         </div>
-
         <div class="row mb-3">
           <div class="col-12">
-            <label class="form-label font-weight-bold">หมายเหตุ </label>
-            <textarea class="form-control" rows="3" [formControl]="remarks" placeholder="หมายเหตุเพิ่มเติม..."
-              [class.is-invalid]="remarks.invalid && remarks.touched"></textarea>
+            <label class="form-label font-weight-bold">หมายเหตุเงื่อนไขการรันงาน </label>
+            <textarea class="form-control" rows="3" [formControl]="decisionAuthorityRemarks" placeholder="หมายเหตุเพิ่มเติม..."
+              [class.is-invalid]="decisionAuthorityRemarks.invalid && decisionAuthorityRemarks.touched"></textarea>
           </div>
         </div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>

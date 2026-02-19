@@ -7,6 +7,7 @@ import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm26-detail',
@@ -31,7 +32,8 @@ export class Dcsm26DetailComponent implements OnInit {
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -131,27 +133,28 @@ export class Dcsm26DetailComponent implements OnInit {
     this.printingForm.get('colorPrint')?.disable();
     this.printingForm.get('paperGram')?.disable();
     this.printingForm.get('decisionAuthority')?.disable();
+    this.printingForm.get('print2Page')?.disable();
   }
 
   createChecklistForm() {
     this.checklistForm = this.fb.group({
-      machineType: [''],
-      waterTemp: [''],
-      ipaValue: [''],
-      conductivity: [''],
-      airPressure: [''],
+      machineType: [null],
+      waterTemp: [null],
+      ipaValue: [null],
+      conductivity: [null],
+      airPressure: [null],
       hasCMYK: [false],
       hasSpecial: [false],
       isNewInk: [false],
       isOldInk: [false],
-      cLotNo: [''],
-      cBrand: [''],
-      mLotNo: [''],
-      mBrand: [''],
-      yLotNo: [''],
-      yBrand: [''],
-      kLotNo: [''],
-      kBrand: [''],
+      cLotNo: [null],
+      cBrand: [null],
+      mLotNo: [null],
+      mBrand: [null],
+      yLotNo: [null],
+      yBrand: [null],
+      kLotNo: [null],
+      kBrand: [null],
       plateCondition: [false],
       rubberCondition: [false],
       cleanedBed: [false],
@@ -159,6 +162,8 @@ export class Dcsm26DetailComponent implements OnInit {
       colorMatchDigital: [false],
       colorMatchPrevious: [false],
       colorNotSerious: [false],
+      printSide: [null],
+      status: [null],
     });
   }
 
@@ -213,7 +218,6 @@ export class Dcsm26DetailComponent implements OnInit {
           this.recipeList = data;
         },
         error: (err) => {
-          console.error('Error loading recipes:', err);
         }
       });
     }
@@ -257,13 +261,15 @@ export class Dcsm26DetailComponent implements OnInit {
     if (this.printingForm.valid) {
       this.loadingService.show();
 
-      // Set job status before saving
       if (status === 'inPrint') {
         this.printingForm.get('jobStatus')?.setValue('IN_PROGRESS');
-      } else if (status === 'Print') {
-        this.printingForm.get('jobStatus')?.setValue('COMPLETED');
+        this.checklistForm.get('printSide')?.setValue('FRONT');
+        this.checklistForm.get('status')?.setValue('RUNNING');
+      } else if (status === 'WAITPAGE2') {
+        this.printingForm.get('jobStatus')?.setValue('IN_PROGRESS_PAGE2');
+        this.checklistForm.get('printSide')?.setValue('BACK');
+        this.checklistForm.get('status')?.setValue('RUNNING');
       }
-
       this.saveRecordOs().subscribe({
         next: (response) => {
           this.printingForm.get('printingRecordId')?.setValue(response.id);
@@ -322,7 +328,9 @@ export class Dcsm26DetailComponent implements OnInit {
       refDigital: checklist.colorMatchDigital,
       refOldJob: checklist.colorMatchPrevious,
       refNotSerious: checklist.colorNotSerious,
-      status: 'RUNNING',
+      status: checklist.status,
+      printSide: checklist.printSide,
+      operatorName: this.authService.getUserFromToken().sub
     };
 
     return this.dcsm26Service.savePrintLogOs(data);
@@ -341,15 +349,16 @@ export class Dcsm26DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        if (status === 'Print' && this.printingForm.getRawValue().print2Page != true) {
+        if (status === 'Print' && this.printingForm.getRawValue().print2Page != true || status === 'IN_PROGRESS_PAGE2') {
           this.printingForm.get('jobStatus')?.setValue('COMPLETED');
-        } else {
+        } else if (status === 'Print' && this.printingForm.getRawValue().print2Page == true) {
           this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
         }
         const data = this.printingForm.getRawValue();
         this.dcsm26Service.getLogById(this.printingForm.getRawValue().printingRecordId).subscribe((response) => {
           const now = new Date();
           const offset = 7 * 60 * 60 * 1000;
+          response.status = 'COMPLETED';
           response.endTime = new Date(now.getTime() + offset);
           this.dcsm26Service.savePrintLogOs(response).subscribe({next: () => {}});
         })

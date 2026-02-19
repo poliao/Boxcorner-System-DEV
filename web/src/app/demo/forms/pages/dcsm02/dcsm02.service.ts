@@ -104,4 +104,8 @@ export class Dcsm02Service {
   countBacklogCheck(): Observable<any> {
     return this.http.get(`${this.apiUrl}/designs/countBacklogCheck`);
   }
+
+  saveProduction(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/production/save`, data);
+  }
 }

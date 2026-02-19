@@ -7,21 +7,37 @@
             style="background-color: #1e1b4b;">
             บันทึกข้อมูล
           </button>
-          <button *ngIf="isPostPone == true" (click)="onKeepPostPoneDeadline()" type="button" class="btn text-white px-5 shadow-sm"
-            style="background-color: #1e1b4b;">
+          <button *ngIf="isPostPone == true" (click)="onKeepPostPoneDeadline()" type="button"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             รับทราบการเลื่อนเวลา
           </button>
         </div>
-
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-        <div *ngIf="isSampleOrderId == true" class="col-md-6">
+        <div *ngIf="isSampleOrderId == true" class="col-md-2">
           <label class="form-label font-weight-bold">อ้างอิงตารางตัวอย่าง</label>
           <input type="text" formControlName="sampleOrderId" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">JobId <span style="color: red;">*</span></label>
+          <input type="text" formControlName="jobId" class="form-control"
+            [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QtId</label>
+          <input type="text" formControlName="qtId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
+          <input type="text" formControlName="usedFile" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">สีตัวอย่าง</label>
+          <input type="text" formControlName="colorSample" class="form-control">
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
             [class.is-invalid]="mainForm.get('orderDate')?.invalid && mainForm.get('orderDate')?.touched">
@@ -31,65 +47,56 @@
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
-        <div class="col-md-3">
-          <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
-          <input type="text" formControlName="usedFile" class="form-control">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label font-weight-bold">สีตัวอย่าง</label>
-          <input type="text" formControlName="colorSample" class="form-control">
-        </div>
+        
         <div class="col-md-6">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
-          <input type="text" #deadlineDateInput class="form-control" 
-            (input)="onThaiDateInput($event, 'deadlineDate')" 
-            [value]="getThaiDateInput('deadlineDate')"
-            [disabled]="mainForm.get('deadlineDate')?.disabled"
+          <input type="text" #deadlineDateInput class="form-control" (input)="onThaiDateInput($event, 'deadlineDate')"
+            [value]="getThaiDateInput('deadlineDate')" [disabled]="mainForm.get('deadlineDate')?.disabled"
             placeholder="วว/ดด/ปป (13/01/26)" maxlength="8">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
           <input type="time" formControlName="deadlineTime" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
           <input type="text" class="form-control" [value]="getThaiDateInput('deliveryDate')" readonly disabled>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะงาน</label>
           <input type="text" formControlName="jobStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
           <input type="text" formControlName="processStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะแม่พิมพ์</label>
           <input type="text" formControlName="moldStatus" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
-          <input type="text" formControlName="operatorName" class="form-control" >
+          <input type="text" formControlName="operatorName" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบแม่พิมพ์</label>
-          <input type="text" formControlName="moldMakerName" class="form-control" >
+          <input type="text" formControlName="moldMakerName" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">เครื่องทำแม่พิมพ์</label>
-          <input type="text" formControlName="printingMachine" class="form-control" >
+          <input type="text" formControlName="printingMachine" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้ตรวจไฟล์</label>
-          <input type="text" formControlName="inspector" class="form-control" >
+          <input type="text" formControlName="inspector" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <input type="text" formControlName="jobType" class="form-control" >
+          <input type="text" formControlName="jobType" class="form-control">
         </div>
         <div class="col-md-9">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
@@ -97,17 +104,19 @@
         </div>
         <div class="col-md-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control" >
+          <input type="text" formControlName="remarks" class="form-control">
         </div>
-        <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="print2Page"
+        <div class="col-md-12">
+          <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="print2Page"
               class="form-check-input" id="print2Page">
             <label class="form-check-label" for="print2Page">พิมพ์ 2 หน้า </label>
           </div>
+        </div>
         <div *ngIf="isCancelRemarks" class="col-md-12">
           <label class="form-label font-weight-bold">หมายเหตุที่ยกเลิกงาน</label>
           <input type="text" formControlName="cancelRemarks" class="form-control">
         </div>
-        
+
         <!-- <div class="col-md-3">
           <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
           <input type="text" formControlName="updatedAt" class="form-control" >
@@ -118,54 +127,68 @@
 
   <!-- Decision Authority Card -->
   <div class="card total-income-card warning overflow-hidden mt-3">
-    <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #1e1b4b; color: white; padding: 15px;">
+    <div class="card-header d-flex justify-content-between align-items-center"
+      style="background-color: #1e1b4b; color: white; padding: 15px;">
       <h6 class="mb-0 font-weight-bold">
         <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
       </h6>
-      <button *ngIf="mainForm.get('decisionAuthority')?.value" type="button" class="btn btn-sm btn-light" (click)="clearDecisionAuthority()">
+      <button *ngIf="mainForm.get('decisionAuthority')?.value && isEditMode === false" type="button" class="btn btn-sm btn-light"
+        (click)="clearDecisionAuthority()">
         <i class="fas fa-times me-1"></i>ล้างค่า
       </button>
     </div>
     <div class="card-body" style="padding: 15px;">
       <form [formGroup]="mainForm">
         <div class="d-flex flex-wrap gap-2">
-          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="customerOnSite" style="border-left: 4px solid #0d6efd !important; min-width: 200px; cursor: pointer;">
-            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="customerOnSite" id="customerOnSite" style="top: 10px; right: 10px;">
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="customerOnSite"
+            style="border-left: 4px solid #0d6efd !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+              value="customerOnSite" id="customerOnSite" style="top: 10px; right: 10px;">
             <strong class="text-primary d-block" style="font-size: 0.9rem;">ลูกค้าเข้าดูงานหน้างาน</strong>
             <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
             <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
           </label>
-          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="sampleToCustomer" style="border-left: 4px solid #198754 !important; min-width: 200px; cursor: pointer;">
-            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="sampleToCustomer" id="sampleToCustomer" style="top: 10px; right: 10px;">
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="sampleToCustomer"
+            style="border-left: 4px solid #198754 !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+              value="sampleToCustomer" id="sampleToCustomer" style="top: 10px; right: 10px;">
             <strong class="text-success d-block" style="font-size: 0.9rem;">ขึ้นตัวอย่างส่งลูกค้าตรวจ</strong>
             <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
             <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
           </label>
-          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="salesDecision" style="border-left: 4px solid #ffc107 !important; min-width: 200px; cursor: pointer;">
-            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="salesDecision" id="salesDecision" style="top: 10px; right: 10px;">
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="salesDecision"
+            style="border-left: 4px solid #ffc107 !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+              value="salesDecision" id="salesDecision" style="top: 10px; right: 10px;">
             <strong class="text-warning d-block" style="font-size: 0.9rem;">เซลล์ตัดสินใจแทนลูกค้า</strong>
             <span class="badge bg-warning text-dark mt-1" style="font-size: 0.7rem;">เซลล์</span>
-            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามคำสั่งเซลล์ ไม่ปรับนอกคำสั่ง</small>
+            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามคำสั่งเซลล์
+              ไม่ปรับนอกคำสั่ง</small>
           </label>
-          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="planningDecision" style="border-left: 4px solid #6c757d !important; min-width: 200px; cursor: pointer;">
-            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="planningDecision" id="planningDecision" style="top: 10px; right: 10px;">
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="planningDecision"
+            style="border-left: 4px solid #6c757d !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+              value="planningDecision" id="planningDecision" style="top: 10px; right: 10px;">
             <strong class="text-secondary d-block" style="font-size: 0.9rem;">ฝ่ายแผนตัดสินใจ</strong>
             <span class="badge bg-secondary mt-1" style="font-size: 0.7rem;">ฝ่ายแผน</span>
             <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามใบปรู๊ฟและมาตรฐาน</small>
           </label>
-          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="operatorQaDecision" style="border-left: 4px solid #dc3545 !important; min-width: 200px; cursor: pointer;">
-            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority" value="operatorQaDecision" id="operatorQaDecision" style="top: 10px; right: 10px;">
+          <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="operatorQaDecision"
+            style="border-left: 4px solid #dc3545 !important; min-width: 200px; cursor: pointer;">
+            <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+              value="operatorQaDecision" id="operatorQaDecision" style="top: 10px; right: 10px;">
             <strong class="text-danger d-block" style="font-size: 0.9rem;">ช่างพิมพ์ + QA ร่วมกัน</strong>
             <span class="badge bg-danger mt-1" style="font-size: 0.7rem;">ช่าง/QA</span>
-            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">ปรับสีให้อยู่ในมาตรฐาน บันทึกเหตุผล</small>
+            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">ปรับสีให้อยู่ในมาตรฐาน
+              บันทึกเหตุผล</small>
           </label>
         </div>
         <div class="mt-3" *ngIf="mainForm.get('decisionAuthority')?.value">
           <label class="form-label font-weight-bold">หมายเหตุผู้มีอำนาจตัดสินใจ</label>
-          <textarea formControlName="decisionAuthorityRemarks" class="form-control" rows="2" placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+          <textarea formControlName="decisionAuthorityRemarks" class="form-control" rows="2"
+            placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
         </div>
       </form>
     </div>
   </div>
 </div>
-

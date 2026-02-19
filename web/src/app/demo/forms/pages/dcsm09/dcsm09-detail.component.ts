@@ -71,6 +71,7 @@ export class Dcsm09DetailComponent implements OnInit {
       rowVersion: [null],
       decisionAuthority: [null],
       decisionAuthorityRemarks: [null],
+      print2Page: [false],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -106,7 +107,8 @@ export class Dcsm09DetailComponent implements OnInit {
       state: {
         referenceId: this.mainForm.getRawValue().id,
         decisionAuthority: this.mainForm.getRawValue().decisionAuthority,
-        decisionAuthorityRemarks: this.mainForm.getRawValue().decisionAuthorityRemarks
+        decisionAuthorityRemarks: this.mainForm.getRawValue().decisionAuthorityRemarks,
+        print2Page: this.mainForm.getRawValue().print2Page
       }
     });
   }

@@ -101,6 +101,19 @@ export class Dcsm19DetailComponent implements OnInit {
     this.mainForm.controls['status'].disable({ emitEvent: false });
     this.mainForm.controls['note'].disable({ emitEvent: false });
     this.mainForm.controls['customerName'].disable({ emitEvent: false });
+    this.mainForm.controls['jobType'].disable({ emitEvent: false });
+    this.mainForm.controls['printType'].disable({ emitEvent: false });
+    this.mainForm.controls['paperType'].disable({ emitEvent: false });
+    this.mainForm.controls['diecuttingType'].disable({ emitEvent: false });
+    this.mainForm.controls['coatType'].disable({ emitEvent: false });
+    this.mainForm.controls['systemPrint'].disable({ emitEvent: false });
+    this.mainForm.controls['colorPrint'].disable({ emitEvent: false });
+    this.mainForm.controls['paperGram'].disable({ emitEvent: false });
+    this.mainForm.controls['jobId'].disable({ emitEvent: false });
+    this.mainForm.controls['qtId'].disable({ emitEvent: false });
+    this.mainForm.controls['typeJob'].disable({ emitEvent: false });
+    this.mainForm.controls['machineName'].disable({ emitEvent: false });
+    this.mainForm.controls['print2Page'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

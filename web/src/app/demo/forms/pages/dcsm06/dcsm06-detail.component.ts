@@ -101,9 +101,11 @@ export class Dcsm06DetailComponent implements OnInit {
       dataDalivery: [false],
       postpone: [null],
       rowVersion: [null],
-      decisionAuthority: [null],
+      decisionAuthority: [null, Validators.required],
       decisionAuthorityRemarks: [null],
       print2Page: [false],
+      jobId: [null, Validators.required],
+      qtId: [null, Validators.required],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -130,6 +132,8 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('decisionAuthority')?.disable({ emitEvent: false });
     this.mainForm.get('decisionAuthorityRemarks')?.disable({ emitEvent: false });
     this.mainForm.get('print2Page')?.disable({ emitEvent: false });
+    this.mainForm.get('jobId')?.disable({ emitEvent: false });
+    this.mainForm.get('qtId')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

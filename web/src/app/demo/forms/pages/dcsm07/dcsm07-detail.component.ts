@@ -94,6 +94,7 @@ export class Dcsm07DetailComponent implements OnInit {
       rowVersion: [null],
       decisionAuthority: [null],
       decisionAuthorityRemarks: [null],
+      print2Page: [false],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

@@ -36,6 +36,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   referenceId: any
   decisionAuthority: string = null;
   decisionAuthorityRemarks: string = null;
+  print2Page = false
 
   constructor(
     private fb: FormBuilder,
@@ -64,6 +65,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       this.referenceId = state.referenceId;
       this.decisionAuthority = state.decisionAuthority
       this.decisionAuthorityRemarks = state.decisionAuthorityRemarks
+      this.print2Page = state.print2Page
     }
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
@@ -472,7 +474,8 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       productionJobId: id,
       productionOrderId: this.referenceId,
       decisionAuthority: this.decisionAuthority,
-      decisionAuthorityRemarks: this.decisionAuthorityRemarks
+      decisionAuthorityRemarks: this.decisionAuthorityRemarks,
+      print2Page: this.print2Page
     }
     this.dcsm20Service.savePrintJob(DataJob).subscribe({
       next: (response) => {

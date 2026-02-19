@@ -3,9 +3,17 @@
     <div style="padding: 10px;">
       <form [formGroup]="designForm" class="row g-3">
         <div class="col-12 d-flex  gap-2 mt-4">
-          <button *ngIf="isBtnApprove == true" (click)="openApproveModal()" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isBtnApprove == true" (click)="Complete()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #2c005f;">
+            สำเร็จ
+          </button>
+          <button *ngIf="isBtnApprove == true" (click)="openApproveProductModal()" class="btn text-white px-5 shadow-sm"
             style="background-color: #16bd2c;">
-            อนุมัติ
+            อนุมัติไปตารางผลิต
+          </button>
+          <button *ngIf="isBtnApprove == true" (click)="openApproveSampleModal()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #050046;">
+            อนุมัติไปตารางสั่งงานตัวอย่าง
           </button>
           <button *ngIf="isBtnApprove == true" (click)="openEditModal()" class="btn text-white px-5 shadow-sm"
             style="background-color: #b61a1a;">
@@ -133,14 +141,6 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12">
-          <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <select [formControl]="jobType" class="form-select">
-            <option value="">เลือกประเภทงาน</option>
-            <option value="OS">OS</option>
-            <option value="OD">OD</option>
-          </select>
-        </div>
         <div class="mb-3">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
           <textarea class="form-control" rows="3" [formControl]="approveRemarks"
@@ -177,6 +177,131 @@
         <button type="button" class="btn btn-secondary" (click)="closeEditModal()">ยกเลิก</button>
         <button type="button" class="btn btn-danger" (click)="confirmEdit()" [disabled]="editNote.invalid">
           ยืนยันส่งแก้ไข
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showApproveProductModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">อนุมัติข้อมูลไปยัง ตารางคอนเฟิร์มรอผลิต</h5>
+        <button type="button" class="btn-close" (click)="closeApproveProductModal()"></button>
+      </div>
+      <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">รหัสงาน<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" [formControl]="jobId"
+              [class.is-invalid]="jobId.invalid && jobId.touched">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
+            <input type="text" class="form-control" [formControl]="usedFile"
+              [class.is-invalid]="usedFile.invalid && usedFile.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">ตัวอย่างสี</label>
+            <input type="text" class="form-control" [formControl]="colorSample"
+              [class.is-invalid]="colorSample.invalid && colorSample.touched">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า <span style="color: red;">*</span></label>
+            <input type="date" class="form-control" [formControl]="deadlineDate"
+              [class.is-invalid]="deadlineDate.invalid && deadlineDate.touched">
+          </div>
+          <div class="col-6">
+            <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า <span style="color: red;">*</span></label>
+            <input type="time" class="form-control" [formControl]="deadlineTime"
+              [class.is-invalid]="deadlineTime.invalid && deadlineTime.touched">
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="print2Page" [formControl]="print2Page">
+            <label class="form-check-label font-weight-bold" for="print2Page">พิมพ์ 2 หน้า</label>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">หมายเหตุ </label>
+            <textarea class="form-control" rows="3" [formControl]="remarks" placeholder="หมายเหตุเพิ่มเติม..."
+              [class.is-invalid]="remarks.invalid && remarks.touched"></textarea>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">เงื่อนไขการรันงาน (ผู้มีอำนาจตัดสินใจ) </label>
+            <div class="border rounded p-3" style="background-color: #f8f9fa;">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="customerOnSite"
+                  id="customerOnSite">
+                <label class="form-check-label" for="customerOnSite">
+                  <strong>ลูกค้าเข้าดูงานหน้างาน</strong> <span class="text-muted">(ผู้ตัดสินใจ: ลูกค้า)</span><br>
+                  <small class="text-muted">รันตามที่ลูกค้าอนุมัติหน้าแท่น ถือว่ายอมรับสภาพงานขณะนั้น</small>
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="sampleToCustomer"
+                  id="sampleToCustomer">
+                <label class="form-check-label" for="sampleToCustomer">
+                  <strong>ขึ้นตัวอย่างหน้าแท่นส่งให้ลูกค้าตรวจ</strong> <span class="text-muted">(ผู้ตัดสินใจ:
+                    ลูกค้า)</span><br>
+                  <small class="text-muted">รันตามที่ลูกค้าอนุมัติหน้าแท่น ถือว่ายอมรับสภาพงานขณะนั้น</small>
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="salesDecision"
+                  id="salesDecision">
+                <label class="form-check-label" for="salesDecision">
+                  <strong>เซลล์ตัดสินใจแทนลูกค้า</strong> <span class="text-muted">(ผู้ตัดสินใจ: เซลล์)</span><br>
+                  <small class="text-muted">รันตามคำสั่งเซลล์ ช่างและ QA ไม่ปรับนอกเหนือคำสั่ง</small>
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority" value="planningDecision"
+                  id="planningDecision">
+                <label class="form-check-label" for="planningDecision">
+                  <strong>ฝ่ายแผนตัดสินใจ</strong> <span class="text-muted">(ผู้ตัดสินใจ: ฝ่ายแผน)</span><br>
+                  <small class="text-muted">รันตามใบปรู๊ฟและมาตรฐานโรงงาน</small>
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" [formControl]="decisionAuthority"
+                  value="operatorQaDecision" id="operatorQaDecision">
+                <label class="form-check-label" for="operatorQaDecision">
+                  <strong>ช่างพิมพ์ + QA ตัดสินใจร่วมกัน</strong> <span class="text-muted">(ผู้ตัดสินใจ: ช่างพิมพ์ /
+                    QA)</span><br>
+                  <small class="text-muted">ปรับสีให้อยู่ในกรอบมาตรฐานโรงงาน ต้องบันทึกเหตุผล</small>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label font-weight-bold">หมายเหตุเงื่อนไขการรันงาน </label>
+            <textarea class="form-control" rows="3" [formControl]="decisionAuthorityRemarks"
+              placeholder="หมายเหตุเพิ่มเติม..."
+              [class.is-invalid]="decisionAuthorityRemarks.invalid && decisionAuthorityRemarks.touched"></textarea>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeApproveProductModal()">ยกเลิก</button>
+
+        <button type="button" class="btn btn-success" (click)="confirmApproveProduction()"
+          [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid || !decisionAuthority.value">
+          ยืนยันอนุมัติ
         </button>
       </div>
     </div>

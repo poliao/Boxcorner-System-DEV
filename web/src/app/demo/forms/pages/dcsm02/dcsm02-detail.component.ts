@@ -34,12 +34,29 @@ export class Dcsm02DetailComponent implements OnInit {
   print2Page = new FormControl(false);
   approveRemarks = new FormControl('');
   jobId = new FormControl('', Validators.required);
-  jobType = new FormControl('', Validators.required);
-
   showEditModal = false;
   editNote = new FormControl('', Validators.required);
-
   showCancelModal = false;
+
+  showEditModalProduct = false;
+  showApproveProductModal = false;
+  showCancelModalProduct = false;
+  //-------------------------------------------------------------------------
+  usedFile = new FormControl('', Validators.required);
+  colorSample = new FormControl('');
+  deadlineDate = new FormControl('');
+  deadlineTime = new FormControl('');
+  remarks = new FormControl('');
+  decisionAuthority = new FormControl('', Validators.required);
+  designDate = new FormControl('', Validators.required);
+  designTime = new FormControl('', Validators.required);
+  designRemarks = new FormControl('', Validators.required);
+  planDate = new FormControl('', Validators.required);
+  planTime = new FormControl('', Validators.required);
+  planRemarks = new FormControl('', Validators.required);
+  decisionAuthorityRemarks = new FormControl('');
+  customerName = new FormControl('', Validators.required);
+
 
   constructor(
     private fb: FormBuilder,
@@ -113,7 +130,6 @@ export class Dcsm02DetailComponent implements OnInit {
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['fileName'].disable({ emitEvent: false });
-    
   }
 
   patchFormData(data: any): void {
@@ -133,27 +149,60 @@ export class Dcsm02DetailComponent implements OnInit {
       cancelButtonText: 'ยกเลิก'
     }).then((result) => {
       if (this.designForm.valid) {
-      this.loadingService.show();
-      const data = this.designForm.getRawValue();
-      this.dcsm02Service.save(data).subscribe(
-        {
-          next: (response) => {
-            this.patchFormData(response);
-            this.loadingService.hide();
-            this.checkBtn();
-            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-            this.router.navigate(['/Dcsm02']);
-          },
-          error: (error) => {
-            this.loadingService.hide();
-            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+        this.loadingService.show();
+        const data = this.designForm.getRawValue();
+        this.dcsm02Service.save(data).subscribe(
+          {
+            next: (response) => {
+              this.patchFormData(response);
+              this.loadingService.hide();
+              this.checkBtn();
+              this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+              this.router.navigate(['/Dcsm02']);
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+            }
           }
-        }
-      );
-    }
+        );
+      }
     });
+  }
 
-    
+  Complete(): void {
+    Swal.fire({
+      title: 'ยืนยันเสร็จสิ้น',
+      text: "คุณต้องเสร็จสิ้นงาน ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (this.designForm.valid) {
+        this.loadingService.show();
+        const data = this.designForm.getRawValue();
+        data.confirmStatus = 'ผ่าน';
+        data.processStatus = 'เสร็จสิ้น';
+        this.dcsm02Service.save(data).subscribe(
+          {
+            next: (response) => {
+              this.patchFormData(response);
+              this.loadingService.hide();
+              this.checkBtn();
+              this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+              this.router.navigate(['/Dcsm02']);
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+            }
+          }
+        );
+      }
+    });
   }
 
   checkBtn() {
@@ -223,6 +272,18 @@ export class Dcsm02DetailComponent implements OnInit {
     this.showApproveModal = true;
   }
 
+  openApproveProductModal() {
+    this.showApproveProductModal = true;
+  }
+
+  closeApproveProductModal() {
+    this.showApproveProductModal = false;
+  }
+
+  openApproveSampleModal() {
+    this.openApproveModal();
+  }
+
   closeApproveModal() {
     this.showApproveModal = false;
   }
@@ -244,7 +305,6 @@ export class Dcsm02DetailComponent implements OnInit {
       designOrderId: this.designForm.getRawValue().id,
       customerName: this.designForm.getRawValue().customerName,
       fileName: this.designForm.getRawValue().fileName,
-      typeJob: this.jobType.value,
       jobId: this.jobId.value,
       print2Page: this.print2Page.value
     };
@@ -296,6 +356,16 @@ export class Dcsm02DetailComponent implements OnInit {
   }
 
   closeEditModal() {
+    this.showEditModal = false;
+  }
+
+  openEditModalProduct() {
+    this.editNote.setValue('');
+    this.editNote.markAsUntouched();
+    this.showEditModal = true;
+  }
+
+  closeEditModalProduct() {
     this.showEditModal = false;
   }
 
@@ -389,5 +459,76 @@ export class Dcsm02DetailComponent implements OnInit {
 
   closeCancelModal() {
     this.showCancelModal = false;
+  }
+
+  confirmApproveProduction() {
+    const data = {
+      orderDate: new Date().toISOString().substring(0, 10),
+      folderName: this.designForm.getRawValue().folderName,
+      usedFile: this.usedFile.value,
+      colorSample: this.colorSample.value,
+      jobOwner: null,
+      deadlineDate: this.deadlineDate.value,
+      deadlineTime: this.deadlineTime.value,
+      deliveryDate: null,
+      jobStatus: null,
+      processStatus: null,
+      operatorName: null,
+      inspectionDate: null,
+      remarks: this.remarks.value,
+      moldStatus: null,
+      createdAt: null,
+      updatedAt: null,
+      responsiblePerson: 'รอผู้รับผิดชอบอนุมัติ',
+      status: 'รอผู้รับผิดชอบอนุมัติ',
+      sampleOrderId: null,
+      customerName: this.designForm.getRawValue().customerName,
+      dataDalivery: false,
+      jobId: this.jobId.value,
+      decisionAuthority: this.decisionAuthority.value,
+      decisionAuthorityRemarks: this.decisionAuthorityRemarks.value,
+      print2Page: this.print2Page.value
+    };
+    Swal.fire({
+      title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',
+      text: "อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm02Service.saveProduction(data).subscribe({
+          next: (response) => {
+            if (response) {
+              this.designForm.get('processStatus').setValue('เสร็จสิ้น')
+              this.designForm.get('confirmStatus').setValue('ผ่าน')
+              this.designForm.get('confirmDate').setValue(new Date());
+              this.dcsm02Service.save(this.designForm.getRawValue()).subscribe({
+                next: (responses) => {
+                  this.designForm.patchValue(responses);
+                  this.closeApproveProductModal();
+                  this.loadingService.hide();
+                  this.sweetAlert.success('Success', 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิตสำเร็จ!');
+                  this.checkBtn();
+                  this.router.navigate(['/Dcsm02']);
+                },
+                error: (error) => {
+                  this.loadingService.hide();
+                  this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+                }
+              })
+            }
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        });
+      }
+    });
   }
 }

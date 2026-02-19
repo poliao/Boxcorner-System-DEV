@@ -60,9 +60,9 @@ export class Dcsm02Component implements OnInit {
   filterowner: string = '';
   filterassignee: string = '';
   filterprocess: string = '';
-  filterconfirm: string = ''; // Filter for process
-  filterId: string = ''; // Filter for ID
-  filterremarks: string = ''; // Filter for remarks
+  filterconfirm: string = '';
+  filterId: string = '';
+  filterremarks: string = '';
 
   jobdetailsList: string[] = [];
   OwnerList: string[] = [];
@@ -79,8 +79,8 @@ export class Dcsm02Component implements OnInit {
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'assignee', label: 'ผู้รับผิดชอบ' },
     { key: 'deadlineDate', label: 'วันที่ต้องส่ง' },
-    { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
-    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService)},
+    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService)},
   ];
 
   tableData: any[] = [];

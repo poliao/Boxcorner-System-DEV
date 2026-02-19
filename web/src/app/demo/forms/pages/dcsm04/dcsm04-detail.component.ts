@@ -45,6 +45,7 @@ export class Dcsm04DetailComponent implements OnInit {
   planDate = new FormControl('', Validators.required);
   planTime = new FormControl('', Validators.required);
   planRemarks = new FormControl('', Validators.required);
+  decisionAuthorityRemarks = new FormControl('');
 
   constructor(
     private fb: FormBuilder,
@@ -416,7 +417,11 @@ export class Dcsm04DetailComponent implements OnInit {
       sampleOrderId: this.mainForm.getRawValue().id,
       customerName: this.mainForm.getRawValue().customerName,
       dataDalivery: false,
-      decisionAuthority: this.decisionAuthority.value
+      jobId: this.mainForm.getRawValue().jobId,
+      qtId: this.mainForm.getRawValue().qtId,
+      decisionAuthority: this.decisionAuthority.value,
+      decisionAuthorityRemarks: this.decisionAuthorityRemarks.value,
+      print2Page: this.mainForm.getRawValue().print2Page
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',
