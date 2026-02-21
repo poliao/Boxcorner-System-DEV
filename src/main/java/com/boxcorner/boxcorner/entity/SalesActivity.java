@@ -52,5 +52,9 @@ public class SalesActivity extends BaseEntity {
     private LocalDate nextDate;
     private LocalTime nextTime;
     private String companyName;
+    private String province;
+    private String activitiesStatus;
+    private String lossReasons;
+    private String probability;
     
 }

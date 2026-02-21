@@ -56,4 +56,11 @@ export class Dcsm28Service {
   getCurrentQuotation(activityId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/quotations/current?activityId=${activityId}`);
   }
+
+  searchProvinces(search?: string): Observable<any[]> {
+    const url = search 
+      ? `${this.apiUrl}/provinces/search?search=${search}`
+      : `${this.apiUrl}/provinces/search`;
+    return this.http.get<any[]>(url);
+  }
 }

@@ -24,6 +24,8 @@ export class Dcsm28DetailComponent implements OnInit {
   showQuotationModal = false;
   hasQuotation = false;
   currentQuotation: any = null;
+  filteredProvinces: any[] = [];
+  selectedProvinceIndex: number = -1;
 
   constructor(
     private fb: FormBuilder,
@@ -54,7 +56,8 @@ export class Dcsm28DetailComponent implements OnInit {
       this.activityForm.get('objective')?.disable();
       this.activityForm.get('discussionResult')?.disable();
       this.activityForm.get('isNewCustomer')?.disable();
-
+      this.activityForm.get('province')?.disable();
+      this.activityForm.get('probability')?.disable();
       this.loadCurrentQuotation();
     }
   }
@@ -84,6 +87,7 @@ export class Dcsm28DetailComponent implements OnInit {
       contactPerson: [null, Validators.required],
       contact: [null, Validators.required],
       contactChannel: [null, Validators.required],
+      activitiesStatus: [null, Validators.required],
       objective: [null, Validators.required],
       discussionResult: [null, Validators.required],
       isNewCustomer: [false],
@@ -91,14 +95,18 @@ export class Dcsm28DetailComponent implements OnInit {
       salesName: [null],
       companyName: [null, Validators.required],
       nextDate: [null],
-      nextTime: [null]
+      nextTime: [null],
+      province: [null, Validators.required],
+      probability: [null, Validators.required]
     });
     this.activityForm.controls['salesName'].disable();
 
     this.quotationForm = this.fb.group({
       quoteNumber: [null, Validators.required],
       amount: [null, Validators.required],
-      remark: [null]
+      remark: [null],
+      status: [null, Validators.required],
+      productCategory: [null, Validators.required]
     });
 
     this.activityForm.get('activityDate')?.disable();
@@ -187,7 +195,9 @@ export class Dcsm28DetailComponent implements OnInit {
         quoteNumber: this.currentQuotation.quoteNumber,
         amount: this.currentQuotation.amount,
         cost: this.currentQuotation.cost,
-        remark: this.currentQuotation.remark
+        remark: this.currentQuotation.remark,
+        status: this.currentQuotation.status,
+        productCategory: this.currentQuotation.productCategory
       });
     }
     this.showQuotationModal = true;
@@ -227,5 +237,56 @@ export class Dcsm28DetailComponent implements OnInit {
         this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
       }
     });
+  }
+
+  onProvinceSearch(event: any): void {
+    const search = event.target.value;
+    this.selectedProvinceIndex = -1;
+    this.dcsm28Service.searchProvinces(search).subscribe({
+      next: (data) => {
+        this.filteredProvinces = data;
+      },
+      error: () => {
+        this.filteredProvinces = [];
+      }
+    });
+  }
+
+  onProvinceKeydown(event: KeyboardEvent): void {
+    if (this.filteredProvinces.length === 0) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedProvinceIndex = Math.min(this.selectedProvinceIndex + 1, this.filteredProvinces.length - 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedProvinceIndex = Math.max(this.selectedProvinceIndex - 1, 0);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (this.selectedProvinceIndex >= 0) {
+          this.selectProvince(this.filteredProvinces[this.selectedProvinceIndex]);
+        }
+        break;
+      case 'Escape':
+        this.filteredProvinces = [];
+        this.selectedProvinceIndex = -1;
+        break;
+    }
+  }
+
+  selectProvince(province: any): void {
+    this.activityForm.patchValue({ province: province.nameTh });
+    this.filteredProvinces = [];
+    this.selectedProvinceIndex = -1;
+  }
+
+  onProvinceBlur(): void {
+    setTimeout(() => {
+      this.filteredProvinces = [];
+      this.selectedProvinceIndex = -1;
+    }, 200);
   }
 }

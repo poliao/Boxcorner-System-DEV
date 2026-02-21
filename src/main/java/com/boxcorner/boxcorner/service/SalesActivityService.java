@@ -42,7 +42,11 @@ public class SalesActivityService {
             existing.setNextDate(activity.getNextDate());
             existing.setNextTime(activity.getNextTime());
             existing.setCompanyName(activity.getCompanyName());
-            
+            existing.setActivitiesStatus(activity.getActivitiesStatus());
+            existing.setLossReasons(activity.getLossReasons());
+            existing.setProvince(activity.getProvince());
+            existing.setProbability(activity.getProbability());
+
             return salesActivityRepository.save(existing);
         } else {
             activity.setSalesName(salesName);

@@ -57,6 +57,32 @@
           [class.is-invalid]="activityForm.get('contact')?.invalid && activityForm.get('contact')?.touched">
         </div>
         <div class="col-md-2">
+          <label class="form-label font-weight-bold">จังหวัด<span style="color: red;">*</span></label>
+          <div class="position-relative">
+            <input type="text" 
+                   formControlName="province" 
+                   class="form-control" 
+                   placeholder="เลือกหรือพิมพ์ค้นหาจังหวัด"
+                   (input)="onProvinceSearch($event)"
+                   (focus)="onProvinceSearch($event)"
+                   (blur)="onProvinceBlur()"
+                   (keydown)="onProvinceKeydown($event)"
+                   autocomplete="off"
+                   [class.is-invalid]="activityForm.get('province')?.invalid && activityForm.get('province')?.touched">
+            <ul class="list-group position-absolute w-100" 
+                style="z-index: 1000; max-height: 250px; overflow-y: auto;"
+                *ngIf="filteredProvinces.length > 0">
+              <li class="list-group-item list-group-item-action" 
+                  style="cursor: pointer;"
+                  *ngFor="let province of filteredProvinces; let i = index" 
+                  [class.active]="i === selectedProvinceIndex"
+                  (mousedown)="selectProvince(province)">
+                {{ province.nameTh }} ({{ province.nameEn }})
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ช่องทางพบ <span style="color: red;">*</span></label>
           <select formControlName="contactChannel" class="form-select" [class.is-invalid]="activityForm.get('contactChannel')?.invalid && activityForm.get('contactChannel')?.touched">
             <option value="">เลือกช่องทาง</option>
@@ -68,6 +94,41 @@
             <option value="Line">Line</option>
             <option value="Facebook">Facebook</option>
             <option value="Instagram">Instagram</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">สถานะ <span style="color: red;">*</span></label>
+          <select formControlName="activitiesStatus" class="form-select" [class.is-invalid]="activityForm.get('activitiesStatus')?.invalid && activityForm.get('activitiesStatus')?.touched">
+            <option value="ติดต่อ">ติดต่อ</option>
+            <option value="เข้าพบลูกค้า">เข้าพบลูกค้า</option>
+            <option value="เก็บความต้องการลูกค้า">เก็บความต้องการลูกค้า</option>
+            <option value="เสนอราคา">เสนอราคา</option>
+            <option value="เจรจาต่อรอง">เจรจาต่อรอง</option>
+            <option value="รอลูกค้าอนุมัติ">รอลูกค้าอนุมัติ</option>
+            <option value="ได้งาน">ได้งาน</option>
+            <option value="ไม่ได้งาน">ไม่ได้งาน</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">% ที่คิดว่าจะได้งาน <span style="color: red;">*</span></label>
+          <input type="number" formControlName="probability" class="form-control" placeholder="0-100" min="0" max="100" [class.is-invalid]="activityForm.get('probability')?.invalid && activityForm.get('probability')?.touched">
+        </div>
+        <div class="col-md-2" *ngIf="activityForm.get('activitiesStatus')?.value === 'ไม่ได้งาน'">
+          <label class="form-label font-weight-bold">เหตุผลที่ไม่ได้งาน <span style="color: red;">*</span></label>
+          <select formControlName="lostReason" class="form-select" [class.is-invalid]="activityForm.get('lostReason')?.invalid && activityForm.get('lostReason')?.touched">
+            <option value="">เลือกเหตุผล</option>
+            <option value="ราคาสูงกว่าคู่แข่ง">ราคาสูงกว่าคู่แข่ง</option>
+            <option value="ลูกค้ามีงบประมาณจำกัด">ลูกค้ามีงบประมาณจำกัด</option>
+            <option value="จำนวนสั่งผลิตน้อยกว่าขั้นต่ำ">จำนวนสั่งผลิตน้อยกว่าขั้นต่ำ</option>
+            <option value="สเปคงาน/เทคนิคพิเศษ ไม่สามารถผลิตได้">สเปคงาน/เทคนิคพิเศษ ไม่สามารถผลิตได้</option>
+            <option value="ระยะเวลาผลิตนานเกินไป">ระยะเวลาผลิตนานเกินไป</option>
+            <option value="ติดต่อลูกค้าไม่ได้">ติดต่อลูกค้าไม่ได้</option>
+            <option value="ลูกค้าเลือกคู่ค้าเดิม">ลูกค้าเลือกคู่ค้าเดิม</option>
+            <option value="ลูกค้ายกเลิกโปรเจกต์">ลูกค้ายกเลิกโปรเจกต์</option>
+            <option value="ลูกค้าตัดสินใจใช้ Supplier เจ้าเดิม">ลูกค้าตัดสินใจใช้ Supplier เจ้าเดิม</option>
+            <option value="ผู้มีอำนาจตัดสินใจไม่อนุมัติ">ผู้มีอำนาจตัดสินใจไม่อนุมัติ</option>
+            <option value="ตกลงเงื่อนไขการชำระเงินไม่ได้">ตกลงเงื่อนไขการชำระเงินไม่ได้</option>
+            <option value="อื่นๆ">อื่นๆ</option>
           </select>
         </div>
         <div class="col-md-2">
@@ -98,7 +159,6 @@
           <label class="form-label font-weight-bold">ผลการพูดคุย <span style="color: red;">*</span></label>
           <textarea formControlName="discussionResult" class="form-control" rows="3" placeholder="สรุปผลการพูดคุย" [class.is-invalid]="activityForm.get('discussionResult')?.invalid && activityForm.get('discussionResult')?.touched"></textarea>
         </div>
-       
       </div>
     </form>
   </div>
@@ -124,6 +184,31 @@
               <label class="form-label font-weight-bold">ยอดขาย (บาท) <span style="color: red;">*</span></label>
               <input type="number" formControlName="amount" class="form-control" placeholder="0.00" step="0.01"
                 [class.is-invalid]="quotationForm.get('amount')?.invalid && quotationForm.get('amount')?.touched">
+            </div>
+            <div class="col-12">
+              <label class="form-label font-weight-bold">สถานะ <span style="color: red;">*</span></label>
+              <select formControlName="status" class="form-select"
+                [class.is-invalid]="quotationForm.get('status')?.invalid && quotationForm.get('status')?.touched">
+                <option value="">เลือกสถานะ</option>
+                <option value="นำเสนอลูกค้า">นำเสนอลูกค้า</option>
+                <option value="ลูกค้าต่อรอง">ลูกค้าต่อรอง</option>
+                <option value="ยกเลิก">ยกเลิก</option>
+                <option value="ลูกค้าตกลง(รอขึ้นตัวอย่าง)">ลูกค้าตกลง(รอขึ้นตัวอย่าง)</option>
+                <option value="ลูกค้าปฏิเสธ">ลูกค้าปฏิเสธ</option>
+                <option value="ยืนยันเปิดใบผลิต">ยืนยันเปิดใบผลิต</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label font-weight-bold">หมวดหมู่สินค้า <span style="color: red;">*</span></label>
+              <select formControlName="productCategory" class="form-select"
+                [class.is-invalid]="quotationForm.get('productCategory')?.invalid && quotationForm.get('productCategory')?.touched">
+                <option value="">เลือกหมวดหมู่</option>
+                <option value="กล่อง">กล่อง</option>
+                <option value="นามบัตร">นามบัตร</option>
+                <option value="แผ่นพับ">แผ่นพับ</option>
+                <option value="สติ๊กเกอร์">สติ๊กเกอร์</option>
+                <option value="หนังสือ">หนังสือ</option>
+              </select>
             </div>
             <div class="col-12">
               <label class="form-label font-weight-bold">หมายเหตุ</label>
