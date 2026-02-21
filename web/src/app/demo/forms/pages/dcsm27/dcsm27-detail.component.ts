@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
+import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 
 declare var bootstrap: any;
 
@@ -30,6 +31,7 @@ export class Dcsm27DetailComponent implements OnInit {
     private router: Router,
     private dcsm27Service: Dcsm27Service,
     private authService: AuthService,
+    private sweetAlert: SweetAlertService
   ) {}
 
   ngOnInit() {
@@ -109,12 +111,7 @@ export class Dcsm27DetailComponent implements OnInit {
 
       this.dcsm27Service.saveExtraPrint(formData).subscribe({
         next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'บันทึกสำเร็จ',
-            showConfirmButton: false,
-            timer: 1500
-          });
+          this.sweetAlert.success('Success', 'บันทึกสำเร็จ');
           this.modal.hide();
           this.loadExtraPrints();
         },

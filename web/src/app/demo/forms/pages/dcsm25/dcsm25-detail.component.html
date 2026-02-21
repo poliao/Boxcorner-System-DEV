@@ -149,54 +149,131 @@
   </div><br>
 </div>
 
-<div class="card-body">
+<div class="card-body p-0">
   <div class="card total-income-card info overflow-hidden">
-    <div style="padding: 10px;">
-      <h5 class="card-title mb-3">ประวัติการพิมพ์เพิ่มเติม</h5>
+    <div style="padding: 20px;">
+      <h5 class="card-title mb-4">ประวัติการพิมพ์เพิ่มเติม</h5>
       <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
+        <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0;">
+          <thead style="background-color: #1e3a8a !important; color: white !important;">
             <tr>
-              <th>วันที่สร้าง</th>
-              <th>จำนวนเพิ่มเติม</th>
-              <th>เหตุผล</th>
-              <th>สถานะ</th>
-              <th>ผู้ขอ</th>
-              <th>การดำเนินการ</th>
+              <th class="text-center py-3" style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">วันที่สร้าง</th>
+              <th class="text-center py-3" style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">จำนวน</th>
+              <th class="py-3" style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">เหตุผล</th>
+              <th class="text-center py-3" style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">สถานะ</th>
+              <th class="text-center py-3" style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">ผู้ขอ</th>
+              <th class="text-center py-3" style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">การดำเนินการ</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let print of extraPrints">
-              <td>{{ print.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td>{{ print.additionalQty }}</td>
-              <td>{{ print.reason }}</td>
-              <td>{{ print.status }}</td>
-              <td>{{ print.requestedBy }}</td>
-              <td>
-                <button *ngIf="print.status === 'PENDING'" class="btn btn-sm text-white me-1" 
-                  style="background-color: #1e1b4b;" data-bs-toggle="modal" 
-                  data-bs-target="#extraPrintStartModal" (click)="selectExtraPrint(print)">
-                  เริ่มพิมพ์
-                </button>
-                <button *ngIf="print.status === 'IN_PROGRESS'" class="btn btn-sm text-white me-1" 
-                  style="background-color: #ff8800;" data-bs-toggle="modal" 
-                  data-bs-target="#extraPrintStopModal" (click)="selectExtraPrint(print)">
-                  หยุดชั่วคราว
-                </button>
-                <button *ngIf="print.status === 'IN_PROGRESS'" class="btn btn-sm text-white" 
-                  style="background-color: #000272;" data-bs-toggle="modal" 
-                  data-bs-target="#extraPrintEndModal" (click)="selectExtraPrint(print)">
-                  พิมพ์จบ
-                </button>
-                <button *ngIf="print.status === 'PAUSED'" class="btn btn-sm text-white" 
-                  style="background-color: #441f99;" data-bs-toggle="modal" 
-                  data-bs-target="#extraPrintStartModal" (click)="selectExtraPrint(print)">
-                  พิมพ์ต่อ
-                </button>
+          <tbody style="background-color: white !important;">
+            <tr *ngFor="let print of extraPrints; let i = index" 
+                style="cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #e5e7eb !important;"
+                [style.background-color]="i % 2 === 0 ? '#ffffff !important' : '#f9fafb !important'"
+                class="hover-row">
+              <td class="text-center py-3">
+                <span class="badge" style="background-color: #3b82f6 !important; color: white !important; font-size: 13px; padding: 6px 12px; font-weight: 500;">
+                  {{ print.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </td>
+              <td class="text-center py-3">
+                <span class="badge rounded-pill" style="background-color: #ec4899 !important; color: white !important; font-size: 14px; padding: 8px 16px; font-weight: 600;">
+                  {{ print.additionalQty }} ใบ
+                </span>
+              </td>
+              <td class="py-3" style="color: #374151; font-weight: 500;">
+                <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  {{ print.reason }}
+                </div>
+              </td>
+              <td class="text-center py-3">
+                <span class="badge rounded-pill px-3 py-2" 
+                  style="font-size: 13px; font-weight: 600;"
+                  [style.background-color]="
+                    print.status === 'PENDING' ? '#fbbf24' : 
+                    print.status === 'IN_PROGRESS' ? '#3b82f6' :
+                    print.status === 'PAUSED' ? '#9ca3af' : 
+                    '#10b981'"
+                  [style.color]="print.status === 'PENDING' ? '#1f2937' : 'white'">
+                  {{ print.status === 'PENDING' ? 'รอดำเนินการ' : 
+                     print.status === 'IN_PROGRESS' ? 'กำลังพิมพ์' :
+                     print.status === 'PAUSED' ? 'หยุดชั่วคราว' : 'เสร็จสิ้น' }}
+                </span>
+              </td>
+              <td class="text-center py-3" style="color: #374151; font-weight: 600;">
+                {{ print.requestedBy }}
+              </td>
+              <td class="text-center py-3">
+                <div class="d-flex justify-content-center gap-1 flex-wrap">
+                  <button *ngIf="print.status === 'PENDING'" class="btn btn-sm text-white" 
+                    style="background-color: #1e3a8a; border: none; padding: 6px 12px; font-weight: 600;" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#extraPrintStartModal" 
+                    (click)="selectExtraPrint(print)">
+                    เริ่มพิมพ์
+                  </button>
+                  <button *ngIf="print.status === 'IN_PROGRESS'" class="btn btn-sm text-white" 
+                    style="background-color: #f97316; border: none; padding: 6px 12px; font-weight: 600;" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#extraPrintStopModal" 
+                    (click)="selectExtraPrint(print)">
+                    หยุดชั่วคราว
+                  </button>
+                  <button *ngIf="print.status === 'IN_PROGRESS'" class="btn btn-sm text-white" 
+                    style="background-color: #0891b2; border: none; padding: 6px 12px; font-weight: 600;" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#extraPrintEndModal" 
+                    (click)="selectExtraPrint(print)">
+                    พิมพ์จบ
+                  </button>
+                  <button *ngIf="print.status === 'PAUSED'" class="btn btn-sm" 
+                    style="background-color: #6366f1; color: white; border: none; padding: 6px 12px; font-weight: 600;" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#extraPrintStartModal" 
+                    (click)="selectExtraPrint(print)">
+                    พิมพ์ต่อ
+                  </button>
+                  <ng-container *ngIf="printingForm.get('print2Page')?.value === true">
+                    <button *ngIf="print.status === 'WAITPAGE2'" class="btn btn-sm text-white" 
+                      style="background-color: #7c3aed; border: none; padding: 6px 12px; font-weight: 600;" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#extraPrintStartPage2Modal" 
+                      (click)="selectExtraPrint(print)">
+                      เริ่มหน้า 2
+                    </button>
+                    <button *ngIf="print.status === 'IN_PROGRESS_PAGE2'" class="btn btn-sm text-white" 
+                      style="background-color: #f97316; border: none; padding: 6px 12px; font-weight: 600;" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#extraPrintStopPage2Modal" 
+                      (click)="selectExtraPrint(print)">
+                      หยุดหน้า 2
+                    </button>
+                    <button *ngIf="print.status === 'IN_PROGRESS_PAGE2'" class="btn btn-sm text-white" 
+                      style="background-color: #0891b2; border: none; padding: 6px 12px; font-weight: 600;" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#extraPrintEndPage2Modal" 
+                      (click)="selectExtraPrint(print); ">
+                      จบหน้า 2
+                    </button>
+                    <button *ngIf="print.status === 'PAUSED_PAGE2'" class="btn btn-sm" 
+                      style="background-color: #6366f1; color: white; border: none; padding: 6px 12px; font-weight: 600;" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#extraPrintStartPage2Modal" 
+                      (click)="selectExtraPrint(print)">
+                      พิมพ์ต่อหน้า 2
+                    </button>
+                  </ng-container>
+                </div>
               </td>
             </tr>
             <tr *ngIf="extraPrints.length === 0">
-              <td colspan="3" class="text-center">ไม่มีข้อมูล</td>
+              <td colspan="6" class="text-center py-5" style="background-color: #f8f9fa;">
+                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px;">
+                  <div class="mb-3" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 32px; color: white;">ฟ้</span>
+                  </div>
+                  <h6 class="text-muted mb-0">ไม่มีข้อมูลการพิมพ์เพิ่ม</h6>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -559,6 +636,124 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
         <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
           (click)="stopExtraPrint('FINISH')" data-bs-dismiss="modal">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Extra Print Page 2 Modals -->
+<div class="modal fade" id="extraPrintStartPage2Modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">เริ่มพิมพ์หน้า 2 (พิมพ์เพิ่ม)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="printingFormRecord2">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
+              <input type="number" formControlName="meterColorStart" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
+              <input type="number" formControlName="meterBwStart" class="form-control">
+            </div>
+            <div class="col-md-6" *ngIf="printingFormRecord2.get('printerName')?.value === 'Ricoh'">
+              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <input type="number" formControlName="meterSpecialStart" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
+              <select formControlName="printerName" class="form-select">
+                <option value="Canon">Canon</option>
+                <option value="Ricoh">Ricoh</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="startExtraPrintPage2()" data-bs-dismiss="modal">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="extraPrintStopPage2Modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">หยุดพิมพ์หน้า 2 ชั่วคราว (พิมพ์เพิ่ม)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="printingEndLog">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี จบ</label>
+              <input type="number" formControlName="meterColorEnd" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ จบ</label>
+              <input type="number" formControlName="meterBwEnd" class="form-control">
+            </div>
+            <div class="col-md-6" *ngIf="isRicoh">
+              <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
+              <input type="number" formControlName="meterSpecialEnd" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">หมายเหตุ</label>
+              <input type="text" formControlName="note" class="form-control">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="stopExtraPrintPage2('PAUSED_PAGE2')" data-bs-dismiss="modal">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="extraPrintEndPage2Modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">พิมพ์หน้า 2 จบ (พิมพ์เพิ่ม)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="printingEndLog">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ 4 สี จบ</label>
+              <input type="number" formControlName="meterColorEnd" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">ค่ามิเตอร์ขาวดำ จบ</label>
+              <input type="number" formControlName="meterBwEnd" class="form-control">
+            </div>
+            <div class="col-md-6" *ngIf="isRicoh">
+              <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
+              <input type="number" formControlName="meterSpecialEnd" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">หมายเหตุ</label>
+              <input type="text" formControlName="note" class="form-control">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
+          (click)="stopExtraPrintPage2('FINISH')" data-bs-dismiss="modal">บันทึก</button>
       </div>
     </div>
   </div>
