@@ -74,4 +74,13 @@ export class Dcsm25Service {
   saveCalibrate(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/printing/saveCalibrate`, data);
   }
+
+  // Extra Print APIs
+  getExtraPrintsByJobId(printJobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
+  }
+
+  updateExtraPrint(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/extra-prints/save`, data);
+  }
 }

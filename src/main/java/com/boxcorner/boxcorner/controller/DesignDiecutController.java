@@ -63,6 +63,7 @@ public class DesignDiecutController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         try {
+
             Page<DesignDiecut> pageDesignOrders = service.getAllRecipes(job_details, job_owner, process_status, confirm_status, assignee, startDate, endDate, page, size);
             return ResponseEntity.ok(pageDesignOrders);
         } catch (Exception e) {

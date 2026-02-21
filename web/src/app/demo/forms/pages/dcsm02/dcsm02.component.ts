@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm02.component',
@@ -72,7 +73,7 @@ export class Dcsm02Component implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private http: HttpClient, private dcsm02Service: Dcsm02Service, private router: Router, private statusColorService: StatusColorService) { }
+  constructor(private http: HttpClient, private dcsm02Service: Dcsm02Service, private router: Router, private statusColorService: StatusColorService, private authService: AuthService,) { }
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
@@ -284,7 +285,11 @@ export class Dcsm02Component implements OnInit {
    onFilterCheck() {
     this.clearAll();
     this.filterconfirm = 'รอตรวจสอบ';
-    this.filterfolder = '';
+    this.filterowner = this.authService.getUserFromToken().sub;
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
     setTimeout(() => {
       this.onSearchChange();
     }, 0);

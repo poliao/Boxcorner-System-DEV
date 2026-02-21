@@ -5,12 +5,14 @@
       class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
     <button *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2'" (click)="updatePrintStatus('IN_PROGRESS_PAGE2')"
       class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">พิมพ์เสร็จหน้า2</button>
-    <button *ngIf="printingForm.get('jobStatus')?.value === 'PENDING'" (click)="onUpdatePrint('inPrint')"
+    <button *ngIf="printingForm.get('jobStatus')?.value === 'PROOF'" (click)="updatePrintStatus('PROOF')"
+      class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">พิมพ์าส่งลูกค้าเสร็จ</button>
+    <button *ngIf="(printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer') || (printingForm.get('jobStatus')?.value === 'PROOFCOMPLETED')" (click)="onUpdatePrint('inPrint')"
       class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
     <button *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2'" (click)="onUpdatePrint('inPrint')"
       class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">เริ่มพิมพ์หน้า2</button>
-      <button *ngIf="printingForm.get('jobStatus')?.value === 'PENDING'" (click)="onUpdatePrint('inPrint')"
-      class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">เริ่มปรู๊ฟหน้าแท่น</button>
+    <button *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"  (click)="onUpdatePrint('inPrint')"
+      class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">เริ่มพิมพ์ส่งลูกค้า</button>
   </div>
 
   <div class="card-body">
@@ -395,7 +397,7 @@
       <div class="modal-footer border-0" style="padding: 12px 24px; background-color: #f8fafc; flex-shrink: 0;">
         <button type="button" class="btn btn-light" (click)="closeChecklistModal()"
           style="border-radius: 8px; padding: 8px 20px; font-weight: 500;">ยกเลิก</button>
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'PENDING'" type="button" class="btn"
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer'" type="button" class="btn"
           (click)="submitChecklist('inPrint')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์
@@ -404,6 +406,11 @@
           (click)="submitChecklist('WAITPAGE2')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์หน้า2
+        </button>
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'" type="button" class="btn"
+          (click)="submitChecklist('PROOF')"
+          style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
+          <i class="fas fa-check me-2"></i>เริ่มพิมพ์ส่งลูกค้า
         </button>
       </div>
     </div>

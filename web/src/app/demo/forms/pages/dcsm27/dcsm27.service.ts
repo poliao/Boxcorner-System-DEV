@@ -42,4 +42,17 @@ export class Dcsm27Service {
   save(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/print-job/save`, data);
   }
+
+  // Extra Print APIs
+  getExtraPrintsByJobId(printJobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
+  }
+
+  saveExtraPrint(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/extra-prints/save`, data);
+  }
+
+  deleteExtraPrint(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/extra-prints/deleteById?id=${id}`);
+  }
 }

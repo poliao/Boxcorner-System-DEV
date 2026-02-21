@@ -82,6 +82,8 @@ export class StatusColorService {
       case 'WAITPAGE2': return '#ff9800';
       case 'PAUSED_PAGE2': return '#ff2600ff';
       case 'IN_PROGRESS_PAGE2': return '#cddb00ff';
+      case 'PROOF': return '#449490ff';
+      case 'PROOFCOMPLETED': return '#00312fff';
 
       default: return '#9e9e9e'; // สีเทาเป็นค่าเริ่มต้น
     }

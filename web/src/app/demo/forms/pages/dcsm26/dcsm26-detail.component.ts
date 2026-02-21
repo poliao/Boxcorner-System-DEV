@@ -269,6 +269,10 @@ export class Dcsm26DetailComponent implements OnInit {
         this.printingForm.get('jobStatus')?.setValue('IN_PROGRESS_PAGE2');
         this.checklistForm.get('printSide')?.setValue('BACK');
         this.checklistForm.get('status')?.setValue('RUNNING');
+      } else if (status === 'PROOF') {
+        this.printingForm.get('jobStatus')?.setValue('PROOF');
+        this.checklistForm.get('printSide')?.setValue('PROOF');
+        this.checklistForm.get('status')?.setValue('RUNNING');
       }
       this.saveRecordOs().subscribe({
         next: (response) => {
@@ -353,7 +357,9 @@ export class Dcsm26DetailComponent implements OnInit {
           this.printingForm.get('jobStatus')?.setValue('COMPLETED');
         } else if (status === 'Print' && this.printingForm.getRawValue().print2Page == true) {
           this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
-        }
+        } else if(status === 'PROOF') {
+          this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
+        } 
         const data = this.printingForm.getRawValue();
         this.dcsm26Service.getLogById(this.printingForm.getRawValue().printingRecordId).subscribe((response) => {
           const now = new Date();

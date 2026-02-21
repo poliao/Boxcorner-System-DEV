@@ -12,7 +12,7 @@
           <button mat-flat-button *ngIf="isEditMode && hasQuotation" (click)="editQuotation()" style="background-color: #ff9800; color: white;">
             <mat-icon>edit</mat-icon> แก้ไขใบเสนอราคา
           </button>
-          <button mat-flat-button *ngIf="!isEditMode" (click)="onSave()" style="background-color: #1e1b4b; color: white;">
+          <button mat-flat-button (click)="onSave()" style="background-color: #1e1b4b; color: white;">
             <mat-icon>save</mat-icon> บันทึก
           </button>
         </div>
@@ -23,27 +23,40 @@
   <div class="card-body">
     <form [formGroup]="activityForm">
       <div class="row g-3">
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ลำดับ</label>
+          <input type="text" formControlName="activityId" class="form-control" >
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ </label>
           <input type="date" formControlName="activityDate" class="form-control"
             [class.is-invalid]="activityForm.get('activityDate')?.invalid && activityForm.get('activityDate')?.touched">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ชื่อพนักงานขาย </label>
+          <input type="text" formControlName="salesName" class="form-control" >
+        </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">ชื่อบริษัท <span style="color: red;">*</span></label>
+          <input type="text" formControlName="companyName" class="form-control" placeholder="ชื่อบริษัท"
+            [class.is-invalid]="activityForm.get('companyName')?.invalid && activityForm.get('companyName')?.touched">
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ชื่อลูกค้า <span style="color: red;">*</span></label>
           <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า"
             [class.is-invalid]="activityForm.get('customerName')?.invalid && activityForm.get('customerName')?.touched">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ผู้ติดต่อ <span style="color: red;">*</span></label>
           <input type="text" formControlName="contactPerson" class="form-control" placeholder="ชื่อผู้ติดต่อ"
           [class.is-invalid]="activityForm.get('contactPerson')?.invalid && activityForm.get('contactPerson')?.touched">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เบอร์โทร/ช่องทางติดต่อ<span style="color: red;">*</span></label>
           <input type="text" formControlName="contact" class="form-control" placeholder="เบอร์โทร/ช่องทางติดต่อ"
           [class.is-invalid]="activityForm.get('contact')?.invalid && activityForm.get('contact')?.touched">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ช่องทางพบ <span style="color: red;">*</span></label>
           <select formControlName="contactChannel" class="form-select" [class.is-invalid]="activityForm.get('contactChannel')?.invalid && activityForm.get('contactChannel')?.touched">
             <option value="">เลือกช่องทาง</option>
@@ -57,15 +70,19 @@
             <option value="Instagram">Instagram</option>
           </select>
         </div>
-        <div class="col-12">
-          <label class="form-label font-weight-bold">วัตถุประสงค์ <span style="color: red;">*</span></label>
-          <textarea formControlName="objective" class="form-control" rows="3" placeholder="วัตถุประสงค์ของการติดต่อ" [class.is-invalid]="activityForm.get('objective')?.invalid && activityForm.get('objective')?.touched"></textarea>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">นัดครั้งถัดไป</label>
+          <input formControlName="nextStep" class="form-control" rows="3" placeholder="นัดครั้งถัดไป">
         </div>
-        <div class="col-12">
-          <label class="form-label font-weight-bold">ผลการพูดคุย <span style="color: red;">*</span></label>
-          <textarea formControlName="discussionResult" class="form-control" rows="3" placeholder="สรุปผลการพูดคุย" [class.is-invalid]="activityForm.get('discussionResult')?.invalid && activityForm.get('discussionResult')?.touched"></textarea>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">วันที่นัดครั้งถัดไป</label>
+          <input type="date" formControlName="nextDate" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลานัดครั้งถัดไป</label>
+          <input type="time" formControlName="nextTime" class="form-control">
+        </div>
+         <div class="col-md-12">
           <div class="form-check">
             <input type="checkbox" formControlName="isNewCustomer" class="form-check-input" id="isNewCustomer" >
             <label class="form-check-label font-weight-bold" for="isNewCustomer" >
@@ -73,11 +90,15 @@
             </label>
           </div>
         </div>
-       
-        <div class="col-12">
-          <label class="form-label font-weight-bold">นัดครั้งถัดไป</label>
-          <input formControlName="nextStep" class="form-control" rows="3" placeholder="นัดครั้งถัดไป">
+        <div class="col-md-12">
+          <label class="form-label font-weight-bold">วัตถุประสงค์ <span style="color: red;">*</span></label>
+          <textarea formControlName="objective" class="form-control" rows="3" placeholder="วัตถุประสงค์ของการติดต่อ" [class.is-invalid]="activityForm.get('objective')?.invalid && activityForm.get('objective')?.touched"></textarea>
         </div>
+        <div class="col-md-12">
+          <label class="form-label font-weight-bold">ผลการพูดคุย <span style="color: red;">*</span></label>
+          <textarea formControlName="discussionResult" class="form-control" rows="3" placeholder="สรุปผลการพูดคุย" [class.is-invalid]="activityForm.get('discussionResult')?.invalid && activityForm.get('discussionResult')?.touched"></textarea>
+        </div>
+       
       </div>
     </form>
   </div>

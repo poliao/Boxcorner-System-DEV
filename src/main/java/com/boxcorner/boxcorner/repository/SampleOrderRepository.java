@@ -24,7 +24,18 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                 AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
                 AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
             ORDER BY s.id DESC
-            """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
+            """, countQuery = """
+            SELECT count(*) FROM sample_orders s
+            WHERE
+                (s.status != 'ยกเลิก')
+                AND (:id IS NULL OR s.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
+                AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
+            """, nativeQuery = true)
     Page<SampleOrder> findByFilters(
             @Param("id") Integer id,
             @Param("folderName") String folderName,
@@ -47,7 +58,18 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                 AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
                 AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
             ORDER BY s.delivery_date ASC, s.delivery_time ASC
-            """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
+            """, countQuery = """
+            SELECT count(*) FROM sample_orders s
+            WHERE
+                (s.status != 'ยกเลิก')
+                AND (:id IS NULL OR s.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
+                AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
+            """, nativeQuery = true)
     Page<SampleOrder> findByFiltersSort(
             @Param("id") Integer id,
             @Param("folderName") String folderName,
@@ -69,7 +91,17 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                 AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
                 AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
             ORDER BY s.id desc
-            """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
+            """, countQuery = """
+            SELECT count(*) FROM sample_orders s
+            WHERE
+                (:id IS NULL OR s.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
+                AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
+            """, nativeQuery = true)
     Page<SampleOrder> findByFiltersDetail(
             @Param("id") Integer id,
             @Param("folderName") String folderName,
@@ -91,7 +123,17 @@ public interface SampleOrderRepository extends JpaRepository<SampleOrder, Intege
                 AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
                 AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
             ORDER BY s.delivery_date asc , s.delivery_time asc
-            """, countQuery = "SELECT count(*) FROM sample_orders s", nativeQuery = true)
+            """, countQuery = """
+            SELECT count(*) FROM sample_orders s
+            WHERE
+                (:id IS NULL OR s.id = :id)
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(s.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(s.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (:responsiblePerson IS NULL OR :responsiblePerson = '' OR UPPER(s.responsible_person) LIKE UPPER(CONCAT('%', :responsiblePerson, '%')))
+                AND (:status IS NULL OR :status = '' OR UPPER(s.status) LIKE UPPER(CONCAT('%', :status, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR s.order_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR s.order_date <= :endDate)
+            """, nativeQuery = true)
     Page<SampleOrder> findByFiltersDetailSort(
             @Param("id") Integer id,
             @Param("folderName") String folderName,

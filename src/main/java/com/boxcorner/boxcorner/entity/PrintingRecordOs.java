@@ -101,6 +101,9 @@ public class PrintingRecordOs extends BaseEntity {
     @Column(name = "decision_remark", columnDefinition = "TEXT")
     private String decisionRemark;
 
+    @Column(name = "operator_name")
+    private String operatorName;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

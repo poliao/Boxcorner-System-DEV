@@ -110,6 +110,5 @@ public class PrintLogOs extends BaseEntity {
 
     @Column(name = "print_side")
     private String printSide;
-
     
 }

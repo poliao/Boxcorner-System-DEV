@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boxcorner.boxcorner.entity.SalesActivity;
+import com.boxcorner.boxcorner.security.jwt.TokenService;
 import com.boxcorner.boxcorner.service.SalesActivityService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/salesActivities")
@@ -25,10 +28,13 @@ public class SalesActivityController {
     @Autowired
     private SalesActivityService salesActivityService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody SalesActivity activity) {
+    public ResponseEntity<?> create(@RequestBody SalesActivity activity, HttpServletRequest request) {
         try {
-            return ResponseEntity.ok(salesActivityService.saveOrUpdate(activity));
+            return ResponseEntity.ok(salesActivityService.saveOrUpdate(activity,tokenService.getCurrentUser(request)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

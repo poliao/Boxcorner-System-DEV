@@ -4,29 +4,33 @@
       <form [formGroup]="mainForm" class="row g-3">
 
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
+          <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="button" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
             {{ isEditMode ? 'อัปเดตข้อมูล' : 'บันทึกข้อมูล' }}
           </button>
-          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="submit"
+          <button *ngIf="isBtnApproveSample == true" (click)="openApproveModal()" type="button"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             อนุมัติ
           </button>
-          <button *ngIf="isUpdateDelivery == true" (click)="updateDelivery()" type="submit"
+          <button *ngIf="isUpdateDelivery == true" (click)="updateDelivery()" type="button"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             อนุมัติเลื่อนวันส่ง
           </button>
-          <button *ngIf="isUpdateDelivery == true" (click)="updateNotDelivery()" type="submit"
+          <button *ngIf="isUpdateDelivery == true" (click)="updateNotDelivery()" type="button"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไม่อนุมัติเลื่อนวันส่ง
           </button>
-          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit"
+          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="button"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไฟล์ถูกต้อง
           </button>
           <button *ngIf="isBtnApproveSample == true" (click)="openRejectModal()" type="button"
             class="btn btn-danger text-white px-5 shadow-sm">
             ไม่ผ่าน
+          </button>
+          <button *ngIf="isBtnApproveSample == true" (click)="confirmComplete()" type="button"
+            class="btn text-white px-5 shadow-sm" style="background-color: #7b0086;">
+            จบงาน
           </button>
         </div>
         <div class="col-md-6" *ngIf="isPap">
@@ -266,7 +270,8 @@
         <div class="row mb-3">
           <div class="col-12">
             <label class="form-label font-weight-bold">หมายเหตุเงื่อนไขการรันงาน </label>
-            <textarea class="form-control" rows="3" [formControl]="decisionAuthorityRemarks" placeholder="หมายเหตุเพิ่มเติม..."
+            <textarea class="form-control" rows="3" [formControl]="decisionAuthorityRemarks"
+              placeholder="หมายเหตุเพิ่มเติม..."
               [class.is-invalid]="decisionAuthorityRemarks.invalid && decisionAuthorityRemarks.touched"></textarea>
           </div>
         </div>
@@ -319,19 +324,25 @@
       <div class="modal-body">
         <div class="row mb-3">
           <div class="col-6">
-            <label class="form-label font-weight-bold">วันที่ต้องส่ง <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">วันที่ต้องส่ง <span style="color: red;">*</span></label>
             <input type="date" class="form-control" [formControl]="designDate"
               [class.is-invalid]="designDate.invalid && designDate.touched">
           </div>
           <div class="col-6">
-            <label class="form-label font-weight-bold">เวลาที่ต้องส่ง <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">เวลาที่ต้องส่ง <span style="color: red;">*</span></label>
             <input type="time" class="form-control" [formControl]="designTime"
               [class.is-invalid]="designTime.invalid && designTime.touched">
+          </div>
+          <div class="col-12"
+            *ngIf="mainForm.getRawValue().designOrderId == null || mainForm.getRawValue().designOrderId == ''">
+            <label class="form-label font-weight-bold">รายละเอียดงาน <span style="color: red;">*</span></label>
+            <input type="text" class="form-control" [formControl]="details"
+              [class.is-invalid]="details.invalid && details.touched">
           </div>
         </div>
         <div class="row mb-3">
           <div class="col-12">
-            <label class="form-label font-weight-bold">หมายเหตุในการขอแก้ไข <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">หมายเหตุในการขอแก้ไข <span style="color: red;">*</span></label>
             <textarea class="form-control" rows="3" [formControl]="designRemarks"
               placeholder="ระบุหมายเหตุในการขอแก้ไข..."
               [class.is-invalid]="designRemarks.invalid && designRemarks.touched"></textarea>
@@ -341,7 +352,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeDesignModal()">ยกเลิก</button>
         <button type="button" class="btn btn-warning" (click)="confirmSendToDesign()"
-          [disabled]="designDate.invalid || designTime.invalid || designRemarks.invalid">
+        [disabled]="designDate.invalid || designTime.invalid || designRemarks.invalid " >
           ยืนยันส่ง
         </button>
       </div>

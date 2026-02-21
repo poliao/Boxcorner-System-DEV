@@ -48,7 +48,19 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
                         ORDER BY d.id DESC
-                        """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
+                        """, countQuery = """
+                        SELECT count(*) FROM design_orders d
+                        WHERE
+                            (:id IS NULL OR :id = '' OR CAST(d.id AS TEXT) LIKE CONCAT('%', :id, '%'))
+                            AND (:folderName IS NULL OR :folderName = '' OR UPPER(d.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                            AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
+                            AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                            AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
+                            AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
+                            AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
+                            AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                        """, nativeQuery = true)
         Page<DesignOrders> findByAll(
                         @Param("id") String id,
                         @Param("folderName") String folderName,
@@ -74,7 +86,19 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
                         ORDER BY d.deadline_date ASC, d.deadline_time ASC
-                        """, countQuery = "SELECT count(*) FROM design_orders", nativeQuery = true)
+                        """, countQuery = """
+                        SELECT count(*) FROM design_orders d
+                        WHERE
+                            (:id IS NULL OR :id = '' OR CAST(d.id AS TEXT) LIKE CONCAT('%', :id, '%'))
+                            AND (:folderName IS NULL OR :folderName = '' OR UPPER(d.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                            AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
+                            AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                            AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
+                            AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
+                            AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
+                            AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                        """, nativeQuery = true)
         Page<DesignOrders> findByAllSorted(
                         @Param("id") String id,
                         @Param("folderName") String folderName,
@@ -128,8 +152,8 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
         Integer countBacklogInProgress(@Param("assignee") String assignee);
 
         @Query(value = "select count(t.id) from design_orders t " +
-                        "where t.confirm_status  = 'รอตรวจสอบ'", nativeQuery = true)
-        Integer countBacklogCheck();
+                        "where t.confirm_status  = 'รอตรวจสอบ' and t.job_owner = :jobOwner", nativeQuery = true)
+        Integer countBacklogCheck(@Param("jobOwner") String jobOwner);
 
         @Query(value = "select count(t.id) from design_orders t " +
                         "where t.confirm_status  = 'รอตรวจสอบ' " + 

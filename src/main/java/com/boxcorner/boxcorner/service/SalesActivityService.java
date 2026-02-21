@@ -20,10 +20,9 @@ public class SalesActivityService {
     private SalesActivityRepository salesActivityRepository;
 
     @Transactional
-    public SalesActivity saveOrUpdate(SalesActivity activity) {
+    public SalesActivity saveOrUpdate(SalesActivity activity, String salesName) {
         if (activity.getActivityId() != null) {
-            SalesActivity existing = salesActivityRepository.findById(activity.getActivityId())
-                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล ID: " + activity.getActivityId()));
+            SalesActivity existing = salesActivityRepository.findById(activity.getActivityId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล ID: " + activity.getActivityId()));
             
             if (activity.getRowVersion() != null && !existing.getRowVersion().equals(activity.getRowVersion())) {
                 throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
@@ -39,9 +38,14 @@ public class SalesActivityService {
             existing.setNextStep(activity.getNextStep());
             existing.setContact(activity.getContact());
             existing.setQuotation(activity.getQuotation());
+            existing.setSalesName(activity.getSalesName());
+            existing.setNextDate(activity.getNextDate());
+            existing.setNextTime(activity.getNextTime());
+            existing.setCompanyName(activity.getCompanyName());
             
             return salesActivityRepository.save(existing);
         } else {
+            activity.setSalesName(salesName);
             return salesActivityRepository.save(activity);
         }
     }

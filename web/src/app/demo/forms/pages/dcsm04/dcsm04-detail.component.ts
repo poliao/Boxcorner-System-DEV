@@ -10,6 +10,7 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
 import Swal from 'sweetalert2';
 import { Dcsm02Service } from '../dcsm02/dcsm02.service';
+import { count } from 'rxjs';
 @Component({
   selector: 'app-dcsm04-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule, ThaiDatePipe],
@@ -33,18 +34,19 @@ export class Dcsm04DetailComponent implements OnInit {
   showRejectModal = false;
   showDesignModal = false;
   showPlanModal = false;
-  usedFile = new FormControl('', Validators.required);
-  colorSample = new FormControl('');
-  deadlineDate = new FormControl('');
-  deadlineTime = new FormControl('');
-  remarks = new FormControl('');
-  decisionAuthority = new FormControl('', Validators.required);
-  designDate = new FormControl('', Validators.required);
-  designTime = new FormControl('', Validators.required);
-  designRemarks = new FormControl('', Validators.required);
-  planDate = new FormControl('', Validators.required);
-  planTime = new FormControl('', Validators.required);
-  planRemarks = new FormControl('', Validators.required);
+  usedFile = new FormControl(null, Validators.required);
+  colorSample = new FormControl(null);
+  deadlineDate = new FormControl(null);
+  deadlineTime = new FormControl(null);
+  remarks = new FormControl(null);
+  decisionAuthority = new FormControl(null, Validators.required);
+  designDate = new FormControl(null, Validators.required);
+  designTime = new FormControl(null, Validators.required);
+  details = new FormControl(null, Validators.required);
+  designRemarks = new FormControl(null, Validators.required);
+  planDate = new FormControl(null, Validators.required);
+  planTime = new FormControl(null, Validators.required);
+  planRemarks = new FormControl(null, Validators.required);
   decisionAuthorityRemarks = new FormControl('');
 
   constructor(
@@ -70,7 +72,7 @@ export class Dcsm04DetailComponent implements OnInit {
       }
     }
 
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'รอเจ้าของงานตรวจสอบ'|| this.mainForm.getRawValue().status === 'ส่งProofหน้าแท่นแล้ว' || this.mainForm.getRawValue().status === 'เริ่มเคลียร์ไฟล์ Proof' || this.mainForm.getRawValue().status === 'ไฟล์Proofเสร็จ รอตรวจ' || this.mainForm.getRawValue().status == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์') {
+    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'รอเจ้าของงานตรวจสอบ' || this.mainForm.getRawValue().status === 'ส่งProofหน้าแท่นแล้ว' || this.mainForm.getRawValue().status === 'เริ่มเคลียร์ไฟล์ Proof' || this.mainForm.getRawValue().status === 'ไฟล์Proofเสร็จ รอตรวจ' || this.mainForm.getRawValue().status == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
@@ -244,6 +246,38 @@ export class Dcsm04DetailComponent implements OnInit {
     });
   }
 
+  confirmComplete() {
+    Swal.fire({
+      title: 'ยืนยันอนุมัติข้อมูล',
+      text: "ยืนยันอนุมัติข้อมูล ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')?.setValue('ผ่าน');
+        this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.checkBtn();
+            this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
+            this.router.navigate(['/Dcsm04']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
+      }
+    });
+  }
+
   updateFileChecked() {
     Swal.fire({
       title: 'ตรวจสอบไฟล์',
@@ -290,7 +324,7 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
       this.isBtnSampleProof = false;
-    } else if (currentUser === formValue.jobOwner && formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' ) {
+    } else if (currentUser === formValue.jobOwner && formValue.status === 'สำเร็จ รออนุมัติไปตารางรอผลิต') {
       this.isBtnSave = false;
       this.isBtnApprove = false;
       this.isBtnReject = false;
@@ -524,55 +558,55 @@ export class Dcsm04DetailComponent implements OnInit {
     this.showRejectModal = false;
   }
 
-  sendToDesign() {
-    Swal.fire({
-      title: 'ส่งไปฝ่ายออกแบบ',
-      text: "ยืนยันส่งงานไปฝ่ายออกแบบ ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        this.mainForm.get('status')?.setValue('แก้ไขงานตัวอย่าง');
-        this.dcsm02Service.getById(this.mainForm.getRawValue().designOrderId).subscribe({
-          next: (response) => {
-            response.confirmStatus = 'ไม่ผ่าน';
-            response.processStatus = 'รอดำเนินการแก้ไข';
-            this.dcsm02Service.save(response).subscribe({
-              next: (response) => {
-                this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
-                  next: (response) => {
-                    this.loadingService.hide();
-                    this.patchFormData(response);
-                    this.checkBtn();
-                    this.closeRejectModal();
-                    this.sweetAlert.success('ส่งไปฝ่ายออกแบบสำเร็จ');
-                    this.router.navigate(['/Dcsm04']);
-                  },
-                  error: (error) => {
-                    this.loadingService.hide();
-                    this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
-                  }
-                });
-                this.loadingService.hide();
-                this.sweetAlert.success('ส่งไปฝ่ายออกแบบสำเร็จ');
-                this.router.navigate(['/Dcsm04']);
-              },
-              error: (error) => {
-                this.loadingService.hide();
-                this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
-              }
-            });
-          }
-        })
+  // sendToDesign() {
+  //   Swal.fire({
+  //     title: 'ส่งไปฝ่ายออกแบบ',
+  //     text: "ยืนยันส่งงานไปฝ่ายออกแบบ ใช่หรือไม่?",
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#1e1b4b',
+  //     cancelButtonColor: '#d33',
+  //     confirmButtonText: 'ยืนยัน',
+  //     cancelButtonText: 'ยกเลิก'
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       this.loadingService.show();
+  //       this.mainForm.get('status')?.setValue('แก้ไขงานตัวอย่าง');
+  //       this.dcsm02Service.getById(this.mainForm.getRawValue().designOrderId).subscribe({
+  //         next: (response) => {
+  //           response.confirmStatus = 'ไม่ผ่าน';
+  //           response.processStatus = 'รอดำเนินการแก้ไข';
+  //           this.dcsm02Service.save(response).subscribe({
+  //             next: (response) => {
+  //               this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+  //                 next: (response) => {
+  //                   this.loadingService.hide();
+  //                   this.patchFormData(response);
+  //                   this.checkBtn();
+  //                   this.closeRejectModal();
+  //                   this.sweetAlert.success('ส่งไปฝ่ายออกแบบสำเร็จ');
+  //                   this.router.navigate(['/Dcsm04']);
+  //                 },
+  //                 error: (error) => {
+  //                   this.loadingService.hide();
+  //                   this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+  //                 }
+  //               });
+  //               this.loadingService.hide();
+  //               this.sweetAlert.success('ส่งไปฝ่ายออกแบบสำเร็จ');
+  //               this.router.navigate(['/Dcsm04']);
+  //             },
+  //             error: (error) => {
+  //               this.loadingService.hide();
+  //               this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+  //             }
+  //           });
+  //         }
+  //       })
 
-      }
-    });
-  }
+  //     }
+  //   });
+  // }
 
   sendToPlan() {
     Swal.fire({
@@ -648,38 +682,82 @@ export class Dcsm04DetailComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.mainForm.get('status')?.setValue('แก้ไขงานตัวอย่าง');
-          this.dcsm02Service.getById(this.mainForm.getRawValue().designOrderId).subscribe({
-            next: (response) => {
-              response.confirmStatus = 'ไม่ผ่าน';
-              response.processStatus = 'รอดำเนินการแก้ไข';
-              response.deadlineDate = this.designDate.value;
-              response.deadlineTime = this.designTime.value;
-              response.noteEdit = this.designRemarks.value;
-              this.dcsm02Service.save(response).subscribe({
-                next: (response) => {
-                  this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
-                    next: (response) => {
-                      this.loadingService.hide();
-                      this.patchFormData(response);
-                      this.checkBtn();
-                      this.closeDesignModal();
-                      this.closeRejectModal();
-                      this.sweetAlert.success('ส่งไปฝ่ายออกแบบสำเร็จ');
-                      this.router.navigate(['/Dcsm04']);
-                    },
-                    error: (error) => {
-                      this.loadingService.hide();
-                      this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
-                    }
-                  });
-                },
-                error: (error) => {
-                  this.loadingService.hide();
-                  this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
-                }
-              });
+          console.log(this.mainForm.getRawValue().designOrderId);
+          
+          if (this.mainForm.getRawValue().designOrderId != null && this.mainForm.getRawValue().designOrderId != '') {
+            this.dcsm02Service.getById(this.mainForm.getRawValue().designOrderId).subscribe({
+              next: (response) => {
+                response.confirmStatus = 'ไม่ผ่าน';
+                response.processStatus = 'รอดำเนินการแก้ไข';
+                response.deadlineDate = this.designDate.value;
+                response.deadlineTime = this.designTime.value;
+                response.noteEdit = this.designRemarks.value;
+                this.dcsm02Service.save(response).subscribe({
+                  next: (response) => {
+                    this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+                      next: (response) => {
+                        this.loadingService.hide();
+                        this.patchFormData(response);
+                        this.checkBtn();
+                        this.closeDesignModal();
+                        this.closeRejectModal();
+                        this.sweetAlert.success('ส่งไปฝ่ายออกแบบสำเร็จ');
+                        this.router.navigate(['/Dcsm04']);
+                      },
+                      error: (error) => {
+                        this.loadingService.hide();
+                        this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+                      }
+                    });
+                  },
+                  error: (error) => {
+                    this.loadingService.hide();
+                    this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+                  }
+                });
+              }
+            })
+          } else {
+            const data = {
+              orderDate: new Date().toISOString().substring(0, 10),
+              folderName: this.mainForm.getRawValue().folderName,
+              jobDetails: this.details.value,
+              remarks: this.designRemarks.value,
+              jobOwner: this.mainForm.getRawValue().jobOwner,
+              deadlineDate: this.designDate.value,
+              deadlineTime: this.designTime.value,
+              assignee: null,
+              processStatus: 'รอผู้รับผิดชอบยืนยัน',
+              confirmStatus: 'รอผู้รับผิดชอบยืนยัน',
+              fileName: null,
+              customerName: this.mainForm.getRawValue().customerName,
+              rowVersion: null,
+              confirmDate: null,
             }
-          })
+            this.dcsm02Service.save(data).subscribe({
+              next: (response) => {
+                this.dcsm04Service.save(this.mainForm.getRawValue()).subscribe({
+                  next: (response) => {
+                    this.loadingService.hide();
+                    this.patchFormData(response);
+                    this.checkBtn();
+                    this.closeDesignModal();
+                    this.closeRejectModal();
+                    this.sweetAlert.success('ส่งไปฝ่ายออกแบบสำเร็จ');
+                    this.router.navigate(['/Dcsm04']);
+                  },
+                  error: (error) => {
+                    this.loadingService.hide();
+                    this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+                  }
+                });
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+              }
+            });
+          }
         }
       });
     }

@@ -170,8 +170,8 @@ public class DesignOrdersController {
     }
 
     @GetMapping("/countBacklogCheck")
-    public ResponseEntity<Integer> countBacklogCheck() {
-        return ResponseEntity.ok(service.countBacklogCheck());
+    public ResponseEntity<Integer> countBacklogCheck(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(service.countBacklogCheck(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogCheckDe")

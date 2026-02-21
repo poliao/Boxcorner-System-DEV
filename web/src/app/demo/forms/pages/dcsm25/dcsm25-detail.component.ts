@@ -23,6 +23,8 @@ export class Dcsm25DetailComponent implements OnInit {
   id: string | null = null;
   isEditMode = false;
   isRicoh = false;
+  extraPrints: any[] = [];
+  selectedExtraPrint: any = null;
 
 
   constructor(
@@ -47,6 +49,10 @@ export class Dcsm25DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designDiecut'];
     if (resolvedData) {
       this.printingForm.patchValue(resolvedData);
+    }
+    
+    if (this.id) {
+      this.loadExtraPrints();
     }
   }
 
@@ -223,7 +229,6 @@ export class Dcsm25DetailComponent implements OnInit {
       const recordData = this.printingFormRecord.value;
       this.dcsm25Service.startPrintLog(recordData).subscribe({
         next: (responseLog) => {
-          console.log(responseLog);
           this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
             response.printingRecordId = responseLog.logId;
             this.dcsm25Service.save(response).subscribe({
@@ -337,8 +342,6 @@ export class Dcsm25DetailComponent implements OnInit {
     }
   }
 
-
-
   checkPrinter() {
     this.dcsm25Service.getLogById(this.printingForm.getRawValue().printingRecordId).subscribe({
       next: (responseLog) => {
@@ -349,5 +352,111 @@ export class Dcsm25DetailComponent implements OnInit {
         }
       }
     })
+  }
+
+  loadExtraPrints() {
+    if (this.id) {
+      this.dcsm25Service.getExtraPrintsByJobId(+this.id).subscribe({
+        next: (data: any[]) => {
+          this.extraPrints = data;
+        },
+        error: (err) => {
+          console.error('Error loading extra prints:', err);
+        }
+      });
+    }
+  }
+
+  selectExtraPrint(print: any) {
+    this.selectedExtraPrint = print;
+  }
+
+  startExtraPrint() {
+    if (this.printingFormRecord.valid && this.selectedExtraPrint) {
+      this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
+      this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
+      this.printingFormRecord.get('logType')?.setValue('EXTRA');
+      this.printingFormRecord.get('printSide')?.setValue('FRONT');
+      const recordData = this.printingFormRecord.value;
+      this.dcsm25Service.startPrintLog(recordData).subscribe({
+        next: (responseLog) => {
+          const updateData = {
+            id: this.selectedExtraPrint.id,
+            printJobId: this.selectedExtraPrint.printJobId,
+            additionalQty: this.selectedExtraPrint.additionalQty,
+            reason: this.selectedExtraPrint.reason,
+            status: 'IN_PROGRESS',
+            requestedBy: this.selectedExtraPrint.requestedBy,
+            printingRecordId: responseLog.logId
+          };
+          this.dcsm25Service.updateExtraPrint(updateData).subscribe({
+            next: () => {
+              this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
+                response.printingRecordId = responseLog.logId;
+                this.dcsm25Service.save(response).subscribe({
+                  next: (response) => {
+                    this.printingForm.patchValue(response);
+                    this.loadExtraPrints();
+                    this.sweetAlert.success('Success', 'เริ่มพิมพ์เพิ่ม');
+                  }
+                });
+              });
+            }
+          });
+        },
+        error: (error) => {
+          this.sweetAlert.error('Error', error.error.error);
+        }
+      });
+    } else {
+      this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
+    }
+  }
+
+  stopExtraPrint(action: string) {
+    if (this.printingEndLog.valid && this.selectedExtraPrint) {
+      const logId = this.selectedExtraPrint.printingRecordId || this.printingForm.getRawValue().printingRecordId;
+      
+      if (!logId) {
+        this.sweetAlert.error('Error', 'ไม่พบ log ID');
+        return;
+      }
+      
+      this.printingEndLog.get('logId')?.setValue(logId);
+      this.printingEndLog.get('action')?.setValue(action);
+      const recordData = this.printingEndLog.value;
+      this.dcsm25Service.stopPrintLog(recordData).subscribe({
+        next: () => {
+          const updateData = {
+            id: this.selectedExtraPrint.id,
+            printJobId: this.selectedExtraPrint.printJobId,
+            additionalQty: this.selectedExtraPrint.additionalQty,
+            reason: this.selectedExtraPrint.reason,
+            status: action === 'FINISH' ? 'COMPLETED' : 'PAUSED',
+            requestedBy: this.selectedExtraPrint.requestedBy,
+            printingRecordId: null
+          };
+          this.dcsm25Service.updateExtraPrint(updateData).subscribe({
+            next: () => {
+              this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
+                response.printingRecordId = null;
+                this.dcsm25Service.save(response).subscribe({
+                  next: (response) => {
+                    this.printingForm.patchValue(response);
+                    this.loadExtraPrints();
+                    this.sweetAlert.success('Success', action === 'FINISH' ? 'พิมพ์เสร็จสิ้น' : 'หยุดชั่วคราว');
+                  }
+                });
+              });
+            }
+          });
+        },
+        error: (error) => {
+          this.sweetAlert.error('Error', error.error.error);
+        }
+      });
+    } else {
+      this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
+    }
   }
 }

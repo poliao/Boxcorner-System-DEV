@@ -20,14 +20,14 @@ public abstract class BaseEntity {
     }
 
     public enum LogType {
-        NORMAL, REPRINT, TEST, CALIBRATE
+        NORMAL, REPRINT, TEST, CALIBRATE, EXTRA
     }
 
     public enum JobStatus {
-        PENDING, IN_PROGRESS, COMPLETED, PAUSED, WAITPAGE2, IN_PROGRESS_PAGE2, PAUSED_PAGE2
+        PENDING, IN_PROGRESS, COMPLETED, PAUSED, WAITPAGE2, IN_PROGRESS_PAGE2, PAUSED_PAGE2, PROOF, PROOFCOMPLETED
     }
 
-     public enum InkCondition {
+    public enum InkCondition {
         NEW, OLD
     }
 

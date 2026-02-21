@@ -56,6 +56,7 @@ export class Dcsm25Component implements OnInit {
     { key: 'deliveryDate', label: 'วันที่ส่งพิมพ์', },
     { key: 'printerName', label: 'พิมพ์ที่', },
     { key: 'issample', label: 'เป็นตัวอย่าง' },
+    { key: 'extraPrintCount', label: 'พิมพ์เพิ่ม' },
     { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
   ];
 
@@ -89,7 +90,7 @@ export class Dcsm25Component implements OnInit {
     this.dcsm25Service.getOrdersWithSearch(this.pageIndex, this.pageSize, filters)
       .subscribe({
         next: (response: any) => {
-          this.tableData = response.content.map((item: any) => ({
+          const jobs = response.content.map((item: any) => ({
             ...item,
             date: this.formatDate(item.date),
             printingDate: this.formatDate(item.printingDate),
@@ -98,8 +99,13 @@ export class Dcsm25Component implements OnInit {
             gluingDate: this.formatDate(item.gluingDate),
             qcDate: this.formatDate(item.qcDate),
             dueDate: this.formatDate(item.dueDate),
-            issample: item.issample ? 'เป็น' : 'ไม่เป็น'
+            issample: item.issample ? 'เป็น' : 'ไม่เป็น',
+            isExtraPrint: false
           }));
+          
+          // Load extra prints for each job
+          this.loadExtraPrints(jobs);
+          
           this.totalElements = response.totalElements;
           this.loadingService.hide();
         },
@@ -108,6 +114,32 @@ export class Dcsm25Component implements OnInit {
           this.loadingService.hide();
           this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการโหลดข้อมูล');
         }
+      });
+  }
+
+  loadExtraPrints(jobs: any[]) {
+    const extraPrintRequests = jobs
+      .filter(job => typeof job.id === 'number' && !isNaN(job.id))
+      .map(job => 
+        this.dcsm25Service.getExtraPrintsByJobId(job.id)
+      );
+
+    Promise.all(extraPrintRequests.map(req => req.toPromise()))
+      .then(results => {
+        const validJobs = jobs.filter(job => typeof job.id === 'number' && !isNaN(job.id));
+        
+        results.forEach((extraPrints: any[], index) => {
+          const job = validJobs[index];
+          // เพิ่ม extraPrints เป็น property ของงานหลัก
+          job.extraPrints = extraPrints || [];
+          job.extraPrintCount = extraPrints ? extraPrints.length : 0;
+        });
+        
+        this.tableData = jobs;
+      })
+      .catch(err => {
+        console.error('Error loading extra prints:', err);
+        this.tableData = jobs;
       });
   }
 
@@ -135,7 +167,7 @@ export class Dcsm25Component implements OnInit {
   }
 
   onRowClick(row: any) {
-    if (row && row.id) {
+    if (row && row.id && typeof row.id === 'number') {
       this.router.navigate(['/Dcsm25Detail', row.id]);
     }
   }

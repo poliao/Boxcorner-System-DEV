@@ -43,16 +43,25 @@ export class Dcsm28DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
     }
-
     if (this.isEditMode) {
-      this.activityForm.disable();
+      this.activityForm.get('activityId')?.disable();
+      this.activityForm.get('activityDate')?.disable();
+      this.activityForm.get('companyName')?.disable();
+      this.activityForm.get('customerName')?.disable();
+      this.activityForm.get('contactPerson')?.disable();
+      this.activityForm.get('contact')?.disable();
+      this.activityForm.get('contactChannel')?.disable();
+      this.activityForm.get('objective')?.disable();
+      this.activityForm.get('discussionResult')?.disable();
+      this.activityForm.get('isNewCustomer')?.disable();
+
       this.loadCurrentQuotation();
     }
   }
 
   loadCurrentQuotation(): void {
     if (!this.id) return;
-    
+
     this.dcsm28Service.getCurrentQuotation(Number(this.id)).subscribe({
       next: (response) => {
         if (response) {
@@ -79,15 +88,21 @@ export class Dcsm28DetailComponent implements OnInit {
       discussionResult: [null, Validators.required],
       isNewCustomer: [false],
       nextStep: [null],
+      salesName: [null],
+      companyName: [null, Validators.required],
+      nextDate: [null],
+      nextTime: [null]
     });
+    this.activityForm.controls['salesName'].disable();
 
     this.quotationForm = this.fb.group({
-      quoteNumber: ['', Validators.required],
+      quoteNumber: [null, Validators.required],
       amount: [null, Validators.required],
-      remark: ['']
+      remark: [null]
     });
 
     this.activityForm.get('activityDate')?.disable();
+    this.activityForm.get('activityId')?.disable();
   }
 
   patchFormData(data: any): void {

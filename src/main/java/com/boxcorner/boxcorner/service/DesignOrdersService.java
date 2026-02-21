@@ -186,8 +186,8 @@ public class DesignOrdersService {
         return repository.countBacklogInProgress(assignee);
     }
 
-    public Integer countBacklogCheck() {
-        return repository.countBacklogCheck();
+    public Integer countBacklogCheck(String jobOwner) {
+        return repository.countBacklogCheck(jobOwner);
     }
 
     public Integer countBacklogCheckDe(String assignee) {

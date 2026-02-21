@@ -1,113 +1,182 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { Dcsm27Service } from './dcsm27.service';
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { LoadingService } from 'src/app/demo/loadingservice/loading';
-import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
+import { AuthService } from 'src/app/services/auth.service';
+
+declare var bootstrap: any;
 
 @Component({
-  selector: 'app-dcsm27-detail.component',
-  imports: [ReactiveFormsModule, CommonModule, MatIconModule, MatButtonModule],
+  selector: 'app-dcsm27-detail',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, MatButtonModule],
   templateUrl: './dcsm27-detail.component.html',
-  styleUrl: './dcsm27-detail.component.scss'
+  styleUrls: ['./dcsm27-detail.component.scss']
 })
 export class Dcsm27DetailComponent implements OnInit {
-  printingForm!: FormGroup;
-  isEditMode = false;
-  id: string | null = null;
-  isSample = false;
-
-  showCompleteModal = false;
-  latestFileName = new FormControl('', Validators.required);
+  printJobForm!: FormGroup;
+  extraPrintForm!: FormGroup;
+  printJobId: number | null = null;
+  extraPrints: any[] = [];
+  modal: any;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private dcsm27Service: Dcsm27Service,
-    private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService
-  ) { }
+    private authService: AuthService,
+  ) {}
 
-  ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get('id');
-    this.isEditMode = !!this.id;
-    this.initForm();
-
-    const resolvedData = this.route.snapshot.data['designDiecut'];
-    if (resolvedData) {
-      this.patchFormData(resolvedData);
-    }
-  }
-
-  initForm(): void {
-    this.printingForm = this.fb.group({
-      rowVersion: [null],
-      id: [null],
-      createdAt: [null],
-      jobId: [null],
-      deliveryDate: [null, Validators.required],
-      customerJobName: [null],
-      jobStatus: [null],
-      totalPrintSheets: [null],
-      productionQty: [null],
-      printerName: [null],
-      setupWaste: [null],
-      sampleRefNo: [null],
-      deliveryTime: [null, Validators.required],
-      issample: [null],
-      jobType: [null],
-      printType: [null],
-      paperType: [null],
-      diecuttingType: [null],
-      coatType: [null],
-      systemPrint: [null],
-      colorPrint: [null],
-      paperGram: [null],
-      printingRecordId: [null],
-      sampleId: [null],
-      productionJobId: [null],
-      print2Page: [false],
-      typeJob: [null],
-      productionOrderId: [null]
-    });
+  ngOnInit() {
+    this.initForms();
     
-    if (this.isEditMode) {
-      this.printingForm.disable();
-    }
-  }
-
-  patchFormData(data: any): void {
-    const apiData = data as any;
-    this.printingForm.patchValue(apiData);
-    this.isSample = apiData.issample || false;
-  }
-
-  onSave(): void {
-    if (this.printingForm.invalid) {
-      this.sweetAlert.error('ข้อผิดพลาด', 'กรุณากรอกข้อมูลให้ครบถ้วน');
-      return;
-    }
-
-    this.loadingService.show();
-    const formData = this.printingForm.getRawValue();
-
-    this.dcsm27Service.save(formData).subscribe({
-      next: (response) => {
-        this.loadingService.hide();
-        this.sweetAlert.success('สำเร็จ', 'บันทึกข้อมูลเรียบร้อยแล้ว');
-        this.router.navigate(['/Dcsm27']);
-      },
-      error: (error) => {
-        this.loadingService.hide();
-        this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้');
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.printJobId = +params['id'];
+        this.loadPrintJob();
+        this.loadExtraPrints();
       }
     });
   }
 
+  initForms() {
+    this.printJobForm = this.fb.group({
+      jobId: [null],
+      deliveryDate: [null],
+      deliveryTime: [null],
+      customerJobName: [null],
+      jobStatus: [null],
+      productionQty: [0]
+    });
+
+    this.extraPrintForm = this.fb.group({
+      additionalQty: [null, [Validators.required, Validators.min(1)]],
+      reason: [null, Validators.required],
+      requestedBy: [null],
+      status: ['PENDING']
+    });
+  }
+
+  loadPrintJob() {
+    if (this.printJobId) {
+      this.dcsm27Service.getById(this.printJobId).subscribe({
+        next: (data: any) => {
+          this.printJobForm.patchValue(data);
+        },
+        error: (err) => {
+          console.error('Error loading print job:', err);
+        }
+      });
+    }
+  }
+
+  loadExtraPrints() {
+    if (this.printJobId) {
+      this.dcsm27Service.getExtraPrintsByJobId(this.printJobId).subscribe({
+        next: (data: any[]) => {
+          this.extraPrints = data;
+        },
+        error: (err) => {
+          console.error('Error loading extra prints:', err);
+        }
+      });
+    }
+  }
+
+  openExtraPrintModal() {
+    this.extraPrintForm.reset({
+      additionalQty: '',
+      reason: '',
+      status: 'PENDING'
+    });
+    const modalElement = document.getElementById('extraPrintModal');
+    this.modal = new bootstrap.Modal(modalElement);
+    this.modal.show();
+  }
+
+  saveExtraPrint() {
+    if (this.extraPrintForm.valid && this.printJobId) {
+      const formData = {
+        ...this.extraPrintForm.value,
+        printJobId: this.printJobId,
+        requestedBy: this.authService.getUserFromToken().sub
+      };
+
+      this.dcsm27Service.saveExtraPrint(formData).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'บันทึกสำเร็จ',
+            showConfirmButton: false,
+            timer: 1500
+          });
+          this.modal.hide();
+          this.loadExtraPrints();
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: err.message
+          });
+        }
+      });
+    } else {
+      Object.keys(this.extraPrintForm.controls).forEach(key => {
+        this.extraPrintForm.get(key)?.markAsTouched();
+      });
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณากรอกข้อมูลให้ครบถ้วน'
+      });
+    }
+  }
+
+  viewExtraPrint(extra: any) {
+    // Optional: implement view/edit functionality
+    console.log('View extra print:', extra);
+  }
+
+  deleteExtraPrint(id: number, event: Event) {
+    event.stopPropagation();
+    Swal.fire({
+      title: 'คุณต้องการลบรายการนี้หรือไม่?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.dcsm27Service.deleteExtraPrint(id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'ลบสำเร็จ',
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.loadExtraPrints();
+          },
+          error: (err) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: err.message
+            });
+          }
+        });
+      }
+    });
+  }
+
+  onBack() {
+    this.router.navigate(['/Dcsm27']);
+  }
 }
