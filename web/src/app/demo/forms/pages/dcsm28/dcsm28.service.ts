@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -10,7 +11,7 @@ export class Dcsm28Service {
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private authService: AuthService,) { }
 
   search(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
@@ -30,7 +31,12 @@ export class Dcsm28Service {
       }
     });
 
-    return this.http.get(`${this.apiUrl}/salesActivities/search`, { params: params });
+    this.authService.getUserFromToken().role
+    if (this.authService.getUserFromToken().role == 'salesAdmin' || this.authService.getUserFromToken().role == 'SupperAdmin') {
+      return this.http.get(`${this.apiUrl}/salesActivities/searchAdmin`, { params: params });
+    }else{
+      return this.http.get(`${this.apiUrl}/salesActivities/search`, { params: params });
+    }
   }
 
   getById(id: number): Observable<any> {

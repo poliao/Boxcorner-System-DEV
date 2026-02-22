@@ -21,10 +21,11 @@ public class JwtUtils {
     }
 
     // 1. สร้าง Token
-    public String generateToken(String username, Long userId) {
+    public String generateToken(String username, Long userId, String role) {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userId)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -51,7 +52,17 @@ public class JwtUtils {
                 .get("userId", Long.class);
     }
 
-    // 4. ตรวจสอบความถูกต้อง
+    // 4. แกะ Role จาก Token
+    public String getRoleFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+    }
+
+    // 5. ตรวจสอบความถูกต้อง
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);

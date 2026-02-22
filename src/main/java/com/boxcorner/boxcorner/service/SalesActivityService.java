@@ -57,6 +57,7 @@ public class SalesActivityService {
     @Transactional
     public Page<SalesActivity> search(
             Long activityId,
+            String salesName,
             String customerName,
             String contactPerson,
             Boolean isNewCustomer,
@@ -66,6 +67,29 @@ public class SalesActivityService {
             int size) {
         Pageable paging = PageRequest.of(page, size);
         return salesActivityRepository.findByFilters(
+            activityId,
+            salesName,
+            customerName,
+            contactPerson,
+            isNewCustomer,
+            startDate,
+            endDate,
+            paging
+        );
+    }
+
+    @Transactional
+    public Page<SalesActivity> searchAdmin(
+            Long activityId,
+            String customerName,
+            String contactPerson,
+            Boolean isNewCustomer,
+            LocalDate startDate,
+            LocalDate endDate,
+            int page,
+            int size) {
+        Pageable paging = PageRequest.of(page, size);
+        return salesActivityRepository.findByFiltersAdmin(
             activityId,
             customerName,
             contactPerson,

@@ -34,7 +34,7 @@ public class SalesActivityController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody SalesActivity activity, HttpServletRequest request) {
         try {
-            return ResponseEntity.ok(salesActivityService.saveOrUpdate(activity,tokenService.getCurrentUser(request)));
+            return ResponseEntity.ok(salesActivityService.saveOrUpdate(activity, tokenService.getCurrentUser(request)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -49,18 +49,41 @@ public class SalesActivityController {
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            HttpServletRequest httpRequest) {
+        String salesName = tokenService.getCurrentUser(httpRequest);       
         Page<SalesActivity> result = salesActivityService.search(
-            activityId,
-            customerName,
-            contactPerson,
-            isNewCustomer,
-            startDate,
-            endDate,
-            page,
-            size
-        );
+                activityId,
+                salesName,
+                customerName,
+                contactPerson,
+                isNewCustomer,
+                startDate,
+                endDate,
+                page,
+                size);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/searchAdmin")
+    public ResponseEntity<Page<SalesActivity>> searchAdmin(
+            @RequestParam(value = "activityId", required = false) Long activityId,
+            @RequestParam(value = "customerName", required = false) String customerName,
+            @RequestParam(value = "contactPerson", required = false) String contactPerson,
+            @RequestParam(value = "isNewCustomer", required = false) Boolean isNewCustomer,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<SalesActivity> result = salesActivityService.searchAdmin(
+                activityId,
+                customerName,
+                contactPerson,
+                isNewCustomer,
+                startDate,
+                endDate,
+                page,
+                size);
         return ResponseEntity.ok(result);
     }
 
