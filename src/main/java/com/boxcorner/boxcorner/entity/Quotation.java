@@ -53,9 +53,15 @@ public class Quotation {
     @CreationTimestamp // บันทึกเวลาอัตโนมัติเมื่อ Insert
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-    
+
     @Column(name = "product_category")
     private String productCategory;
+
+    @Column(name = "total_product")
+    private String totalProduct;
+
+    @Column(name = "price_item")
+    private String priceItem;
 
     // --- Helper Method (Optional) ---
     // คำนวณกำไรเบื้องต้น (เผื่อเรียกใช้ใน Java)

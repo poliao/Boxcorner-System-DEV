@@ -27,6 +27,7 @@ public class PrintingController {
 
     @Autowired
     private TokenService tokenService;
+
     // =================================================================
     // 1. เริ่มงาน (Start / Resume)
     // URL: POST /api/printing/start
@@ -34,13 +35,12 @@ public class PrintingController {
     @PostMapping("/start")
     public ResponseEntity<?> startJob(@RequestBody StartPrintRequest request, HttpServletRequest httpRequest) {
         try {
-            PrintLog newLog = printingService.startPrinting(request,tokenService.getCurrentUser(httpRequest) );
-            
+            PrintLog newLog = printingService.startPrinting(request, tokenService.getCurrentUser(httpRequest));
+
             return ResponseEntity.ok(Map.of(
-                "status", "STARTED",
-                "logId", newLog.getId(),
-                "startedAt", newLog.getStartedAt()
-            ));
+                    "status", "STARTED",
+                    "logId", newLog.getId(),
+                    "startedAt", newLog.getStartedAt()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -50,37 +50,35 @@ public class PrintingController {
     public ResponseEntity<?> stopJob(@RequestBody StopPrintRequest request) {
         try {
             PrintLog updatedLog = printingService.stopPrinting(request);
-            
+
             return ResponseEntity.ok(Map.of(
-                "status", request.getAction(),
-                "logId", updatedLog.getId(),
-                "totalImpressions", updatedLog.getTotalImpressions(),
-                "endedAt", updatedLog.getEndedAt()
-            ));
+                    "status", request.getAction(),
+                    "logId", updatedLog.getId(),
+                    "totalImpressions", updatedLog.getTotalImpressions(),
+                    "endedAt", updatedLog.getEndedAt()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
     @GetMapping("/active-log")
-    public ResponseEntity<?> checkActiveLog( @RequestParam(value = "printerId") Integer printerId) {
+    public ResponseEntity<?> checkActiveLog(@RequestParam(value = "printerId") Integer printerId) {
         PrintLog activeLog = printingService.getActiveLogByPrinter(printerId);
 
         if (activeLog != null) {
             return ResponseEntity.ok(Map.of(
-                "isActive", true,
-                "logId", activeLog.getId(),
-                "jobId", activeLog.getJob().getId(),
-                "meterStart", activeLog.getMeterColorStart(),
-                "printSide", activeLog.getPrintSide()
-            ));
+                    "isActive", true,
+                    "logId", activeLog.getId(),
+                    "jobId", activeLog.getJob().getId(),
+                    "meterStart", activeLog.getMeterColorStart(),
+                    "printSide", activeLog.getPrintSide()));
         } else {
             return ResponseEntity.ok(Map.of("isActive", false));
         }
     }
 
     @GetMapping("/logById")
-    public ResponseEntity<?> getPrintLog( @RequestParam(value = "logId") Long logId) {
+    public ResponseEntity<?> getPrintLog(@RequestParam(value = "logId") Long logId) {
         PrintLog log = printingService.gePrintLog(logId);
         if (log != null) {
             return ResponseEntity.ok(log);
@@ -94,6 +92,16 @@ public class PrintingController {
         try {
             PrintLog saved = printingService.saveCalibrate(request);
             return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/logsByJobId")
+    public ResponseEntity<?> getLogsByJobId(@RequestParam(value = "jobId") Long jobId) {
+        try {
+            java.util.List<PrintLog> logs = printingService.getLogsByJobId(jobId);
+            return ResponseEntity.ok(logs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

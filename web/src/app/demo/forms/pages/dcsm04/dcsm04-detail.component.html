@@ -48,7 +48,7 @@
         <div class="col-md-6">
           <label class="form-label font-weight-bold">รหัสงาน <span style="color: red;">*</span></label>
           <input type="text" formControlName="jobId" class="form-control"
-            [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
+            [class.is-invalid]="mainForm.get('jobId')?.invalid && mainForm.get('jobId')?.touched">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">รหัสใบเสนอราคา</label>
@@ -65,7 +65,7 @@
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
-          <input type="time" class="form-control" formControlName="orderTime" >
+          <input type="time" class="form-control" formControlName="orderTime">
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
@@ -74,7 +74,7 @@
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
-            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
+            [class.is-invalid]="mainForm.get('folderName')?.invalid && mainForm.get('folderName')?.touched">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
@@ -359,7 +359,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeDesignModal()">ยกเลิก</button>
         <button type="button" class="btn btn-warning" (click)="confirmSendToDesign()"
-        [disabled]="designDate.invalid || designTime.invalid || designRemarks.invalid " >
+          [disabled]="designDate.invalid || designTime.invalid || designRemarks.invalid ">
           ยืนยันส่ง
         </button>
       </div>

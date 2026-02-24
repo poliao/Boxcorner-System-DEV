@@ -61,7 +61,7 @@ export class Dcsm05DetailComponent implements OnInit {
         this.isDesign = true
       }
     }
-    if (this.mainForm.getRawValue().status == 'รอผู้รับผิดชอบอนุมัติ' || this.mainForm.getRawValue().status =='รอดำเนินการ') {
+    if (this.mainForm.getRawValue().status == 'รอผู้รับผิดชอบอนุมัติ' || this.mainForm.getRawValue().status == 'รอดำเนินการ') {
       this.mainForm.controls['machineName'].enable;
     } else {
       this.mainForm.controls['machineName'].disable({ emitEvent: false });
@@ -103,6 +103,7 @@ export class Dcsm05DetailComponent implements OnInit {
       typeJob: [null],
       machineName: [false],
       print2Page: [false],
+      totalPrintSheets: [null]
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -133,6 +134,7 @@ export class Dcsm05DetailComponent implements OnInit {
     this.mainForm.controls['jobId'].disable({ emitEvent: false });
     this.mainForm.controls['qtId'].disable({ emitEvent: false });
     this.mainForm.controls['typeJob'].disable({ emitEvent: false });
+    this.mainForm.controls['totalPrintSheets'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -157,6 +159,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = false;
+      this.mainForm.controls['totalPrintSheets'].enable({ emitEvent: false });
     } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์') || this.mainForm.getRawValue().status === 'แก้ไขไฟล์') {
       this.confirm = false;
       this.confirmDeliver = false;
@@ -215,7 +218,7 @@ export class Dcsm05DetailComponent implements OnInit {
   }
 
   CheckBtnProof() {
-    
+
   }
 
   private getCurrentUserFromToken(): string | null {
@@ -235,7 +238,7 @@ export class Dcsm05DetailComponent implements OnInit {
       this.sweetAlert.warning('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
       return;
     }
-    
+
     Swal.fire({
       title: 'ยืนยันรับงาน',
       text: "ยืนยันรับงาน ใช่หรือไม่?",
@@ -271,17 +274,26 @@ export class Dcsm05DetailComponent implements OnInit {
 
   updateStatusDeliver() {
     Swal.fire({
-      title: 'ยืนยันจัดส่งได้',
-      text: "ยืนยันจัดส่งได้ ใช่หรือไม่?",
-      icon: 'warning',
+      title: 'ระบุจำนวนใบพิมพ์',
+      input: 'number',
+      inputAttributes: {
+        min: "1"
+      },
+      inputPlaceholder: 'กรอกจำนวนใบพิมพ์',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
+      confirmButtonText: 'ยืนยันจัดส่งได้',
+      cancelButtonText: 'ยกเลิก',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'กรุณาระบุจำนวนใบพิมพ์!';
+        }
+        return null;
+      }
     }).then((result) => {
       if (result.isConfirmed) {
-        this.loadingService.show();
+        this.mainForm.controls['totalPrintSheets'].setValue(result.value);
         this.loadingService.show();
         this.mainForm.get('status')!.setValue('จัดส่งได้ รอเคลียร์ไฟล์');
         this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
@@ -384,7 +396,7 @@ export class Dcsm05DetailComponent implements OnInit {
           deliveryTime: this.mainForm.getRawValue().deliveryTime,
           customerJobName: this.mainForm.getRawValue().customerName,
           jobStatus: null,
-          totalPrintSheets: null,
+          totalPrintSheets: this.mainForm.getRawValue().totalPrintSheets,
           productionQty: this.mainForm.getRawValue().quantity,
           printerName: null,
           setupWaste: null,
@@ -594,7 +606,7 @@ export class Dcsm05DetailComponent implements OnInit {
           deliveryTime: this.mainForm.getRawValue().deliveryTime,
           customerJobName: this.mainForm.getRawValue().customerName,
           jobStatus: 'PENDING',
-          totalPrintSheets: null,
+          totalPrintSheets: this.mainForm.getRawValue().totalPrintSheets,
           productionQty: this.mainForm.getRawValue().quantity,
           printerName: this.mainForm.getRawValue().machineName,
           setupWaste: null,

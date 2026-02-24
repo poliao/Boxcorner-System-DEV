@@ -23,7 +23,9 @@ export class Dcsm28Service {
       contactPerson: filters.contactPerson || null,
       isNewCustomer: filters.isNewCustomer || null,
       startDate: filters.startDate || null,
-      endDate: filters.endDate || null
+      endDate: filters.endDate || null,
+      startDateMain: filters.activityStartDate || null,
+      endDateMain: filters.activityEndDate || null
     };
 
     Object.keys(params).forEach(key => {

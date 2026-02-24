@@ -87,6 +87,7 @@ export class Dcsm19DetailComponent implements OnInit {
       typeJob: [null],
       machineName: [null],
       print2Page: [false],
+      totalPrintSheets: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -114,6 +115,7 @@ export class Dcsm19DetailComponent implements OnInit {
     this.mainForm.controls['typeJob'].disable({ emitEvent: false });
     this.mainForm.controls['machineName'].disable({ emitEvent: false });
     this.mainForm.controls['print2Page'].disable({ emitEvent: false });
+    this.mainForm.controls['totalPrintSheets'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -130,7 +132,7 @@ export class Dcsm19DetailComponent implements OnInit {
       this.inspection = false;
       this.samples = false;
       this.deadline = true;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต') ) {
+    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต')) {
       this.confirm = false;
       this.confirmDeliver = false;
       this.notDeliver = false;
@@ -153,33 +155,33 @@ export class Dcsm19DetailComponent implements OnInit {
   }
 
   updateStatusSucsess() {
-      Swal.fire({
-        title: 'ยืนยันเสร็จสิ้น รอตรวจสอบ',
-        text: "ยืนยันเสร็จสิ้น ใช่หรือไม่?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#1e1b4b',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'ยืนยัน',
-        cancelButtonText: 'ยกเลิก'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.loadingService.show();
-          this.mainForm.get('status')!.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
-          this.dcsm19Service.save(this.mainForm.getRawValue()).subscribe({
-            next: (response) => {
-              this.patchFormData(response);
-              this.checkBtn();
-              this.loadingService.hide();
-              this.sweetAlert.success('Success', 'เสร็จสิ้น รอตรวจสอบ!');
-              this.router.navigate(['/Dcsm05']);
-            },
-            error: (error) => {
-              this.loadingService.hide();
-              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
-            }
-          })
-        }
-      });
-    }
+    Swal.fire({
+      title: 'ยืนยันเสร็จสิ้น รอตรวจสอบ',
+      text: "ยืนยันเสร็จสิ้น ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')!.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
+        this.dcsm19Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'เสร็จสิ้น รอตรวจสอบ!');
+            this.router.navigate(['/Dcsm05']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        })
+      }
+    });
+  }
 }

@@ -9,8 +9,11 @@
               placeholder="ค้นหา ลำดับ" (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
-            <input type="text" class="form-control" [(ngModel)]="filterSalesName" name="filterSalesName"
-              placeholder="ค้นหา พนักงานขาย" (keyup.enter)="onSearchChange()">
+            <select class="form-select" [(ngModel)]="filterSalesName" name="filterSalesName"
+              (change)="onSearchChange()">
+              <option value="">ค้นหา พนักงานขาย (ทั้งหมด)</option>
+              <option *ngFor="let sales of salesUsers" [value]="sales.text">{{ sales.text }}</option>
+            </select>
           </div>
           <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
@@ -30,13 +33,13 @@
             </select>
           </div>
           <div class="col-md-3">
-            <label class="form-label font-weight-bold">วันที่เริ่ม</label>
-            <input type="date" class="form-control" [(ngModel)]="filterStartDate" name="filterStartDate"
+            <label class="form-label font-weight-bold">วันที่บันทึก (เริ่ม)</label>
+            <input type="date" class="form-control" [(ngModel)]="filterActivityStartDate" name="filterActivityStartDate"
               (change)="onSearchChange()">
           </div>
           <div class="col-md-3">
-            <label class="form-label font-weight-bold">วันที่สิ้นสุด</label>
-            <input type="date" class="form-control" [(ngModel)]="filterEndDate" name="filterEndDate"
+            <label class="form-label font-weight-bold">วันที่บันทึก (สิ้นสุด)</label>
+            <input type="date" class="form-control" [(ngModel)]="filterActivityEndDate" name="filterActivityEndDate"
               (change)="onSearchChange()">
           </div>
           <div class="col-12">
@@ -111,9 +114,9 @@
       </div>
       <div class="modal-body p-4">
         <div class="mb-3">
-          <label class="form-label fw-bold">ราคาน้ำมัน (บาท) <span class="text-danger">*</span></label>
-          <input type="number" class="form-control" [(ngModel)]="fuelPrice" name="fuelPrice"
-            placeholder="กรอกราคาน้ำมัน" min="0" step="0.01">
+          <label class="form-label fw-bold">จำนวนที่เติม (บาท) <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" [(ngModel)]="fuelPrice" name="fuelPrice" placeholder="กรอกจำนวนเงิน"
+            min="0" step="0.01">
         </div>
         <div class="mb-3">
           <label class="form-label fw-bold">เลขไมค์ (กม.) <span class="text-danger">*</span></label>

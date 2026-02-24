@@ -25,23 +25,23 @@ import com.boxcorner.boxcorner.security.jwt.JwtAuthFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired private JwtAuthFilter jwtAuthFilter;
-    @Autowired private UserDetailsService userDetailsService;
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("api/auth/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(sess -> sess
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("api/auth/**").permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(sess -> sess
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -70,12 +70,13 @@ public class SecurityConfig {
         configuration.addAllowedOrigin("http://localhost:4200");
         configuration.addAllowedOrigin("http://13.215.254.25");
         configuration.addAllowedOrigin("https://192.168.1.156:4200");
-        configuration.addAllowedOrigin("http://bca-system.sytes.net");
+        configuration.addAllowedOrigin("https://bca-system.duckdns.org");
+        configuration.addAllowedOrigin("http://bca-system.duckdns.org");
 
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

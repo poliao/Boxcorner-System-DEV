@@ -22,6 +22,8 @@ public interface SalesActivityRepository extends JpaRepository<SalesActivity, Lo
                 AND (:isNewCustomer IS NULL OR s.is_new_customer = :isNewCustomer)
                 AND (CAST(:startDate AS DATE) IS NULL OR s.check_in_time >= CAST(:startDate AS DATE))
                 AND (CAST(:endDate AS DATE) IS NULL OR s.check_in_time < (CAST(:endDate AS DATE) + INTERVAL '1 DAY'))
+                AND (CAST(:startDateMain AS DATE) IS NULL OR s.activity_date >= CAST(:startDateMain AS DATE))
+                AND (CAST(:endDateMain AS DATE) IS NULL OR s.activity_date < (CAST(:endDateMain AS DATE) + INTERVAL '1 DAY'))
             ORDER BY s.activity_date DESC, s.activity_id DESC
             """, countQuery = "SELECT count(*) FROM sales_activities s", nativeQuery = true)
     Page<SalesActivity> findByFiltersAdmin(
@@ -32,6 +34,8 @@ public interface SalesActivityRepository extends JpaRepository<SalesActivity, Lo
             @Param("isNewCustomer") Boolean isNewCustomer,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
+            @Param("startDateMain") LocalDate startDateMain,
+            @Param("endDateMain") LocalDate endDateMain,
             Pageable pageable);
 
     @Query(value = """
@@ -44,6 +48,8 @@ public interface SalesActivityRepository extends JpaRepository<SalesActivity, Lo
                 AND (:isNewCustomer IS NULL OR s.is_new_customer = :isNewCustomer)
                 AND (CAST(:startDate AS DATE) IS NULL OR s.check_in_time >= CAST(:startDate AS DATE))
                 AND (CAST(:endDate AS DATE) IS NULL OR s.check_in_time < (CAST(:endDate AS DATE) + INTERVAL '1 DAY'))
+                AND (CAST(:startDateMain AS DATE) IS NULL OR s.activity_date >= CAST(:startDateMain AS DATE))
+                AND (CAST(:endDateMain AS DATE) IS NULL OR s.activity_date < (CAST(:endDateMain AS DATE) + INTERVAL '1 DAY'))
             ORDER BY s.activity_date DESC, s.activity_id DESC
             """, countQuery = "SELECT count(*) FROM sales_activities s", nativeQuery = true)
     Page<SalesActivity> findByFilters(

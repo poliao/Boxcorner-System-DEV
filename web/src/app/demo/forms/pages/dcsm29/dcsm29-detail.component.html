@@ -1,0 +1,188 @@
+<div class="card">
+  <div class="card-header">
+    <div class="row align-items-center">
+      <div class="col-12 col-md-6">
+        <h1 class="mb-2 mb-md-0">ตรวจสอบค่ายอดพิมพ์และมิเตอร์ (Meter Verification)</h1>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="d-grid d-md-flex justify-content-md-end gap-2">
+          <button mat-flat-button (click)="onBack()" style="background-color: #6c757d; color: white;">
+            <mat-icon>arrow_back</mat-icon> กลับ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <form [formGroup]="printJobForm">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Job ID</label>
+          <input type="text" formControlName="jobId" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">วันที่ส่ง</label>
+          <input type="date" formControlName="deliveryDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">เวลาส่ง</label>
+          <input type="time" formControlName="deliveryTime" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">จำนวนใบพิมพ์</label>
+          <input type="number" formControlName="totalPrintSheets" class="form-control">
+        </div>
+        <div class="col-md-5">
+          <label class="form-label">ชื่อลูกค้า/ชื่องาน</label>
+          <input type="text" formControlName="customerJobName" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">สถานะ</label>
+          <input type="text" formControlName="jobStatus" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">ยอดเผื่อเสีย (Setup Waste)</label>
+          <input type="number" formControlName="setupWaste" class="form-control">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- สรุปยอดพิมพ์ -->
+<div class="row mt-3">
+  <div class="col-md-4">
+    <div class="card text-center h-100 border-primary">
+      <div class="card-body">
+        <h5 class="card-title text-primary"><mat-icon class="align-middle">assignment</mat-icon> ยอดสั่งพิมพ์ทั้งหมด
+        </h5>
+        <h2 class="display-4">{{ orderedQuantity | number }}</h2>
+        <p class="text-muted">(จำนวนใบพิมพ์ + ยอดเผื่อเสีย)</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center h-100 border-info">
+      <div class="card-body">
+        <h5 class="card-title text-info"><mat-icon class="align-middle">print</mat-icon> ยอดพิมพ์จริงจากมิเตอร์</h5>
+        <h2 class="display-4">{{ totalMeterImpressions | number }}</h2>
+        <p class="text-muted">(รวม สี + ขาวดำ + อุปกรณ์พิเศษ)</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center h-100"
+      [ngClass]="{'border-success': difference <= 0, 'border-danger': difference > 0}">
+      <div class="card-body">
+        <h5 class="card-title" [ngClass]="{'text-success': difference <= 0, 'text-danger': difference > 0}">
+          <mat-icon class="align-middle">{{ difference > 0 ? 'warning' : 'check_circle' }}</mat-icon> ส่วนต่าง
+          (พิมพ์เกิน)
+        </h5>
+        <h2 class="display-4" [ngClass]="{'text-success': difference <= 0, 'text-danger': difference > 0}">
+          {{ difference > 0 ? '+' : '' }}{{ difference | number }}
+        </h2>
+        <p class="text-muted">
+          <span *ngIf="difference > 0" class="text-danger">พิมพ์เกินจากยอดสั่งพิมพ์</span>
+          <span *ngIf="difference <= 0" class="text-success">ยอดพิมพ์อยู่ในเกณฑ์</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ตารางแสดงประวัติมิเตอร์ PrintLogs -->
+<div class="card mt-3">
+  <div class="card-header" style="background-color: #f8f9fa;">
+    <h4 class="mb-0"><mat-icon class="align-middle text-primary">history</mat-icon> ประวัติการพิมพ์ (Print Logs)</h4>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light text-dark">
+          <tr>
+            <th class="py-3 text-center">รหัสประวัติ</th>
+            <th class="py-3">เครื่องพิมพ์</th>
+            <th class="py-3 text-center">หน้า/หลัง</th>
+            <th class="py-3 text-center">ประเภทงาน</th>
+            <th class="py-3 text-end">ยอดสี (Color)</th>
+            <th class="py-3 text-end">ยอดขาวดำ (B/W)</th>
+            <th class="py-3 text-end">ยอดพิเศษ (Sp)</th>
+            <th class="py-3 text-end">ยอดรวม</th>
+            <th class="py-3 text-center">เริ่มพิมพ์</th>
+            <th class="py-3 text-center">จบงานพิมพ์</th>
+            <th class="py-3">ผู้ปฏิบัติงาน</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of printLogs">
+            <td class="text-center">#{{ log.id }}</td>
+            <td>
+              <strong>{{ log.printer?.name }}</strong> <br>
+              <small class="text-muted">{{ log.printer?.brand }} - {{ log.printer?.model }}</small>
+            </td>
+            <td class="text-center">
+              <span class="badge" [ngClass]="log.printSide === 'FRONT' ? 'bg-primary' : 'bg-secondary'">
+                {{ log.printSide === 'FRONT' ? 'หน้า' : 'หลัง' }}
+              </span>
+            </td>
+            <td class="text-center">
+              <span class="badge" [ngClass]="{
+                  'bg-success': log.logType === 'NORMAL',
+                  'bg-warning text-dark': log.logType === 'REPRINT',
+                  'bg-info': log.logType === 'EXTRA'
+                }">
+                {{ log.logType }}
+              </span>
+            </td>
+
+            <td class="text-end font-monospace text-primary">
+              {{ (log.meterColorEnd && log.meterColorStart) ? (log.meterColorEnd - log.meterColorStart | number) : '0'
+              }}
+            </td>
+            <td class="text-end font-monospace text-secondary">
+              {{ (log.meterBwEnd && log.meterBwStart) ? (log.meterBwEnd - log.meterBwStart | number) : '0' }}
+            </td>
+            <td class="text-end font-monospace text-warning">
+              {{ (log.meterSpecialEnd && log.meterSpecialStart) ? (log.meterSpecialEnd - log.meterSpecialStart | number)
+              : '0' }}
+            </td>
+            <td class="text-end font-monospace fw-bold">
+              {{ ((log.meterColorEnd && log.meterColorStart ? (log.meterColorEnd - log.meterColorStart) : 0) +
+              (log.meterBwEnd && log.meterBwStart ? (log.meterBwEnd - log.meterBwStart) : 0) +
+              (log.meterSpecialEnd && log.meterSpecialStart ? (log.meterSpecialEnd - log.meterSpecialStart) : 0)) |
+              number }}
+            </td>
+
+            <td class="text-center">
+              <div *ngIf="log.startedAt">
+                <div>{{ log.startedAt | date:'dd/MM/yyyy' }}</div>
+                <small class="text-muted">{{ log.startedAt | date:'HH:mm:ss' }}</small>
+              </div>
+            </td>
+            <td class="text-center">
+              <div *ngIf="log.endedAt">
+                <div>{{ log.endedAt | date:'dd/MM/yyyy' }}</div>
+                <small class="text-muted">{{ log.endedAt | date:'HH:mm:ss' }}</small>
+              </div>
+              <span *ngIf="!log.endedAt" class="badge bg-warning text-dark">กำลังพิมพ์</span>
+            </td>
+            <td>
+              <span class="d-flex align-items-center">
+                <mat-icon class="me-1 text-muted fs-6">person</mat-icon>
+                {{ log.operatorName || '-' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="printLogs.length === 0">
+            <td colspan="11" class="text-center py-5 text-muted">
+              <mat-icon style="font-size: 48px; width: 48px; height: 48px; opacity: 0.5;">print_disabled</mat-icon>
+              <h5 class="mt-2 text-muted">ไม่พบข้อมูลประวัติการพิมพ์</h5>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

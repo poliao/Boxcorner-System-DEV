@@ -47,16 +47,20 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class Dcsm28Component implements OnInit {
 
-  filterActivityId: string = null;
-  filterSalesName: string = null;
-  filterCustomerName: string = null;
-  filterContactPerson: string = null;
-  filterIsNewCustomer: string = null;
-  filterStartDate: string = null;
-  filterEndDate: string = null;
+  filterActivityId: string = '';
+  filterSalesName: string = '';
+  filterCustomerName: string = '';
+  filterContactPerson: string = '';
+  filterIsNewCustomer: string = '';
+  filterStartDate: string = '';
+  filterEndDate: string = '';
+  filterActivityStartDate: string = '';
+  filterActivityEndDate: string = '';
 
   // Role check
   isAdmin: boolean = false;
+
+  salesUsers: any[] = [];
 
   // Fuel refill modal
   showFuelModal: boolean = false;
@@ -93,7 +97,17 @@ export class Dcsm28Component implements OnInit {
   ngOnInit() {
     const userRole = this.authService.getUserFromToken().role;
     this.isAdmin = userRole === 'salesAdmin' || userRole === 'SupperAdmin';
+    this.loadSalesUsers();
     this.loadData();
+  }
+
+  loadSalesUsers() {
+    this.dcsm28Service.getSalesUsers().subscribe({
+      next: (res) => {
+        this.salesUsers = res;
+      },
+      error: (err) => console.error('Error loading sales users:', err)
+    });
   }
 
   loadData() {
@@ -105,7 +119,9 @@ export class Dcsm28Component implements OnInit {
       contactPerson: this.filterContactPerson,
       isNewCustomer: this.filterIsNewCustomer,
       startDate: this.filterStartDate,
-      endDate: this.filterEndDate
+      endDate: this.filterEndDate,
+      activityStartDate: this.filterActivityStartDate,
+      activityEndDate: this.filterActivityEndDate
     };
 
     this.dcsm28Service.search(this.pageIndex, this.pageSize, filters)
@@ -168,6 +184,8 @@ export class Dcsm28Component implements OnInit {
     this.filterIsNewCustomer = '';
     this.filterStartDate = '';
     this.filterEndDate = '';
+    this.filterActivityStartDate = '';
+    this.filterActivityEndDate = '';
     this.onSearchChange();
   }
 

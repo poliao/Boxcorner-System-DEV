@@ -80,6 +80,8 @@ public class SalesActivityController {
             @RequestParam(value = "isNewCustomer", required = false) Boolean isNewCustomer,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "startDateMain", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateMain,
+            @RequestParam(value = "endDateMain", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDateMain,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<SalesActivity> result = salesActivityService.searchAdmin(
@@ -90,6 +92,8 @@ public class SalesActivityController {
                 isNewCustomer,
                 startDate,
                 endDate,
+                startDateMain,
+                endDateMain,
                 page,
                 size);
         return ResponseEntity.ok(result);

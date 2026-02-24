@@ -103,9 +103,9 @@
           <label class="form-label font-weight-bold">หน่วยนับ</label>
           <input type="text" formControlName="unit" class="form-control">
         </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">ประเภทงานจริง</label>
-          <input type="text" formControlName="typeJob" class="form-control" style="color: #000000;">
+        <div class="col-md-2" *ngIf="mainForm.get('totalPrintSheets')?.value">
+          <label class="form-label font-weight-bold">จำนวนใบพิมพ์</label>
+          <input type="number" formControlName="totalPrintSheets" class="form-control">
         </div>
         <div class="col-md-5">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>

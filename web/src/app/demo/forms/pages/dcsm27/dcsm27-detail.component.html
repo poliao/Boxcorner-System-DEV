@@ -6,6 +6,10 @@
       </div>
       <div class="col-12 col-md-6">
         <div class="d-grid d-md-flex justify-content-md-end gap-2">
+          <button *ngIf="!printJobId" mat-flat-button (click)="savePrintJob()"
+            style="background-color: #1e1b4b; color: white;">
+            <mat-icon>save</mat-icon> บันทึก
+          </button>
           <button mat-flat-button (click)="onBack()" style="background-color: #6c757d; color: white;">
             <mat-icon>arrow_back</mat-icon> กลับ
           </button>
@@ -17,29 +21,33 @@
   <div class="card-body">
     <form [formGroup]="printJobForm">
       <div class="row g-3">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label">Job ID</label>
-          <input type="text" formControlName="jobId" class="form-control" readonly>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">วันที่ส่ง</label>
-          <input type="date" formControlName="deliveryDate" class="form-control" readonly>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">เวลาส่ง</label>
-          <input type="time" formControlName="deliveryTime" class="form-control" readonly>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">ชื่อลูกค้า/ชื่องาน</label>
-          <input type="text" formControlName="customerJobName" class="form-control" readonly>
+          <input type="text" formControlName="jobId" class="form-control" [readonly]="!!printJobId || isInternalJob">
         </div>
         <div class="col-md-3">
+          <label class="form-label">วันที่ส่ง</label>
+          <input type="date" formControlName="deliveryDate" class="form-control" [readonly]="!!printJobId">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">เวลาส่ง</label>
+          <input type="time" formControlName="deliveryTime" class="form-control" [readonly]="!!printJobId">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">จำนวนใบพิมพ์</label>
+          <input type="number" formControlName="totalPrintSheets" class="form-control" [readonly]="!!printJobId">
+        </div>
+        <div class="col-md-5">
+          <label class="form-label">ชื่อลูกค้า/ชื่องาน</label>
+          <input type="text" formControlName="customerJobName" class="form-control" [readonly]="!!printJobId">
+        </div>
+        <div class="col-md-4" *ngIf="!isInternalJob">
           <label class="form-label">สถานะ</label>
-          <input type="text" formControlName="jobStatus" class="form-control" readonly>
+          <input type="text" formControlName="jobStatus" class="form-control" [readonly]="!!printJobId">
         </div>
         <div class="col-md-3">
           <label class="form-label">ยอดผลิต</label>
-          <input type="number" formControlName="productionQty" class="form-control" readonly>
+          <input type="number" formControlName="productionQty" class="form-control" [readonly]="!!printJobId">
         </div>
       </div>
     </form>
@@ -47,7 +55,7 @@
 </div>
 
 <!-- Extra Prints Section -->
-<div class="card mt-3">
+<div class="card mt-3" *ngIf="!!printJobId && !isInternalJob">
   <div class="card-header">
     <div class="row align-items-center">
       <div class="col-12 col-md-6">
@@ -94,20 +102,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let extra of extraPrints; let i = index" 
-              (click)="viewExtraPrint(extra)" 
-              style="cursor: pointer; transition: all 0.3s ease;"
-              [style.background-color]="i % 2 === 0 ? '#f8f9fa' : 'white'"
-              class="hover-row">
+          <tr *ngFor="let extra of extraPrints; let i = index" (click)="viewExtraPrint(extra)"
+            style="cursor: pointer; transition: all 0.3s ease;"
+            [style.background-color]="i % 2 === 0 ? '#f8f9fa' : 'white'" class="hover-row">
             <td class="text-center py-3">
-              <span class="badge rounded-pill" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 13px; padding: 6px 12px;">
+              <span class="badge rounded-pill"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 13px; padding: 6px 12px;">
                 #{{ extra.id }}
               </span>
             </td>
             <td class="text-center py-3">
               <div class="d-flex align-items-center justify-content-center">
-                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); font-size: 14px; padding: 8px 16px;">
-                  <mat-icon class="align-middle me-1" style="font-size: 16px; width: 16px; height: 16px;">inventory_2</mat-icon>
+                <span class="badge rounded-pill"
+                  style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); font-size: 14px; padding: 8px 16px;">
+                  <mat-icon class="align-middle me-1"
+                    style="font-size: 16px; width: 16px; height: 16px;">inventory_2</mat-icon>
                   {{ extra.additionalQty }}
                 </span>
               </div>
@@ -118,22 +127,21 @@
               </div>
             </td>
             <td class="text-center py-3">
-              <span class="badge rounded-pill px-3 py-2" 
-                style="font-size: 12px; font-weight: 500; letter-spacing: 0.5px;"
-                [style.background]="
+              <span class="badge rounded-pill px-3 py-2"
+                style="font-size: 12px; font-weight: 500; letter-spacing: 0.5px;" [style.background]="
                   extra.status === 'PENDING' ? 'linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)' : 
                   extra.status === 'IN_PROGRESS' ? 'linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)' :
                   extra.status === 'PAUSED' ? 'linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)' : 
                   'linear-gradient(135deg, #55efc4 0%, #00b894 100%)'"
                 [style.color]="extra.status === 'PENDING' ? '#2d3436' : 'white'">
                 <mat-icon class="align-middle me-1" style="font-size: 14px; width: 14px; height: 14px;">
-                  {{ extra.status === 'PENDING' ? 'schedule' : 
-                     extra.status === 'IN_PROGRESS' ? 'play_circle' :
-                     extra.status === 'PAUSED' ? 'pause_circle' : 'check_circle' }}
+                  {{ extra.status === 'PENDING' ? 'schedule' :
+                  extra.status === 'IN_PROGRESS' ? 'play_circle' :
+                  extra.status === 'PAUSED' ? 'pause_circle' : 'check_circle' }}
                 </mat-icon>
-                {{ extra.status === 'PENDING' ? 'รอดำเนินการ' : 
-                   extra.status === 'IN_PROGRESS' ? 'กำลังพิมพ์' :
-                   extra.status === 'PAUSED' ? 'หยุดชั่วคราว' : 'เสร็จสิ้น' }}
+                {{ extra.status === 'PENDING' ? 'รอดำเนินการ' :
+                extra.status === 'IN_PROGRESS' ? 'กำลังพิมพ์' :
+                extra.status === 'PAUSED' ? 'หยุดชั่วคราว' : 'เสร็จสิ้น' }}
               </span>
             </td>
             <td class="text-center py-3">
@@ -143,7 +151,8 @@
               </div>
             </td>
             <td class="text-center py-3">
-              <span class="badge bg-light text-dark" style="font-size: 13px; padding: 6px 12px; font-weight: 500; color: #000;">
+              <span class="badge bg-light text-dark"
+                style="font-size: 13px; padding: 6px 12px; font-weight: 500; color: #000;">
                 {{ extra.createdAt | date:'dd/MM/yyyy' }}
               </span>
             </td>
@@ -151,7 +160,8 @@
           <tr *ngIf="extraPrints.length === 0">
             <td colspan="6" class="text-center py-5" style="background-color: #f8f9fa;">
               <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px;">
-                <div class="mb-3" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                <div class="mb-3"
+                  style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
                   <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: white;">inbox</mat-icon>
                 </div>
                 <h5 class="text-muted mb-2">ไม่มีรายการขอพิมพ์เพิ่ม</h5>

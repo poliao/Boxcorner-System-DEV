@@ -189,6 +189,16 @@
               <input type="number" formControlName="amount" class="form-control" placeholder="0.00" step="0.01"
                 [class.is-invalid]="quotationForm.get('amount')?.invalid && quotationForm.get('amount')?.touched">
             </div>
+            <div class="col-md-6">
+              <label class="form-label font-weight-bold">ราคาขายต่อชิ้น <span style="color: red;">*</span></label>
+              <input type="text" formControlName="priceItem" class="form-control" placeholder="0.00"
+                [class.is-invalid]="quotationForm.get('priceItem')?.invalid && quotationForm.get('priceItem')?.touched">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label font-weight-bold">จำนวนชิ้นที่ขาย <span style="color: red;">*</span></label>
+              <input type="text" formControlName="totalProduct" class="form-control" placeholder="0"
+                [class.is-invalid]="quotationForm.get('totalProduct')?.invalid && quotationForm.get('totalProduct')?.touched">
+            </div>
             <div class="col-12">
               <label class="form-label font-weight-bold">สถานะ <span style="color: red;">*</span></label>
               <select formControlName="status" class="form-select"

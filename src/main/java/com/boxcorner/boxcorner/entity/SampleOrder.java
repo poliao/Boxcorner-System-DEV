@@ -68,7 +68,7 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "update_date_delivery")
     private LocalDate updateDateDelivery;
-    
+
     @Column(name = "update_time_delivery")
     private LocalTime updateTimeDelivery;
 
@@ -86,16 +86,16 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "print_type")
     private String printType;
-    
+
     @Column(name = "paper_type")
     private String paperType;
-    
+
     @Column(name = "diecutting_type")
     private String diecuttingType;
 
     @Column(name = "coat_type")
     private String coatType;
-    
+
     @Column(name = "system_print")
     private String systemPrint;
 
@@ -119,4 +119,7 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "order_time")
     private LocalTime orderTime;
+
+    @Column(name = "total_print_sheets")
+    private Integer totalPrintSheets;
 }

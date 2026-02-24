@@ -104,8 +104,8 @@ public class SalesActivityService {
                 isNewCustomer,
                 startDate,
                 endDate,
-                startDate,
-                endDate,
+                startDateMain,
+                endDateMain,
                 paging);
     }
 
@@ -118,6 +118,8 @@ public class SalesActivityService {
             Boolean isNewCustomer,
             LocalDate startDate,
             LocalDate endDate,
+            LocalDate startDateMain,
+            LocalDate endDateMain,
             int page,
             int size) {
         Pageable paging = PageRequest.of(page, size);
@@ -129,6 +131,8 @@ public class SalesActivityService {
                 isNewCustomer,
                 startDate,
                 endDate,
+                startDateMain,
+                endDateMain,
                 paging);
     }
 

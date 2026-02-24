@@ -65,7 +65,8 @@ public class PrintingService {
         if (JobStatus.PENDING.equals(job.getJobStatus()) || JobStatus.PAUSED.equals(job.getJobStatus())) {
             job.setJobStatus(JobStatus.IN_PROGRESS);
             jobRepository.save(job);
-        } else if (JobStatus.WAITPAGE2.equals(job.getJobStatus()) || JobStatus.PAUSED_PAGE2.equals(job.getJobStatus())) {
+        } else if (JobStatus.WAITPAGE2.equals(job.getJobStatus())
+                || JobStatus.PAUSED_PAGE2.equals(job.getJobStatus())) {
             job.setJobStatus(JobStatus.IN_PROGRESS_PAGE2);
             jobRepository.save(job);
         }
@@ -124,8 +125,9 @@ public class PrintingService {
     }
 
     public PrintLog saveCalibrate(CalibrateRequest request) {
-  
-        Printer printer = printerRepository.findById(request.getPrinterId()).orElseThrow(() -> new RuntimeException("Printer not found: " + request.getPrinterId()));
+
+        Printer printer = printerRepository.findById(request.getPrinterId())
+                .orElseThrow(() -> new RuntimeException("Printer not found: " + request.getPrinterId()));
 
         PrintLog log = PrintLog.builder()
                 .printer(printer)
@@ -141,6 +143,10 @@ public class PrintingService {
                 .build();
 
         return printLogRepository.save(log);
+    }
+
+    public java.util.List<PrintLog> getLogsByJobId(Long jobId) {
+        return printLogRepository.findByJobIdOrderByStartedAtDesc(jobId);
     }
 
 }

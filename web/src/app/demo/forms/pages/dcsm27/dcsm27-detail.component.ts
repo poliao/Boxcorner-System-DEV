@@ -24,6 +24,7 @@ export class Dcsm27DetailComponent implements OnInit {
   printJobId: number | null = null;
   extraPrints: any[] = [];
   modal: any;
+  isInternalJob: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -32,16 +33,25 @@ export class Dcsm27DetailComponent implements OnInit {
     private dcsm27Service: Dcsm27Service,
     private authService: AuthService,
     private sweetAlert: SweetAlertService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initForms();
-    
+
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.printJobId = +params['id'];
         this.loadPrintJob();
         this.loadExtraPrints();
+      }
+    });
+
+    this.route.queryParams.subscribe(qParams => {
+      if (qParams['type'] === 'internal' && !this.printJobId) {
+        this.isInternalJob = true;
+        this.printJobForm.patchValue({
+          jobId: 'ภายใน'
+        });
       }
     });
   }
@@ -53,7 +63,8 @@ export class Dcsm27DetailComponent implements OnInit {
       deliveryTime: [null],
       customerJobName: [null],
       jobStatus: [null],
-      productionQty: [0]
+      productionQty: [0],
+      totalPrintSheets: [0]
     });
 
     this.extraPrintForm = this.fb.group({
@@ -69,6 +80,9 @@ export class Dcsm27DetailComponent implements OnInit {
       this.dcsm27Service.getById(this.printJobId).subscribe({
         next: (data: any) => {
           this.printJobForm.patchValue(data);
+          if (data.jobId === 'ภายใน') {
+            this.isInternalJob = true;
+          }
         },
         error: (err) => {
           console.error('Error loading print job:', err);
@@ -137,6 +151,18 @@ export class Dcsm27DetailComponent implements OnInit {
   viewExtraPrint(extra: any) {
     // Optional: implement view/edit functionality
     console.log('View extra print:', extra);
+  }
+
+  savePrintJob() {
+    this.dcsm27Service.save(this.printJobForm.getRawValue()).subscribe({
+      next: (res: any) => {
+        this.sweetAlert.success('Success', 'บันทึกสำเร็จ');
+        this.router.navigate(['/Dcsm27Detail', res.id]);
+      },
+      error: (err: any) => {
+        this.sweetAlert.error('Error', err.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+      }
+    });
   }
 
   deleteExtraPrint(id: number, event: Event) {

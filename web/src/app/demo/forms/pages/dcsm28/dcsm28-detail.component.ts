@@ -105,6 +105,8 @@ export class Dcsm28DetailComponent implements OnInit {
     this.quotationForm = this.fb.group({
       quoteNumber: [null, Validators.required],
       amount: [null, Validators.required],
+      priceItem: [null, Validators.required],
+      totalProduct: [null, Validators.required],
       remark: [null],
       status: [null, Validators.required],
       productCategory: [null, Validators.required]
@@ -198,6 +200,8 @@ export class Dcsm28DetailComponent implements OnInit {
       this.quotationForm.patchValue({
         quoteNumber: this.currentQuotation.quoteNumber,
         amount: this.currentQuotation.amount,
+        priceItem: this.currentQuotation.priceItem,
+        totalProduct: this.currentQuotation.totalProduct,
         cost: this.currentQuotation.cost,
         remark: this.currentQuotation.remark,
         status: this.currentQuotation.status,

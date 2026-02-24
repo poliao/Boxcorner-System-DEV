@@ -26,12 +26,12 @@ public class SampleOrderService {
     public SampleOrder saveOrUpdateOrder(SampleOrder order, String jobOwner) {
         if (order.getId() != null) {
             SampleOrder existingOrder = sampleOrderRepository.findById(order.getId())
-                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลสำหรับการอัปเดต ID: " + order.getId()));
-            
+                    .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลสำหรับการอัปเดต ID: " + order.getId()));
+
             if (order.getRowVersion() != null && !existingOrder.getRowVersion().equals(order.getRowVersion())) {
                 throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
             }
-            
+
             existingOrder.setOrderDate(order.getOrderDate());
             existingOrder.setFolderName(order.getFolderName());
             existingOrder.setJobOwner(order.getJobOwner());
@@ -62,7 +62,8 @@ public class SampleOrderService {
             existingOrder.setMachineName(order.getMachineName());
             existingOrder.setPrint2Page(order.getPrint2Page());
             existingOrder.setOrderTime(order.getOrderTime());
-            
+            existingOrder.setTotalPrintSheets(order.getTotalPrintSheets());
+
             return sampleOrderRepository.save(existingOrder);
         } else {
             order.setJobOwner(jobOwner);
@@ -72,33 +73,33 @@ public class SampleOrderService {
     }
 
     @Transactional
-    public Page<SampleOrder> getAll(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAll(Integer id, String folderName, String jobOwner, String responsiblePerson,
+            String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFilters(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 
     @Transactional
-    public Page<SampleOrder> getAllSort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllSort(Integer id, String folderName, String jobOwner, String responsiblePerson,
+            String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersSort(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 
     public Optional<SampleOrder> getSampleOrderById(Integer id) {
@@ -106,114 +107,115 @@ public class SampleOrderService {
     }
 
     @Transactional
-    public Page<SampleOrder> getAllDetail(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllDetail(Integer id, String folderName, String jobOwner, String responsiblePerson,
+            String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersDetail(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 
     @Transactional
-    public Page<SampleOrder> getAllDetailSort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllDetailSort(Integer id, String folderName, String jobOwner, String responsiblePerson,
+            String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersDetailSort(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 
     @Transactional
-    public Page<SampleOrder> getAllDetailBack(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllDetailBack(Integer id, String folderName, String jobOwner, String responsiblePerson,
+            String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersDetailBack(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 
     @Transactional
-    public Page<SampleOrder> getAllDetailBackSort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllDetailBackSort(Integer id, String folderName, String jobOwner,
+            String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersDetailBackSort(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 
     public SampleOrder updatesampleOrderNoteEdit(Integer id, String note) {
-        SampleOrder sampleOrder = sampleOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+        SampleOrder sampleOrder = sampleOrderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         sampleOrder.setNoteEdit(note);
         return sampleOrderRepository.save(sampleOrder);
     }
 
-    public Integer countBacklogStatus(String status ,String responsiblePerson) {
-        return sampleOrderRepository.countBacklogStatus(status,responsiblePerson);
+    public Integer countBacklogStatus(String status, String responsiblePerson) {
+        return sampleOrderRepository.countBacklogStatus(status, responsiblePerson);
     }
 
-    public Integer countBacklogStatusAdmin(String status ,String responsiblePerson) {
-        return sampleOrderRepository.countBacklogStatusAdmin(status,responsiblePerson);
+    public Integer countBacklogStatusAdmin(String status, String responsiblePerson) {
+        return sampleOrderRepository.countBacklogStatusAdmin(status, responsiblePerson);
     }
 
     public Integer countStatus(String status) {
         return sampleOrderRepository.countStatus(status);
     }
 
-    public Integer countBacklogSalesStatus(String status ,String jobOwner) {
-        return sampleOrderRepository.countBacklogSalesStatus(status,jobOwner);
+    public Integer countBacklogSalesStatus(String status, String jobOwner) {
+        return sampleOrderRepository.countBacklogSalesStatus(status, jobOwner);
     }
 
     @Transactional
-    public Page<SampleOrder> getAllVerify(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllVerify(Integer id, String folderName, String jobOwner, String responsiblePerson,
+            String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersVerify(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 
     @Transactional
-    public Page<SampleOrder> getAllVerifySort(Integer id, String folderName, String jobOwner, String responsiblePerson, String status, LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SampleOrder> getAllVerifySort(Integer id, String folderName, String jobOwner, String responsiblePerson,
+            String status, LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return sampleOrderRepository.findByFiltersVerifySort(
-            id,
-            folderName,
-            jobOwner,
-            responsiblePerson,
-            status, 
-            startDate,
-            endDate,
-            paging
-        );
+                id,
+                folderName,
+                jobOwner,
+                responsiblePerson,
+                status,
+                startDate,
+                endDate,
+                paging);
     }
 }

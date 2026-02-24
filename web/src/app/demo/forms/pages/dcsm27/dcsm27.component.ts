@@ -20,7 +20,8 @@ export class Dcsm27Component implements OnInit {
     { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน' },
     { key: 'deliveryDate', label: 'วันที่ส่ง' },
     { key: 'jobStatus', label: 'สถานะ' },
-    { key: 'printerName', label: 'เครื่องพิมพ์' }
+    { key: 'printerName', label: 'เครื่องพิมพ์' },
+    { key: 'totalPrintSheets', label: 'จำนวนใบพิมพ์' }
   ];
 
   tableData: any[] = [];
@@ -31,7 +32,7 @@ export class Dcsm27Component implements OnInit {
   constructor(
     private router: Router,
     private dcsm27Service: Dcsm27Service
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadData();
@@ -63,5 +64,9 @@ export class Dcsm27Component implements OnInit {
 
   add() {
     this.router.navigate(['/Dcsm27Detail']);
+  }
+
+  createInternalJob() {
+    this.router.navigate(['/Dcsm27Detail'], { queryParams: { type: 'internal' } });
   }
 }
