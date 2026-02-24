@@ -2,7 +2,6 @@
   <div class="card total-income-card warning overflow-hidden">
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
-
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
           <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="button" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
@@ -47,22 +46,30 @@
           <input type="text" formControlName="id" class="form-control">
         </div>
         <div class="col-md-6">
-          <label class="form-label font-weight-bold">JobId <span style="color: red;">*</span></label>
+          <label class="form-label font-weight-bold">รหัสงาน <span style="color: red;">*</span></label>
           <input type="text" formControlName="jobId" class="form-control"
             [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
         </div>
         <div class="col-md-6">
-          <label class="form-label font-weight-bold">QtId</label>
+          <label class="form-label font-weight-bold">รหัสใบเสนอราคา</label>
           <input type="text" formControlName="qtId" class="form-control">
         </div>
         <div *ngIf="isDesign" class="col-md-6">
           <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
           <input type="text" formControlName="designOrderId" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
             [class.is-invalid]="mainForm.get('orderDate')?.invalid && mainForm.get('orderDate')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
+          <input type="time" class="form-control" formControlName="orderTime" >
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เจ้าของงาน</label>
+          <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>

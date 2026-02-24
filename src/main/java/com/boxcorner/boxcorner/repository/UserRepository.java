@@ -14,9 +14,13 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
-     @Query(value = "SELECT u.username as value, u.username as text " +
-                   "FROM users u " +
-                   "WHERE u.role in ('planningTa','planningF','planningNick','planning')", 
-           nativeQuery = true)
+    @Query(value = "SELECT u.username as value, u.username as text " +
+            "FROM users u " +
+            "WHERE u.role in ('planningTa','planningF','planningNick','planning')", nativeQuery = true)
     List<OptionDTO> findPlanningUsers();
+
+    @Query(value = "SELECT u.username as value, u.username as text " +
+            "FROM users u " +
+            "WHERE LOWER(u.role) LIKE '%sales%'", nativeQuery = true)
+    List<OptionDTO> findSalesUsers();
 }

@@ -552,6 +552,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/forms/pages/dcsm28/dcsm28-detail.component').then((c) => c.Dcsm28DetailComponent)
       },
       {
+        path: 'Dcsm28Map',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm28/dcsm28-map.component').then((c) => c.Dcsm28MapComponent)
+      },
+      {
         path: 'Dcsm28',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm28/dcsm28.component').then((c) => c.Dcsm28Component)

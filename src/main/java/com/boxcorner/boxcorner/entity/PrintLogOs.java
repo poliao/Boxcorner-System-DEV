@@ -110,5 +110,13 @@ public class PrintLogOs extends BaseEntity {
 
     @Column(name = "print_side")
     private String printSide;
+
+    @Column(name = "paper_brightness")
+    private String paperBrightness;
     
+    @Column(name = "total_product")
+    private String totalProduct;
+
+     @Column(name = "operator_name")
+    private String operatorName;
 }

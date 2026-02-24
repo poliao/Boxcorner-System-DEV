@@ -21,4 +21,9 @@ public class UserController {
     public List<OptionDTO> getPlanningOperators() {
         return userService.getPlanningOperators();
     }
+
+    @GetMapping("/sales")
+    public List<OptionDTO> getSalesUsers() {
+        return userService.getSalesUsers();
+    }
 }

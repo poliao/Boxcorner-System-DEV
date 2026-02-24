@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,9 +33,10 @@ public class SalesActivityController {
     private TokenService tokenService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody SalesActivity activity, HttpServletRequest request) {
+    public ResponseEntity<?> create(@RequestBody SalesActivity activity, Authentication authentication) {
         try {
-            return ResponseEntity.ok(salesActivityService.saveOrUpdate(activity, tokenService.getCurrentUser(request)));
+            String username = authentication.getName();
+            return ResponseEntity.ok(salesActivityService.saveOrUpdate(activity, username));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -48,10 +50,12 @@ public class SalesActivityController {
             @RequestParam(value = "isNewCustomer", required = false) Boolean isNewCustomer,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "startDateMain", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDateMain,
+            @RequestParam(value = "endDateMain", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDateMain,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             HttpServletRequest httpRequest) {
-        String salesName = tokenService.getCurrentUser(httpRequest);       
+        String salesName = tokenService.getCurrentUser(httpRequest);
         Page<SalesActivity> result = salesActivityService.search(
                 activityId,
                 salesName,
@@ -60,6 +64,8 @@ public class SalesActivityController {
                 isNewCustomer,
                 startDate,
                 endDate,
+                startDateMain,
+                endDateMain,
                 page,
                 size);
         return ResponseEntity.ok(result);
@@ -68,6 +74,7 @@ public class SalesActivityController {
     @GetMapping("/searchAdmin")
     public ResponseEntity<Page<SalesActivity>> searchAdmin(
             @RequestParam(value = "activityId", required = false) Long activityId,
+            @RequestParam(value = "salesName", required = false) String salesName,
             @RequestParam(value = "customerName", required = false) String customerName,
             @RequestParam(value = "contactPerson", required = false) String contactPerson,
             @RequestParam(value = "isNewCustomer", required = false) Boolean isNewCustomer,
@@ -77,6 +84,7 @@ public class SalesActivityController {
             @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<SalesActivity> result = salesActivityService.searchAdmin(
                 activityId,
+                salesName,
                 customerName,
                 contactPerson,
                 isNewCustomer,
@@ -101,6 +109,48 @@ public class SalesActivityController {
             return ResponseEntity.ok("ลบข้อมูลสำเร็จ");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/checkIn")
+    public ResponseEntity<?> checkIn(@RequestBody CheckInRequest request, Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            salesActivityService.checkIn(request.getActivityId(), request.getCheckInLat(), request.getCheckInLng(),
+                    username);
+            return ResponseEntity.ok("เช็คอินสำเร็จ");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    public static class CheckInRequest {
+        private Long activityId;
+        private java.math.BigDecimal checkInLat;
+        private java.math.BigDecimal checkInLng;
+
+        public Long getActivityId() {
+            return activityId;
+        }
+
+        public void setActivityId(Long activityId) {
+            this.activityId = activityId;
+        }
+
+        public java.math.BigDecimal getCheckInLat() {
+            return checkInLat;
+        }
+
+        public void setCheckInLat(java.math.BigDecimal checkInLat) {
+            this.checkInLat = checkInLat;
+        }
+
+        public java.math.BigDecimal getCheckInLng() {
+            return checkInLng;
+        }
+
+        public void setCheckInLng(java.math.BigDecimal checkInLng) {
+            this.checkInLng = checkInLng;
         }
     }
 }

@@ -4,21 +4,26 @@
     <div class="card-body bg-light">
       <form>
         <div class="row g-3">
-          <div class="col-md-4">
-            <input type="number" class="form-control" [(ngModel)]="filterActivityId" name="filterActivityId" placeholder="ค้นหา ลำดับ"
-              (keyup.enter)="onSearchChange()">
+          <div class="col-md-3">
+            <input type="number" class="form-control" [(ngModel)]="filterActivityId" name="filterActivityId"
+              placeholder="ค้นหา ลำดับ" (keyup.enter)="onSearchChange()">
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterSalesName" name="filterSalesName"
+              placeholder="ค้นหา พนักงานขาย" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
               placeholder="ค้นหา ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterContactPerson" name="filterContactPerson"
               placeholder="ค้นหา ผู้ติดต่อ" (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
             <label class="form-label font-weight-bold">ลูกค้าใหม่</label>
-            <select class="form-select" [(ngModel)]="filterIsNewCustomer" name="filterIsNewCustomer" (change)="onSearchChange()">
+            <select class="form-select" [(ngModel)]="filterIsNewCustomer" name="filterIsNewCustomer"
+              (change)="onSearchChange()">
               <option value="">ทั้งหมด</option>
               <option value="true">ใช่</option>
               <option value="false">ไม่ใช่</option>
@@ -37,6 +42,18 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #28a745;"
+                  (click)="startWork()">
+                  <mat-icon>play_arrow</mat-icon> เริ่มงาน
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #dc3545;"
+                  (click)="endWork()">
+                  <mat-icon>stop</mat-icon> เลิกงาน
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #003747;"
                   (click)="onSearchChange()">
                   <mat-icon>search</mat-icon> ค้นหา
@@ -54,6 +71,18 @@
                   <mat-icon>add</mat-icon> เพิ่มกิจกรรม
                 </button>
               </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #f59e0b; color: #fff;"
+                  (click)="openFuelModal()">
+                  <mat-icon>local_gas_station</mat-icon> เติมน้ำมัน
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto" *ngIf="isAdmin">
+                <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #17a2b8; color: #fff;"
+                  routerLink="/Dcsm28Map">
+                  <mat-icon>map</mat-icon> ดูแผนที่
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -65,4 +94,40 @@
     [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'activityId'"
     (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
+</div>
+
+<!-- Modal เติมน้ำมัน -->
+<div class="modal-backdrop fade show" *ngIf="showFuelModal"
+  style="background: rgba(0,0,0,0.5); position:fixed; top:0; left:0; width:100%; height:100%; z-index:1040;"></div>
+<div class="modal d-block" tabindex="-1" *ngIf="showFuelModal" style="z-index:1050;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header" style="background: #f59e0b; color: #fff;">
+        <h5 class="modal-title">
+          <mat-icon style="vertical-align: middle; margin-right: 6px;">local_gas_station</mat-icon>
+          บันทึกการเติมน้ำมัน
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeFuelModal()"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-bold">ราคาน้ำมัน (บาท) <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" [(ngModel)]="fuelPrice" name="fuelPrice"
+            placeholder="กรอกราคาน้ำมัน" min="0" step="0.01">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">เลขไมค์ (กม.) <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" [(ngModel)]="fuelOdometer" name="fuelOdometer"
+            placeholder="กรอกเลขไมล์" min="0">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button mat-stroked-button type="button" (click)="closeFuelModal()">ยกเลิก</button>
+        <button mat-flat-button type="button" style="background-color: #f59e0b; color: #fff;"
+          (click)="submitFuelRefill()">
+          <mat-icon>save</mat-icon> บันทึก
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

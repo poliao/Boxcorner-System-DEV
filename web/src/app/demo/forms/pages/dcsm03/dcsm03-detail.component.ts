@@ -69,7 +69,8 @@ export class Dcsm03DetailComponent implements OnInit {
       fileName: [''],
       customerName: [''],
       rowVersion: [null],
-      jobType: ['']
+      jobType: [''],
+      orderTime: [null],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -86,6 +87,7 @@ export class Dcsm03DetailComponent implements OnInit {
     this.designForm.controls['customerName'].disable({ emitEvent: false });
     this.designForm.controls['fileName'].disable({ emitEvent: false });
     this.designForm.controls['jobType'].disable({ emitEvent: false });
+    this.designForm.controls['orderTime'].disable({ emitEvent: false });
   }
   patchFormData(data: any): void {
     const apiData = data as any;

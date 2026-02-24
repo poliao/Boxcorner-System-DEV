@@ -26,4 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public List<OptionDTO> getPlanningOperators() {
         return userRepository.findPlanningUsers();
     }
+
+    public List<OptionDTO> getSalesUsers() {
+        return userRepository.findSalesUsers();
+    }
 }

@@ -11,13 +11,14 @@ export class Dcsm28Service {
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient,private authService: AuthService,) { }
+  constructor(private http: HttpClient, private authService: AuthService,) { }
 
   search(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
       page: page.toString(),
       size: size.toString(),
       activityId: filters.activityId || null,
+      salesName: filters.salesName || null,
       customerName: filters.customerName || null,
       contactPerson: filters.contactPerson || null,
       isNewCustomer: filters.isNewCustomer || null,
@@ -34,7 +35,7 @@ export class Dcsm28Service {
     this.authService.getUserFromToken().role
     if (this.authService.getUserFromToken().role == 'salesAdmin' || this.authService.getUserFromToken().role == 'SupperAdmin') {
       return this.http.get(`${this.apiUrl}/salesActivities/searchAdmin`, { params: params });
-    }else{
+    } else {
       return this.http.get(`${this.apiUrl}/salesActivities/search`, { params: params });
     }
   }
@@ -64,9 +65,29 @@ export class Dcsm28Service {
   }
 
   searchProvinces(search?: string): Observable<any[]> {
-    const url = search 
+    const url = search
       ? `${this.apiUrl}/provinces/search?search=${search}`
       : `${this.apiUrl}/provinces/search`;
     return this.http.get<any[]>(url);
+  }
+
+  getSalesUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/sales`);
+  }
+
+  startWork(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/dailyRoutes/start`, data);
+  }
+
+  endWork(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/dailyRoutes/end`, data);
+  }
+
+  checkIn(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/salesActivities/checkIn`, data, { responseType: 'text' });
+  }
+
+  refillFuel(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/fuelRefills/create`, data, { responseType: 'text' });
   }
 }

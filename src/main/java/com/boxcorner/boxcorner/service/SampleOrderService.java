@@ -1,6 +1,8 @@
 package com.boxcorner.boxcorner.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +61,12 @@ public class SampleOrderService {
             existingOrder.setQtId(order.getQtId());
             existingOrder.setMachineName(order.getMachineName());
             existingOrder.setPrint2Page(order.getPrint2Page());
+            existingOrder.setOrderTime(order.getOrderTime());
             
             return sampleOrderRepository.save(existingOrder);
         } else {
             order.setJobOwner(jobOwner);
+            order.setOrderTime(LocalTime.now(ZoneId.of("Asia/Bangkok")));
             return sampleOrderRepository.save(order);
         }
     }

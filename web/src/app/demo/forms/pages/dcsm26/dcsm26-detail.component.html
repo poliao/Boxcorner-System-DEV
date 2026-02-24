@@ -218,6 +218,11 @@
                   <input type="number" formControlName="airPressure" class="form-control form-control-sm"
                     placeholder="8-10" style="border-radius: 6px;">
                 </div>
+                <div class="col-md-6 col-lg-3">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💡 ความสว่างกระดาษ</label>
+                  <input type="number" formControlName="paperBrightness" class="form-control form-control-sm"
+                    placeholder="ระบุ" style="border-radius: 6px;">
+                </div>
               </div>
             </div>
           </div>
@@ -232,29 +237,29 @@
                 <label class="btn btn-sm btn-outline-primary"
                   style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
                   <input class="form-check-input me-1" type="checkbox" formControlName="hasCMYK" id="hasCMYK"
-                    style="margin-top: 0;">
+                    (change)="onInkTypeChange('CMYK')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">มี CMYK</span>
                 </label>
                 <label class="btn btn-sm btn-outline-secondary"
                   style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
                   <input class="form-check-input me-1" type="checkbox" formControlName="hasSpecial" id="hasSpecial"
-                    style="margin-top: 0;">
+                    (change)="onInkTypeChange('SPECIAL')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">พิเศษ</span>
                 </label>
                 <label class="btn btn-sm btn-outline-success"
                   style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
                   <input class="form-check-input me-1" type="checkbox" formControlName="isNewInk" id="isNewInk"
-                    style="margin-top: 0;">
+                    (change)="onInkTypeChange('NEW')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">หมึกใหม่</span>
                 </label>
                 <label class="btn btn-sm btn-outline-warning"
                   style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
                   <input class="form-check-input me-1" type="checkbox" formControlName="isOldInk" id="isOldInk"
-                    style="margin-top: 0;">
+                    (change)="onInkTypeChange('OLD')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">หมึกเก่า</span>
                 </label>
               </div>
-              <div class="row g-2">
+              <div class="row g-2" *ngIf="checklistForm.get('hasCMYK')?.value">
                 <div class="col-md-6 col-lg-3">
                   <div class="p-2"
                     style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border-radius: 8px;">
@@ -441,6 +446,35 @@
               }}</small>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal กรอกจำนวนที่พิมพ์ได้ -->
+<div class="modal fade" [class.show]="showPrintedQtyModal" [style.display]="showPrintedQtyModal ? 'block' : 'none'"
+  style="background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header border-0"
+        style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 16px 24px;">
+        <h5 class="modal-title text-white mb-0" style="font-weight: 600;">📊 บันทึกจำนวนที่พิมพ์ได้</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closePrintedQtyModal()"></button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <div class="mb-3">
+          <label class="form-label fw-bold">จำนวนที่พิมพ์ได้ (แผ่น) <span class="text-danger">*</span></label>
+          <input type="number" [(ngModel)]="printedQuantity" class="form-control" placeholder="กรอกจำนวน" min="0">
+        </div>
+      </div>
+      <div class="modal-footer border-0" style="padding: 12px 24px;">
+        <button type="button" class="btn btn-secondary" (click)="closePrintedQtyModal()"
+          style="border-radius: 8px;">ยกเลิก</button>
+        <button type="button" class="btn btn-success" (click)="confirmPrintComplete()"
+          style="border-radius: 8px;">
+          <i class="fas fa-check me-2"></i>ยืนยัน
+        </button>
       </div>
     </div>
   </div>

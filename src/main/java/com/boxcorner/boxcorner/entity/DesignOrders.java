@@ -63,4 +63,7 @@ public class DesignOrders extends BaseEntity {
     @Column(name = "customer_name")
     private String customerName;
 
+    @Column(name = "order_time")
+    private LocalTime orderTime;
+
 }

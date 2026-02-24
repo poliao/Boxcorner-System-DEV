@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Dcsm26Service } from './dcsm26.service';
@@ -11,7 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm26-detail',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './dcsm26-detail.component.html',
   styleUrls: ['./dcsm26-detail.component.scss']
 })
@@ -24,6 +24,9 @@ export class Dcsm26DetailComponent implements OnInit {
   isInPrint = false;
   recipeList: any[] = [];
   showChecklistModal = false;
+  showPrintedQtyModal = false;
+  printedQuantity: number = 0;
+  currentPrintStatus: string = '';
   isSample = false;
 
   constructor(
@@ -138,11 +141,12 @@ export class Dcsm26DetailComponent implements OnInit {
 
   createChecklistForm() {
     this.checklistForm = this.fb.group({
-      machineType: [null],
-      waterTemp: [null],
-      ipaValue: [null],
-      conductivity: [null],
-      airPressure: [null],
+      machineType: [null, Validators.required],
+      waterTemp: [null, Validators.required],
+      ipaValue: [null, Validators.required],
+      conductivity: [null, Validators.required],
+      airPressure: [null, Validators.required],
+      paperBrightness: [null, Validators.required],
       hasCMYK: [false],
       hasSpecial: [false],
       isNewInk: [false],
@@ -164,6 +168,7 @@ export class Dcsm26DetailComponent implements OnInit {
       colorNotSerious: [false],
       printSide: [null],
       status: [null],
+      totalProduct: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
@@ -258,7 +263,7 @@ export class Dcsm26DetailComponent implements OnInit {
   }
 
   submitChecklist(status) {
-    if (this.printingForm.valid) {
+    if (this.checklistForm.valid) {
       this.loadingService.show();
 
       if (status === 'inPrint') {
@@ -297,8 +302,10 @@ export class Dcsm26DetailComponent implements OnInit {
         }
       });
     } else {
-      this.markFormGroupTouched();
-      this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+      Object.keys(this.checklistForm.controls).forEach(key => {
+        this.checklistForm.get(key)?.markAsTouched();
+      });
+      this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลเครื่องพิมพ์และพารามิเตอร์ให้ครบถ้วน');
     }
   }
 
@@ -313,6 +320,7 @@ export class Dcsm26DetailComponent implements OnInit {
       ipaPercent: checklist.ipaValue,
       conductivity: checklist.conductivity,
       airPressure: checklist.airPressure,
+      paperBrightness: checklist.paperBrightness,
       flagHasCmyk: checklist.hasCMYK,
       flagSpecialColor: checklist.hasSpecial,
       flagInkNew: checklist.isNewInk,
@@ -334,50 +342,81 @@ export class Dcsm26DetailComponent implements OnInit {
       refNotSerious: checklist.colorNotSerious,
       status: checklist.status,
       printSide: checklist.printSide,
-      operatorName: this.authService.getUserFromToken().sub
+      operatorName: this.authService.getUserFromToken().sub,
+      totalProduct: checklist.totalProduct
     };
-
+    console.log(data);
+    console.log(this.authService.getUserFromToken().sub);
     return this.dcsm26Service.savePrintLogOs(data);
   }
 
   updatePrintStatus(status: string): void {
-    Swal.fire({
-      title: 'ยืนยันอัพเดตสถานะ',
-      text: "ยืนยันอัพเดตสถานะ ใช่หรือไม่?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e1b4b',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loadingService.show();
-        if (status === 'Print' && this.printingForm.getRawValue().print2Page != true || status === 'IN_PROGRESS_PAGE2') {
-          this.printingForm.get('jobStatus')?.setValue('COMPLETED');
-        } else if (status === 'Print' && this.printingForm.getRawValue().print2Page == true) {
-          this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
-        } else if(status === 'PROOF') {
-          this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
-        } 
-        const data = this.printingForm.getRawValue();
-        this.dcsm26Service.getLogById(this.printingForm.getRawValue().printingRecordId).subscribe((response) => {
-          const now = new Date();
-          const offset = 7 * 60 * 60 * 1000;
-          response.status = 'COMPLETED';
-          response.endTime = new Date(now.getTime() + offset);
-          this.dcsm26Service.savePrintLogOs(response).subscribe({next: () => {}});
-        })
-        this.dcsm26Service.save(data).subscribe((response) => {
-          if (this.printingForm.getRawValue().print2Page != true) {
-            this.updateProductionJob()
-          }
-          this.checkbntPrint();
-          this.printingForm.patchValue(response);
-          this.loadingService.hide();
-          this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
-        })
+    this.currentPrintStatus = status;
+    this.showPrintedQtyModal = true;
+  }
+
+  closePrintedQtyModal() {
+    this.showPrintedQtyModal = false;
+    this.printedQuantity = 0;
+  }
+
+  onInkTypeChange(type: string) {
+    if (type === 'CMYK') {
+      if (this.checklistForm.get('hasCMYK')?.value) {
+        this.checklistForm.get('hasSpecial')?.setValue(false);
       }
+    } else if (type === 'SPECIAL') {
+      if (this.checklistForm.get('hasSpecial')?.value) {
+        this.checklistForm.get('hasCMYK')?.setValue(false);
+      }
+    } else if (type === 'NEW') {
+      if (this.checklistForm.get('isNewInk')?.value) {
+        this.checklistForm.get('isOldInk')?.setValue(false);
+      }
+    } else if (type === 'OLD') {
+      if (this.checklistForm.get('isOldInk')?.value) {
+        this.checklistForm.get('isNewInk')?.setValue(false);
+      }
+    }
+  }
+
+  confirmPrintComplete(): void {
+    if (!this.printedQuantity || this.printedQuantity <= 0) {
+      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่พิมพ์ได้');
+      return;
+    }
+
+    this.showPrintedQtyModal = false;
+    this.loadingService.show();
+
+    const status = this.currentPrintStatus;
+    if (status === 'Print' && this.printingForm.getRawValue().print2Page != true || status === 'IN_PROGRESS_PAGE2') {
+      this.printingForm.get('jobStatus')?.setValue('COMPLETED');
+    } else if (status === 'Print' && this.printingForm.getRawValue().print2Page == true) {
+      this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
+    } else if(status === 'PROOF') {
+      this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
+    }
+
+    const data = this.printingForm.getRawValue();
+    this.dcsm26Service.getLogById(this.printingForm.getRawValue().printingRecordId).subscribe((response) => {
+      const now = new Date();
+      const offset = 7 * 60 * 60 * 1000;
+      response.status = 'COMPLETED';
+      response.endTime = new Date(now.getTime() + offset);
+      response.totalProduct = this.printedQuantity;
+      this.dcsm26Service.savePrintLogOs(response).subscribe({next: () => {}});
+    });
+
+    this.dcsm26Service.save(data).subscribe((response) => {
+      if (this.printingForm.getRawValue().print2Page != true) {
+        this.updateProductionJob();
+      }
+      this.checkbntPrint();
+      this.printingForm.patchValue(response);
+      this.loadingService.hide();
+      this.sweetAlert.success('Success', 'บันทึกจำนวนที่พิมพ์ได้สำเร็จ!');
+      this.printedQuantity = 0;
     });
   }
 

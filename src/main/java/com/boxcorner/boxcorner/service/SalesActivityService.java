@@ -1,6 +1,9 @@
 package com.boxcorner.boxcorner.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.boxcorner.boxcorner.entity.DailyRoute;
 import com.boxcorner.boxcorner.entity.SalesActivity;
+import com.boxcorner.boxcorner.entity.User;
+import com.boxcorner.boxcorner.repository.DailyRouteRepository;
 import com.boxcorner.boxcorner.repository.SalesActivityRepository;
+import com.boxcorner.boxcorner.repository.UserRepository;
 
 @Service
 public class SalesActivityService {
@@ -19,15 +26,22 @@ public class SalesActivityService {
     @Autowired
     private SalesActivityRepository salesActivityRepository;
 
+    @Autowired
+    private DailyRouteRepository dailyRouteRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Transactional
     public SalesActivity saveOrUpdate(SalesActivity activity, String salesName) {
         if (activity.getActivityId() != null) {
-            SalesActivity existing = salesActivityRepository.findById(activity.getActivityId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล ID: " + activity.getActivityId()));
-            
+            SalesActivity existing = salesActivityRepository.findById(activity.getActivityId())
+                    .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล ID: " + activity.getActivityId()));
+
             if (activity.getRowVersion() != null && !existing.getRowVersion().equals(activity.getRowVersion())) {
                 throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
             }
-            
+
             existing.setActivityDate(activity.getActivityDate());
             existing.setCustomerName(activity.getCustomerName());
             existing.setContactPerson(activity.getContactPerson());
@@ -50,6 +64,20 @@ public class SalesActivityService {
             return salesActivityRepository.save(existing);
         } else {
             activity.setSalesName(salesName);
+
+            // Auto-link daily_route_id จาก DailyRoute ของวันนี้
+            try {
+                User user = userRepository.findByUsername(salesName).orElse(null);
+                if (user != null) {
+                    LocalDate today = LocalDate.now(ZoneId.of("Asia/Bangkok"));
+                    Optional<DailyRoute> todayRoute = dailyRouteRepository.findByEmployeeIdAndWorkDate(user.getId(),
+                            today);
+                    todayRoute.ifPresent(activity::setDailyRoute);
+                }
+            } catch (Exception ignored) {
+                // ถ้าหา DailyRoute ไม่เจอ ก็สร้าง activity ได้เลยโดยไม่มี FK
+            }
+
             return salesActivityRepository.save(activity);
         }
     }
@@ -63,24 +91,28 @@ public class SalesActivityService {
             Boolean isNewCustomer,
             LocalDate startDate,
             LocalDate endDate,
+            LocalDate startDateMain,
+            LocalDate endDateMain,
             int page,
             int size) {
         Pageable paging = PageRequest.of(page, size);
         return salesActivityRepository.findByFilters(
-            activityId,
-            salesName,
-            customerName,
-            contactPerson,
-            isNewCustomer,
-            startDate,
-            endDate,
-            paging
-        );
+                activityId,
+                salesName,
+                customerName,
+                contactPerson,
+                isNewCustomer,
+                startDate,
+                endDate,
+                startDate,
+                endDate,
+                paging);
     }
 
     @Transactional
     public Page<SalesActivity> searchAdmin(
             Long activityId,
+            String salesName,
             String customerName,
             String contactPerson,
             Boolean isNewCustomer,
@@ -90,14 +122,14 @@ public class SalesActivityService {
             int size) {
         Pageable paging = PageRequest.of(page, size);
         return salesActivityRepository.findByFiltersAdmin(
-            activityId,
-            customerName,
-            contactPerson,
-            isNewCustomer,
-            startDate,
-            endDate,
-            paging
-        );
+                activityId,
+                salesName,
+                customerName,
+                contactPerson,
+                isNewCustomer,
+                startDate,
+                endDate,
+                paging);
     }
 
     public Optional<SalesActivity> getById(Long id) {
@@ -107,5 +139,30 @@ public class SalesActivityService {
     @Transactional
     public void delete(Long id) {
         salesActivityRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void checkIn(Long activityId, BigDecimal checkInLat, BigDecimal checkInLng, String salesName) {
+        SalesActivity activity = salesActivityRepository.findById(activityId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล ID: " + activityId));
+        activity.setCheckInLat(checkInLat);
+        activity.setCheckInLng(checkInLng);
+        activity.setCheckInTime(LocalDateTime.now());
+
+        // Link daily_route_id ถ้ายังไม่มี (ตรวจ FK โดยตรง ไม่ใช้ LAZY proxy)
+        if (activity.getDailyRouteId() == null && salesName != null) {
+            try {
+                User user = userRepository.findByUsername(salesName).orElse(null);
+                if (user != null) {
+                    LocalDate today = LocalDate.now(ZoneId.of("Asia/Bangkok"));
+                    Optional<DailyRoute> todayRoute = dailyRouteRepository.findByEmployeeIdAndWorkDate(user.getId(),
+                            today);
+                    todayRoute.ifPresent(activity::setDailyRoute);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        salesActivityRepository.save(activity);
     }
 }

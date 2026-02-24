@@ -71,6 +71,9 @@ export class Dcsm08DetailComponent implements OnInit {
       decisionAuthority: [null],
       decisionAuthorityRemarks: [null],
       print2Page: [false],
+      inspector: [null],
+      jobId: [null],
+      qtId: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -93,6 +96,10 @@ export class Dcsm08DetailComponent implements OnInit {
     this.mainForm.get('customerName')?.disable();
     this.mainForm.get('decisionAuthority')?.disable();
     this.mainForm.get('decisionAuthorityRemarks')?.disable();
+    this.mainForm.get('print2Page')?.disable();
+    this.mainForm.get('jobId')?.disable();
+    this.mainForm.get('qtId')?.disable();
+    this.mainForm.get('inspector')?.disable();
   }
 
   patchFormData(data: any): void {

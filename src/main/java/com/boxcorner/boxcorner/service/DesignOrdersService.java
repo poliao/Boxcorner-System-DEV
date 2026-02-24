@@ -1,6 +1,8 @@
 package com.boxcorner.boxcorner.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +56,7 @@ public class DesignOrdersService {
         } else {
             designOrder.setJobOwner(currentUser);
             designOrder.setAssignee("รอผู้รับผิดชอบยืนยัน");
+            designOrder.setOrderTime(LocalTime.now(ZoneId.of("Asia/Bangkok")));
             return repository.save(designOrder);
         }
     }

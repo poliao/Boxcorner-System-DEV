@@ -7,11 +7,11 @@ import { MenuService } from '../services/menu.service';
   providedIn: 'root'
 })
 export class MenuGuard implements CanActivate {
-  constructor(private menuService: MenuService, private router: Router) {}
+  constructor(private menuService: MenuService, private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
     const requestedUrl = '/' + route.url.join('/');
-    
+
     return this.menuService.getMenu().pipe(
       map(menus => {
         const hasAccess = this.checkMenuAccess(menus, requestedUrl);
@@ -33,13 +33,13 @@ export class MenuGuard implements CanActivate {
       if (menu.url === url) return true;
       if (menu.children && this.checkMenuAccess(menu.children, url)) return true;
     }
-    
-    // ถ้าเป็นหน้า Detail ให้ตรวจสอบหน้าหลัก
-    if (url.includes('Detail')) {
-      const mainPageUrl = url.replace(/Detail.*$/, '');
+
+    // ถ้าเป็นหน้า Detail หรือ Map ให้ตรวจสอบหน้าหลัก
+    if (url.includes('Detail') || url.includes('Map')) {
+      const mainPageUrl = url.replace(/(Detail|Map).*$/, '');
       return this.checkMenuAccess(menus, mainPageUrl);
     }
-    
+
     return false;
   }
 }

@@ -9,6 +9,8 @@ export const environment = {
   production: false,
   // apiUrl: 'http://bca-system.sytes.net/api'
   apiUrl: 'http://localhost:8080/api'
+  // apiUrl: 'http://192.168.1.156:8080/api'
+
 
 };
 

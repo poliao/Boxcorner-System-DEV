@@ -132,6 +132,7 @@ export class Dcsm04DetailComponent implements OnInit {
       jobId: [null, Validators.required],
       qtId: [null],
       print2Page: [false],
+      orderTime: [null],
     });
 
     this.mainForm.get('isCreateSample')?.valueChanges.subscribe(value => {
@@ -158,6 +159,7 @@ export class Dcsm04DetailComponent implements OnInit {
     this.mainForm.controls['designOrderId'].disable({ emitEvent: false });
     this.mainForm.controls['updateDateDelivery'].disable({ emitEvent: false });
     this.mainForm.controls['updateTimeDelivery'].disable({ emitEvent: false });
+    this.mainForm.controls['orderTime'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {

@@ -16,14 +16,18 @@
             เสร็จสิ้น
           </button>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="designForm.get('order_date')?.invalid && designForm.get('order_date')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
+          <input type="time" class="form-control" formControlName="orderTime" >
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>

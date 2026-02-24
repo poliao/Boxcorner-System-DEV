@@ -17,16 +17,29 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": ["apexcharts", "sweetalert2"],
+            "allowedCommonJsDependencies": [
+              "apexcharts",
+              "sweetalert2"
+            ],
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/leaflet/dist/images/",
+                "output": "./assets"
+              }
+            ],
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css",
               "src/styles.scss"
             ],
             "scripts": [
@@ -94,7 +107,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
@@ -102,6 +118,8 @@
   },
   "cli": {
     "analytics": "b68da35f-6e9b-4e25-9791-9b99b359fd6e",
-    "defaultCollection": ["angular-eslint"]
+    "defaultCollection": [
+      "angular-eslint"
+    ]
   }
 }

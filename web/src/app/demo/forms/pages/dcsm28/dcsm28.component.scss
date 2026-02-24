@@ -1,1 +1,6 @@
 // dcsm03 component styles
+
+// ซ่อนแผงบอกเส้นทางของ Leaflet Routing Machine ที่บังหน้าจอแผนที่
+::ng-deep .leaflet-routing-container {
+    display: none !important;
+}

@@ -73,6 +73,10 @@
           <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
             [class.is-invalid]="designForm.get('orderDate')?.invalid && designForm.get('orderDate')?.touched">
         </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
+          <input type="time" class="form-control" formControlName="orderTime" >
+        </div>
         <div class="col-md-12" *ngIf="isFileName">
           <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
           <input type="text" formControlName="fileName" class="form-control"

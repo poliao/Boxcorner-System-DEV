@@ -6,10 +6,16 @@
       </div>
       <div class="col-12 col-md-6">
         <div class="d-grid d-md-flex justify-content-md-end gap-2">
-          <button mat-flat-button *ngIf="isEditMode && !hasQuotation" (click)="addQuotation()" style="background-color: #ff4800; color: white;">
+          <button mat-flat-button *ngIf="isEditMode && !hasCheckedIn" (click)="checkIn()"
+            style="background-color: #17a2b8; color: white;">
+            <mat-icon>location_on</mat-icon> เช็คอิน
+          </button>
+          <button mat-flat-button *ngIf="isEditMode && !hasQuotation" (click)="addQuotation()"
+            style="background-color: #ff4800; color: white;">
             <mat-icon>add</mat-icon> เพิ่มใบเสนอราคา
           </button>
-          <button mat-flat-button *ngIf="isEditMode && hasQuotation" (click)="editQuotation()" style="background-color: #ff9800; color: white;">
+          <button mat-flat-button *ngIf="isEditMode && hasQuotation" (click)="editQuotation()"
+            style="background-color: #ff9800; color: white;">
             <mat-icon>edit</mat-icon> แก้ไขใบเสนอราคา
           </button>
           <button mat-flat-button (click)="onSave()" style="background-color: #1e1b4b; color: white;">
@@ -25,7 +31,7 @@
       <div class="row g-3">
         <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
-          <input type="text" formControlName="activityId" class="form-control" >
+          <input type="text" formControlName="activityId" class="form-control">
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ </label>
@@ -34,7 +40,7 @@
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">ชื่อพนักงานขาย </label>
-          <input type="text" formControlName="salesName" class="form-control" >
+          <input type="text" formControlName="salesName" class="form-control">
         </div>
         <div class="col-md-4">
           <label class="form-label font-weight-bold">ชื่อบริษัท <span style="color: red;">*</span></label>
@@ -49,34 +55,25 @@
         <div class="col-md-2">
           <label class="form-label font-weight-bold">ผู้ติดต่อ <span style="color: red;">*</span></label>
           <input type="text" formControlName="contactPerson" class="form-control" placeholder="ชื่อผู้ติดต่อ"
-          [class.is-invalid]="activityForm.get('contactPerson')?.invalid && activityForm.get('contactPerson')?.touched">
+            [class.is-invalid]="activityForm.get('contactPerson')?.invalid && activityForm.get('contactPerson')?.touched">
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">เบอร์โทร/ช่องทางติดต่อ<span style="color: red;">*</span></label>
           <input type="text" formControlName="contact" class="form-control" placeholder="เบอร์โทร/ช่องทางติดต่อ"
-          [class.is-invalid]="activityForm.get('contact')?.invalid && activityForm.get('contact')?.touched">
+            [class.is-invalid]="activityForm.get('contact')?.invalid && activityForm.get('contact')?.touched">
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">จังหวัด<span style="color: red;">*</span></label>
           <div class="position-relative">
-            <input type="text" 
-                   formControlName="province" 
-                   class="form-control" 
-                   placeholder="เลือกหรือพิมพ์ค้นหาจังหวัด"
-                   (input)="onProvinceSearch($event)"
-                   (focus)="onProvinceSearch($event)"
-                   (blur)="onProvinceBlur()"
-                   (keydown)="onProvinceKeydown($event)"
-                   autocomplete="off"
-                   [class.is-invalid]="activityForm.get('province')?.invalid && activityForm.get('province')?.touched">
-            <ul class="list-group position-absolute w-100" 
-                style="z-index: 1000; max-height: 250px; overflow-y: auto;"
-                *ngIf="filteredProvinces.length > 0">
-              <li class="list-group-item list-group-item-action" 
-                  style="cursor: pointer;"
-                  *ngFor="let province of filteredProvinces; let i = index" 
-                  [class.active]="i === selectedProvinceIndex"
-                  (mousedown)="selectProvince(province)">
+            <input type="text" formControlName="province" class="form-control" placeholder="เลือกหรือพิมพ์ค้นหาจังหวัด"
+              (input)="onProvinceSearch($event)" (focus)="onProvinceSearch($event)" (blur)="onProvinceBlur()"
+              (keydown)="onProvinceKeydown($event)" autocomplete="off"
+              [class.is-invalid]="activityForm.get('province')?.invalid && activityForm.get('province')?.touched">
+            <ul class="list-group position-absolute w-100" style="z-index: 1000; max-height: 250px; overflow-y: auto;"
+              *ngIf="filteredProvinces.length > 0">
+              <li class="list-group-item list-group-item-action" style="cursor: pointer;"
+                *ngFor="let province of filteredProvinces; let i = index" [class.active]="i === selectedProvinceIndex"
+                (mousedown)="selectProvince(province)">
                 {{ province.nameTh }} ({{ province.nameEn }})
               </li>
             </ul>
@@ -84,7 +81,8 @@
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">ช่องทางพบ <span style="color: red;">*</span></label>
-          <select formControlName="contactChannel" class="form-select" [class.is-invalid]="activityForm.get('contactChannel')?.invalid && activityForm.get('contactChannel')?.touched">
+          <select formControlName="contactChannel" class="form-select"
+            [class.is-invalid]="activityForm.get('contactChannel')?.invalid && activityForm.get('contactChannel')?.touched">
             <option value="">เลือกช่องทาง</option>
             <option value="MsTeam">MsTeam</option>
             <option value="ZOOM">ZOOM</option>
@@ -98,7 +96,8 @@
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะ <span style="color: red;">*</span></label>
-          <select formControlName="activitiesStatus" class="form-select" [class.is-invalid]="activityForm.get('activitiesStatus')?.invalid && activityForm.get('activitiesStatus')?.touched">
+          <select formControlName="activitiesStatus" class="form-select"
+            [class.is-invalid]="activityForm.get('activitiesStatus')?.invalid && activityForm.get('activitiesStatus')?.touched">
             <option value="ติดต่อ">ติดต่อ</option>
             <option value="เข้าพบลูกค้า">เข้าพบลูกค้า</option>
             <option value="เก็บความต้องการลูกค้า">เก็บความต้องการลูกค้า</option>
@@ -111,11 +110,13 @@
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">% ที่คิดว่าจะได้งาน <span style="color: red;">*</span></label>
-          <input type="number" formControlName="probability" class="form-control" placeholder="0-100" min="0" max="100" [class.is-invalid]="activityForm.get('probability')?.invalid && activityForm.get('probability')?.touched">
+          <input type="number" formControlName="probability" class="form-control" placeholder="0-100" min="0" max="100"
+            [class.is-invalid]="activityForm.get('probability')?.invalid && activityForm.get('probability')?.touched">
         </div>
         <div class="col-md-2" *ngIf="activityForm.get('activitiesStatus')?.value === 'ไม่ได้งาน'">
           <label class="form-label font-weight-bold">เหตุผลที่ไม่ได้งาน <span style="color: red;">*</span></label>
-          <select formControlName="lostReason" class="form-select" [class.is-invalid]="activityForm.get('lostReason')?.invalid && activityForm.get('lostReason')?.touched">
+          <select formControlName="lostReason" class="form-select"
+            [class.is-invalid]="activityForm.get('lostReason')?.invalid && activityForm.get('lostReason')?.touched">
             <option value="">เลือกเหตุผล</option>
             <option value="ราคาสูงกว่าคู่แข่ง">ราคาสูงกว่าคู่แข่ง</option>
             <option value="ลูกค้ามีงบประมาณจำกัด">ลูกค้ามีงบประมาณจำกัด</option>
@@ -143,21 +144,23 @@
           <label class="form-label font-weight-bold">เวลานัดครั้งถัดไป</label>
           <input type="time" formControlName="nextTime" class="form-control">
         </div>
-         <div class="col-md-12">
+        <div class="col-md-12">
           <div class="form-check">
-            <input type="checkbox" formControlName="isNewCustomer" class="form-check-input" id="isNewCustomer" >
-            <label class="form-check-label font-weight-bold" for="isNewCustomer" >
-             ลูกค้าใหม่
+            <input type="checkbox" formControlName="isNewCustomer" class="form-check-input" id="isNewCustomer">
+            <label class="form-check-label font-weight-bold" for="isNewCustomer">
+              ลูกค้าใหม่
             </label>
           </div>
         </div>
         <div class="col-md-12">
           <label class="form-label font-weight-bold">วัตถุประสงค์ <span style="color: red;">*</span></label>
-          <textarea formControlName="objective" class="form-control" rows="3" placeholder="วัตถุประสงค์ของการติดต่อ" [class.is-invalid]="activityForm.get('objective')?.invalid && activityForm.get('objective')?.touched"></textarea>
+          <textarea formControlName="objective" class="form-control" rows="3" placeholder="วัตถุประสงค์ของการติดต่อ"
+            [class.is-invalid]="activityForm.get('objective')?.invalid && activityForm.get('objective')?.touched"></textarea>
         </div>
         <div class="col-md-12">
           <label class="form-label font-weight-bold">ผลการพูดคุย <span style="color: red;">*</span></label>
-          <textarea formControlName="discussionResult" class="form-control" rows="3" placeholder="สรุปผลการพูดคุย" [class.is-invalid]="activityForm.get('discussionResult')?.invalid && activityForm.get('discussionResult')?.touched"></textarea>
+          <textarea formControlName="discussionResult" class="form-control" rows="3" placeholder="สรุปผลการพูดคุย"
+            [class.is-invalid]="activityForm.get('discussionResult')?.invalid && activityForm.get('discussionResult')?.touched"></textarea>
         </div>
       </div>
     </form>
@@ -165,7 +168,8 @@
 </div>
 
 <!-- Quotation Modal -->
-<div class="modal fade show d-block" tabindex="-1" *ngIf="showQuotationModal" style="background-color: rgba(0,0,0,0.5);">
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showQuotationModal"
+  style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -208,11 +212,13 @@
                 <option value="แผ่นพับ">แผ่นพับ</option>
                 <option value="สติ๊กเกอร์">สติ๊กเกอร์</option>
                 <option value="หนังสือ">หนังสือ</option>
+                <option value="ป้าย">ป้าย</option>
               </select>
             </div>
             <div class="col-12">
               <label class="form-label font-weight-bold">หมายเหตุ</label>
-              <textarea formControlName="remark" class="form-control" rows="3" placeholder="หมายเหตุเพิ่มเติม..."></textarea>
+              <textarea formControlName="remark" class="form-control" rows="3"
+                placeholder="หมายเหตุเพิ่มเติม..."></textarea>
             </div>
           </div>
         </form>

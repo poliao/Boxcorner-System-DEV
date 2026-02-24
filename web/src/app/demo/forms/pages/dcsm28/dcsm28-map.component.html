@@ -1,0 +1,57 @@
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>แผนที่การเช็คอิน (Sales Map)</h2>
+        <button mat-raised-button color="warn" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon> ย้อนกลับ
+        </button>
+    </div>
+
+    <div class="card mb-3 border-0 shadow-sm" *ngIf="isAdmin">
+        <div class="card-body">
+            <div class="row align-items-end g-3">
+                <div class="col-md-3">
+                    <label class="form-label text-muted small mb-1 fw-bold">วันที่</label>
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filterActivityDate">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted small mb-1 fw-bold">ชื่อพนักงานขาย</label>
+                    <select class="form-select form-select-sm" [(ngModel)]="filterSalesName" (change)="onSearch()">
+                        <option value="">-- ทั้งหมด --</option>
+                        <option *ngFor="let sales of salesUsers" [value]="sales.text">{{ sales.text }}</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button mat-flat-button color="primary" class="w-100" (click)="onSearch()">
+                        <mat-icon>search</mat-icon> ค้นหา
+                    </button>
+                    <button mat-stroked-button class="w-100" (click)="clearFilters()">
+                        <mat-icon>refresh</mat-icon> ล้างค่า
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-body p-0 position-relative">
+            <!-- Floating Summary Panel -->
+            <div *ngIf="routeDistances.length > 0" class="position-absolute top-0 end-0 m-3 p-3 bg-white rounded shadow"
+                style="z-index: 1000; min-width: 250px; max-width: 350px;">
+                <h5 class="mb-2 fw-bold text-primary border-bottom pb-2">
+                    <mat-icon
+                        style="vertical-align: middle; font-size: 20px; width: 20px; height: 20px;">directions_car</mat-icon>
+                    ระยะทางเดินรถจริง
+                </h5>
+                <div *ngFor="let rd of routeDistances" class="mb-2 pb-2 border-bottom">
+                    <div class="fw-bold">{{ rd.salesName }}</div>
+                    <div class="text-muted d-flex justify-content-between">
+                        <span>รวมระยะทาง:</span>
+                        <span class="text-danger fw-bold">{{ rd.distanceKm }} กม.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="map" style="height: 70vh; width: 100%; z-index: 1;"></div>
+        </div>
+    </div>
+</div>

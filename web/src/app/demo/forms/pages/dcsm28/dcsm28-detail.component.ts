@@ -23,6 +23,7 @@ export class Dcsm28DetailComponent implements OnInit {
   id: string | null = null;
   showQuotationModal = false;
   hasQuotation = false;
+  hasCheckedIn = false;
   currentQuotation: any = null;
   filteredProvinces: any[] = [];
   selectedProvinceIndex: number = -1;
@@ -115,6 +116,9 @@ export class Dcsm28DetailComponent implements OnInit {
 
   patchFormData(data: any): void {
     this.activityForm.patchValue(data);
+    if (data.checkInTime) {
+      this.hasCheckedIn = true;
+    }
   }
 
   onSave(): void {
@@ -288,5 +292,55 @@ export class Dcsm28DetailComponent implements OnInit {
       this.filteredProvinces = [];
       this.selectedProvinceIndex = -1;
     }, 200);
+  }
+
+  checkIn(): void {
+    if (navigator.geolocation) {
+      this.loadingService.show();
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      };
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const data = {
+            activityId: Number(this.id),
+            checkInLat: position.coords.latitude,
+            checkInLng: position.coords.longitude
+          };
+          this.dcsm28Service.checkIn(data).subscribe({
+            next: (response) => {
+              this.loadingService.hide();
+              this.hasCheckedIn = true;
+              this.sweetAlert.success('สำเร็จ', 'เช็คอินสำเร็จ');
+            },
+            error: (err) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('เกิดข้อผิดพลาด', err.error || 'ไม่สามารถเช็คอินได้');
+            }
+          });
+        },
+        (error) => {
+          this.loadingService.hide();
+          let errMsg = 'ไม่สามารถเข้าถึงตำแหน่งได้';
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errMsg = 'คุณไม่อนุญาตให้ระบบเข้าถึงตำแหน่ง GPS';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errMsg = 'ไม่มีสัญญาณ GPS ลองขยับไปที่โล่งแจ้งครับ';
+              break;
+            case error.TIMEOUT:
+              errMsg = 'หมดเวลารอสัญญาณ GPS กรุณาลองใหม่';
+              break;
+          }
+          this.sweetAlert.error('เกิดข้อผิดพลาด', errMsg);
+        },
+        options
+      );
+    } else {
+      this.sweetAlert.error('เกิดข้อผิดพลาด', 'เบราว์เซอร์ไม่รองรับ Geolocation');
+    }
   }
 }

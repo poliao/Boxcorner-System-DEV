@@ -42,20 +42,20 @@ export class Dcsm02DetailComponent implements OnInit {
   showApproveProductModal = false;
   showCancelModalProduct = false;
   //-------------------------------------------------------------------------
-  usedFile = new FormControl('', Validators.required);
-  colorSample = new FormControl('');
-  deadlineDate = new FormControl('');
-  deadlineTime = new FormControl('');
-  remarks = new FormControl('');
-  decisionAuthority = new FormControl('', Validators.required);
-  designDate = new FormControl('', Validators.required);
-  designTime = new FormControl('', Validators.required);
-  designRemarks = new FormControl('', Validators.required);
-  planDate = new FormControl('', Validators.required);
-  planTime = new FormControl('', Validators.required);
-  planRemarks = new FormControl('', Validators.required);
-  decisionAuthorityRemarks = new FormControl('');
-  customerName = new FormControl('', Validators.required);
+  usedFile = new FormControl(null, Validators.required);
+  colorSample = new FormControl(null);
+  deadlineDate = new FormControl(null);
+  deadlineTime = new FormControl(null);
+  remarks = new FormControl(null);
+  decisionAuthority = new FormControl(null, Validators.required);
+  designDate = new FormControl(null, Validators.required);
+  designTime = new FormControl(null, Validators.required);
+  designRemarks = new FormControl(null, Validators.required);
+  planDate = new FormControl(null, Validators.required);
+  planTime = new FormControl(null, Validators.required);
+  planRemarks = new FormControl(null, Validators.required);
+  decisionAuthorityRemarks = new FormControl(null);
+  customerName = new FormControl(null, Validators.required);
 
 
   constructor(
@@ -122,6 +122,7 @@ export class Dcsm02DetailComponent implements OnInit {
       customerName: [''],
       rowVersion: [null],
       confirmDate: [null],
+      orderTime: [null],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -130,6 +131,7 @@ export class Dcsm02DetailComponent implements OnInit {
     this.designForm.controls['processStatus'].disable({ emitEvent: false });
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['fileName'].disable({ emitEvent: false });
+    this.designForm.controls['orderTime'].disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
@@ -181,7 +183,7 @@ export class Dcsm02DetailComponent implements OnInit {
       confirmButtonText: 'ยืนยัน',
       cancelButtonText: 'ยกเลิก'
     }).then((result) => {
-      if (this.designForm.valid) {
+      if (result.isConfirmed && this.designForm.valid) {
         this.loadingService.show();
         const data = this.designForm.getRawValue();
         data.confirmStatus = 'ผ่าน';
@@ -273,6 +275,7 @@ export class Dcsm02DetailComponent implements OnInit {
   }
 
   openApproveProductModal() {
+    this.usedFile.setValue(this.designForm.getRawValue().fileName);
     this.showApproveProductModal = true;
   }
 

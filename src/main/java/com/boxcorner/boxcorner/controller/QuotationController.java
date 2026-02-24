@@ -49,7 +49,7 @@ public class QuotationController {
     public ResponseEntity<?> getCurrent(@RequestParam("activityId") Long activityId) {
         return quotationService.getCurrentQuotation(activityId)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(null);
     }
 
     @GetMapping("/revisionCount")

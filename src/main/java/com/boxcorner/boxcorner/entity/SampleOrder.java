@@ -116,4 +116,7 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "print2_page")
     private Boolean print2Page;
+
+    @Column(name = "order_time")
+    private LocalTime orderTime;
 }
