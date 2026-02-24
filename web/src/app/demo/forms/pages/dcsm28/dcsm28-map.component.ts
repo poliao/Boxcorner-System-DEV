@@ -193,7 +193,7 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                         return timeA - timeB;
                     });
 
-                    routeData.activities.forEach((act: any) => {
+                    routeData.activities.forEach((act: any, index: number) => {
                         const cp = L.latLng(parseFloat(act.checkInLat), parseFloat(act.checkInLng));
                         latlngs.push(cp);
                         bounds.extend(cp);
@@ -202,7 +202,7 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                         const checkInTimeStr = act.checkInTime ? new Date(act.checkInTime).toLocaleString('th-TH') : 'ไม่ระบุ';
                         marker.bindPopup(`
               <div style="font-family: 'Kanit', sans-serif;">
-                <h6 style="margin-bottom: 5px; font-weight: bold; color: #007bff;">${act.customerName || 'ไม่ระบุชื่อลูกค้า'}</h6>
+                <h6 style="margin-bottom: 5px; font-weight: bold; color: #007bff;">${index + 1}. ${act.customerName || 'ไม่ระบุชื่อลูกค้า'}</h6>
                 <div><b>พนักงาน:</b> ${act.salesName || 'ไม่ระบุ'}</div>
                 <div><b>เช็คอินเมื่อ:</b> ${checkInTimeStr}</div>
                 <div><b>ช่องทาง:</b> ${act.contactChannel || '-'}</div>
