@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface ExtraPrintRepository extends JpaRepository<ExtraPrint, Long> {
     List<ExtraPrint> findByPrintJobIdOrderByCreatedAtDesc(Long printJobId);
+
+    List<ExtraPrint> findByPrintJobIdIn(List<Long> printJobIds);
 }

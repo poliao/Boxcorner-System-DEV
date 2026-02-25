@@ -14,4 +14,6 @@ public interface PrintLogRepository extends JpaRepository<PrintLog, Long> {
     Optional<PrintLog> findByPrinterIdAndEndedAtIsNull(Integer printerId);
 
     List<PrintLog> findByJobIdOrderByStartedAtDesc(Long jobId);
+
+    List<PrintLog> findByJobIdIn(List<Long> jobIds);
 }

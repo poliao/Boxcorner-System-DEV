@@ -17,33 +17,45 @@
   <div class="card-body">
     <form [formGroup]="printJobForm">
       <div class="row g-3">
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label">Job ID</label>
           <input type="text" formControlName="jobId" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
+          <label class="form-label">เป็นงานตัวอย่าง</label>
+          <input type="text" formControlName="issample" class="form-control">
+        </div>
+        <div class="col-md-2">
           <label class="form-label">วันที่ส่ง</label>
           <input type="date" formControlName="deliveryDate" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label">เวลาส่ง</label>
           <input type="time" formControlName="deliveryTime" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label">จำนวนใบพิมพ์</label>
           <input type="number" formControlName="totalPrintSheets" class="form-control">
         </div>
-        <div class="col-md-5">
-          <label class="form-label">ชื่อลูกค้า/ชื่องาน</label>
-          <input type="text" formControlName="customerJobName" class="form-control">
-        </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label class="form-label">สถานะ</label>
           <input type="text" formControlName="jobStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
+          <label class="form-label">ชื่อลูกค้า/ชื่องาน</label>
+          <input type="text" formControlName="customerJobName" class="form-control">
+        </div>
+        <div class="col-md-2">
           <label class="form-label">ยอดเผื่อเสีย (Setup Waste)</label>
           <input type="number" formControlName="setupWaste" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">ยอดขอพิมพ์เพิ่ม (Extra)</label>
+          <input type="text" [value]="extraQuantity" class="form-control" readonly style="background-color: #e9ecef;">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">รูปแบบการพิมพ์</label>
+          <input type="text" [value]="printSidedness" class="form-control" readonly style="background-color: #e9ecef;">
         </div>
       </div>
     </form>
@@ -58,7 +70,9 @@
         <h5 class="card-title text-primary"><mat-icon class="align-middle">assignment</mat-icon> ยอดสั่งพิมพ์ทั้งหมด
         </h5>
         <h2 class="display-4">{{ orderedQuantity | number }}</h2>
-        <p class="text-muted">(จำนวนใบพิมพ์ + ยอดเผื่อเสีย)</p>
+        <p class="text-muted" *ngIf="extraQuantity === 0">(จำนวนใบพิมพ์ + ยอดเผื่อเสีย)</p>
+        <p class="text-muted" *ngIf="extraQuantity > 0">(จำนวนใบพิมพ์ + ยอดเผื่อเสีย + พิพม์เพิ่ม <strong>{{
+            extraQuantity | number }}</strong>)</p>
       </div>
     </div>
   </div>
@@ -77,7 +91,7 @@
       <div class="card-body">
         <h5 class="card-title" [ngClass]="{'text-success': difference <= 0, 'text-danger': difference > 0}">
           <mat-icon class="align-middle">{{ difference > 0 ? 'warning' : 'check_circle' }}</mat-icon> ส่วนต่าง
-          (พิมพ์เกิน)
+          (พิมพ์เกิน/พิมพ์ขาด)
         </h5>
         <h2 class="display-4" [ngClass]="{'text-success': difference <= 0, 'text-danger': difference > 0}">
           {{ difference > 0 ? '+' : '' }}{{ difference | number }}
@@ -138,21 +152,44 @@
             </td>
 
             <td class="text-end font-monospace text-primary">
-              {{ (log.meterColorEnd && log.meterColorStart) ? (log.meterColorEnd - log.meterColorStart | number) : '0'
-              }}
+              <div class="fw-bold">{{ (log.meterColorEnd && log.meterColorStart) ? (log.meterColorEnd -
+                log.meterColorStart | number) : '0' }}</div>
+              <small class="text-muted" style="font-size: 0.75rem;"
+                *ngIf="log.meterColorStart != null || log.meterColorEnd != null">
+                {{ log.meterColorStart | number }} <mat-icon
+                  style="font-size: 10px; width: 10px; height: 10px;">arrow_forward</mat-icon> {{ log.meterColorEnd |
+                number }}
+              </small>
             </td>
             <td class="text-end font-monospace text-secondary">
-              {{ (log.meterBwEnd && log.meterBwStart) ? (log.meterBwEnd - log.meterBwStart | number) : '0' }}
+              <div class="fw-bold">{{ (log.meterBwEnd && log.meterBwStart) ? (log.meterBwEnd - log.meterBwStart |
+                number) : '0' }}</div>
+              <small class="text-muted" style="font-size: 0.75rem;"
+                *ngIf="log.meterBwStart != null || log.meterBwEnd != null">
+                {{ log.meterBwStart | number }} <mat-icon
+                  style="font-size: 10px; width: 10px; height: 10px;">arrow_forward</mat-icon> {{ log.meterBwEnd |
+                number }}
+              </small>
             </td>
             <td class="text-end font-monospace text-warning">
-              {{ (log.meterSpecialEnd && log.meterSpecialStart) ? (log.meterSpecialEnd - log.meterSpecialStart | number)
-              : '0' }}
+              <div class="fw-bold">{{ (log.meterSpecialEnd && log.meterSpecialStart) ? (log.meterSpecialEnd -
+                log.meterSpecialStart | number) : '0' }}</div>
+              <small class="text-muted" style="font-size: 0.75rem;"
+                *ngIf="log.meterSpecialStart != null || log.meterSpecialEnd != null">
+                {{ log.meterSpecialStart | number }} <mat-icon
+                  style="font-size: 10px; width: 10px; height: 10px;">arrow_forward</mat-icon> {{ log.meterSpecialEnd |
+                number }}
+              </small>
             </td>
             <td class="text-end font-monospace fw-bold">
-              {{ ((log.meterColorEnd && log.meterColorStart ? (log.meterColorEnd - log.meterColorStart) : 0) +
-              (log.meterBwEnd && log.meterBwStart ? (log.meterBwEnd - log.meterBwStart) : 0) +
-              (log.meterSpecialEnd && log.meterSpecialStart ? (log.meterSpecialEnd - log.meterSpecialStart) : 0)) |
-              number }}
+              <!-- Maximum impression value from color, bw, special -->
+              {{
+              getMax(
+              (log.meterColorEnd && log.meterColorStart ? (log.meterColorEnd - log.meterColorStart) : 0),
+              (log.meterBwEnd && log.meterBwStart ? (log.meterBwEnd - log.meterBwStart) : 0),
+              (log.meterSpecialEnd && log.meterSpecialStart ? (log.meterSpecialEnd - log.meterSpecialStart) : 0)
+              ) | number
+              }}
             </td>
 
             <td class="text-center">

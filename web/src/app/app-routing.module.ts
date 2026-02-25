@@ -580,6 +580,11 @@ const routes: Routes = [
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm29/dcsm29.component').then((c) => c.Dcsm29Component)
       },
+      {
+        path: 'MaterialInventory',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/material-inventory/material-inventory.component').then((c) => c.MaterialInventoryComponent)
+      },
     ]
   },
   {

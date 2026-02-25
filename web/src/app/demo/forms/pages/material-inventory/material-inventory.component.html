@@ -1,0 +1,114 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-6">
+                <h1 class="mb-2 mb-md-0">ระบบพัสดุและคลังกระดาษ (Materials Inventory)</h1>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-grid d-md-flex justify-content-md-end gap-2">
+                    <button mat-flat-button color="primary" (click)="openModal()">
+                        <mat-icon>add</mat-icon> เพิ่มวัสดุใหม่
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- Filter Section (ถ้ามี) -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="ค้นหาชื่อ หรือ หมวดหมู่..." [value]="searchTerm"
+                    (keyup)="onSearch($event)">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" (click)="clearSearch()">
+                    ล้างการค้นหา
+                </button>
+            </div>
+        </div>
+
+        <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements"
+            [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)"
+            (rowClick)="onRowClick($event)">
+        </app-data-table>
+    </div>
+</div>
+
+<!-- Modal Form -->
+<div class="modal fade" id="materialModal" tabindex="-1" aria-labelledby="materialModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: #032b5e;">
+                <h5 class="modal-title" id="materialModalLabel">{{ isEditMode ? 'แก้ไขข้อมูลวัสดุ' : 'เพิ่มวัสดุใหม่' }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                    (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="materialForm">
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label">ชื่อวัสดุ <span class="text-danger">*</span></label>
+                            <input type="text" formControlName="materialName" class="form-control"
+                                placeholder="เช่น กระดาษอาร์ตการ์ด, หมึกสีแดง">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">หมวดหมู่</label>
+                            <input type="text" formControlName="category" class="form-control"
+                                placeholder="เช่น กระดาษ, หมึก">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">ขนาด (ถ้ามี)</label>
+                            <input type="text" formControlName="materialSize" class="form-control"
+                                placeholder="เช่น 24x35 นิ้ว">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">อัตราบรรจุต่อกล่อง (ชิ้น/กล่อง) <span
+                                    class="text-danger">*</span></label>
+                            <input type="number" formControlName="qtyPerBox" class="form-control">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h6 class="mb-3 text-secondary">การนับสต็อก (Inventory Units)</h6>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">ชื่อหน่วยใหญ่</label>
+                            <input type="text" formControlName="unitLargeName" class="form-control"
+                                placeholder="เช่น กล่อง, ลัง, แพ็ค">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">สต็อกใหญ่คงเหลือ</label>
+                            <input type="number" formControlName="currentStockLarge" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">ชื่อหน่วยย่อย</label>
+                            <input type="text" formControlName="unitSmallName" class="form-control"
+                                placeholder="เช่น แผ่น, ชิ้น, ใบ">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">สต็อกย่อยคงเหลือ (เศษ)</label>
+                            <input type="number" formControlName="currentStockSmall" class="form-control">
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">ยกเลิก</button>
+                <button type="button" class="btn btn-primary" (click)="onSubmit()"
+                    style="background-color: #032b5e; border-color: #032b5e;">บันทึก</button>
+            </div>
+        </div>
+    </div>
+</div>

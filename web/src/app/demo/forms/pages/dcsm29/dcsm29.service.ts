@@ -42,4 +42,16 @@ export class Dcsm29Service {
   getLogsByJobId(jobId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/printing/logsByJobId?jobId=${jobId}`);
   }
+
+  getExtraPrintsByJobId(printJobId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
+  }
+
+  getBatchLogs(jobIds: number[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/printing/batchLogs`, jobIds);
+  }
+
+  getBatchExtraPrints(printJobIds: number[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/extra-prints/batchByPrintJobIds`, printJobIds);
+  }
 }

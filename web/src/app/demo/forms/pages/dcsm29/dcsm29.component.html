@@ -11,6 +11,66 @@
   </div>
 
   <div class="card-body">
+    <!-- Search Filters -->
+    <div class="row mb-3">
+      <div class="col-md-2 mb-2">
+        <label class="form-label">เลข ID</label>
+        <input type="text" class="form-control" [(ngModel)]="searchParams.id" placeholder="ค้นหา ID"
+          (keyup.enter)="onSearch()">
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label">เลข Job ID</label>
+        <input type="text" class="form-control" [(ngModel)]="searchParams.jobId" placeholder="ค้นหา Job ID"
+          (keyup.enter)="onSearch()">
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label">ชื่อลูกค้า</label>
+        <input type="text" class="form-control" [(ngModel)]="searchParams.customerJobName" placeholder="ค้นหาชื่อลูกค้า"
+          (keyup.enter)="onSearch()">
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label">เป็นงานตัวอย่าง</label>
+        <select class="form-select" [(ngModel)]="searchParams.issample" (change)="onSearch()">
+          <option [ngValue]="null">ทั้งหมด</option>
+          <option value="Yes">ใช่</option>
+          <option value="No">ไม่ใช่</option>
+        </select>
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label">สเตตัส</label>
+        <select class="form-select" [(ngModel)]="searchParams.jobStatus" (change)="onSearch()">
+          <option [ngValue]="null">ทั้งหมด</option>
+          <option value="PENDING">PENDING</option>
+          <option value="PAUSED">PAUSED</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="WAITPAGE2">WAITPAGE2</option>
+          <option value="PAUSED_PAGE2">PAUSED_PAGE2</option>
+          <option value="IN_PROGRESS_PAGE2">IN_PROGRESS_PAGE2</option>
+          <option value="COMPLETED">COMPLETED</option>
+        </select>
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label">ยอดส่วนต่างมิเตอร์</label>
+        <select class="form-select" [(ngModel)]="searchParams.meterCategory" (change)="onSearch()">
+          <option [ngValue]="null">ทั้งหมด</option>
+          <option value="พอดี">พอดี</option>
+          <option value="เกิน">เกิน</option>
+          <option value="ขาด">ขาด</option>
+          <option value="ไม่มีประวัติ">ไม่มีประวัติ</option>
+        </select>
+      </div>
+      <div class="col-md-2 mb-2 d-flex align-items-end">
+        <div class="d-grid w-100 d-md-flex gap-2">
+          <button class="btn btn-primary flex-grow-1" (click)="onSearch()" style="background-color: #0d6efd;">
+            ค้นหา
+          </button>
+          <button class="btn btn-secondary flex-grow-1" (click)="clearSearch()">
+            ล้าง
+          </button>
+        </div>
+      </div>
+    </div>
+
     <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
       [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
       (rowClick)="onRowClick($event)">

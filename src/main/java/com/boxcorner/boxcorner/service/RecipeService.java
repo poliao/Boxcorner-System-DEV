@@ -70,9 +70,23 @@ public class RecipeService {
         recipeRepository.save(recipe);
 
         colorsRepository.deleteByRecipeid(recipe.getRecipeid());
+
+        String lastColorId = colorsRepository.findTopByOrderByColoridDesc();
+        int colorNumber = 0;
+        if (lastColorId != null && lastColorId.startsWith("COL")) {
+            try {
+                colorNumber = Integer.parseInt(lastColorId.substring(3));
+            } catch (NumberFormatException e) {
+                colorNumber = 0;
+            }
+        }
+
         for (ColorRequest c : req.getColors()) {
+            colorNumber++;
+            String nextColorId = colorNumber <= 1 ? "COL01" : String.format("COL%06d", colorNumber);
+
             Colors color = new Colors();
-            color.setColorid(generateNextColorId());
+            color.setColorid(nextColorId);
             color.setRecipeid(recipe.getRecipeid());
             color.setColorname(c.getColor());
             color.setWeight(c.getWeight());
@@ -83,7 +97,7 @@ public class RecipeService {
             colorsRepository.save(color);
         }
 
-        List<Colors> colorsList = colorsRepository.findByRecipeid(req.getRecipeid());
+        List<Colors> colorsList = colorsRepository.findByRecipeid(recipe.getRecipeid());
         RecipeResponse response = new RecipeResponse();
         response.setRecipeid(recipe.getRecipeid());
         response.setJobid(recipe.getJobid());
@@ -159,15 +173,5 @@ public class RecipeService {
 
         int number = Integer.parseInt(lastId.substring(3));
         return String.format("BCA%06d", number + 1);
-    }
-
-    private String generateNextColorId() {
-        String lastId = colorsRepository.findTopByOrderByColoridDesc();
-        if (lastId == null || !lastId.startsWith("COL")) {
-            return "COL01";
-        }
-
-        int number = Integer.parseInt(lastId.substring(3));
-        return String.format("COL%06d", number + 1);
     }
 }

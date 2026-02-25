@@ -52,14 +52,13 @@ export const NavigationItems: NavigationItem[] = [
             url: '/Dcsm01',
             breadcrumbs: false
           },
-          // {
-          //   id: 'register',
-          //   title: 'Register',
-          //   type: 'item',
-          //   url: '/register',
-          //   target: true,
-          //   breadcrumbs: false
-          // }
+          {
+            id: 'material-inventory',
+            title: 'พัสดุและคลังกระดาษ',
+            type: 'item',
+            url: '/MaterialInventory',
+            breadcrumbs: false
+          }
         ]
       }
     ]

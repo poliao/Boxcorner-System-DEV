@@ -107,4 +107,14 @@ public class PrintingController {
         }
     }
 
+    @PostMapping("/batchLogs")
+    public ResponseEntity<?> getBatchLogs(@RequestBody java.util.List<Long> jobIds) {
+        try {
+            java.util.Map<Long, java.util.List<PrintLog>> batchLogs = printingService.getBatchLogs(jobIds);
+            return ResponseEntity.ok(batchLogs);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

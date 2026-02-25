@@ -29,7 +29,7 @@
           <label class="form-label font-weight-bold">QtId</label>
           <input type="text" formControlName="qtId" class="form-control">
         </div>
-        <div class="col-md-2">
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
           <input type="text" formControlName="usedFile" class="form-control">
         </div>
@@ -47,8 +47,8 @@
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
-        
-        <div class="col-md-6">
+
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control">
         </div>
@@ -132,8 +132,8 @@
       <h6 class="mb-0 font-weight-bold">
         <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
       </h6>
-      <button *ngIf="mainForm.get('decisionAuthority')?.value && isEditMode === false" type="button" class="btn btn-sm btn-light"
-        (click)="clearDecisionAuthority()">
+      <button *ngIf="mainForm.get('decisionAuthority')?.value && isEditMode === false" type="button"
+        class="btn btn-sm btn-light" (click)="clearDecisionAuthority()">
         <i class="fas fa-times me-1"></i>ล้างค่า
       </button>
     </div>

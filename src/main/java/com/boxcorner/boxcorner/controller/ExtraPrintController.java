@@ -15,6 +15,7 @@ import com.boxcorner.boxcorner.entity.ExtraPrint;
 import com.boxcorner.boxcorner.service.ExtraPrintService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/extra-prints")
@@ -40,6 +41,17 @@ public class ExtraPrintController {
         try {
             List<ExtraPrint> extraPrints = extraPrintService.findByPrintJobId(printJobId);
             return ResponseEntity.ok(extraPrints);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/batchByPrintJobIds")
+    public ResponseEntity<?> getBatchExtraPrints(@RequestBody List<Long> printJobIds) {
+        try {
+            Map<Long, List<ExtraPrint>> batchExtraPrints = extraPrintService.getBatchExtraPrints(printJobIds);
+            return ResponseEntity.ok(batchExtraPrints);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());

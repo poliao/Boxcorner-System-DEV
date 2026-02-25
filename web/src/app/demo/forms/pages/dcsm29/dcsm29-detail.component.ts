@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dcsm29Service } from './dcsm29.service';
+import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +24,8 @@ export class Dcsm29DetailComponent implements OnInit {
   printJobForm: FormGroup;
   printJobId: string | null = null;
   printLogs: any[] = [];
+  extraPrints: any[] = [];
+  previousState: any;
 
   totalMeterImpressions = 0;
   totalMeterColor = 0;
@@ -31,6 +34,8 @@ export class Dcsm29DetailComponent implements OnInit {
 
   orderedQuantity = 0;
   difference = 0;
+  extraQuantity = 0;
+  printSidedness = '-';
 
   constructor(
     private fb: FormBuilder,
@@ -44,6 +49,7 @@ export class Dcsm29DetailComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.previousState = history.state;
     this.printJobId = this.route.snapshot.paramMap.get('id');
     if (this.printJobId) {
       this.loadJobDetails(Number(this.printJobId));
@@ -61,7 +67,8 @@ export class Dcsm29DetailComponent implements OnInit {
       customerJobName: [''],
       jobStatus: [''],
       productionQty: [0],
-      setupWaste: [0]
+      setupWaste: [0],
+      issample: ['']
     });
 
     this.printJobForm.disable(); // Make form readonly
@@ -70,7 +77,21 @@ export class Dcsm29DetailComponent implements OnInit {
   loadJobDetails(id: number) {
     this.dcsm29Service.getById(id).subscribe({
       next: (data) => {
-        this.printJobForm.patchValue(data);
+        let issampleFormatted = data.issample;
+        if (data.issample !== undefined && data.issample !== null) {
+          const valUpper = String(data.issample).toUpperCase();
+          if (valUpper === 'YES' || valUpper === 'TRUE') {
+            issampleFormatted = 'เป็น';
+          } else if (valUpper === 'NO' || valUpper === 'FALSE') {
+            issampleFormatted = 'ไม่เป็น';
+          }
+        }
+
+        const formattedData = {
+          ...data,
+          issample: issampleFormatted
+        };
+        this.printJobForm.patchValue(formattedData);
         this.calculateDifference();
       },
       error: (err) => {
@@ -81,13 +102,17 @@ export class Dcsm29DetailComponent implements OnInit {
   }
 
   loadPrintLogs(jobId: number) {
-    this.dcsm29Service.getLogsByJobId(jobId).subscribe({
-      next: (logs) => {
-        this.printLogs = logs || [];
+    forkJoin({
+      logs: this.dcsm29Service.getLogsByJobId(jobId),
+      extra: this.dcsm29Service.getExtraPrintsByJobId(jobId)
+    }).subscribe({
+      next: (results) => {
+        this.printLogs = results.logs || [];
+        this.extraPrints = results.extra || [];
         this.calculateMeterUsage();
       },
       error: (err) => {
-        console.error('Error loading logs:', err);
+        console.error('Error loading logs or extra prints:', err);
       }
     });
   }
@@ -98,22 +123,35 @@ export class Dcsm29DetailComponent implements OnInit {
     this.totalMeterSpecial = 0;
     this.totalMeterImpressions = 0;
 
-    this.printLogs.forEach(log => {
-      // Color
-      if (log.meterColorEnd && log.meterColorStart) {
-        this.totalMeterColor += (log.meterColorEnd - log.meterColorStart);
-      }
-      // BW
-      if (log.meterBwEnd && log.meterBwStart) {
-        this.totalMeterBw += (log.meterBwEnd - log.meterBwStart);
-      }
-      // Special
-      if (log.meterSpecialEnd && log.meterSpecialStart) {
-        this.totalMeterSpecial += (log.meterSpecialEnd - log.meterSpecialStart);
-      }
-    });
+    if (this.printLogs && this.printLogs.length > 0) {
+      this.printLogs.forEach(log => {
+        let colorDiff = 0;
+        let bwDiff = 0;
+        let specialDiff = 0;
 
-    this.totalMeterImpressions = this.totalMeterColor + this.totalMeterBw + this.totalMeterSpecial;
+        // Color
+        if (log.meterColorEnd && log.meterColorStart) {
+          colorDiff = log.meterColorEnd - log.meterColorStart;
+          this.totalMeterColor += colorDiff;
+        }
+        // BW
+        if (log.meterBwEnd && log.meterBwStart) {
+          bwDiff = log.meterBwEnd - log.meterBwStart;
+          this.totalMeterBw += bwDiff;
+        }
+        // Special
+        if (log.meterSpecialEnd && log.meterSpecialStart) {
+          specialDiff = log.meterSpecialEnd - log.meterSpecialStart;
+          this.totalMeterSpecial += specialDiff;
+        }
+
+        // Impressions per sheet:
+        // Typically, color and special toners hit the same physical sheet simultaneously.
+        // Therefore, the total impressions per pass is the max of the individual meters.
+        this.totalMeterImpressions += Math.max(colorDiff, bwDiff, specialDiff);
+      });
+    }
+
     this.calculateDifference();
   }
 
@@ -121,11 +159,56 @@ export class Dcsm29DetailComponent implements OnInit {
     const totalPrintSheets = this.printJobForm.get('totalPrintSheets')?.value || 0;
     const setupWaste = this.printJobForm.get('setupWaste')?.value || 0;
 
-    this.orderedQuantity = totalPrintSheets + setupWaste;
+    let orderedQuantity = totalPrintSheets + setupWaste;
+
+    let hasFront = false;
+    let hasBack = false;
+    let extraPrintQuantity = 0;
+
+    if (this.extraPrints && this.extraPrints.length > 0) {
+      this.extraPrints.forEach(extra => {
+        if (extra.status !== 'REJECTED') {
+          extraPrintQuantity += extra.additionalQty || 0;
+        }
+      });
+    }
+
+    if (this.printLogs && this.printLogs.length > 0) {
+      this.printLogs.forEach(log => {
+        if (log.printSide === 'FRONT') hasFront = true;
+        if (log.printSide === 'BACK') hasBack = true;
+      });
+
+      if (hasFront && hasBack) {
+        orderedQuantity = orderedQuantity * 2;
+        this.printSidedness = 'หน้า-หลัง (2 หน้า)';
+      } else if (hasFront) {
+        this.printSidedness = 'หน้าเดียว (Front)';
+      } else if (hasBack) {
+        this.printSidedness = 'หน้าเดียว (Back)';
+      } else {
+        this.printSidedness = 'ไม่ทราบ';
+      }
+
+      // Add extra prints to the allowed ordered quantity
+      orderedQuantity += extraPrintQuantity;
+      this.extraQuantity = extraPrintQuantity;
+    } else {
+      this.printSidedness = '-';
+      this.extraQuantity = 0;
+    }
+
+    this.orderedQuantity = orderedQuantity;
     this.difference = this.totalMeterImpressions - this.orderedQuantity;
   }
 
+  getMax(a: number, b: number, c: number): number {
+    return Math.max(a, b, c);
+  }
+
   onBack() {
-    this.router.navigate(['/Dcsm29']);
+    this.router.navigate(['/Dcsm29'], {
+      state: this.previousState
+    });
   }
 }

@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ExtraPrintService {
@@ -21,6 +23,11 @@ public class ExtraPrintService {
 
     public List<ExtraPrint> findByPrintJobId(Long printJobId) {
         return extraPrintRepository.findByPrintJobIdOrderByCreatedAtDesc(printJobId);
+    }
+
+    public Map<Long, List<ExtraPrint>> getBatchExtraPrints(List<Long> printJobIds) {
+        List<ExtraPrint> extraPrints = extraPrintRepository.findByPrintJobIdIn(printJobIds);
+        return extraPrints.stream().collect(Collectors.groupingBy(ExtraPrint::getPrintJobId));
     }
 
     @Transactional

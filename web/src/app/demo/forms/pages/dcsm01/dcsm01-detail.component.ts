@@ -137,13 +137,14 @@ export class Dcsm01DetailComponent implements OnInit {
         const colorControl = this.docForm.get('colors') as FormArray;
 
         colorControl.clear();
+        console.log('Response from save API:', res);
 
         if (res.colors && Array.isArray(res.colors)) {
           res.colors.forEach((item: any) => {
             const newRow = this.createColorItem();
 
             newRow.patchValue({
-              color: item.colorname,
+              color: item.colorname || item.color,
               weight: item.weight,
               lot: item.lot
             });
@@ -203,7 +204,7 @@ export class Dcsm01DetailComponent implements OnInit {
       recipe.colors.forEach((item: any) => {
         const newRow = this.createColorItem();
         newRow.patchValue({
-          color: item.colorname,
+          color: item.colorname || item.color,
           weight: item.weight,
           lot: item.lot
         });

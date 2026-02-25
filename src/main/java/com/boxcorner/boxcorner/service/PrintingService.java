@@ -21,6 +21,10 @@ import com.boxcorner.boxcorner.repository.PrinterRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PrintingService {
@@ -145,8 +149,13 @@ public class PrintingService {
         return printLogRepository.save(log);
     }
 
-    public java.util.List<PrintLog> getLogsByJobId(Long jobId) {
+    public List<PrintLog> getLogsByJobId(Long jobId) {
         return printLogRepository.findByJobIdOrderByStartedAtDesc(jobId);
+    }
+
+    public Map<Long, List<PrintLog>> getBatchLogs(List<Long> jobIds) {
+        List<PrintLog> logs = printLogRepository.findByJobIdIn(jobIds);
+        return logs.stream().collect(Collectors.groupingBy(log -> log.getJob().getId()));
     }
 
 }
