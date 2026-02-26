@@ -49,10 +49,33 @@ export class Dcsm25DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designDiecut'];
     if (resolvedData) {
       this.printingForm.patchValue(resolvedData);
+      if (resolvedData.setupWaste !== null && resolvedData.setupWaste !== undefined) {
+        this.printingForm.get('setupWaste')?.disable();
+      } else {
+        this.printingForm.get('setupWaste')?.enable();
+      }
     }
 
     if (this.id) {
       this.loadExtraPrints();
+    }
+  }
+
+  saveSetupWaste() {
+    if (this.printingForm.get('setupWaste')?.value !== null && this.printingForm.get('setupWaste')?.value !== '') {
+      const data = this.printingForm.getRawValue();
+      this.dcsm25Service.save(data).subscribe({
+        next: (response) => {
+          this.printingForm.patchValue(response);
+          this.printingForm.get('setupWaste')?.disable();
+          this.sweetAlert.success('Success', 'บันทึกค่าตั้งเครื่องเรียบร้อย');
+        },
+        error: (error) => {
+          this.sweetAlert.error('Error', error.error?.error || 'เกิดข้อผิดพลาดในการบันทึก');
+        }
+      });
+    } else {
+      this.sweetAlert.warning('Warning', 'กรุณากรอกค่าตั้งเครื่องก่อนบันทึก');
     }
   }
 
@@ -103,7 +126,7 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingForm.get('totalPrintSheets')?.disable();
     this.printingForm.get('productionQty')?.disable();
     this.printingForm.get('printerName')?.disable();
-    this.printingForm.get('setupWaste')?.disable();
+    // this.printingForm.get('setupWaste')?.disable();
     this.printingForm.get('sampleId')?.disable();
     this.printingForm.get('deliveryDate')?.disable();
     this.printingForm.get('deliveryTime')?.disable();
@@ -414,7 +437,7 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   stopExtraPrint(action: string) {
-    
+
     if (this.printingEndLog.valid && this.selectedExtraPrint) {
       const logId = this.printingForm.getRawValue().printingRecordId;
 

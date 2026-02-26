@@ -49,6 +49,15 @@
           <label class="form-label">ยอดผลิต</label>
           <input type="number" formControlName="productionQty" class="form-control" [readonly]="!!printJobId">
         </div>
+        <div class="col-md-3" *ngIf="isInternalJob">
+          <label class="form-label">เครื่องพิมพ์</label>
+          <select *ngIf="!printJobId" formControlName="printerName" class="form-select">
+            <option [ngValue]="null" disabled>เลือกเครื่องพิมพ์</option>
+            <option value="Canon">Canon</option>
+            <option value="Ricoh">Ricoh</option>
+          </select>
+          <input *ngIf="!!printJobId" type="text" formControlName="printerName" class="form-control" [readonly]="true">
+        </div>
       </div>
     </form>
   </div>

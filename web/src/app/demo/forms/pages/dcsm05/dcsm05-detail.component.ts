@@ -103,7 +103,9 @@ export class Dcsm05DetailComponent implements OnInit {
       typeJob: [null],
       machineName: [false],
       print2Page: [false],
-      totalPrintSheets: [null]
+      orderTime: [null],
+      totalPrintSheets: [null],
+      setupWaste: [null]
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });

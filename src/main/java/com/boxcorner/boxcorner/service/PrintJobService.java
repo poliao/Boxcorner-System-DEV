@@ -79,12 +79,36 @@ public class PrintJobService {
         repository.deleteById(id);
     }
 
-    public Page<PrintJob> getAllDetail(Long id, String jobId, String customerJobName, String printerName,Date startDate, Date endDate, Boolean issample, String jobStatus, int page, int size) {
+    public Page<PrintJob> getAllDetail(Long id, String jobId, String customerJobName, String printerName,
+            Date startDate, Date endDate, Boolean issample, String jobStatus, String meterCategory, int page,
+            int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        return repository.findByFiltersAll(id, jobId, customerJobName, printerName,startDate, endDate, issample, jobStatus, paging);
+        Page<PrintJob> pageResult = repository.findByFiltersAll(id, jobId, customerJobName, printerName, startDate,
+                endDate, issample,
+                jobStatus, paging);
+
+        List<String> sampleJobIds = pageResult.getContent().stream()
+                .filter(job -> Boolean.TRUE.equals(job.getIssample()) && job.getJobId() != null
+                        && !job.getJobId().isEmpty())
+                .map(PrintJob::getJobId)
+                .distinct()
+                .toList();
+
+        if (!sampleJobIds.isEmpty()) {
+            List<String> realJobIds = repository.findRealJobIdsByJobIds(sampleJobIds);
+            pageResult.getContent().forEach(job -> {
+                if (Boolean.TRUE.equals(job.getIssample()) && job.getJobId() != null
+                        && realJobIds.contains(job.getJobId())) {
+                    job.setHasRealJob(true);
+                }
+            });
+        }
+
+        return pageResult;
     }
 
-    public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName, int page, int size) {
+    public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName, int page,
+            int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByFiltersOS(id, jobId, customerJobName, printerName, paging);
     }

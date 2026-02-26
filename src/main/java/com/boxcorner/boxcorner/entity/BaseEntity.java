@@ -20,7 +20,7 @@ public abstract class BaseEntity {
     }
 
     public enum LogType {
-        NORMAL, REPRINT, TEST, CALIBRATE, EXTRA
+        NORMAL, REPRINT, TEST, CALIBRATE, EXTRA, REPAIR
     }
 
     public enum JobStatus {

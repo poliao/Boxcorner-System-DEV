@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm25',
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatDialogModule, DataTableComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatDialogModule, DataTableComponent],
   templateUrl: './dcsm25.component.html',
   styleUrls: ['./dcsm25.component.scss']
 })
@@ -31,6 +31,7 @@ export class Dcsm25Component implements OnInit {
     note: null
   };
   printers: any[] = [];
+  repairPrinterForm!: FormGroup;
 
   filterId: string = null;
   filterJobId: string = null;
@@ -60,8 +61,19 @@ export class Dcsm25Component implements OnInit {
     { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
   ];
 
+  rowStyles(row: any) {
+    if (row.hasRealJob && row.jobStatus === 'COMPLETED') {
+      return { 'background-color': '#fff3cd' };
+    }
+    if (row.isClosedSample) {
+      return { 'background-color': '#f0f0f0', 'color': '#888', 'opacity': '0.7' };
+    }
+    return {};
+  }
+
 
   constructor(
+    private fb: FormBuilder,
     private dcsm25Service: Dcsm25Service,
     private router: Router,
     private loadingService: LoadingService,
@@ -71,7 +83,35 @@ export class Dcsm25Component implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.createRepairPrinterForm();
     this.loadData();
+  }
+
+  createRepairPrinterForm() {
+    this.repairPrinterForm = this.fb.group({
+      printerName: [null, Validators.required],
+      meterColorStart: [null, Validators.required],
+      meterColorEnd: [null, Validators.required],
+      meterBwStart: [null, Validators.required],
+      meterBwEnd: [null, Validators.required],
+      meterSpecialStart: [null],
+      meterSpecialEnd: [null],
+      note: ['ซ่อมเครื่อง']
+    });
+
+    this.repairPrinterForm.get('printerName')?.valueChanges.subscribe(val => {
+      if (val === 'Ricoh') {
+        this.repairPrinterForm.get('meterSpecialStart')?.setValidators([Validators.required]);
+        this.repairPrinterForm.get('meterSpecialEnd')?.setValidators([Validators.required]);
+      } else {
+        this.repairPrinterForm.get('meterSpecialStart')?.clearValidators();
+        this.repairPrinterForm.get('meterSpecialEnd')?.clearValidators();
+        this.repairPrinterForm.get('meterSpecialStart')?.setValue(null);
+        this.repairPrinterForm.get('meterSpecialEnd')?.setValue(null);
+      }
+      this.repairPrinterForm.get('meterSpecialStart')?.updateValueAndValidity();
+      this.repairPrinterForm.get('meterSpecialEnd')?.updateValueAndValidity();
+    });
   }
 
   loadData() {
@@ -100,12 +140,14 @@ export class Dcsm25Component implements OnInit {
             qcDate: this.formatDate(item.qcDate),
             dueDate: this.formatDate(item.dueDate),
             issample: item.issample ? 'เป็น' : 'ไม่เป็น',
-            isExtraPrint: false
+            isExtraPrint: false,
+            isClosedSample: item.issample && item.jobStatus === 'COMPLETED' && !!item.productionOrderId,
+            hasRealJob: item.hasRealJob
           }));
-          
+
           // Load extra prints for each job
           this.loadExtraPrints(jobs);
-          
+
           this.totalElements = response.totalElements;
           this.loadingService.hide();
         },
@@ -120,21 +162,21 @@ export class Dcsm25Component implements OnInit {
   loadExtraPrints(jobs: any[]) {
     const extraPrintRequests = jobs
       .filter(job => typeof job.id === 'number' && !isNaN(job.id))
-      .map(job => 
+      .map(job =>
         this.dcsm25Service.getExtraPrintsByJobId(job.id)
       );
 
     Promise.all(extraPrintRequests.map(req => req.toPromise()))
       .then(results => {
         const validJobs = jobs.filter(job => typeof job.id === 'number' && !isNaN(job.id));
-        
+
         results.forEach((extraPrints: any[], index) => {
           const job = validJobs[index];
           // เพิ่ม extraPrints เป็น property ของงานหลัก
           job.extraPrints = extraPrints || [];
           job.extraPrintCount = extraPrints ? extraPrints.length : 0;
         });
-        
+
         this.tableData = jobs;
       })
       .catch(err => {
@@ -171,7 +213,7 @@ export class Dcsm25Component implements OnInit {
       this.router.navigate(['/Dcsm25Detail', row.id]);
     }
   }
-  
+
   clearAllFilters() {
     this.filterId = '';
     this.filterJobId = '';
@@ -223,7 +265,7 @@ export class Dcsm25Component implements OnInit {
       meterColorEnd: this.calibrateData.meterColorEnd,
       meterBwStart: this.calibrateData.meterBwStart,
       meterBwEnd: this.calibrateData.meterBwEnd,
-      note: this.calibrateData.note 
+      note: this.calibrateData.note
     };
 
     this.dcsm25Service.saveCalibrate(payload).subscribe({
@@ -240,4 +282,58 @@ export class Dcsm25Component implements OnInit {
     });
   }
 
+  saveRepairLog() {
+    if (this.repairPrinterForm.invalid) {
+      this.repairPrinterForm.markAllAsTouched();
+      this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
+    const formVal = this.repairPrinterForm.getRawValue();
+    const printerId = formVal.printerName === 'Canon' ? 2 : 1;
+
+    // Step 1: Start Print Log (LogType = REPAIR)
+    const startData = {
+      jobId: null, // General repair, no specific job ID from the list page unless selected, here it's general repair.
+      printerId: printerId,
+      printSide: 'FRONT', // Or leave null if backend allows
+      logType: 'REPAIR',
+      meterColorStart: formVal.meterColorStart,
+      meterBwStart: formVal.meterBwStart,
+      meterSpecialStart: formVal.meterSpecialStart,
+      printerName: formVal.printerName
+    };
+
+    this.dcsm25Service.startPrintLog(startData).subscribe({
+      next: (responseLog) => {
+        // Step 2: Stop Print Log to record End meters
+        const stopData = {
+          logId: responseLog.logId,
+          action: 'COMPLETED',
+          meterColorEnd: formVal.meterColorEnd,
+          meterBwEnd: formVal.meterBwEnd,
+          meterSpecialEnd: formVal.meterSpecialEnd,
+          note: formVal.note
+        };
+        this.dcsm25Service.stopPrintLog(stopData).subscribe({
+          next: () => {
+            this.sweetAlert.success('Success', 'บันทึกประวัติซ่อมเครื่องเรียบร้อย');
+            this.repairPrinterForm.reset({ note: 'ซ่อมเครื่อง' });
+            // Close modal using raw DOM
+            const closeBtn = document.getElementById('closeRepairModalBtn');
+            if (closeBtn) {
+              closeBtn.click();
+            }
+          },
+          error: (err) => {
+            this.sweetAlert.error('Error', err.error?.error || 'Failed to complete repair log');
+          }
+        });
+      },
+      error: (err) => {
+        this.sweetAlert.error('Error', err.error?.error || 'Failed to start repair log');
+      }
+    });
+  }
 }
+

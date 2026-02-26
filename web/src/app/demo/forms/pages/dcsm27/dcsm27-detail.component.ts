@@ -64,7 +64,8 @@ export class Dcsm27DetailComponent implements OnInit {
       customerJobName: [null],
       jobStatus: [null],
       productionQty: [0],
-      totalPrintSheets: [0]
+      totalPrintSheets: [0],
+      printerName: [null]
     });
 
     this.extraPrintForm = this.fb.group({

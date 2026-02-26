@@ -122,4 +122,5 @@ public class SampleOrder extends BaseEntity {
 
     @Column(name = "total_print_sheets")
     private Integer totalPrintSheets;
+
 }

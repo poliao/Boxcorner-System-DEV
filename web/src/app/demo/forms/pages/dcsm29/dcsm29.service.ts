@@ -23,7 +23,8 @@ export class Dcsm29Service {
       startDate: filters.startDate || null,
       endDate: filters.endDate || null,
       issample: filters.issample || null,
-      jobStatus: filters.jobStatus || null
+      jobStatus: filters.jobStatus || null,
+      meterCategory: filters.meterCategory || null
     };
 
     Object.keys(params).forEach(key => {

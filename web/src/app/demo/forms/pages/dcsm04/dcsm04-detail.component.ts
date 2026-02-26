@@ -133,6 +133,8 @@ export class Dcsm04DetailComponent implements OnInit {
       qtId: [null],
       print2Page: [false],
       orderTime: [null],
+      totalPrintSheets: [null],
+      setupWaste: [null]
     });
 
     this.mainForm.get('isCreateSample')?.valueChanges.subscribe(value => {
@@ -685,7 +687,7 @@ export class Dcsm04DetailComponent implements OnInit {
           this.loadingService.show();
           this.mainForm.get('status')?.setValue('แก้ไขงานตัวอย่าง');
           console.log(this.mainForm.getRawValue().designOrderId);
-          
+
           if (this.mainForm.getRawValue().designOrderId != null && this.mainForm.getRawValue().designOrderId != '') {
             this.dcsm02Service.getById(this.mainForm.getRawValue().designOrderId).subscribe({
               next: (response) => {

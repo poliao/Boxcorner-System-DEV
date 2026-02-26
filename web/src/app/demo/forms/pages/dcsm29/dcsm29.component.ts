@@ -202,11 +202,8 @@ export class Dcsm29Component implements OnInit {
   }
 
   applyFrontendFilters() {
-    if (this.searchParams.meterCategory) {
-      this.tableData = this.originalTableData.filter(row => row.meterCategory === this.searchParams.meterCategory);
-    } else {
-      this.tableData = [...this.originalTableData];
-    }
+    // Data is already filtered by backend
+    this.tableData = [...this.originalTableData];
   }
 
   onPageChange(event: { pageIndex: number, pageSize: number }) {

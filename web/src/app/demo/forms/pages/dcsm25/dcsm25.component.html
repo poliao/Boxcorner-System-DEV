@@ -58,6 +58,12 @@
                   <mat-icon>tune</mat-icon> Calibrate
                 </button>
               </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 text-white" style="background-color: #e63946;"
+                  data-bs-toggle="modal" data-bs-target="#repairPrinterModal">
+                  <mat-icon>build</mat-icon> ซ่อมเครื่อง
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -67,7 +73,7 @@
 
   <app-data-table [headerStyle]="'background: #003747; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
     [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
-    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
+    [rowStyles]="rowStyles" (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
 </div>
 
@@ -121,3 +127,111 @@
   </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showCalibrateModal" *ngIf="showCalibrateModal"></div>
+
+<!-- Modal ซ่อมเครื่อง -->
+<div class="modal fade" id="repairPrinterModal" tabindex="-1" aria-labelledby="repairPrinterModalLabel"
+  aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #e63946;">
+        <h5 class="modal-title" id="repairPrinterModalLabel">
+          <mat-icon style="vertical-align: middle;">build</mat-icon> แจ้งซ่อมเครื่อง
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"
+          id="closeRepairModalBtn"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form [formGroup]="repairPrinterForm">
+          <!-- เลือกเครื่องพิมพ์ -->
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <label class="form-label fw-bold text-primary">เลือกเครื่องพิมพ์ <span
+                  class="text-danger">*</span></label>
+              <select formControlName="printerName" class="form-select form-select-lg">
+                <option [ngValue]="null" disabled>-- กรุณาเลือกเครื่องพิมพ์ --</option>
+                <option value="Canon">Canon (แคนนอน)</option>
+                <option value="Ricoh">Ricoh (ริโก้)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Color & BW Meters -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="card h-100 border-0 bg-light">
+                <div class="card-body">
+                  <h6 class="card-title fw-bold text-danger mb-3">มิเตอร์สี (Color) <span class="text-danger">*</span>
+                  </h6>
+                  <div class="mb-2">
+                    <label class="form-label small">เริ่มต้น</label>
+                    <input type="number" formControlName="meterColorStart" class="form-control" placeholder="0">
+                  </div>
+                  <div>
+                    <label class="form-label small">สิ้นสุด</label>
+                    <input type="number" formControlName="meterColorEnd" class="form-control" placeholder="0">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card h-100 border-0 bg-light">
+                <div class="card-body">
+                  <h6 class="card-title fw-bold text-dark mb-3">มิเตอร์ขาวดำ (BW) <span class="text-danger">*</span>
+                  </h6>
+                  <div class="mb-2">
+                    <label class="form-label small">เริ่มต้น</label>
+                    <input type="number" formControlName="meterBwStart" class="form-control" placeholder="0">
+                  </div>
+                  <div>
+                    <label class="form-label small">สิ้นสุด</label>
+                    <input type="number" formControlName="meterBwEnd" class="form-control" placeholder="0">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Special Color (Ricoh Only) -->
+          <div class="row g-3 mb-4" *ngIf="repairPrinterForm.get('printerName')?.value === 'Ricoh'">
+            <div class="col-md-12">
+              <div class="card border-0 bg-light">
+                <div class="card-body">
+                  <h6 class="card-title fw-bold text-info mb-3">มิเตอร์สีพิเศษ (ขาว/White) <span
+                      class="text-danger">*</span></h6>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="form-label small">เริ่มต้น</label>
+                      <input type="number" formControlName="meterSpecialStart" class="form-control" placeholder="0">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small">สิ้นสุด</label>
+                      <input type="number" formControlName="meterSpecialEnd" class="form-control" placeholder="0">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Note -->
+          <div class="row">
+            <div class="col-md-12">
+              <label class="form-label fw-bold">หมายเหตุ</label>
+              <textarea formControlName="note" class="form-control" rows="2"
+                placeholder="ระบุสาเหตุหรือรายละเอียดการซ่อม"></textarea>
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn btn-danger px-4" (click)="saveRepairLog()"
+          [disabled]="repairPrinterForm.invalid">
+          <mat-icon style="vertical-align: middle; font-size: 18px;">save</mat-icon> บันทึกประวัติซ่อม
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

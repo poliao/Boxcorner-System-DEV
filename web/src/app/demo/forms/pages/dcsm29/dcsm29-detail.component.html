@@ -34,8 +34,8 @@
           <input type="time" formControlName="deliveryTime" class="form-control">
         </div>
         <div class="col-md-2">
-          <label class="form-label">จำนวนใบพิมพ์</label>
-          <input type="number" formControlName="totalPrintSheets" class="form-control">
+          <label class="form-label">รูปแบบการพิมพ์</label>
+          <input type="text" [value]="printSidedness" class="form-control" readonly style="background-color: #e9ecef;">
         </div>
         <div class="col-md-2">
           <label class="form-label">สถานะ</label>
@@ -46,16 +46,16 @@
           <input type="text" formControlName="customerJobName" class="form-control">
         </div>
         <div class="col-md-2">
+          <label class="form-label">จำนวนใบพิมพ์</label>
+          <input type="number" formControlName="totalPrintSheets" class="form-control">
+        </div>
+        <div class="col-md-2">
           <label class="form-label">ยอดเผื่อเสีย (Setup Waste)</label>
           <input type="number" formControlName="setupWaste" class="form-control">
         </div>
         <div class="col-md-2">
           <label class="form-label">ยอดขอพิมพ์เพิ่ม (Extra)</label>
           <input type="text" [value]="extraQuantity" class="form-control" readonly style="background-color: #e9ecef;">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">รูปแบบการพิมพ์</label>
-          <input type="text" [value]="printSidedness" class="form-control" readonly style="background-color: #e9ecef;">
         </div>
       </div>
     </form>
@@ -127,6 +127,7 @@
             <th class="py-3 text-center">เริ่มพิมพ์</th>
             <th class="py-3 text-center">จบงานพิมพ์</th>
             <th class="py-3">ผู้ปฏิบัติงาน</th>
+            <th class="py-3">หมายเหตุ</th>
           </tr>
         </thead>
         <tbody>
@@ -211,9 +212,12 @@
                 {{ log.operatorName || '-' }}
               </span>
             </td>
+            <td>
+              <span class="text-muted" style="font-size: 0.85em;">{{ log.note || '-' }}</span>
+            </td>
           </tr>
           <tr *ngIf="printLogs.length === 0">
-            <td colspan="11" class="text-center py-5 text-muted">
+            <td colspan="12" class="text-center py-5 text-muted">
               <mat-icon style="font-size: 48px; width: 48px; height: 48px; opacity: 0.5;">print_disabled</mat-icon>
               <h5 class="mt-2 text-muted">ไม่พบข้อมูลประวัติการพิมพ์</h5>
             </td>

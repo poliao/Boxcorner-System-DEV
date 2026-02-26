@@ -42,6 +42,7 @@ public class PrintJobController {
             @RequestParam(value = "endDate", required = false) Date endDate,
             @RequestParam(value = "issample", required = false) Boolean issample,
             @RequestParam(value = "jobStatus", required = false) String jobStatus,
+            @RequestParam(value = "meterCategory", required = false) String meterCategory,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
@@ -55,6 +56,7 @@ public class PrintJobController {
                 endDate,
                 issample,
                 jobStatus,
+                meterCategory,
                 page,
                 size);
         return ResponseEntity.ok(result);

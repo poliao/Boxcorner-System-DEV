@@ -37,7 +37,7 @@ public class PrintJob extends BaseEntity {
     @Column(name = "customer_job_name", columnDefinition = "TEXT")
     private String customerJobName;
 
-    @Enumerated(EnumType.STRING) 
+    @Enumerated(EnumType.STRING)
     @Column(name = "job_status")
     private JobStatus jobStatus;
 
@@ -109,4 +109,7 @@ public class PrintJob extends BaseEntity {
 
     @Column(name = "decision_authority_remarks")
     private String decisionAuthorityRemarks;
+
+    @jakarta.persistence.Transient
+    private Boolean hasRealJob = false;
 }
