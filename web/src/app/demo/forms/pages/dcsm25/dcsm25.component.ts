@@ -294,9 +294,9 @@ export class Dcsm25Component implements OnInit {
 
     // Step 1: Start Print Log (LogType = REPAIR)
     const startData = {
-      jobId: null, // General repair, no specific job ID from the list page unless selected, here it's general repair.
+      jobId: null,
       printerId: printerId,
-      printSide: 'FRONT', // Or leave null if backend allows
+      printSide: 'REPAIR',
       logType: 'REPAIR',
       meterColorStart: formVal.meterColorStart,
       meterBwStart: formVal.meterBwStart,

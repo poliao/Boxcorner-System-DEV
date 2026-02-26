@@ -113,4 +113,11 @@ public class PrintJobService {
         return repository.findByFiltersOS(id, jobId, customerJobName, printerName, paging);
     }
 
+    public Page<PrintJob> findByFiltersODPrinter(Long id, String jobId, String customerJobName, String printerName,
+            Date startDate, Date endDate, String jobStatus, int page, int size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return repository.findByFiltersODPrinter(id, jobId, customerJobName, printerName, startDate, endDate,
+                jobStatus, paging);
+    }
+
 }

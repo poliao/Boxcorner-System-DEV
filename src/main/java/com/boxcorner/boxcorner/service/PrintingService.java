@@ -38,9 +38,12 @@ public class PrintingService {
     // =========================================================================
     @Transactional
     public PrintLog startPrinting(StartPrintRequest req, String operatorName) {
-        // 1. Validate: ตรวจสอบว่า Job และ Printer มีอยู่จริง
-        PrintJob job = jobRepository.findById(req.getJobId())
-                .orElseThrow(() -> new RuntimeException("Job ID not found: " + req.getJobId()));
+
+        PrintJob job = null;
+        if (req.getJobId() != null) {
+            job = jobRepository.findById(req.getJobId())
+                    .orElseThrow(() -> new RuntimeException("Job ID not found: " + req.getJobId()));
+        }
 
         Printer printer = printerRepository.findById(req.getPrinterId())
                 .orElseThrow(() -> new RuntimeException("Printer ID not found: " + req.getPrinterId()));
@@ -48,7 +51,9 @@ public class PrintingService {
         Optional<PrintLog> activeLog = printLogRepository.findByPrinterIdAndEndedAtIsNull(printer.getId());
         if (activeLog.isPresent()) {
             throw new RuntimeException(
-                    "เครื่องนี้มีงานค้างอยู่ (ลำดับงานที่: " + activeLog.get().getJob().getId() + ") กรุณาจบงานก่อน");
+                    "เครื่องนี้มีงานค้างอยู่ (ลำดับงานที่: "
+                            + (activeLog.get().getJob() != null ? activeLog.get().getJob().getId() : "ไม่มี Job ID")
+                            + ") กรุณาจบงานก่อน");
         }
 
         // 3. Create New Log
@@ -66,13 +71,15 @@ public class PrintingService {
                 .build();
 
         // 4. Update Job Status -> IN_PROGRESS
-        if (JobStatus.PENDING.equals(job.getJobStatus()) || JobStatus.PAUSED.equals(job.getJobStatus())) {
-            job.setJobStatus(JobStatus.IN_PROGRESS);
-            jobRepository.save(job);
-        } else if (JobStatus.WAITPAGE2.equals(job.getJobStatus())
-                || JobStatus.PAUSED_PAGE2.equals(job.getJobStatus())) {
-            job.setJobStatus(JobStatus.IN_PROGRESS_PAGE2);
-            jobRepository.save(job);
+        if (job != null) {
+            if (JobStatus.PENDING.equals(job.getJobStatus()) || JobStatus.PAUSED.equals(job.getJobStatus())) {
+                job.setJobStatus(JobStatus.IN_PROGRESS);
+                jobRepository.save(job);
+            } else if (JobStatus.WAITPAGE2.equals(job.getJobStatus())
+                    || JobStatus.PAUSED_PAGE2.equals(job.getJobStatus())) {
+                job.setJobStatus(JobStatus.IN_PROGRESS_PAGE2);
+                jobRepository.save(job);
+            }
         }
 
         return printLogRepository.save(log);
@@ -103,19 +110,22 @@ public class PrintingService {
         // 4. Handle Job Status based on Action (PAUSE vs FINISH)
         PrintJob job = log.getJob();
 
-        if ("FINISH".equalsIgnoreCase(req.getAction())) {
-            job.setJobStatus(JobStatus.COMPLETED);
-        } else if ("PAUSE".equalsIgnoreCase(req.getAction())) {
-            job.setJobStatus(JobStatus.PAUSED);
-        } else if ("WAITPAGE2".equalsIgnoreCase(req.getAction())) {
-            job.setJobStatus(JobStatus.WAITPAGE2);
-        } else if ("PAUSED_PAGE2".equalsIgnoreCase(req.getAction())) {
-            job.setJobStatus(JobStatus.PAUSED_PAGE2);
-        } else if ("FINISH_PAGE2".equalsIgnoreCase(req.getAction())) {
-            job.setJobStatus(JobStatus.COMPLETED);
+        if (job != null) {
+            if ("FINISH".equalsIgnoreCase(req.getAction())) {
+                job.setJobStatus(JobStatus.COMPLETED);
+            } else if ("PAUSE".equalsIgnoreCase(req.getAction())) {
+                job.setJobStatus(JobStatus.PAUSED);
+            } else if ("WAITPAGE2".equalsIgnoreCase(req.getAction())) {
+                job.setJobStatus(JobStatus.WAITPAGE2);
+            } else if ("PAUSED_PAGE2".equalsIgnoreCase(req.getAction())) {
+                job.setJobStatus(JobStatus.PAUSED_PAGE2);
+            } else if ("FINISH_PAGE2".equalsIgnoreCase(req.getAction())) {
+                job.setJobStatus(JobStatus.COMPLETED);
+            }
+
+            jobRepository.save(job);
         }
 
-        jobRepository.save(job);
         return printLogRepository.save(log);
     }
 

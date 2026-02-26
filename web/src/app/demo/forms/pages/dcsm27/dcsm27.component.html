@@ -12,8 +12,59 @@
       </div>
     </div>
   </div>
-
   <div class="card-body">
+    <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+      <div class="card-body bg-light">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label font-weight-bold">เลข Job ID</label>
+              <input type="text" class="form-control" [(ngModel)]="filterJobId" name="filterJobId"
+                placeholder="ค้นหา JOB ID" (keyup.enter)="onSearchChange()">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-weight-bold">ชื่อลูกค้า / ชื่องาน</label>
+              <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
+                placeholder="ค้นหา ชื่องาน/ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-weight-bold">เป็นตัวอย่างหรืองานจริง</label>
+              <select class="form-select" [(ngModel)]="filterIssample" name="filterIssample"
+                (change)="onSearchChange()">
+                <option value="">ทั้งหมด</option>
+                <option value="true">เป็นตัวอย่าง</option>
+                <option value="false">ไม่เป็นตัวอย่าง</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-weight-bold">สถานะการทำงาน</label>
+              <select class="form-select" [(ngModel)]="filterPrintStatus" name="filterPrintStatus"
+                (change)="onSearchChange()">
+                <option value="">สถานะทั้งหมด</option>
+                <option value="PENDING">PENDING</option>
+                <option value="PAUSED">PAUSED</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="WAITPAGE2">WAITPAGE2</option>
+                <option value="PAUSED_PAGE2">PAUSED_PAGE2</option>
+                <option value="IN_PROGRESS_PAGE2">IN_PROGRESS_PAGE2</option>
+                <option value="COMPLETED">COMPLETED</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <div class="d-flex gap-2">
+                <button mat-flat-button type="button" style="background-color: #003747; color: white;"
+                  (click)="onSearchChange()">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+                <button mat-stroked-button type="button" (click)="clearAllFilters()" style="color: #003747;">
+                  <mat-icon>refresh</mat-icon> ล้างค่า
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
     <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
       [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
       (rowClick)="onRowClick($event)">

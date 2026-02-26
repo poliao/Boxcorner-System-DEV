@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 
 @Component({
   selector: 'app-dcsm29',
@@ -23,7 +24,7 @@ export class Dcsm29Component implements OnInit {
     { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน' },
     { key: 'issample', label: 'เป็นงานตัวอย่าง' },
     { key: 'deliveryDate', label: 'วันที่ส่ง' },
-    { key: 'jobStatus', label: 'สถานะ' },
+    { key: 'jobStatus', label: 'สถานะ', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'printerName', label: 'เครื่องพิมพ์' },
     { key: 'totalPrintSheets', label: 'จำนวนใบพิมพ์' },
     { key: 'printSidedness', label: 'รูปแบบการพิมพ์' },
@@ -48,7 +49,8 @@ export class Dcsm29Component implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private dcsm29Service: Dcsm29Service
+    private dcsm29Service: Dcsm29Service,
+    private statusColorService: StatusColorService
   ) { }
 
   ngOnInit() {

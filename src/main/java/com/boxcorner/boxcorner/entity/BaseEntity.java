@@ -16,7 +16,7 @@ public abstract class BaseEntity {
     }
 
     public enum PrintSide {
-        FRONT, BACK, CALIBRATE
+        FRONT, BACK, CALIBRATE, REPAIR
     }
 
     public enum LogType {

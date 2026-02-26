@@ -88,4 +88,30 @@ public class PrintJobController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/searchODPrinter")
+    public ResponseEntity<Page<PrintJob>> findByFiltersODPrinter(
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "jobId", required = false) String jobId,
+            @RequestParam(value = "customerJobName", required = false) String customerJobName,
+            @RequestParam(value = "printerName", required = false) String printerName,
+            @RequestParam(value = "startDate", required = false) Date startDate,
+            @RequestParam(value = "endDate", required = false) Date endDate,
+            @RequestParam(value = "jobStatus", required = false) String jobStatus,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+        Page<PrintJob> result;
+        result = printJobService.findByFiltersODPrinter(
+                id,
+                jobId,
+                customerJobName,
+                printerName,
+                startDate,
+                endDate,
+                jobStatus,
+                page,
+                size);
+        return ResponseEntity.ok(result);
+    }
 }

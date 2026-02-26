@@ -8,10 +8,13 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
 import { V } from '@angular/cdk/scrolling-module.d-C_w4tIrZ';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
 
 @Component({
   selector: 'app-dcsm25-detail',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, MatIconModule, MatButtonModule, DataTableComponent],
   templateUrl: './dcsm25-detail.component.html',
   styleUrls: ['./dcsm25-detail.component.scss']
 })

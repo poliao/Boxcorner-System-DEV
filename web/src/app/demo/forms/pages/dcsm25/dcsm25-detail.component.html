@@ -81,14 +81,6 @@
           <input type="text" formControlName="jobStatus" class="form-control">
         </div>
         <div class="col-md-2">
-          <label class="form-label d-flex justify-content-between align-items-center">
-            ตั้งเครื่อง
-            <button *ngIf="printingForm.get('setupWaste')?.enabled" class="btn btn-sm text-white px-2 py-0"
-              style="background-color: #1e1b4b; font-size: 0.75rem;" (click)="saveSetupWaste()">บันทึก</button>
-          </label>
-          <input type="number" formControlName="setupWaste" class="form-control" placeholder="0">
-        </div>
-        <div class="col-md-2">
           <label class="form-label">ยอดใบพิมพ์</label>
           <input type="number" formControlName="totalPrintSheets" class="form-control" placeholder="0">
         </div>
@@ -278,12 +270,12 @@
             </tr>
             <tr *ngIf="extraPrints.length === 0">
               <td colspan="6" class="text-center py-5" style="background-color: #f8f9fa;">
-                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px;">
+                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px;">
                   <div class="mb-3"
-                    style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
-                    <span style="font-size: 32px; color: white;">ฟ้</span>
+                    style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                    <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: white;">inbox</mat-icon>
                   </div>
-                  <h6 class="text-muted mb-0">ไม่มีข้อมูลการพิมพ์เพิ่ม</h6>
+                  <h5 class="text-muted mb-2">ไม่มีข้อมูลการพิมพ์เพิ่ม</h5>
                 </div>
               </td>
             </tr>

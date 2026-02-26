@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -10,7 +11,7 @@ export class Dcsm27Service {
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService,) { }
 
   getOrdersWithSearch(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
@@ -31,8 +32,12 @@ export class Dcsm27Service {
         delete params[key];
       }
     });
-
-    return this.http.get(`${this.apiUrl}/print-job/search`, { params: params });
+    this.authService.getUserFromToken().role
+    if (this.authService.getUserFromToken().role == 'digital' || this.authService.getUserFromToken().role == 'digital_admin') {
+      return this.http.get(`${this.apiUrl}/print-job/searchODPrinter`, { params: params });
+    } else {
+      return this.http.get(`${this.apiUrl}/print-job/search`, { params: params });
+    }
   }
 
   getById(id: number): Observable<any> {
