@@ -19,16 +19,17 @@ import { StatusColorService } from 'src/app/shared/services/status-color.service
 })
 export class Dcsm29Component implements OnInit {
   tableColumns = [
-    { key: 'id', label: 'ID' },
-    { key: 'jobId', label: 'Job ID' },
-    { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน' },
+    { key: 'id', label: 'Log ID' },
+    { key: 'jobIdStr', label: 'Job ID' },
+    { key: 'customerJobNameStr', label: 'ชื่อลูกค้า/รายละเอียด' },
+    { key: 'logType', label: 'ประเภทการพิมพ์' },
     { key: 'issample', label: 'เป็นงานตัวอย่าง' },
-    { key: 'deliveryDate', label: 'วันที่ส่ง' },
-    { key: 'jobStatus', label: 'สถานะ', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
-    { key: 'printerName', label: 'เครื่องพิมพ์' },
-    { key: 'totalPrintSheets', label: 'จำนวนใบพิมพ์' },
-    { key: 'printSidedness', label: 'รูปแบบการพิมพ์' },
-    { key: 'meterStatus', label: 'ยอดส่วนต่างมิเตอร์' }
+    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'printerNameStr', label: 'เครื่องพิมพ์' },
+    { key: 'startedAtStr', label: 'เวลาเริ่ม' },
+    { key: 'endedAtStr', label: 'เวลาจบ' },
+    { key: 'totalImpressions', label: 'ยอดมิเตอร์ที่ใช้' },
+    { key: 'meterStatus', label: 'สถานะยอดมิเตอร์' }
   ];
 
   tableData: any[] = [];
@@ -43,8 +44,12 @@ export class Dcsm29Component implements OnInit {
     customerJobName: null,
     jobId: null,
     id: null,
-    meterCategory: null
+    startDate: '',
+    endDate: ''
   };
+
+  summaryCanon: any = null;
+  summaryRicoh: any = null;
 
   constructor(
     private router: Router,
@@ -98,108 +103,146 @@ export class Dcsm29Component implements OnInit {
   loadData() {
     this.dcsm29Service.getOrdersWithSearch(this.pageIndex, this.pageSize, this.searchParams).subscribe({
       next: (response: any) => {
-        this.originalTableData = response.content.map((row: any) => {
+        this.originalTableData = response.content.map((log: any) => {
+          const job = log.job;
+          let colorDiff = 0, bwDiff = 0, specialDiff = 0;
+          if (log.meterColorEnd && log.meterColorStart) colorDiff = log.meterColorEnd - log.meterColorStart;
+          if (log.meterBwEnd && log.meterBwStart) bwDiff = log.meterBwEnd - log.meterBwStart;
+          if (log.meterSpecialEnd && log.meterSpecialStart) specialDiff = log.meterSpecialEnd - log.meterSpecialStart;
+          const totalUsage = Math.max(colorDiff, bwDiff, specialDiff);
+
           return {
-            ...row,
-            issample: row.issample === 'Yes' ? 'เป็น' : 'ไม่เป็น'
+            ...log,
+            jobIdNum: job ? job.id : null,
+            jobIdStr: job ? job.jobId : (log.logType === 'REPAIR' ? 'ซ่อมเครื่อง' : (log.logType === 'CALIBRATE' ? 'Calibrate' : '-')),
+            customerJobNameStr: job ? job.customerJobName : (log.note || '-'),
+            issample: job && job.issample ? 'เป็น' : 'ไม่เป็น',
+            jobStatus: job ? job.jobStatus : '-',
+            printerNameStr: log.printer ? log.printer.printerName : '-',
+            startedAtStr: log.startedAt ? new Date(log.startedAt).toLocaleString('th-TH') : '-',
+            endedAtStr: log.endedAt ? new Date(log.endedAt).toLocaleString('th-TH') : 'กำลังพิมพ์',
+            totalImpressions: totalUsage,
+            meterStatus: 'กำลังโหลด...'
           };
         });
+
         this.totalElements = response.totalElements;
-        this.loadMeterDataForRows();
+
+        if (this.originalTableData.length > 0) {
+          const jobIds = [...new Set(this.originalTableData.filter(r => r.jobIdNum).map(r => r.jobIdNum))];
+
+          if (jobIds.length > 0) {
+            forkJoin({
+              extraBatch: this.dcsm29Service.getBatchExtraPrints(jobIds),
+              logsBatch: this.dcsm29Service.getBatchLogs(jobIds)
+            }).subscribe({
+              next: ({ extraBatch, logsBatch }: any) => {
+                this.originalTableData.forEach(row => {
+                  if (row.jobIdNum) {
+                    const extra = extraBatch[row.jobIdNum] || [];
+                    const allLogs = logsBatch[row.jobIdNum] || [];
+
+                    let extraPrintQuantity = 0;
+                    if (extra && extra.length > 0) {
+                      extra.forEach((e: any) => {
+                        if (e.status !== 'REJECTED') {
+                          extraPrintQuantity += e.additionalQty || 0;
+                        }
+                      });
+                    }
+
+                    const job = row.job;
+                    let ordered = job ? (job.totalPrintSheets || 0) + (job.setupWaste || 0) : 0;
+
+                    let hasFront = false;
+                    let hasBack = false;
+                    let jobTotalImpressions = 0;
+
+                    if (allLogs && allLogs.length > 0) {
+                      allLogs.forEach((l: any) => {
+                        if (l.printSide === 'FRONT') hasFront = true;
+                        if (l.printSide === 'BACK') hasBack = true;
+
+                        let colorD = 0;
+                        let bwD = 0;
+                        let specialD = 0;
+                        if (l.meterColorEnd && l.meterColorStart) colorD = l.meterColorEnd - l.meterColorStart;
+                        if (l.meterBwEnd && l.meterBwStart) bwD = l.meterBwEnd - l.meterBwStart;
+                        if (l.meterSpecialEnd && l.meterSpecialStart) specialD = l.meterSpecialEnd - l.meterSpecialStart;
+
+                        jobTotalImpressions += Math.max(colorD, bwD, specialD);
+                      });
+                    }
+
+                    if (hasFront && hasBack) {
+                      ordered = ordered * 2;
+                    }
+
+                    ordered += extraPrintQuantity;
+
+                    if (ordered === 0) {
+                      row.meterStatus = '-';
+                    } else {
+                      const diff = jobTotalImpressions - ordered;
+                      if (diff === 0) {
+                        row.meterStatus = 'พอดี';
+                      } else if (diff < 0) {
+                        row.meterStatus = `ขาด (${Math.abs(diff)})`;
+                      } else {
+                        row.meterStatus = `เกิน (+${diff})`;
+                      }
+                    }
+
+                  } else {
+                    row.meterStatus = '-'; // For Calibrate / Repair
+                  }
+                });
+                this.tableData = [...this.originalTableData];
+              },
+              error: () => {
+                this.tableData = [...this.originalTableData];
+              }
+            });
+          } else {
+            this.tableData = [...this.originalTableData];
+          }
+        } else {
+          this.tableData = [];
+        }
       },
       error: (err) => {
         console.error('Error loading data:', err);
       }
     });
-  }
 
-  loadMeterDataForRows() {
-    if (!this.originalTableData || this.originalTableData.length === 0) {
-      this.tableData = [];
-      return;
-    }
+    this.dcsm29Service.getLogSummary(this.searchParams).subscribe({
+      next: (res: any[]) => {
+        this.summaryCanon = { totalClicks: 0, colorMin: 0, colorMax: 0, bwMin: 0, bwMax: 0, specialMin: 0, specialMax: 0 };
+        this.summaryRicoh = { totalClicks: 0, colorMin: 0, colorMax: 0, bwMin: 0, bwMax: 0, specialMin: 0, specialMax: 0 };
 
-    const jobIds = this.originalTableData.map(row => row.id);
+        if (res && res.length > 0) {
+          res.forEach(item => {
+            const data = {
+              totalClicks: (Number(item.sumcolor) || 0) + (Number(item.sumbw) || 0) + (Number(item.sumspecial) || 0),
+              colorMin: Number(item.mincolorstart) || 0,
+              colorMax: Number(item.maxcolorend) || 0,
+              bwMin: Number(item.minbwstart) || 0,
+              bwMax: Number(item.maxbwend) || 0,
+              specialMin: Number(item.minspecialstart) || 0,
+              specialMax: Number(item.maxspecialend) || 0
+            };
 
-    this.originalTableData.forEach(row => {
-      row.meterStatus = 'กำลังโหลด...';
-      row.meterCategory = null;
-    });
-
-    forkJoin({
-      logsBatch: this.dcsm29Service.getBatchLogs(jobIds).pipe(catchError(() => of({}))),
-      extraBatch: this.dcsm29Service.getBatchExtraPrints(jobIds).pipe(catchError(() => of({})))
-    }).subscribe(results => {
-      const { logsBatch, extraBatch } = results as any;
-
-      this.originalTableData.forEach(row => {
-        const logs = logsBatch[row.id] || [];
-        const extra = extraBatch[row.id] || [];
-
-        let totalImpressions = 0;
-        let hasFront = false;
-        let hasBack = false;
-        let extraPrintQuantity = 0;
-
-        if (extra && extra.length > 0) {
-          extra.forEach((e: any) => {
-            if (e.status !== 'REJECTED') {
-              extraPrintQuantity += e.additionalQty || 0;
+            if (item.brand === 'CANON') {
+              this.summaryCanon = data;
+            } else if (item.brand === 'RICOH') {
+              this.summaryRicoh = data;
             }
           });
         }
-
-        if (logs && logs.length > 0) {
-          logs.forEach((log: any) => {
-            if (log.printSide === 'FRONT') hasFront = true;
-            if (log.printSide === 'BACK') hasBack = true;
-
-            let colorDiff = 0;
-            let bwDiff = 0;
-            let specialDiff = 0;
-
-            if (log.meterColorEnd && log.meterColorStart) colorDiff = log.meterColorEnd - log.meterColorStart;
-            if (log.meterBwEnd && log.meterBwStart) bwDiff = log.meterBwEnd - log.meterBwStart;
-            if (log.meterSpecialEnd && log.meterSpecialStart) specialDiff = log.meterSpecialEnd - log.meterSpecialStart;
-
-            totalImpressions += Math.max(colorDiff, bwDiff, specialDiff);
-          });
-
-          let ordered = (row.totalPrintSheets || 0) + (row.setupWaste || 0);
-
-          if (hasFront && hasBack) {
-            ordered = ordered * 2;
-            row.printSidedness = 'หน้า-หลัง (2 หน้า)';
-          } else if (hasFront) {
-            row.printSidedness = 'หน้าเดียว (Front)';
-          } else if (hasBack) {
-            row.printSidedness = 'หน้าเดียว (Back)';
-          } else {
-            row.printSidedness = 'ไม่ทราบ';
-          }
-
-          ordered += extraPrintQuantity;
-
-          const diff = totalImpressions - ordered;
-
-          if (diff === 0) {
-            row.meterStatus = 'พอดี';
-            row.meterCategory = 'พอดี';
-          } else if (diff < 0) {
-            row.meterStatus = `ขาด (${Math.abs(diff)})`;
-            row.meterCategory = 'ขาด';
-          } else {
-            row.meterStatus = `เกิน (+${diff})`;
-            row.meterCategory = 'เกิน';
-          }
-        } else {
-          row.meterStatus = 'ไม่มีประวัติ';
-          row.meterCategory = 'ไม่มีประวัติ';
-          row.printSidedness = '-';
-        }
-      });
-
-      this.applyFrontendFilters();
+      },
+      error: (err) => {
+        console.error('Error loading summary:', err);
+      }
     });
   }
 
@@ -228,16 +271,19 @@ export class Dcsm29Component implements OnInit {
       customerJobName: null,
       jobId: null,
       id: null,
-      meterCategory: null
+      startDate: '',
+      endDate: ''
     };
+    this.summaryCanon = null;
+    this.summaryRicoh = null;
     this.saveState();
     this.onSearch();
   }
 
   onRowClick(row: any) {
-    if (row && row.id) {
+    if (row && row.jobIdNum) {
       this.saveState();
-      this.router.navigate(['/Dcsm29Detail', row.id]);
+      this.router.navigate(['/Dcsm29Detail', row.jobIdNum]);
     }
   }
 

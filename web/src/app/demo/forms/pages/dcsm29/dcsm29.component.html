@@ -50,14 +50,12 @@
         </select>
       </div>
       <div class="col-md-2 mb-2">
-        <label class="form-label">ยอดส่วนต่างมิเตอร์</label>
-        <select class="form-select" [(ngModel)]="searchParams.meterCategory" (change)="onSearch()">
-          <option [ngValue]="null">ทั้งหมด</option>
-          <option value="พอดี">พอดี</option>
-          <option value="เกิน">เกิน</option>
-          <option value="ขาด">ขาด</option>
-          <option value="ไม่มีประวัติ">ไม่มีประวัติ</option>
-        </select>
+        <label class="form-label">ตั้งแต่วันที่</label>
+        <input type="date" class="form-control" [(ngModel)]="searchParams.startDate" (change)="onSearch()">
+      </div>
+      <div class="col-md-2 mb-2">
+        <label class="form-label">ถึงวันที่</label>
+        <input type="date" class="form-control" [(ngModel)]="searchParams.endDate" (change)="onSearch()">
       </div>
       <div class="col-md-2 mb-2 d-flex align-items-end">
         <div class="d-grid w-100 d-md-flex gap-2">
@@ -67,6 +65,71 @@
           <button class="btn btn-secondary flex-grow-1" (click)="clearSearch()">
             ล้าง
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4" *ngIf="summaryCanon || summaryRicoh">
+      <!-- CANON Summary -->
+      <div class="col-md-6" *ngIf="summaryCanon">
+        <div class="card border-left-danger shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title text-danger mb-3">สรุปยอดคลิ๊กชาร์จ (CANON)</h5>
+            <div class="row text-center mb-3">
+              <div class="col-md-4 px-1">
+                <h6 class="text-muted mb-1" style="font-size: 0.9rem;">รวมทั้งหมด</h6>
+                <h3 class="mb-0 text-dark font-weight-bold">{{ summaryCanon.totalClicks | number }}</h3>
+              </div>
+              <div class="col-md-4 px-1">
+                <h6 class="text-muted mb-1" style="font-size: 0.9rem;">ยอดสี (Color)</h6>
+                <h4 class="mb-0 text-info">{{ summaryCanon.colorMax - summaryCanon.colorMin | number }}</h4>
+                <small class="text-muted" style="font-size: 0.75rem;">เริ่ม: {{ summaryCanon.colorMin || 0 | number }} |
+                  จบ: {{
+                  summaryCanon.colorMax || 0 | number }}</small>
+              </div>
+              <div class="col-md-4 px-1">
+                <h6 class="text-muted mb-1" style="font-size: 0.9rem;">ยอดขาวดำ (B&W)</h6>
+                <h4 class="mb-0 text-secondary">{{ summaryCanon.bwMax - summaryCanon.bwMin | number }}</h4>
+                <small class="text-muted" style="font-size: 0.75rem;">เริ่ม: {{ summaryCanon.bwMin || 0 | number }} |
+                  จบ: {{ summaryCanon.bwMax || 0
+                  | number }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RICOH Summary -->
+      <div class="col-md-6" *ngIf="summaryRicoh">
+        <div class="card border-left-info shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title text-info mb-3">สรุปยอดคลิ๊กชาร์จ (RICOH)</h5>
+            <div class="row text-center mb-3">
+              <div class="col-md-3 px-1">
+                <h6 class="text-muted mb-1" style="font-size: 0.9rem;">รวมทั้งหมด</h6>
+                <h3 class="mb-0 text-dark font-weight-bold">{{ summaryRicoh.totalClicks | number }}</h3>
+              </div>
+              <div class="col-md-3 px-1">
+                <h6 class="text-muted mb-1" style="font-size: 0.9rem;">ยอดสี (Color)</h6>
+                <h4 class="mb-0 text-info">{{ summaryRicoh.colorMax - summaryRicoh.colorMin | number }}</h4>
+                <small class="text-muted" style="font-size: 0.75rem;">เริ่ม: {{ summaryRicoh.colorMin || 0 | number }} |
+                  จบ: {{ summaryRicoh.colorMax || 0 | number }}</small>
+              </div>
+              <div class="col-md-3 px-1">
+                <h6 class="text-muted mb-1" style="font-size: 0.9rem;">ยอดพิเศษ (Special)</h6>
+                <h4 class="mb-0 text-warning">{{ summaryRicoh.specialMax - summaryRicoh.specialMin | number }}</h4>
+                <small class="text-muted" style="font-size: 0.75rem;">เริ่ม: {{ summaryRicoh.specialMin || 0 | number }}
+                  | จบ: {{ summaryRicoh.specialMax || 0 | number }}</small>
+              </div>
+              <div class="col-md-3 px-1">
+                <h6 class="text-muted mb-1" style="font-size: 0.9rem;">ยอดขาวดำ (B&W)</h6>
+                <h4 class="mb-0 text-secondary">{{ summaryRicoh.bwMax - summaryRicoh.bwMin | number }}</h4>
+                <small class="text-muted" style="font-size: 0.75rem;">เริ่ม: {{ summaryRicoh.bwMin || 0 | number }} |
+                  จบ: {{ summaryRicoh.bwMax || 0 | number }}</small>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

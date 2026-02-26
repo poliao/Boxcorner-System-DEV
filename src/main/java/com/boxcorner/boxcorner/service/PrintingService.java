@@ -168,4 +168,16 @@ public class PrintingService {
         return logs.stream().collect(Collectors.groupingBy(log -> log.getJob().getId()));
     }
 
+    public org.springframework.data.domain.Page<PrintLog> searchLogs(Long id, String jobId, String customerJobName,
+            Boolean issample, String jobStatus, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate,
+            int page, int size) {
+        org.springframework.data.domain.Pageable paging = org.springframework.data.domain.PageRequest.of(page, size);
+        return printLogRepository.findByFilters(id, jobId, customerJobName, issample, jobStatus, startDate, endDate,
+                paging);
+    }
+
+    public java.util.List<java.util.Map<String, Object>> getLogSummary(Long id, String jobId, String customerJobName,
+            Boolean issample, String jobStatus, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate) {
+        return printLogRepository.getLogSummary(id, jobId, customerJobName, issample, jobStatus, startDate, endDate);
+    }
 }

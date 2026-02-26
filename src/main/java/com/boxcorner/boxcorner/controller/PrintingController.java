@@ -117,4 +117,41 @@ public class PrintingController {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchLogs(
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "jobId", required = false) String jobId,
+            @RequestParam(value = "customerJobName", required = false) String customerJobName,
+            @RequestParam(value = "issample", required = false) Boolean issample,
+            @RequestParam(value = "jobStatus", required = false) String jobStatus,
+            @RequestParam(value = "startDate", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime endDate,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        try {
+            org.springframework.data.domain.Page<PrintLog> result = printingService.searchLogs(
+                    id, jobId, customerJobName, issample, jobStatus, startDate, endDate, page, size);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<?> getLogSummary(
+            @RequestParam(value = "id", required = false) Long id,
+            @RequestParam(value = "jobId", required = false) String jobId,
+            @RequestParam(value = "customerJobName", required = false) String customerJobName,
+            @RequestParam(value = "issample", required = false) Boolean issample,
+            @RequestParam(value = "jobStatus", required = false) String jobStatus,
+            @RequestParam(value = "startDate", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime endDate) {
+        try {
+            java.util.List<java.util.Map<String, Object>> result = printingService.getLogSummary(
+                    id, jobId, customerJobName, issample, jobStatus, startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }
