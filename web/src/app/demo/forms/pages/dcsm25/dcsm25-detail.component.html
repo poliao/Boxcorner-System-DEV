@@ -48,6 +48,13 @@
               data-bs-toggle="modal" data-bs-target="#printingLogEndPage2" (click)="checkPrinter()">พิมพ์จบหน้า2
             </button>
           </div>
+          <div class="col-12 col-md-2">
+            <button class="btn text-white px-5 shadow-sm w-100"
+              style="background-color: #2e7d32; border-color: #2e7d32;" data-bs-toggle="modal"
+              data-bs-target="#returnPaperModal" title="คืนกระดาษที่เหลือแจ้งเข้าสต็อค">
+              คืนกระดาษ
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -804,6 +811,58 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
         <button type="button" class="btn text-white" style="background-color: #1e1b4b;"
           (click)="stopExtraPrintPage2('FINISH')" data-bs-dismiss="modal">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Return Paper Modal -->
+<div class="modal fade" id="returnPaperModal" tabindex="-1" aria-labelledby="returnPaperModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="returnPaperModalLabel">คืนกระดาษที่เหลือแจ้งเข้าสต็อค</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="returnPaperForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">กระดาษที่ต้องการคืนสต็อค <span class="text-danger">*</span></label>
+              <select formControlName="unitStockId" class="form-select"
+                [ngClass]="{ 'is-invalid': returnPaperForm.get('unitStockId')?.invalid && returnPaperForm.get('unitStockId')?.touched }">
+                <option [ngValue]="null">-- เลือกกระดาษ --</option>
+                <option *ngFor="let stock of unitStocks" [value]="stock.id">
+                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                </option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนกระดาษที่คืน (แผ่น)
+                <span class="text-danger">*</span>
+                <small class="text-muted" *ngIf="printingForm.get('setupWaste')?.value">(เหลือ: {{
+                  printingForm.get('setupWaste')?.value || 0 }})</small>
+              </label>
+              <input type="number" formControlName="returnQty" class="form-control" min="1"
+                [max]="printingForm.get('setupWaste')?.value || 0"
+                [ngClass]="{ 'is-invalid': returnPaperForm.get('returnQty')?.invalid && returnPaperForm.get('returnQty')?.touched }">
+              <div class="invalid-feedback" *ngIf="returnPaperForm.get('returnQty')?.hasError('max')">
+                จำนวนที่คืนต้องไม่เกินยอดตั้งเครื่องที่เหลือ ({{ printingForm.get('setupWaste')?.value || 0 }})
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">หมายเหตุ</label>
+              <textarea formControlName="note" class="form-control" rows="2"
+                placeholder="ระบุเหตุผลที่คืนกระดาษ"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn text-white" style="background-color: #2e7d32;" (click)="submitReturnPaper()"
+          data-bs-dismiss="modal" [disabled]="returnPaperForm.invalid">
+          บันทึกคืนสต็อค
+        </button>
       </div>
     </div>
   </div>

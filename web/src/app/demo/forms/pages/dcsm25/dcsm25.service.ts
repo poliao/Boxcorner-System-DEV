@@ -83,4 +83,9 @@ export class Dcsm25Service {
   updateExtraPrint(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/extra-prints/save`, data);
   }
+
+  // Return Paper API
+  returnPaper(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/printing/return-paper`, data);
+  }
 }

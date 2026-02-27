@@ -165,4 +165,14 @@ public class PrintingController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/return-paper")
+    public ResponseEntity<?> returnPaper(@RequestBody com.boxcorner.boxcorner.entity.dto.ReturnPaperRequest request) {
+        try {
+            printingService.returnPaper(request);
+            return ResponseEntity.ok(Map.of("status", "SUCCESS", "message", "คืนสต็อคกระดาษเรียบร้อยแล้ว"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

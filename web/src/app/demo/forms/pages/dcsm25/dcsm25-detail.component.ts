@@ -11,11 +11,11 @@ import { AuthService } from 'src/app/services/auth.service';
 import { V } from '@angular/cdk/scrolling-module.d-C_w4tIrZ';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { DataTableComponent } from 'src/app/shared/components/data-table/data-table.component';
+
 
 @Component({
   selector: 'app-dcsm25-detail',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, MatIconModule, MatButtonModule, DataTableComponent],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, MatIconModule, MatButtonModule],
   templateUrl: './dcsm25-detail.component.html',
   styleUrls: ['./dcsm25-detail.component.scss']
 })
@@ -24,6 +24,7 @@ export class Dcsm25DetailComponent implements OnInit {
   printingFormRecord: FormGroup;
   printingFormRecord2: FormGroup;
   printingEndLog: FormGroup;
+  returnPaperForm: FormGroup;
   id: string | null = null;
   isEditMode = false;
   isRicoh = false;
@@ -46,6 +47,7 @@ export class Dcsm25DetailComponent implements OnInit {
     this.createForm();
     this.createPrintingFormRecord();
     this.createPrintingFormRecord2();
+    this.createReturnPaperForm();
 
     this.fromPrintLogEnd();
     this.loadUnitStocks();
@@ -217,6 +219,48 @@ export class Dcsm25DetailComponent implements OnInit {
       unitStockId: [null],
       paperUsed: [null],
     });
+  }
+
+  createReturnPaperForm() {
+    this.returnPaperForm = this.fb.group({
+      printJobId: [null],
+      unitStockId: [null, Validators.required],
+      returnQty: [null, [Validators.required, Validators.min(1)]],
+      note: [null]
+    });
+  }
+
+  submitReturnPaper() {
+    if (this.returnPaperForm.valid) {
+      if (!this.id && !this.printingForm.getRawValue().id) {
+        this.sweetAlert.warning('เตือน', 'ไม่พบรหัสงานพิมพ์');
+        return;
+      }
+
+      this.returnPaperForm.get('printJobId')?.setValue(this.id || this.printingForm.getRawValue().id);
+
+      const requestData = this.returnPaperForm.value;
+      this.dcsm25Service.returnPaper(requestData).subscribe({
+        next: (response) => {
+          this.sweetAlert.success('Success', response.message || 'คืนกระดาษเรียบร้อยแล้ว');
+
+          // Decrement the setup waste value on the frontend instantly
+          const currentWasteControl = this.printingForm.get('setupWaste');
+          if (currentWasteControl && currentWasteControl.value != null) {
+            const newWaste = Math.max(0, currentWasteControl.value - requestData.returnQty);
+            currentWasteControl.setValue(newWaste);
+          }
+
+          this.returnPaperForm.reset();
+        },
+        error: (error) => {
+          this.sweetAlert.error('Error', error.error?.error || 'เกิดข้อผิดพลาดในการคืนกระดาษ');
+        }
+      });
+    } else {
+      this.returnPaperForm.markAllAsTouched();
+      this.sweetAlert.warning('เตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+    }
   }
 
   loadUnitStocks() {

@@ -1,7 +1,10 @@
 package com.boxcorner.boxcorner.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,10 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.boxcorner.boxcorner.entity.BaseEntity.JobStatus;
 import com.boxcorner.boxcorner.entity.BaseEntity.LogType;
 import com.boxcorner.boxcorner.entity.BaseEntity.PrintSide;
+import com.boxcorner.boxcorner.entity.PaperInventory;
 import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.entity.PrintLog;
 import com.boxcorner.boxcorner.entity.Printer;
+import com.boxcorner.boxcorner.entity.UnitStock;
 import com.boxcorner.boxcorner.entity.dto.CalibrateRequest;
+import com.boxcorner.boxcorner.entity.dto.ReturnPaperRequest;
 import com.boxcorner.boxcorner.entity.dto.StartPrintRequest;
 import com.boxcorner.boxcorner.entity.dto.StopPrintRequest;
 import com.boxcorner.boxcorner.repository.PrintJobRepository;
@@ -20,10 +26,6 @@ import com.boxcorner.boxcorner.repository.PrintLogRepository;
 import com.boxcorner.boxcorner.repository.PrinterRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -170,6 +172,68 @@ public class PrintingService {
         }
 
         return printLogRepository.save(log);
+    }
+
+    @Transactional
+    public void returnPaper(ReturnPaperRequest request) {
+        if (request.getUnitStockId() != null && request.getReturnQty() != null && request.getReturnQty() > 0) {
+
+            PrintJob printJob = null;
+            if (request.getPrintJobId() != null) {
+                printJob = jobRepository.findById(request.getPrintJobId())
+                        .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล PrintJob / PrintJob not found"));
+
+                if (printJob.getSetupWaste() == null || request.getReturnQty() > printJob.getSetupWaste()) {
+                    throw new RuntimeException("จำนวนกระดาษที่คืนต้องไม่เกินยอดตั้งเครื่องที่เหลือ ("
+                            + (printJob.getSetupWaste() == null ? 0 : printJob.getSetupWaste()) + " แผ่น)");
+                }
+            }
+
+            UnitStock unitStock = unitStockRepository.findById(request.getUnitStockId())
+                    .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลกระดาษ / UnitStock not found"));
+
+            PaperInventory paperInventory = paperInventoryRepository.findByUnitStockId(unitStock.getId())
+                    .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลสต็อคกระดาษ / Paper inventory not found"));
+
+            java.math.BigDecimal majorQuantity = unitStock.getMajorQuantity();
+            if (majorQuantity == null || majorQuantity.compareTo(java.math.BigDecimal.ZERO) == 0) {
+                majorQuantity = java.math.BigDecimal.ONE;
+            }
+
+            java.math.BigDecimal minorQuantity = unitStock.getMinorQuantity();
+            if (minorQuantity == null || minorQuantity.compareTo(java.math.BigDecimal.ZERO) == 0) {
+                minorQuantity = java.math.BigDecimal.ONE;
+            }
+
+            java.math.BigDecimal sheetsPerReam = minorQuantity.divide(majorQuantity, 2, java.math.RoundingMode.HALF_UP);
+
+            java.math.BigDecimal currentMajor = paperInventory.getCurrentMajorQty() != null
+                    ? paperInventory.getCurrentMajorQty()
+                    : java.math.BigDecimal.ZERO;
+            java.math.BigDecimal currentMinor = paperInventory.getCurrentMinorQty() != null
+                    ? paperInventory.getCurrentMinorQty()
+                    : java.math.BigDecimal.ZERO;
+
+            java.math.BigDecimal totalCurrentSheets = currentMajor.multiply(sheetsPerReam).add(currentMinor);
+
+            // Add the returned quantity
+            java.math.BigDecimal returnedAmount = new java.math.BigDecimal(request.getReturnQty());
+            java.math.BigDecimal newTotalSheets = totalCurrentSheets.add(returnedAmount);
+
+            java.math.BigDecimal[] divisionResult = newTotalSheets.divideAndRemainder(sheetsPerReam);
+            java.math.BigDecimal newMajorQty = divisionResult[0];
+            java.math.BigDecimal newMinorQty = divisionResult[1];
+
+            paperInventory.setCurrentMajorQty(newMajorQty);
+            paperInventory.setCurrentMinorQty(newMinorQty);
+
+            if (printJob != null) {
+                printJob.setSetupWaste(printJob.getSetupWaste() - request.getReturnQty());
+                jobRepository.save(printJob);
+            }
+
+            paperInventoryRepository.save(paperInventory);
+        }
     }
 
     public PrintLog getActiveLogByPrinter(Integer printerId) {
