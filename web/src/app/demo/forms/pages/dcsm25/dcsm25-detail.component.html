@@ -8,26 +8,24 @@
         <div class="row g-2">
           <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PENDING'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #1e1b4b;"
-              data-bs-toggle="modal" data-bs-target="#printingRecordModal"
-              [disabled]="printingForm.get('setupWaste')?.enabled">เริ่มพิมพ์
+              data-bs-toggle="modal" data-bs-target="#printingRecordModal" [disabled]="setupWasteGateBlocked"
+              [title]="setupWasteGateBlocked ? 'กรุณาบันทึกยอดใบตั้งเครื่องก่อนเริ่มพิมพ์' : ''">เริ่มพิมพ์
             </button>
           </div>
           <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;"
               data-bs-toggle="modal" data-bs-target="#printingRecordModal"
-              [disabled]="printingForm.get('setupWaste')?.enabled">เริ่มพิมพ์ต่อ
+              [disabled]="setupWasteGateBlocked">เริ่มพิมพ์ต่อ
             </button>
           </div>
           <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;"
-              data-bs-toggle="modal" data-bs-target="#printingStartPage2"
-              [disabled]="printingForm.get('setupWaste')?.enabled">เริ่มพิมพ์หน้าที่ 2
+              data-bs-toggle="modal" data-bs-target="#printingStartPage2">เริ่มพิมพ์หน้าที่ 2
             </button>
           </div>
           <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED_PAGE2'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;"
-              data-bs-toggle="modal" data-bs-target="#printingStartPage2"
-              [disabled]="printingForm.get('setupWaste')?.enabled">เริ่มพิมพ์หน้าที่ 2ต่อ
+              data-bs-toggle="modal" data-bs-target="#printingStartPage2">เริ่มพิมพ์หน้าที่ 2ต่อ
             </button>
           </div>
           <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS'">
@@ -85,6 +83,20 @@
           <input type="number" formControlName="totalPrintSheets" class="form-control" placeholder="0">
         </div>
         <div class="col-md-2">
+          <label class="form-label">ยอดใบตั้งเครื่อง
+            <span *ngIf="isSampleJob && !setupWasteSaved" class="text-danger">*</span>
+          </label>
+          <input type="number" formControlName="setupWaste" class="form-control" placeholder="0"
+            [class.border-warning]="isSampleJob && !setupWasteSaved"
+            [class.border-success]="isSampleJob && setupWasteSaved">
+          <div *ngIf="isSampleJob && !setupWasteSaved" class="mt-1">
+            <button type="button" class="btn btn-warning btn-sm w-100" (click)="saveSetupWaste()">
+              💾 บันทึกก่อนเริ่มพิมพ์
+            </button>
+          </div>
+          <small *ngIf="isSampleJob && setupWasteSaved" class="text-success fw-semibold">🔒 ล็อกแล้ว</small>
+        </div>
+        <div class="col-md-2">
           <label class="form-label">ยอดผลิต/กล่อง</label>
           <input type="number" formControlName="productionQty" class="form-control" placeholder="0">
         </div>
@@ -114,6 +126,8 @@
     </form>
   </div>
 </div>
+
+
 
 <div class="card-body">
   <div class="card total-income-card info overflow-hidden">

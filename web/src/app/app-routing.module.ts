@@ -32,6 +32,8 @@ import { Dcsm25DetailResolver } from './demo/forms/pages/dcsm25/dcsm25-detail.re
 import { Dcsm26DetailResolver } from './demo/forms/pages/dcsm26/dcsm26-detail.resolver';
 import { Dcsm28DetailResolver } from './demo/forms/pages/dcsm28/dcsm28-detail.resolver';
 import { Dcsm29DetailResolver } from './demo/forms/pages/dcsm29/dcsm29-detail.resolver';
+import { Dcsm30DetailResolver } from './demo/forms/pages/dcsm30/dcsm30-detail.resolver';
+import { Dcsm31DetailResolver } from './demo/forms/pages/dcsm31/dcsm31-detail.resolver';
 
 const routes: Routes = [
   {
@@ -581,9 +583,40 @@ const routes: Routes = [
         loadComponent: () => import('./demo/forms/pages/dcsm29/dcsm29.component').then((c) => c.Dcsm29Component)
       },
       {
-        path: 'MaterialInventory',
+        path: 'Dcsm30Detail/:id',
         canActivate: [MenuGuard],
-        loadComponent: () => import('./demo/forms/pages/material-inventory/material-inventory.component').then((c) => c.MaterialInventoryComponent)
+        loadComponent: () => import('./demo/forms/pages/dcsm30/dcsm30-detail.component').then((c) => c.Dcsm30DetailComponent),
+        resolve: {
+          printJob: Dcsm30DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm30Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm30/dcsm30-detail.component').then((c) => c.Dcsm30DetailComponent)
+      },
+      {
+        path: 'Dcsm30',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm30/dcsm30.component').then((c) => c.Dcsm30Component)
+      },
+      {
+        path: 'Dcsm31Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm31/dcsm31-detail.component').then((c) => c.Dcsm31DetailComponent),
+        resolve: {
+          printJob: Dcsm31DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm31Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm31/dcsm31-detail.component').then((c) => c.Dcsm31DetailComponent)
+      },
+      {
+        path: 'Dcsm31',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm31/dcsm31.component').then((c) => c.Dcsm31Component)
       },
     ]
   },

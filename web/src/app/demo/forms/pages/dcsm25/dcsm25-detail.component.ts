@@ -50,11 +50,14 @@ export class Dcsm25DetailComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     const resolvedData = this.route.snapshot.data['designDiecut'];
+
     if (resolvedData) {
       this.printingForm.patchValue(resolvedData);
-      if (resolvedData.setupWaste !== null && resolvedData.setupWaste !== undefined) {
-        this.printingForm.get('setupWaste')?.disable();
-      } else {
+
+      // เงื่อนไข: ถ้าเป็นงานตัวอย่าง (issample=true) และใน DB ยังไม่มีค่า setupWaste (null/empty)
+      // ให้เปิด field ให้ช่างพิมพ์กรอกได้
+      const dbSetupWaste = resolvedData.setupWaste;
+      if (this.isSampleJob && (dbSetupWaste === null || dbSetupWaste === undefined || dbSetupWaste === '')) {
         this.printingForm.get('setupWaste')?.enable();
       }
     }
@@ -64,8 +67,32 @@ export class Dcsm25DetailComponent implements OnInit {
     }
   }
 
+  /** true เมื่องานนี้เป็นงานตัวอย่าง */
+  get isSampleJob(): boolean {
+    return this.printingForm?.getRawValue().issample === true;
+  }
+
+  /** true เมื่อ setupWaste ถูกบันทึก/ล็อกแล้ว (ค่าใน DB มีอยู่แล้ว หรือกด save สำเร็จจน field disable) */
+  get setupWasteSaved(): boolean {
+    const control = this.printingForm?.get('setupWaste');
+    const val = control?.value;
+    const hasValue = val !== null && val !== '' && val !== undefined;
+    // ถ้า field ถูก disable แสดงว่าระบบล็อกไว้แล้ว (ถือว่า saved)
+    return hasValue && (control?.disabled || false);
+  }
+
+  /**
+   * true เมื่อ: เป็นงานตัวอย่าง AND สถานะ PENDING AND ยังไม่บันทึก setupWaste
+   * → ต้องบล็อกปุ่มเริ่มพิมพ์
+   */
+  get setupWasteGateBlocked(): boolean {
+    const status = this.printingForm?.getRawValue().jobStatus;
+    return this.isSampleJob && (status === 'PENDING') && !this.setupWasteSaved;
+  }
+
   saveSetupWaste() {
-    if (this.printingForm.get('setupWaste')?.value !== null && this.printingForm.get('setupWaste')?.value !== '') {
+    const v = this.printingForm.get('setupWaste')?.value;
+    if (v !== null && v !== '' && v !== undefined) {
       const data = this.printingForm.getRawValue();
       this.dcsm25Service.save(data).subscribe({
         next: (response) => {
@@ -78,7 +105,7 @@ export class Dcsm25DetailComponent implements OnInit {
         }
       });
     } else {
-      this.sweetAlert.warning('Warning', 'กรุณากรอกค่าตั้งเครื่องก่อนบันทึก');
+      this.sweetAlert.warning('Warning', 'กรุณากรอกยอดใบตั้งเครื่องก่อนบันทึก');
     }
   }
 
@@ -129,7 +156,7 @@ export class Dcsm25DetailComponent implements OnInit {
     this.printingForm.get('totalPrintSheets')?.disable();
     this.printingForm.get('productionQty')?.disable();
     this.printingForm.get('printerName')?.disable();
-    // this.printingForm.get('setupWaste')?.disable();
+    this.printingForm.get('setupWaste')?.disable();
     this.printingForm.get('sampleId')?.disable();
     this.printingForm.get('deliveryDate')?.disable();
     this.printingForm.get('deliveryTime')?.disable();

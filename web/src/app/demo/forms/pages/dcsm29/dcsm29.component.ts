@@ -19,17 +19,20 @@ import { StatusColorService } from 'src/app/shared/services/status-color.service
 })
 export class Dcsm29Component implements OnInit {
   tableColumns = [
-    { key: 'id', label: 'Log ID' },
-    { key: 'jobIdStr', label: 'Job ID' },
-    { key: 'customerJobNameStr', label: 'ชื่อลูกค้า/รายละเอียด' },
-    { key: 'logType', label: 'ประเภทการพิมพ์' },
-    { key: 'issample', label: 'เป็นงานตัวอย่าง' },
-    { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
-    { key: 'printerNameStr', label: 'เครื่องพิมพ์' },
-    { key: 'startedAtStr', label: 'เวลาเริ่ม' },
-    { key: 'endedAtStr', label: 'เวลาจบ' },
-    { key: 'totalImpressions', label: 'ยอดมิเตอร์ที่ใช้' },
+    { key: 'id', label: 'Job ID (DB)' },
+    { key: 'jobId', label: 'Job ID' },
+    { key: 'issampleStr', label: 'เป็นงานตัวอย่าง' },
+    { key: 'jobStatusStr', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'printerBrandsStr', label: 'เครื่องพิมพ์' },
+    { key: 'totalPrintSheets', label: 'จำนวนพิมพ์' },
     { key: 'meterStatus', label: 'สถานะยอดมิเตอร์' }
+  ];
+
+  miscTableColumns = [
+    { key: 'id', label: 'Log ID' },
+    { key: 'jobId', label: 'ประเภท' },
+    { key: 'printerBrandsStr', label: 'เครื่องพิมพ์' },
+    { key: 'totalPrintSheets', label: 'ยอดมิเตอร์' }
   ];
 
   tableData: any[] = [];
@@ -39,7 +42,7 @@ export class Dcsm29Component implements OnInit {
   pageIndex = 0;
 
   searchParams: any = {
-    jobStatus: null,
+    jobStatus: 'COMPLETED',
     issample: null,
     customerJobName: null,
     jobId: null,
@@ -50,6 +53,7 @@ export class Dcsm29Component implements OnInit {
 
   summaryCanon: any = null;
   summaryRicoh: any = null;
+  miscLogsData: any[] = [];
 
   constructor(
     private router: Router,
@@ -61,6 +65,7 @@ export class Dcsm29Component implements OnInit {
   ngOnInit() {
     this.restoreState();
     this.loadData();
+    this.loadStandaloneLogs();
   }
 
   restoreState() {
@@ -103,25 +108,12 @@ export class Dcsm29Component implements OnInit {
   loadData() {
     this.dcsm29Service.getOrdersWithSearch(this.pageIndex, this.pageSize, this.searchParams).subscribe({
       next: (response: any) => {
-        this.originalTableData = response.content.map((log: any) => {
-          const job = log.job;
-          let colorDiff = 0, bwDiff = 0, specialDiff = 0;
-          if (log.meterColorEnd && log.meterColorStart) colorDiff = log.meterColorEnd - log.meterColorStart;
-          if (log.meterBwEnd && log.meterBwStart) bwDiff = log.meterBwEnd - log.meterBwStart;
-          if (log.meterSpecialEnd && log.meterSpecialStart) specialDiff = log.meterSpecialEnd - log.meterSpecialStart;
-          const totalUsage = Math.max(colorDiff, bwDiff, specialDiff);
-
+        this.originalTableData = response.content.map((job: any) => {
           return {
-            ...log,
-            jobIdNum: job ? job.id : null,
-            jobIdStr: job ? job.jobId : (log.logType === 'REPAIR' ? 'ซ่อมเครื่อง' : (log.logType === 'CALIBRATE' ? 'Calibrate' : '-')),
-            customerJobNameStr: job ? job.customerJobName : (log.note || '-'),
-            issample: job && job.issample ? 'เป็น' : 'ไม่เป็น',
-            jobStatus: job ? job.jobStatus : '-',
-            printerNameStr: log.printer ? log.printer.printerName : '-',
-            startedAtStr: log.startedAt ? new Date(log.startedAt).toLocaleString('th-TH') : '-',
-            endedAtStr: log.endedAt ? new Date(log.endedAt).toLocaleString('th-TH') : 'กำลังพิมพ์',
-            totalImpressions: totalUsage,
+            ...job,
+            issampleStr: job.issample ? 'เป็น' : 'ไม่เป็น',
+            jobStatusStr: job.jobStatus || '-',
+            printerBrandsStr: 'กำลังโหลด...',
             meterStatus: 'กำลังโหลด...'
           };
         });
@@ -129,83 +121,85 @@ export class Dcsm29Component implements OnInit {
         this.totalElements = response.totalElements;
 
         if (this.originalTableData.length > 0) {
-          const jobIds = [...new Set(this.originalTableData.filter(r => r.jobIdNum).map(r => r.jobIdNum))];
+          const jobIds = this.originalTableData.map((r: any) => r.id);
 
-          if (jobIds.length > 0) {
-            forkJoin({
-              extraBatch: this.dcsm29Service.getBatchExtraPrints(jobIds),
-              logsBatch: this.dcsm29Service.getBatchLogs(jobIds)
-            }).subscribe({
-              next: ({ extraBatch, logsBatch }: any) => {
-                this.originalTableData.forEach(row => {
-                  if (row.jobIdNum) {
-                    const extra = extraBatch[row.jobIdNum] || [];
-                    const allLogs = logsBatch[row.jobIdNum] || [];
+          forkJoin({
+            extraBatch: this.dcsm29Service.getBatchExtraPrints(jobIds),
+            logsBatch: this.dcsm29Service.getBatchLogs(jobIds)
+          }).subscribe({
+            next: ({ extraBatch, logsBatch }: any) => {
+              this.originalTableData.forEach(row => {
+                const extra = extraBatch[row.id] || [];
+                const allLogs = logsBatch[row.id] || [];
 
-                    let extraPrintQuantity = 0;
-                    if (extra && extra.length > 0) {
-                      extra.forEach((e: any) => {
-                        if (e.status !== 'REJECTED') {
-                          extraPrintQuantity += e.additionalQty || 0;
-                        }
-                      });
-                    }
-
-                    const job = row.job;
-                    let ordered = job ? (job.totalPrintSheets || 0) + (job.setupWaste || 0) : 0;
-
-                    let hasFront = false;
-                    let hasBack = false;
-                    let jobTotalImpressions = 0;
-
-                    if (allLogs && allLogs.length > 0) {
-                      allLogs.forEach((l: any) => {
-                        if (l.printSide === 'FRONT') hasFront = true;
-                        if (l.printSide === 'BACK') hasBack = true;
-
-                        let colorD = 0;
-                        let bwD = 0;
-                        let specialD = 0;
-                        if (l.meterColorEnd && l.meterColorStart) colorD = l.meterColorEnd - l.meterColorStart;
-                        if (l.meterBwEnd && l.meterBwStart) bwD = l.meterBwEnd - l.meterBwStart;
-                        if (l.meterSpecialEnd && l.meterSpecialStart) specialD = l.meterSpecialEnd - l.meterSpecialStart;
-
-                        jobTotalImpressions += Math.max(colorD, bwD, specialD);
-                      });
-                    }
-
-                    if (hasFront && hasBack) {
-                      ordered = ordered * 2;
-                    }
-
-                    ordered += extraPrintQuantity;
-
-                    if (ordered === 0) {
-                      row.meterStatus = '-';
-                    } else {
-                      const diff = jobTotalImpressions - ordered;
-                      if (diff === 0) {
-                        row.meterStatus = 'พอดี';
-                      } else if (diff < 0) {
-                        row.meterStatus = `ขาด (${Math.abs(diff)})`;
-                      } else {
-                        row.meterStatus = `เกิน (+${diff})`;
-                      }
-                    }
-
-                  } else {
-                    row.meterStatus = '-'; // For Calibrate / Repair
+                // คำนวณ printerBrandsStr จาก brand ของ printer ใน logs
+                const brands = new Set<string>();
+                allLogs.forEach((l: any) => {
+                  if (l.printer && l.printer.brand) {
+                    brands.add(l.printer.brand);
                   }
                 });
-                this.tableData = [...this.originalTableData];
-              },
-              error: () => {
-                this.tableData = [...this.originalTableData];
-              }
-            });
-          } else {
-            this.tableData = [...this.originalTableData];
-          }
+                const brandList = Array.from(brands);
+                if (brandList.length === 0) {
+                  row.printerBrandsStr = row.printerName || '-';
+                } else if (brandList.length === 1) {
+                  row.printerBrandsStr = brandList[0] === 'CANON' ? 'Canon' : (brandList[0] === 'RICOH' ? 'Ricoh' : brandList[0]);
+                } else {
+                  row.printerBrandsStr = 'Canon/Ricoh';
+                }
+
+                // คำนวณ extraPrintQuantity
+                let extraPrintQuantity = 0;
+                extra.forEach((e: any) => {
+                  if (e.status !== 'REJECTED') {
+                    extraPrintQuantity += e.additionalQty || 0;
+                  }
+                });
+
+                // คำนวณ ordered quantity
+                let ordered = (row.totalPrintSheets || 0) + (row.setupWaste || 0);
+
+                let hasFront = false;
+                let hasBack = false;
+                let jobTotalImpressions = 0;
+
+                allLogs.forEach((l: any) => {
+                  if (l.printSide === 'FRONT') hasFront = true;
+                  if (l.printSide === 'BACK') hasBack = true;
+
+                  let colorD = 0, bwD = 0, specialD = 0;
+                  if (l.meterColorEnd && l.meterColorStart) colorD = l.meterColorEnd - l.meterColorStart;
+                  if (l.meterBwEnd && l.meterBwStart) bwD = l.meterBwEnd - l.meterBwStart;
+                  if (l.meterSpecialEnd && l.meterSpecialStart) specialD = l.meterSpecialEnd - l.meterSpecialStart;
+                  jobTotalImpressions += Math.max(colorD, bwD, specialD);
+                });
+
+                if (hasFront && hasBack) {
+                  ordered = ordered * 2;
+                }
+                ordered += extraPrintQuantity;
+
+                if (allLogs.length === 0) {
+                  row.meterStatus = '-';
+                } else if (ordered === 0) {
+                  row.meterStatus = '-';
+                } else {
+                  const diff = jobTotalImpressions - ordered;
+                  if (diff === 0) {
+                    row.meterStatus = 'ปกติ';
+                  } else if (diff < 0) {
+                    row.meterStatus = `ขาด ${Math.abs(diff)}`;
+                  } else {
+                    row.meterStatus = `เกิน ${diff}`;
+                  }
+                }
+              });
+              this.tableData = [...this.originalTableData];
+            },
+            error: () => {
+              this.tableData = [...this.originalTableData];
+            }
+          });
         } else {
           this.tableData = [];
         }
@@ -222,8 +216,12 @@ export class Dcsm29Component implements OnInit {
 
         if (res && res.length > 0) {
           res.forEach(item => {
+            const colorDiff = (Number(item.maxcolorend) || 0) - (Number(item.mincolorstart) || 0);
+            const bwDiff = (Number(item.maxbwend) || 0) - (Number(item.minbwstart) || 0);
+            const specialDiff = (Number(item.maxspecialend) || 0) - (Number(item.minspecialstart) || 0);
             const data = {
-              totalClicks: (Number(item.sumcolor) || 0) + (Number(item.sumbw) || 0) + (Number(item.sumspecial) || 0),
+              printerNames: item.printernames || '',
+              totalClicks: colorDiff + bwDiff + specialDiff,
               colorMin: Number(item.mincolorstart) || 0,
               colorMax: Number(item.maxcolorend) || 0,
               bwMin: Number(item.minbwstart) || 0,
@@ -244,6 +242,7 @@ export class Dcsm29Component implements OnInit {
         console.error('Error loading summary:', err);
       }
     });
+
   }
 
   applyFrontendFilters() {
@@ -262,11 +261,35 @@ export class Dcsm29Component implements OnInit {
     this.pageIndex = 0;
     this.saveState();
     this.loadData();
+    this.loadStandaloneLogs();
+  }
+
+  loadStandaloneLogs() {
+    this.dcsm29Service.getStandaloneLogs(this.searchParams).subscribe({
+      next: (logs: any[]) => {
+        this.miscLogsData = (logs || []).map((log: any) => {
+          const colorUsage = (log.meterColorEnd && log.meterColorStart) ? log.meterColorEnd - log.meterColorStart : 0;
+          const bwUsage = (log.meterBwEnd && log.meterBwStart) ? log.meterBwEnd - log.meterBwStart : 0;
+          const specialUsage = (log.meterSpecialEnd && log.meterSpecialStart) ? log.meterSpecialEnd - log.meterSpecialStart : 0;
+          return {
+            _isStandaloneLog: true,
+            id: log.id,
+            jobId: log.logType === 'CALIBRATE' ? 'Calibrate' : (log.logType === 'REPAIR' ? 'ซ่อมเครื่อง' : log.logType),
+            issampleStr: '-',
+            jobStatusStr: '-',
+            printerBrandsStr: log.printer ? (log.printer.name || log.printer.printerName || '-') : '-',
+            totalPrintSheets: `Color:${colorUsage} / B&W:${bwUsage}${specialUsage ? ' / Sp:' + specialUsage : ''}`,
+            meterStatus: '-'
+          };
+        });
+      },
+      error: () => { this.miscLogsData = []; }
+    });
   }
 
   clearSearch() {
     this.searchParams = {
-      jobStatus: null,
+      jobStatus: 'COMPLETED',
       issample: null,
       customerJobName: null,
       jobId: null,
@@ -281,9 +304,9 @@ export class Dcsm29Component implements OnInit {
   }
 
   onRowClick(row: any) {
-    if (row && row.jobIdNum) {
+    if (row && row.id && !row._isStandaloneLog) {
       this.saveState();
-      this.router.navigate(['/Dcsm29Detail', row.jobIdNum]);
+      this.router.navigate(['/Dcsm29Detail', row.id]);
     }
   }
 

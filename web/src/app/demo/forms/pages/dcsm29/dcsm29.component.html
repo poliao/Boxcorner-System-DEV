@@ -75,7 +75,8 @@
       <div class="col-md-6" *ngIf="summaryCanon">
         <div class="card border-left-danger shadow-sm h-100">
           <div class="card-body">
-            <h5 class="card-title text-danger mb-3">สรุปยอดคลิ๊กชาร์จ (CANON)</h5>
+            <h5 class="card-title text-danger mb-1">สรุปยอดคลิ๊กชาร์จ (CANON)</h5>
+            <p class="text-muted mb-3" style="font-size: 0.8rem;">🖨️ {{ summaryCanon.printerNames }}</p>
             <div class="row text-center mb-3">
               <div class="col-md-4 px-1">
                 <h6 class="text-muted mb-1" style="font-size: 0.9rem;">รวมทั้งหมด</h6>
@@ -104,7 +105,8 @@
       <div class="col-md-6" *ngIf="summaryRicoh">
         <div class="card border-left-info shadow-sm h-100">
           <div class="card-body">
-            <h5 class="card-title text-info mb-3">สรุปยอดคลิ๊กชาร์จ (RICOH)</h5>
+            <h5 class="card-title text-info mb-1">สรุปยอดคลิ๊กชาร์จ (RICOH)</h5>
+            <p class="text-muted mb-3" style="font-size: 0.8rem;">🖨️ {{ summaryRicoh.printerNames }}</p>
             <div class="row text-center mb-3">
               <div class="col-md-3 px-1">
                 <h6 class="text-muted mb-1" style="font-size: 0.9rem;">รวมทั้งหมด</h6>
@@ -138,5 +140,14 @@
       [pageIndex]="pageIndex" [clickableColumn]="'id'" (pageChange)="onPageChange($event)"
       (rowClick)="onRowClick($event)">
     </app-data-table>
+
+    <!-- Calibrate / Repair แยกตาราง -->
+    <div *ngIf="miscLogsData && miscLogsData.length > 0" class="mt-4">
+      <h6 class="text-muted mb-2">📋 Calibrate / ซ่อมเครื่อง</h6>
+      <app-data-table [columns]="miscTableColumns" [data]="miscLogsData" [totalElements]="0"
+        [pageSize]="miscLogsData.length" [pageIndex]="0" [clickableColumn]="''">
+      </app-data-table>
+    </div>
+
   </div>
 </div>

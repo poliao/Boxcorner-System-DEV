@@ -1,0 +1,93 @@
+<div class="container-fluid py-3">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-secondary" (click)="back()">
+            <mat-icon style="font-size:18px;vertical-align:middle;">arrow_back</mat-icon>
+          </button>
+          <h5 class="mb-0">
+            {{ isEdit ? '✏️ แก้ไขสต็อก' : '➕ เพิ่มสต็อกกระดาษ' }}
+          </h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="save()">
+
+            <!-- Unit Stock Selector -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">สินค้า (Unit Stock) <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="unitStockId" (change)="onUnitStockChange()"
+                [class.is-invalid]="form.get('unitStockId')?.invalid && form.get('unitStockId')?.touched">
+                <option [value]="null" disabled selected>-- เลือกสินค้า --</option>
+                <option *ngFor="let u of unitStockList" [value]="u.id">
+                  {{ u.itemName }} ({{ u.category }}) - {{ u.paperSize }}
+                </option>
+              </select>
+              <div class="invalid-feedback">กรุณาเลือกสินค้า</div>
+            </div>
+
+            <!-- Unit stock info card -->
+            <div *ngIf="selectedUnitStock" class="alert alert-info py-2 mb-3">
+              <div class="row g-1 small">
+                <div class="col-6">
+                  <strong>หน่วยหลัก:</strong> {{ selectedUnitStock.majorUnit }}
+                </div>
+                <div class="col-6">
+                  <strong>หน่วยรอง:</strong> {{ selectedUnitStock.minorUnit }}
+                </div>
+                <div class="col-12">
+                  <strong>ขนาด:</strong> {{ selectedUnitStock.paperSize }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Current Major Qty -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                ยอดปัจจุบัน (หน่วยหลัก)
+                <span *ngIf="selectedUnitStock" class="text-muted fw-normal">
+                  — {{ selectedUnitStock.majorUnit }}
+                </span>
+                <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control" formControlName="currentMajorQty" min="0" step="0.01"
+                [class.is-invalid]="form.get('currentMajorQty')?.invalid && form.get('currentMajorQty')?.touched">
+              <div class="invalid-feedback">กรุณากรอกยอดหน่วยหลัก (≥ 0)</div>
+            </div>
+
+            <!-- Current Minor Qty -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">
+                ยอดปัจจุบัน (หน่วยรอง)
+                <span *ngIf="selectedUnitStock" class="text-muted fw-normal">
+                  — {{ selectedUnitStock.minorUnit }}
+                </span>
+                <span class="text-danger">*</span>
+              </label>
+              <input type="number" class="form-control" formControlName="currentMinorQty" min="0" step="0.01"
+                [class.is-invalid]="form.get('currentMinorQty')?.invalid && form.get('currentMinorQty')?.touched">
+              <div class="invalid-feedback">กรุณากรอกยอดหน่วยรอง (≥ 0)</div>
+            </div>
+
+            <!-- Warehouse Location -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">ตำแหน่งจัดเก็บ (Warehouse Location)</label>
+              <input type="text" class="form-control" formControlName="warehouseLocation"
+                placeholder="เช่น A-01, ชั้น 2, โรงเก็บ B">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 justify-content-end">
+              <button type="button" class="btn btn-outline-secondary" (click)="back()">ยกเลิก</button>
+              <button type="submit" class="btn btn-success">
+                <mat-icon style="font-size:18px;vertical-align:middle;">save</mat-icon>
+                บันทึกสต็อก
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

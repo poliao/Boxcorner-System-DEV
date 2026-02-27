@@ -180,4 +180,8 @@ public class PrintingService {
             Boolean issample, String jobStatus, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate) {
         return printLogRepository.getLogSummary(id, jobId, customerJobName, issample, jobStatus, startDate, endDate);
     }
+
+    public List<PrintLog> getStandaloneLogs(java.time.LocalDateTime startDate, java.time.LocalDateTime endDate) {
+        return printLogRepository.findStandaloneLogs(startDate, endDate);
+    }
 }
