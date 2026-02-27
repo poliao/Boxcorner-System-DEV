@@ -4,13 +4,16 @@ import lombok.Data;
 
 @Data
 public class StopPrintRequest {
-    private Long logId;       // ID ของ Log ที่กำลังวิ่งอยู่
-    private String action;    // "PAUSE" หรือ "FINISH"
-    
+    private Long logId; // ID ของ Log ที่กำลังวิ่งอยู่
+    private String action; // "PAUSE" หรือ "FINISH"
+
     private Long meterColorEnd;
     private Long meterBwEnd;
     private Long meterSpecialEnd; // Nullable for Canon
-    
+
     private String paperReqEnd;
     private String note; // หมายเหตุ (Optional)
+
+    private Long unitStockId; // ไอดีของกระดาษที่ถูกใช้ตัดสต็อค
+    private Long paperUsed; // จำนวนแผ่นที่ใช้ไปทั้งหมด
 }

@@ -32,6 +32,8 @@ public class PrintingService {
     private final PrintLogRepository printLogRepository;
     private final PrintJobRepository jobRepository;
     private final PrinterRepository printerRepository;
+    private final com.boxcorner.boxcorner.repository.PaperInventoryRepository paperInventoryRepository;
+    private final com.boxcorner.boxcorner.repository.UnitStockRepository unitStockRepository;
 
     // =========================================================================
     // 1. ACTION: START (เริ่มงาน / พิมพ์ต่อ / พิมพ์ซ่อม)
@@ -103,11 +105,52 @@ public class PrintingService {
         log.setPaperReqEnd(req.getPaperReqEnd());
         log.setNote(req.getNote());
 
-        // 3. Calculate Total Impressions (คำนวณยอดรวมทันทีที่จบ)
-        // long total = calculateTotal(log);
-        // log.setTotalImpressions((int) total);
+        // 3. Obtain Total Impressions (ยอดที่พิมพ์จริงและเผื่อเสีย) from form
+        long totalUsed = (req.getPaperUsed() != null) ? req.getPaperUsed() : 0;
 
-        // 4. Handle Job Status based on Action (PAUSE vs FINISH)
+        // 3.5 Deduct Paper Inventory if action is FINISH and unitStockId is provided
+        if (("FINISH".equalsIgnoreCase(req.getAction()) || "FINISH_PAGE2".equalsIgnoreCase(req.getAction())
+                || "WAITPAGE2".equalsIgnoreCase(req.getAction()))
+                && req.getUnitStockId() != null && totalUsed > 0) {
+
+            com.boxcorner.boxcorner.entity.UnitStock stockMaster = unitStockRepository.findById(req.getUnitStockId())
+                    .orElseThrow(() -> new RuntimeException("ไม่พบ UnitStock ID: " + req.getUnitStockId()));
+
+            com.boxcorner.boxcorner.entity.PaperInventory inventory = paperInventoryRepository
+                    .findByUnitStockId(req.getUnitStockId())
+                    .orElseThrow(
+                            () -> new RuntimeException("ไม่พบสต็อคกระดาษสำหรับ UnitStock ID: " + req.getUnitStockId()));
+
+            java.math.BigDecimal majorQtyUnit = stockMaster.getMajorQuantity();
+            java.math.BigDecimal minorQtyUnit = stockMaster.getMinorQuantity();
+
+            if (majorQtyUnit != null && minorQtyUnit != null && majorQtyUnit.compareTo(java.math.BigDecimal.ZERO) > 0) {
+                // หาว่าเวลา 1 ห่อมีกี่ใบ (sheets per ream) โดยเอา minor / major
+                java.math.BigDecimal sheetsPerReam = minorQtyUnit.divide(majorQtyUnit, 2,
+                        java.math.RoundingMode.HALF_UP);
+
+                if (sheetsPerReam.compareTo(java.math.BigDecimal.ZERO) > 0) {
+                    // คำนวณสต็อคปัจจุบันเป็นหน่วยย่อย (ใบ) ทั้งหมด
+                    java.math.BigDecimal currentTotalMinor = inventory.getCurrentMajorQty().multiply(sheetsPerReam)
+                            .add(inventory.getCurrentMinorQty());
+
+                    // หักลบจำนวนที่ใช้พิมพ์
+                    java.math.BigDecimal newTotalMinor = currentTotalMinor
+                            .subtract(java.math.BigDecimal.valueOf(totalUsed));
+                    if (newTotalMinor.compareTo(java.math.BigDecimal.ZERO) < 0) {
+                        newTotalMinor = java.math.BigDecimal.ZERO; // ไม่ให้ติดลบ
+                    }
+
+                    // แปลงกลับเป็นหน่วยหลักและหน่วยย่อย
+                    java.math.BigDecimal[] divAndRem = newTotalMinor.divideAndRemainder(sheetsPerReam);
+                    inventory.setCurrentMajorQty(divAndRem[0]);
+                    inventory.setCurrentMinorQty(divAndRem[1]);
+
+                    paperInventoryRepository.save(inventory);
+                }
+            }
+        }
+
         PrintJob job = log.getJob();
 
         if (job != null) {

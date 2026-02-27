@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Dcsm25Service } from './dcsm25.service';
+import { Dcsm30Service } from '../dcsm30/dcsm30.service';
 import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
@@ -28,11 +29,12 @@ export class Dcsm25DetailComponent implements OnInit {
   isRicoh = false;
   extraPrints: any[] = [];
   selectedExtraPrint: any = null;
-
+  unitStocks: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dcsm25Service: Dcsm25Service,
+    private dcsm30Service: Dcsm30Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private route: ActivatedRoute,
@@ -46,6 +48,7 @@ export class Dcsm25DetailComponent implements OnInit {
     this.createPrintingFormRecord2();
 
     this.fromPrintLogEnd();
+    this.loadUnitStocks();
 
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
@@ -211,6 +214,19 @@ export class Dcsm25DetailComponent implements OnInit {
       meterSpecialEnd: [null],
       paperReqEnd: [null],
       note: [null],
+      unitStockId: [null],
+      paperUsed: [null],
+    });
+  }
+
+  loadUnitStocks() {
+    this.dcsm30Service.search(0, 1000, {}).subscribe({
+      next: (res: any) => {
+        if (res && res.content) {
+          this.unitStocks = res.content;
+        }
+      },
+      error: (err) => console.error('Error loading unit stocks', err)
     });
   }
 
@@ -336,6 +352,19 @@ export class Dcsm25DetailComponent implements OnInit {
       } else {
         this.printingEndLog.get('action')?.setValue(Status);
       }
+
+      const actionValue = this.printingEndLog.get('action')?.value;
+      if (actionValue === 'FINISH' || actionValue === 'WAITPAGE2') {
+        if (!this.printingEndLog.get('unitStockId')?.value) {
+          this.sweetAlert.warning('เตือน', 'กรุณาเลือกกระดาษที่ใช้พิมพ์ เพื่อตัดสต็อค');
+          return;
+        }
+
+        let pQty = this.printingForm.getRawValue().productionQty || 0;
+        let sWaste = this.printingForm.getRawValue().setupWaste || 0;
+        this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
+      }
+
       const recordData = this.printingEndLog.value;
       this.dcsm25Service.stopPrintLog(recordData).subscribe({
         next: (responseLog) => {
@@ -369,6 +398,19 @@ export class Dcsm25DetailComponent implements OnInit {
       } else {
         this.printingEndLog.get('action')?.setValue(Status);
       }
+
+      const actionValue = this.printingEndLog.get('action')?.value;
+      if (actionValue === 'FINISH_PAGE2') {
+        if (!this.printingEndLog.get('unitStockId')?.value) {
+          this.sweetAlert.warning('เตือน', 'กรุณาเลือกกระดาษที่ใช้พิมพ์ เพื่อตัดสต็อค');
+          return;
+        }
+
+        let pQty = this.printingForm.getRawValue().productionQty || 0;
+        let sWaste = this.printingForm.getRawValue().setupWaste || 0;
+        this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
+      }
+
       const recordData = this.printingEndLog.value;
       this.dcsm25Service.stopPrintLog(recordData).subscribe({
         next: (responseLog) => {
@@ -485,6 +527,17 @@ export class Dcsm25DetailComponent implements OnInit {
         this.printingEndLog.get('action')?.setValue(action);
       }
 
+      const actionValue = this.printingEndLog.get('action')?.value;
+      if (actionValue === 'FINISH' || actionValue === 'WAITPAGE2') {
+        if (!this.printingEndLog.get('unitStockId')?.value) {
+          this.sweetAlert.warning('เตือน', 'กรุณาเลือกกระดาษที่ใช้พิมพ์ เพื่อตัดสต็อค');
+          return;
+        }
+
+        let additionalQty = this.selectedExtraPrint?.additionalQty || 0;
+        this.printingEndLog.get('paperUsed')?.setValue(additionalQty);
+      }
+
       const recordData = this.printingEndLog.value;
       this.dcsm25Service.stopPrintLog(recordData).subscribe({
         next: () => {
@@ -578,6 +631,16 @@ export class Dcsm25DetailComponent implements OnInit {
 
       this.printingEndLog.get('logId')?.setValue(logId);
       this.printingEndLog.get('action')?.setValue(action);
+
+      if (action === 'FINISH' && !this.printingEndLog.get('unitStockId')?.value) {
+        this.sweetAlert.warning('เตือน', 'กรุณาเลือกกระดาษที่ใช้พิมพ์ เพื่อตัดสต็อค');
+        return;
+      }
+
+      if (action === 'FINISH') {
+        let additionalQty = this.selectedExtraPrint?.additionalQty || 0;
+        this.printingEndLog.get('paperUsed')?.setValue(additionalQty);
+      }
 
       const recordData = this.printingEndLog.value;
       this.dcsm25Service.stopPrintLog(recordData).subscribe({
