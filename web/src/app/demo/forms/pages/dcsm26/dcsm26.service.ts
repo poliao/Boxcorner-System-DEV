@@ -11,7 +11,7 @@ export class Dcsm26Service {
   private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
-  
+
 
   save(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/print-job/save`, data);
@@ -28,7 +28,7 @@ export class Dcsm26Service {
   savePrintLogOs(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/print-log-os/save`, data);
   }
- 
+
   getOrdersWithSearch(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
       page: page.toString(),
@@ -72,7 +72,15 @@ export class Dcsm26Service {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
   }
 
-   getLogById(id: number): Observable<any> {
+  getLogById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/print-log-os/getById?logId=${id}`);
+  }
+
+  saveQa(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/print-log-qa/save`, data);
+  }
+
+  getQaByJobId(jobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/print-log-qa/job/${jobId}`);
   }
 }

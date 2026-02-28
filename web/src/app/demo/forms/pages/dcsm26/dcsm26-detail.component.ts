@@ -18,6 +18,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class Dcsm26DetailComponent implements OnInit {
   printingForm: FormGroup;
   checklistForm: FormGroup;
+  qcForm: FormGroup;
   id: string | null = null;
   isEditMode = false;
   isPrint = false;
@@ -25,6 +26,7 @@ export class Dcsm26DetailComponent implements OnInit {
   recipeList: any[] = [];
   showChecklistModal = false;
   showPrintedQtyModal = false;
+  showQcModal = false;
   printedQuantity: number = 0;
   currentPrintStatus: string = '';
   isSample = false;
@@ -42,6 +44,7 @@ export class Dcsm26DetailComponent implements OnInit {
   ngOnInit() {
     this.createForm();
     this.createChecklistForm();
+    this.createQcForm();
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     const resolvedData = this.route.snapshot.data['designDiecut'];
@@ -168,7 +171,18 @@ export class Dcsm26DetailComponent implements OnInit {
       colorNotSerious: [false],
       printSide: [null],
       status: [null],
-      totalProduct: [null, [Validators.required, Validators.min(1)]],
+      totalProduct: [null],
+    });
+  }
+
+  createQcForm() {
+    this.qcForm = this.fb.group({
+      qcAlignment: [false],
+      qcScumming: [false],
+      qcColorMatch: [false],
+      qcColorDensity: [false],
+      printedSheetNumber: [null, [Validators.required, Validators.min(1)]],
+      qcRemark: [null]
     });
   }
 
@@ -394,7 +408,7 @@ export class Dcsm26DetailComponent implements OnInit {
       this.printingForm.get('jobStatus')?.setValue('COMPLETED');
     } else if (status === 'Print' && this.printingForm.getRawValue().print2Page == true) {
       this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
-    } else if(status === 'PROOF') {
+    } else if (status === 'PROOF') {
       this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
     }
 
@@ -405,7 +419,7 @@ export class Dcsm26DetailComponent implements OnInit {
       response.status = 'COMPLETED';
       response.endTime = new Date(now.getTime() + offset);
       response.totalProduct = this.printedQuantity;
-      this.dcsm26Service.savePrintLogOs(response).subscribe({next: () => {}});
+      this.dcsm26Service.savePrintLogOs(response).subscribe({ next: () => { } });
     });
 
     this.dcsm26Service.save(data).subscribe((response) => {
@@ -518,5 +532,47 @@ export class Dcsm26DetailComponent implements OnInit {
         this.sweetAlert.error('Error', error.error);
       }
     });
+  }
+
+  openQcModal() {
+    this.qcForm.reset({
+      qcAlignment: false,
+      qcScumming: false,
+      qcColorMatch: false,
+      qcColorDensity: false,
+      printedSheetNumber: null,
+      qcRemark: null
+    });
+    this.showQcModal = true;
+  }
+
+  closeQcModal() {
+    this.showQcModal = false;
+  }
+
+  submitQc() {
+    if (this.qcForm.valid) {
+      this.loadingService.show();
+      const form = this.printingForm.getRawValue();
+      const qcData = {
+        ...this.qcForm.value,
+        jobId: form.id,
+        operatorName: this.authService.getUserFromToken().sub
+      };
+
+      this.dcsm26Service.saveQa(qcData).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          this.showQcModal = false;
+          this.sweetAlert.success('Success', 'บันทึกข้อมูลแบบฟอร์มเช็คคุณภาพสำเร็จ');
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาดในการบันทึกเช็คคุณภาพ');
+        }
+      });
+    } else {
+      this.qcForm.markAllAsTouched();
+    }
   }
 }

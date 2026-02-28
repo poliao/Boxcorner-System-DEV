@@ -338,6 +338,15 @@
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
+            <div class="col-md-12">
+              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
+              <select formControlName="unitStockId" class="form-select">
+                <option [ngValue]="null">-- เลือกกระดาษ --</option>
+                <option *ngFor="let stock of unitStocks" [value]="stock.id">
+                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                </option>
+              </select>
+            </div>
           </div>
         </form>
       </div>
@@ -372,15 +381,7 @@
               <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
               <input type="number" formControlName="meterSpecialEnd" class="form-control">
             </div>
-            <div class="col-md-6">
-              <label class="form-label">กระดาษที่ใช้พิมพ์ (ตัดสต็อค)</label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
-                </option>
-              </select>
-            </div>
+
             <div class="col-md-6">
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
@@ -503,6 +504,15 @@
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
+            <div class="col-md-12">
+              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
+              <select formControlName="unitStockId" class="form-select">
+                <option [ngValue]="null">-- เลือกกระดาษ --</option>
+                <option *ngFor="let stock of unitStocks" [value]="stock.id">
+                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                </option>
+              </select>
+            </div>
           </div>
         </form>
       </div>
@@ -537,15 +547,7 @@
               <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
               <input type="number" formControlName="meterSpecialEnd" class="form-control">
             </div>
-            <div class="col-md-6">
-              <label class="form-label">กระดาษที่ใช้พิมพ์ (ตัดสต็อค)</label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
-                </option>
-              </select>
-            </div>
+
             <div class="col-md-6">
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
@@ -590,6 +592,15 @@
               <select formControlName="printerName" class="form-select">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
+              <select formControlName="unitStockId" class="form-select">
+                <option [ngValue]="null">-- เลือกกระดาษ --</option>
+                <option *ngFor="let stock of unitStocks" [value]="stock.id">
+                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                </option>
               </select>
             </div>
           </div>
@@ -664,15 +675,7 @@
               <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
               <input type="number" formControlName="meterSpecialEnd" class="form-control">
             </div>
-            <div class="col-md-6">
-              <label class="form-label">กระดาษที่ใช้พิมพ์ (ตัดสต็อค)</label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
-                </option>
-              </select>
-            </div>
+
             <div class="col-md-6">
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
@@ -717,6 +720,15 @@
               <select formControlName="printerName" class="form-select">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
+              <select formControlName="unitStockId" class="form-select">
+                <option [ngValue]="null">-- เลือกกระดาษ --</option>
+                <option *ngFor="let stock of unitStocks" [value]="stock.id">
+                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                </option>
               </select>
             </div>
           </div>

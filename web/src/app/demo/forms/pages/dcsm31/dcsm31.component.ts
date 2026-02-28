@@ -26,7 +26,7 @@ export class Dcsm31Component implements OnInit {
     { key: 'majorUnit', label: 'หน่วยหลัก' },
     { key: 'currentMinorQty', label: 'ยอดรอง' },
     { key: 'minorUnit', label: 'หน่วยรอง' },
-    { key: 'warehouseLocation', label: 'ตำแหน่งจัดเก็บ' },
+    { key: 'warehouseLocation', label: 'ตำแหน่งจัดเก็บ' }
   ];
 
   tableData: any[] = [];
@@ -78,6 +78,13 @@ export class Dcsm31Component implements OnInit {
   onRowClick(row: any) {
     if (row?.inventoryId) {
       this.router.navigate(['/Dcsm31Detail', row.inventoryId]);
+    }
+  }
+
+  onHistoryClick(row: any, event: Event) {
+    event.stopPropagation();
+    if (row?.unitStockId) {
+      this.router.navigate(['/Dcsm32'], { queryParams: { unitStockId: row.unitStockId } });
     }
   }
 

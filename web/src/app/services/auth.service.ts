@@ -11,7 +11,7 @@ import { MenuService } from './menu.service';
 export class AuthService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, private menuService: MenuService) {}
+  constructor(private http: HttpClient, private menuService: MenuService) { }
 
   login(credentials: { username: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
@@ -31,7 +31,7 @@ export class AuthService {
   getUserFromToken(): any {
     const token = this.getToken();
     if (!token) return null;
-    
+
     try {
       return jwtDecode(token);
     } catch {
@@ -39,20 +39,25 @@ export class AuthService {
     }
   }
 
+  getFullName(): string {
+    const user = this.getUserFromToken();
+    return user?.sub || 'Unknown';
+  }
+
   isTokenValid(): boolean {
     const token = this.getToken();
     if (!token) return false;
 
     try {
-        const decoded: any = jwtDecode(token);
-        if (!decoded.exp) return false;
-        const currentTime = Date.now() / 1000;
-        return decoded.exp > currentTime;
-        
+      const decoded: any = jwtDecode(token);
+      if (!decoded.exp) return false;
+      const currentTime = Date.now() / 1000;
+      return decoded.exp > currentTime;
+
     } catch (error) {
-        return false;
+      return false;
     }
-}
+  }
 
   logout(): void {
     localStorage.removeItem('token');

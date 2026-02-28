@@ -204,6 +204,7 @@ export class Dcsm25DetailComponent implements OnInit {
       meterSpecialStart: [null],
       paperReqStart: [null],
       printerName: [null, Validators.required],
+      unitStockId: [null, Validators.required],
     });
   }
 
@@ -263,16 +264,7 @@ export class Dcsm25DetailComponent implements OnInit {
     }
   }
 
-  loadUnitStocks() {
-    this.dcsm30Service.search(0, 1000, {}).subscribe({
-      next: (res: any) => {
-        if (res && res.content) {
-          this.unitStocks = res.content;
-        }
-      },
-      error: (err) => console.error('Error loading unit stocks', err)
-    });
-  }
+
 
   createPrintingFormRecord2() {
     this.printingFormRecord2 = this.fb.group({
@@ -285,6 +277,7 @@ export class Dcsm25DetailComponent implements OnInit {
       meterSpecialStart: [null],
       paperReqStart: [null],
       printerName: [null, Validators.required],
+      unitStockId: [null, Validators.required],
     });
   }
 
@@ -335,26 +328,43 @@ export class Dcsm25DetailComponent implements OnInit {
 
   startPrintLog() {
     if (this.printingFormRecord.valid) {
-      this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
-      this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
-      this.printingFormRecord.get('logType')?.setValue('NORMAL');
-      this.printingFormRecord.get('printSide')?.setValue('FRONT');
-      const recordData = this.printingFormRecord.value;
-      this.dcsm25Service.startPrintLog(recordData).subscribe({
-        next: (responseLog) => {
-          this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-            response.printingRecordId = responseLog.logId;
-            this.dcsm25Service.save(response).subscribe({
-              next: (response) => {
-                this.printingForm.patchValue(response);
-                this.sweetAlert.success('Success', 'เริ่มปริ้น');
-              }
-            });
+      const formRaw = this.printingForm.getRawValue();
+      const requiredSheets = (formRaw.totalPrintSheets || 0) + (formRaw.setupWaste || 0);
+      const unitStockId = this.printingFormRecord.get('unitStockId')?.value;
+
+      this.dcsm25Service.checkStock(unitStockId, requiredSheets).subscribe({
+        next: (res: any) => {
+          if (!res.isEnough) {
+            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์');
+            return;
+          }
+
+          // Proceed to print
+          this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
+          this.printingFormRecord.get('jobId')?.setValue(formRaw.id);
+          this.printingFormRecord.get('logType')?.setValue('NORMAL');
+          this.printingFormRecord.get('printSide')?.setValue('FRONT');
+          const recordData = this.printingFormRecord.value;
+          this.dcsm25Service.startPrintLog(recordData).subscribe({
+            next: (responseLog) => {
+              this.dcsm25Service.getById(formRaw.id).subscribe((response) => {
+                response.printingRecordId = responseLog.logId;
+                this.dcsm25Service.save(response).subscribe({
+                  next: (response) => {
+                    this.printingForm.patchValue(response);
+                    this.sweetAlert.success('Success', 'เริ่มปริ้น');
+                  }
+                });
+              })
+            }, error: (error) => {
+              this.sweetAlert.error('Error', error.error.error);
+            }
           })
-        }, error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
+        },
+        error: (err) => {
+          this.sweetAlert.error('Error', 'ไม่สามารถตรวจสอบสต็อคกระดาษได้');
         }
-      })
+      });
     } else {
       this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
     }
@@ -362,26 +372,42 @@ export class Dcsm25DetailComponent implements OnInit {
 
   startPrintPage2Log() {
     if (this.printingFormRecord2.valid) {
-      this.chengePringterAuto2(this.printingFormRecord2.getRawValue().printerName);
-      this.printingFormRecord2.get('jobId')?.setValue(this.printingForm.getRawValue().id);
-      this.printingFormRecord2.get('logType')?.setValue('NORMAL');
-      this.printingFormRecord2.get('printSide')?.setValue('BACK');
-      const recordData = this.printingFormRecord2.value;
-      this.dcsm25Service.startPrintLog(recordData).subscribe({
-        next: (responseLog) => {
-          this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-            response.printingRecordId = responseLog.logId;
-            this.dcsm25Service.save(response).subscribe({
-              next: (response) => {
-                this.printingForm.patchValue(response);
-                this.sweetAlert.success('Success', 'เริ่มปริ้น');
-              }
-            });
+      const formRaw = this.printingForm.getRawValue();
+      const requiredSheets = (formRaw.totalPrintSheets || 0) + (formRaw.setupWaste || 0);
+      const unitStockId = this.printingFormRecord2.get('unitStockId')?.value;
+
+      this.dcsm25Service.checkStock(unitStockId, requiredSheets).subscribe({
+        next: (res: any) => {
+          if (!res.isEnough) {
+            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์');
+            return;
+          }
+
+          this.chengePringterAuto2(this.printingFormRecord2.getRawValue().printerName);
+          this.printingFormRecord2.get('jobId')?.setValue(formRaw.id);
+          this.printingFormRecord2.get('logType')?.setValue('NORMAL');
+          this.printingFormRecord2.get('printSide')?.setValue('BACK');
+          const recordData = this.printingFormRecord2.value;
+          this.dcsm25Service.startPrintLog(recordData).subscribe({
+            next: (responseLog) => {
+              this.dcsm25Service.getById(formRaw.id).subscribe((response) => {
+                response.printingRecordId = responseLog.logId;
+                this.dcsm25Service.save(response).subscribe({
+                  next: (response) => {
+                    this.printingForm.patchValue(response);
+                    this.sweetAlert.success('Success', 'เริ่มปริ้น');
+                  }
+                });
+              })
+            }, error: (error) => {
+              this.sweetAlert.error('Error', error.error.error);
+            }
           })
-        }, error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
+        },
+        error: (err) => {
+          this.sweetAlert.error('Error', 'ไม่สามารถตรวจสอบสต็อคกระดาษได้');
         }
-      })
+      });
     } else {
       this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
     }
@@ -399,12 +425,7 @@ export class Dcsm25DetailComponent implements OnInit {
 
       const actionValue = this.printingEndLog.get('action')?.value;
       if (actionValue === 'FINISH' || actionValue === 'WAITPAGE2') {
-        if (!this.printingEndLog.get('unitStockId')?.value) {
-          this.sweetAlert.warning('เตือน', 'กรุณาเลือกกระดาษที่ใช้พิมพ์ เพื่อตัดสต็อค');
-          return;
-        }
-
-        let pQty = this.printingForm.getRawValue().productionQty || 0;
+        let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
         let sWaste = this.printingForm.getRawValue().setupWaste || 0;
         this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
       }
@@ -445,12 +466,7 @@ export class Dcsm25DetailComponent implements OnInit {
 
       const actionValue = this.printingEndLog.get('action')?.value;
       if (actionValue === 'FINISH_PAGE2') {
-        if (!this.printingEndLog.get('unitStockId')?.value) {
-          this.sweetAlert.warning('เตือน', 'กรุณาเลือกกระดาษที่ใช้พิมพ์ เพื่อตัดสต็อค');
-          return;
-        }
-
-        let pQty = this.printingForm.getRawValue().productionQty || 0;
+        let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
         let sWaste = this.printingForm.getRawValue().setupWaste || 0;
         this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
       }
@@ -512,39 +528,54 @@ export class Dcsm25DetailComponent implements OnInit {
 
   startExtraPrint() {
     if (this.printingFormRecord.valid && this.selectedExtraPrint) {
-      this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
-      this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
-      this.printingFormRecord.get('logType')?.setValue('EXTRA');
-      this.printingFormRecord.get('printSide')?.setValue('FRONT');
-      const recordData = this.printingFormRecord.value;
-      this.dcsm25Service.startPrintLog(recordData).subscribe({
-        next: (responseLog) => {
-          const updateData = {
-            id: this.selectedExtraPrint.id,
-            printJobId: this.selectedExtraPrint.printJobId,
-            additionalQty: this.selectedExtraPrint.additionalQty,
-            reason: this.selectedExtraPrint.reason,
-            status: 'IN_PROGRESS',
-            requestedBy: this.selectedExtraPrint.requestedBy,
-            printingRecordId: responseLog.logId
-          };
-          this.dcsm25Service.updateExtraPrint(updateData).subscribe({
-            next: () => {
-              this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-                response.printingRecordId = responseLog.logId;
-                this.dcsm25Service.save(response).subscribe({
-                  next: (response) => {
-                    this.printingForm.patchValue(response);
-                    this.loadExtraPrints();
-                    this.sweetAlert.success('Success', 'เริ่มพิมพ์เพิ่ม');
-                  }
-                });
+      const requiredSheets = this.selectedExtraPrint.additionalQty || 0;
+      const unitStockId = this.printingFormRecord.get('unitStockId')?.value;
+
+      this.dcsm25Service.checkStock(unitStockId, requiredSheets).subscribe({
+        next: (res: any) => {
+          if (!res.isEnough) {
+            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์');
+            return;
+          }
+
+          this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
+          this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
+          this.printingFormRecord.get('logType')?.setValue('EXTRA');
+          this.printingFormRecord.get('printSide')?.setValue('FRONT');
+          const recordData = this.printingFormRecord.value;
+          this.dcsm25Service.startPrintLog(recordData).subscribe({
+            next: (responseLog) => {
+              const updateData = {
+                id: this.selectedExtraPrint.id,
+                printJobId: this.selectedExtraPrint.printJobId,
+                additionalQty: this.selectedExtraPrint.additionalQty,
+                reason: this.selectedExtraPrint.reason,
+                status: 'IN_PROGRESS',
+                requestedBy: this.selectedExtraPrint.requestedBy,
+                printingRecordId: responseLog.logId
+              };
+              this.dcsm25Service.updateExtraPrint(updateData).subscribe({
+                next: () => {
+                  this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
+                    response.printingRecordId = responseLog.logId;
+                    this.dcsm25Service.save(response).subscribe({
+                      next: (response) => {
+                        this.printingForm.patchValue(response);
+                        this.loadExtraPrints();
+                        this.sweetAlert.success('Success', 'เริ่มพิมพ์เพิ่ม');
+                      }
+                    });
+                  });
+                }
               });
+            },
+            error: (error) => {
+              this.sweetAlert.error('Error', error.error.error);
             }
           });
         },
-        error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
+        error: (err) => {
+          this.sweetAlert.error('Error', 'ไม่สามารถตรวจสอบสต็อคกระดาษได้');
         }
       });
     } else {
@@ -624,39 +655,54 @@ export class Dcsm25DetailComponent implements OnInit {
 
   startExtraPrintPage2() {
     if (this.printingFormRecord2.valid && this.selectedExtraPrint) {
-      this.chengePringterAuto2(this.printingFormRecord2.getRawValue().printerName);
-      this.printingFormRecord2.get('jobId')?.setValue(this.printingForm.getRawValue().id);
-      this.printingFormRecord2.get('logType')?.setValue('EXTRA');
-      this.printingFormRecord2.get('printSide')?.setValue('BACK');
-      const recordData = this.printingFormRecord2.value;
-      this.dcsm25Service.startPrintLog(recordData).subscribe({
-        next: (responseLog) => {
-          const updateData = {
-            id: this.selectedExtraPrint.id,
-            printJobId: this.selectedExtraPrint.printJobId,
-            additionalQty: this.selectedExtraPrint.additionalQty,
-            reason: this.selectedExtraPrint.reason,
-            status: 'IN_PROGRESS_PAGE2',
-            requestedBy: this.selectedExtraPrint.requestedBy,
-            printingRecordId: responseLog.logId
-          };
-          this.dcsm25Service.updateExtraPrint(updateData).subscribe({
-            next: () => {
-              this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-                response.printingRecordId = responseLog.logId;
-                this.dcsm25Service.save(response).subscribe({
-                  next: (response) => {
-                    this.printingForm.patchValue(response);
-                    this.loadExtraPrints();
-                    this.sweetAlert.success('Success', 'เริ่มพิมพ์หน้า 2');
-                  }
-                });
+      const requiredSheets = this.selectedExtraPrint.additionalQty || 0;
+      const unitStockId = this.printingFormRecord2.get('unitStockId')?.value;
+
+      this.dcsm25Service.checkStock(unitStockId, requiredSheets).subscribe({
+        next: (res: any) => {
+          if (!res.isEnough) {
+            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์');
+            return;
+          }
+
+          this.chengePringterAuto2(this.printingFormRecord2.getRawValue().printerName);
+          this.printingFormRecord2.get('jobId')?.setValue(this.printingForm.getRawValue().id);
+          this.printingFormRecord2.get('logType')?.setValue('EXTRA');
+          this.printingFormRecord2.get('printSide')?.setValue('BACK');
+          const recordData = this.printingFormRecord2.value;
+          this.dcsm25Service.startPrintLog(recordData).subscribe({
+            next: (responseLog) => {
+              const updateData = {
+                id: this.selectedExtraPrint.id,
+                printJobId: this.selectedExtraPrint.printJobId,
+                additionalQty: this.selectedExtraPrint.additionalQty,
+                reason: this.selectedExtraPrint.reason,
+                status: 'IN_PROGRESS_PAGE2',
+                requestedBy: this.selectedExtraPrint.requestedBy,
+                printingRecordId: responseLog.logId
+              };
+              this.dcsm25Service.updateExtraPrint(updateData).subscribe({
+                next: () => {
+                  this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
+                    response.printingRecordId = responseLog.logId;
+                    this.dcsm25Service.save(response).subscribe({
+                      next: (response) => {
+                        this.printingForm.patchValue(response);
+                        this.loadExtraPrints();
+                        this.sweetAlert.success('Success', 'เริ่มพิมพ์หน้า 2');
+                      }
+                    });
+                  });
+                }
               });
+            },
+            error: (error) => {
+              this.sweetAlert.error('Error', error.error.error);
             }
           });
         },
-        error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
+        error: (err) => {
+          this.sweetAlert.error('Error', 'ไม่สามารถตรวจสอบสต็อคกระดาษได้');
         }
       });
     } else {
@@ -722,5 +768,18 @@ export class Dcsm25DetailComponent implements OnInit {
     } else {
       this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
     }
+  }
+
+  loadUnitStocks() {
+    this.dcsm25Service.getUnitStocks().subscribe({
+      next: (res: any) => {
+        if (res) {
+          this.unitStocks = res;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load unit stocks', err);
+      }
+    });
   }
 }

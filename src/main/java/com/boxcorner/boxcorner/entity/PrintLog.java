@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "print_logs")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,12 +20,12 @@ public class PrintLog extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id", nullable = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private PrintJob job;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "printer_id", nullable = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Printer printer;
 
     @Enumerated(EnumType.STRING)
@@ -34,7 +35,7 @@ public class PrintLog extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "log_type")
     @Builder.Default
-    private LogType logType = LogType.NORMAL; 
+    private LogType logType = LogType.NORMAL;
 
     @Column(name = "started_at")
     private LocalDateTime startedAt;
@@ -74,21 +75,27 @@ public class PrintLog extends BaseEntity {
     @Column(name = "total_sheets_used")
     private Integer totalSheetsUsed;
 
+    @Column(name = "unit_stock_id")
+    private Long unitStockId;
+
     @Column(columnDefinition = "TEXT")
     private String note;
 
     public long getColorUsage() {
-        if (meterColorEnd == null || meterColorStart == null) return 0;
+        if (meterColorEnd == null || meterColorStart == null)
+            return 0;
         return meterColorEnd - meterColorStart;
     }
 
     public long getBwUsage() {
-        if (meterBwEnd == null || meterBwStart == null) return 0;
+        if (meterBwEnd == null || meterBwStart == null)
+            return 0;
         return meterBwEnd - meterBwStart;
     }
-    
+
     public long getSpecialUsage() {
-        if (meterSpecialEnd == null || meterSpecialStart == null) return 0;
+        if (meterSpecialEnd == null || meterSpecialStart == null)
+            return 0;
         return meterSpecialEnd - meterSpecialStart;
     }
 

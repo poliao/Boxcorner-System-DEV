@@ -1,1 +1,29 @@
-// dcsm03 component styles
+.dcsm31-page {
+  .dcsm31-card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .dcsm31-card-body {
+    background-color: #ffffff;
+  }
+
+  .dcsm31-search {
+    background: #f8f9ff;
+    border-radius: 10px;
+  }
+
+  .dcsm31-search-actions {
+    width: 100%;
+  }
+
+  @media (max-width: 767.98px) {
+    .dcsm31-card-body {
+      padding: 1.25rem !important;
+    }
+
+    .dcsm31-search-actions {
+      flex-direction: column;
+    }
+  }
+}

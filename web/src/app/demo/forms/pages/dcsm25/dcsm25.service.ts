@@ -88,4 +88,13 @@ export class Dcsm25Service {
   returnPaper(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/printing/return-paper`, data);
   }
+
+  // Check Paper Stock API
+  checkStock(unitStockId: number, requiredSheets: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/paper-inventory/check-stock?unitStockId=${unitStockId}&requiredSheets=${requiredSheets}`);
+  }
+
+  getUnitStocks(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/paper-inventory/unit-stock-list`);
+  }
 }

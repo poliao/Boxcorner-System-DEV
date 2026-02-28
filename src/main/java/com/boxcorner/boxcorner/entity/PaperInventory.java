@@ -29,6 +29,12 @@ public class PaperInventory {
     @Column(name = "warehouse_location", length = 100)
     private String warehouseLocation;
 
+    @Transient
+    private String operatorName;
+
+    @Transient
+    private String transactionNote;
+
     @UpdateTimestamp
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;

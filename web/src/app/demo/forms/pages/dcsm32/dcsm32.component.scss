@@ -1,0 +1,50 @@
+.dcsm32-card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  .card-header {
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    background-color: #f8fafc;
+  }
+
+  .form-label {
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+    border-color: #dee2e6;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+    }
+  }
+
+  .btn {
+    border-radius: 999px;
+  }
+
+  .record-count {
+    background-color: rgba(255, 255, 255, 0.15);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .search-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}

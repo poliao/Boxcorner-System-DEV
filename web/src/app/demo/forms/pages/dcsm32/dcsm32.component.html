@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card dcsm32-card shadow-sm border-0">
+            <div
+                class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h5 class="mb-1 text-white">ประวัติการรับเข้า-เบิกจ่ายกระดาษ</h5>
+                    <p class="mb-0 small text-white-50">ค้นหาและตรวจสอบการเคลื่อนไหวของกระดาษได้อย่างรวดเร็ว</p>
+                </div>
+                <span *ngIf="totalElements" class="record-count ms-auto">
+                    {{ totalElements | number }} รายการทั้งหมด
+                </span>
+            </div>
+
+            <div class="card-body">
+                <!-- Search Section -->
+                <div class="row g-3 mb-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small mb-1">ประเภทรายการ</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="searchParams.transactionType">
+                            <option *ngFor="let t of transactionTypes" [value]="t.value">{{ t.label }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small mb-1">ผู้ทำรายการ</label>
+                        <input type="text" class="form-control form-control-sm"
+                            [(ngModel)]="searchParams.operatorName" placeholder="ค้นหาตามชื่อผู้ทำรายการ">
+                    </div>
+
+                    <div class="col-md-6 text-md-end text-start">
+                        <div class="search-actions">
+                            <button class="btn btn-outline-secondary btn-sm" type="button"
+                                (click)="clearSearch()">ล้างข้อมูล</button>
+                            <button class="btn btn-primary btn-sm" type="button" (click)="onSearch()">
+                                <mat-icon
+                                    style="font-size: 16px; width: 16px; height: 16px; line-height: 16px"
+                                    class="me-1 align-middle">search</mat-icon>
+                                <span class="align-middle">ค้นหา</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Component -->
+                <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements"
+                    [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)">
+                </app-data-table>
+            </div>
+        </div>
+    </div>
+</div>

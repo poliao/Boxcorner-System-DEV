@@ -12,4 +12,5 @@ public class StartPrintRequest {
     private Long meterBwStart;
     private Long meterSpecialStart;
     private String paperReqStart;
+    private Long unitStockId;
 }

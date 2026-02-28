@@ -1,34 +1,52 @@
-<div class="container-fluid py-3">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">📦 สต็อกกระดาษ (Paper Inventory)</h5>
-        <button class="btn btn-success" (click)="add()">
-          <mat-icon style="vertical-align:middle;font-size:18px;">add</mat-icon> เพิ่มสต็อก
+<div class="container-fluid py-3 dcsm31-page">
+  <div class="card shadow-sm border-0 dcsm31-card">
+    <div class="card-body p-4 dcsm31-card-body">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="mb-1 fw-bold" style="color:#171851;">
+            <mat-icon style="vertical-align:middle;margin-right:8px;color:#4f6ef7;">inventory_2</mat-icon>
+            สต็อกกระดาษ
+          </h5>
+          <small class="text-muted">Paper Inventory Management</small>
+        </div>
+        <button class="btn btn-primary px-4"
+          style="border-radius:8px;background:linear-gradient(135deg,#4f6ef7,#171851);border:none;" (click)="add()">
+          <mat-icon style="vertical-align:middle;font-size:18px;">add</mat-icon>
+          เพิ่มสต็อก
         </button>
       </div>
 
       <!-- Search -->
-      <div class="row mb-3">
+      <div class="row mb-4 g-2 align-items-center p-3 dcsm31-search">
         <div class="col-md-5">
-          <input type="text" class="form-control" placeholder="ชื่อสินค้า" [(ngModel)]="searchParams.itemName"
-            (keyup.enter)="onSearch()">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-white border-end-0">
+              <mat-icon style="font-size:16px;width:16px;height:16px;">search</mat-icon>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="ค้นหาชื่อสินค้า..."
+              [(ngModel)]="searchParams.itemName" (keyup.enter)="onSearch()">
+          </div>
         </div>
         <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="ประเภท" [(ngModel)]="searchParams.category"
-            (keyup.enter)="onSearch()">
+          <input type="text" class="form-control form-control-sm" placeholder="ประเภทสินค้า"
+            [(ngModel)]="searchParams.category" (keyup.enter)="onSearch()">
         </div>
-        <div class="col-md-3 d-flex gap-1">
-          <button class="btn btn-primary btn-sm flex-fill" (click)="onSearch()">ค้นหา</button>
-          <button class="btn btn-outline-secondary btn-sm" (click)="clearSearch()">ล้าง</button>
+        <div class="col-md-3">
+          <div class="d-flex gap-2 dcsm31-search-actions">
+            <button class="btn btn-primary btn-sm flex-fill" (click)="onSearch()">ค้นหา</button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="clearSearch()">ล้าง</button>
+          </div>
         </div>
       </div>
 
       <!-- Table -->
-      <app-data-table [columns]="tableColumns" [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize"
-        [pageIndex]="pageIndex" [clickableColumn]="'itemName'" (pageChange)="onPageChange($event)"
-        (rowClick)="onRowClick($event)">
+      <app-data-table [headerStyle]="'background: #171851; color: #ffffff;'" [columns]="tableColumns"
+        [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex"
+        [clickableColumn]="'itemName'" (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
       </app-data-table>
+
     </div>
   </div>
 </div>

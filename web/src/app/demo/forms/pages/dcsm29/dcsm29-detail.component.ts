@@ -197,7 +197,6 @@ export class Dcsm29DetailComponent implements OnInit {
         this.printSidedness = 'ไม่ทราบ';
       }
 
-      // Add extra prints to the allowed ordered quantity
       orderedQuantity += extraPrintQuantity;
       this.extraQuantity = extraPrintQuantity;
     } else {

@@ -30,7 +30,7 @@ public class PrintLogOs extends BaseEntity {
     private Long id;
 
     @Column(name = "job_id", nullable = false)
-    private Long jobId; 
+    private Long jobId;
 
     @Column(name = "machine_name")
     private String machineName;
@@ -60,20 +60,28 @@ public class PrintLogOs extends BaseEntity {
     private Boolean flagInkOld;
 
     // Cyan
-    @Column(name = "c_lot") private String cLot;
-    @Column(name = "c_brand") private String cBrand;
+    @Column(name = "c_lot")
+    private String cLot;
+    @Column(name = "c_brand")
+    private String cBrand;
 
     // Magenta
-    @Column(name = "m_lot") private String mLot;
-    @Column(name = "m_brand") private String mBrand;
+    @Column(name = "m_lot")
+    private String mLot;
+    @Column(name = "m_brand")
+    private String mBrand;
 
     // Yellow
-    @Column(name = "y_lot") private String yLot;
-    @Column(name = "y_brand") private String yBrand;
+    @Column(name = "y_lot")
+    private String yLot;
+    @Column(name = "y_brand")
+    private String yBrand;
 
     // Black
-    @Column(name = "k_lot") private String kLot;
-    @Column(name = "k_brand") private String kBrand;
+    @Column(name = "k_lot")
+    private String kLot;
+    @Column(name = "k_brand")
+    private String kBrand;
 
     // --- 5. การตรวจสอบอุปกรณ์ ---
     @Column(name = "check_plate_condition")
@@ -113,10 +121,26 @@ public class PrintLogOs extends BaseEntity {
 
     @Column(name = "paper_brightness")
     private String paperBrightness;
-    
+
     @Column(name = "total_product")
     private String totalProduct;
 
-     @Column(name = "operator_name")
+    @Column(name = "operator_name")
     private String operatorName;
+
+    // --- 6. Quality Check (เช็คคุณภาพ) ---
+    @Column(name = "qc_alignment")
+    private Boolean qcAlignment; // พิมพ์ไม่เหลื่อม/ฉากตรง
+
+    @Column(name = "qc_scumming")
+    private Boolean qcScumming; // ไม่เกิดสกรัมหรือซับหลัง
+
+    @Column(name = "qc_color_match")
+    private Boolean qcColorMatch; // สีตรงตามปรู๊ฟ
+
+    @Column(name = "qc_color_density")
+    private Boolean qcColorDensity; // พิมพ์สีไม่ซีดหรือเข้มเกินไป
+
+    @Column(name = "qc_remark")
+    private String qcRemark; // หมายเหตุ
 }

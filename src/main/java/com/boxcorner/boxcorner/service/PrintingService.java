@@ -1,5 +1,6 @@
 package com.boxcorner.boxcorner.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.boxcorner.boxcorner.entity.PaperInventory;
 import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.entity.PrintLog;
 import com.boxcorner.boxcorner.entity.Printer;
+import com.boxcorner.boxcorner.entity.StockLog;
 import com.boxcorner.boxcorner.entity.UnitStock;
 import com.boxcorner.boxcorner.entity.dto.CalibrateRequest;
 import com.boxcorner.boxcorner.entity.dto.ReturnPaperRequest;
@@ -24,6 +26,9 @@ import com.boxcorner.boxcorner.entity.dto.StopPrintRequest;
 import com.boxcorner.boxcorner.repository.PrintJobRepository;
 import com.boxcorner.boxcorner.repository.PrintLogRepository;
 import com.boxcorner.boxcorner.repository.PrinterRepository;
+import com.boxcorner.boxcorner.repository.UnitStockRepository;
+import com.boxcorner.boxcorner.repository.PaperInventoryRepository;
+import com.boxcorner.boxcorner.service.StockLogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,8 +39,9 @@ public class PrintingService {
     private final PrintLogRepository printLogRepository;
     private final PrintJobRepository jobRepository;
     private final PrinterRepository printerRepository;
-    private final com.boxcorner.boxcorner.repository.PaperInventoryRepository paperInventoryRepository;
-    private final com.boxcorner.boxcorner.repository.UnitStockRepository unitStockRepository;
+    private final UnitStockRepository unitStockRepository;
+    private final PaperInventoryRepository paperInventoryRepository;
+    private final StockLogService stockLogService;
 
     // =========================================================================
     // 1. ACTION: START (เริ่มงาน / พิมพ์ต่อ / พิมพ์ซ่อม)
@@ -71,6 +77,7 @@ public class PrintingService {
                 .meterBwStart(req.getMeterBwStart())
                 .meterSpecialStart(req.getMeterSpecialStart())
                 .paperReqStart(req.getPaperReqStart())
+                .unitStockId(req.getUnitStockId())
                 .operatorName(operatorName)
                 .build();
 
@@ -114,15 +121,15 @@ public class PrintingService {
         // 3.5 Deduct Paper Inventory if action is FINISH and unitStockId is provided
         if (("FINISH".equalsIgnoreCase(req.getAction()) || "FINISH_PAGE2".equalsIgnoreCase(req.getAction())
                 || "WAITPAGE2".equalsIgnoreCase(req.getAction()))
-                && req.getUnitStockId() != null && totalUsed > 0) {
+                && log.getUnitStockId() != null && totalUsed > 0) {
 
-            com.boxcorner.boxcorner.entity.UnitStock stockMaster = unitStockRepository.findById(req.getUnitStockId())
-                    .orElseThrow(() -> new RuntimeException("ไม่พบ UnitStock ID: " + req.getUnitStockId()));
+            com.boxcorner.boxcorner.entity.UnitStock stockMaster = unitStockRepository.findById(log.getUnitStockId())
+                    .orElseThrow(() -> new RuntimeException("ไม่พบ UnitStock ID: " + log.getUnitStockId()));
 
             com.boxcorner.boxcorner.entity.PaperInventory inventory = paperInventoryRepository
-                    .findByUnitStockId(req.getUnitStockId())
+                    .findByUnitStockId(log.getUnitStockId())
                     .orElseThrow(
-                            () -> new RuntimeException("ไม่พบสต็อคกระดาษสำหรับ UnitStock ID: " + req.getUnitStockId()));
+                            () -> new RuntimeException("ไม่พบสต็อคกระดาษสำหรับ UnitStock ID: " + log.getUnitStockId()));
 
             java.math.BigDecimal majorQtyUnit = stockMaster.getMajorQuantity();
             java.math.BigDecimal minorQtyUnit = stockMaster.getMinorQuantity();
@@ -150,6 +157,20 @@ public class PrintingService {
                     inventory.setCurrentMinorQty(divAndRem[1]);
 
                     paperInventoryRepository.save(inventory);
+
+                    // Add StockLog OUT
+                    StockLog stockLog = StockLog.builder()
+                            .unitStockId(stockMaster.getId())
+                            .transactionType(StockLog.TransactionType.OUT)
+                            .quantityMajor(java.math.BigDecimal.ZERO)
+                            .quantityMinor(java.math.BigDecimal.valueOf(totalUsed))
+                            .totalSheets((int) totalUsed)
+                            .referenceJobId(log.getJob() != null ? log.getJob().getId() : null)
+                            .operatorName(log.getOperatorName())
+                            .note("ตัดสต็อคกระดาษจากการพิมพ์ (Job: "
+                                    + (log.getJob() != null ? log.getJob().getJobId() : "-") + ")")
+                            .build();
+                    stockLogService.logTransaction(stockLog);
                 }
             }
         }
@@ -234,6 +255,19 @@ public class PrintingService {
             }
 
             paperInventoryRepository.save(paperInventory);
+
+            // Add StockLog RETURN
+            StockLog stockLog = StockLog.builder()
+                    .unitStockId(unitStock.getId())
+                    .transactionType(StockLog.TransactionType.RETURN)
+                    .quantityMajor(BigDecimal.ZERO)
+                    .quantityMinor(returnedAmount)
+                    .totalSheets(request.getReturnQty())
+                    .referenceJobId(printJob != null ? printJob.getId() : null)
+                    .operatorName("SYSTEM") // We don't have operatorName in ReturnPaperRequest right now
+                    .note("คืนกระดาษจากการพิมพ์ (Job: " + (printJob != null ? printJob.getJobId() : "-") + ")")
+                    .build();
+            stockLogService.logTransaction(stockLog);
         }
     }
 

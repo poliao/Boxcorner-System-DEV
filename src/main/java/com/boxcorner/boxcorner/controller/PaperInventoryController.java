@@ -44,7 +44,7 @@ public class PaperInventoryController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody PaperInventory inv) {
         try {
-            PaperInventory saved = paperInventoryService.save(inv);
+            PaperInventory saved = paperInventoryService.save(inv, inv.getOperatorName());
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -67,6 +67,19 @@ public class PaperInventoryController {
         try {
             List<UnitStock> list = unitStockRepository.findAll();
             return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /** เช็คว่ากระดาษพอหรือไม่ก่อนเริ่มพิมพ์ */
+    @GetMapping("/check-stock")
+    public ResponseEntity<?> checkStock(
+            @RequestParam(value = "unitStockId") Long unitStockId,
+            @RequestParam(value = "requiredSheets") java.math.BigDecimal requiredSheets) {
+        try {
+            boolean isEnough = paperInventoryService.checkStock(unitStockId, requiredSheets);
+            return ResponseEntity.ok(Map.of("isEnough", isEnough));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
