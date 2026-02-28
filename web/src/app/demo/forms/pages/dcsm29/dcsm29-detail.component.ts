@@ -36,6 +36,7 @@ export class Dcsm29DetailComponent implements OnInit {
   difference = 0;
   extraQuantity = 0;
   printSidedness = '-';
+  totalPaperUsed = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -122,6 +123,7 @@ export class Dcsm29DetailComponent implements OnInit {
     this.totalMeterBw = 0;
     this.totalMeterSpecial = 0;
     this.totalMeterImpressions = 0;
+    this.totalPaperUsed = 0;
 
     if (this.printLogs && this.printLogs.length > 0) {
       this.printLogs.forEach(log => {
@@ -143,6 +145,11 @@ export class Dcsm29DetailComponent implements OnInit {
         if (log.meterSpecialEnd && log.meterSpecialStart) {
           specialDiff = log.meterSpecialEnd - log.meterSpecialStart;
           this.totalMeterSpecial += specialDiff;
+        }
+
+        // Track total paper used
+        if (log.totalSheetsUsed) {
+          this.totalPaperUsed += log.totalSheetsUsed;
         }
 
         // Impressions per sheet:

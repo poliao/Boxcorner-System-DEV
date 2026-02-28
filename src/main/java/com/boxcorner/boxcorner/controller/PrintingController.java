@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.boxcorner.boxcorner.entity.PrintLog;
 import com.boxcorner.boxcorner.entity.dto.CalibrateRequest;
+import com.boxcorner.boxcorner.entity.dto.ReturnPaperRequest;
 import com.boxcorner.boxcorner.entity.dto.StartPrintRequest;
 import com.boxcorner.boxcorner.entity.dto.StopPrintRequest;
 import com.boxcorner.boxcorner.security.jwt.TokenService;
@@ -167,7 +168,7 @@ public class PrintingController {
     }
 
     @PostMapping("/return-paper")
-    public ResponseEntity<?> returnPaper(@RequestBody com.boxcorner.boxcorner.entity.dto.ReturnPaperRequest request) {
+    public ResponseEntity<?> returnPaper(@RequestBody ReturnPaperRequest request) {
         try {
             printingService.returnPaper(request);
             return ResponseEntity.ok(Map.of("status", "SUCCESS", "message", "คืนสต็อคกระดาษเรียบร้อยแล้ว"));

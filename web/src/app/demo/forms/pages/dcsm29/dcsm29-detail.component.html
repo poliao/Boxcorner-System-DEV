@@ -62,9 +62,8 @@
   </div>
 </div>
 
-<!-- สรุปยอดพิมพ์ -->
 <div class="row mt-3">
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="card text-center h-100 border-primary">
       <div class="card-body">
         <h5 class="card-title text-primary"><mat-icon class="align-middle">assignment</mat-icon> ยอดสั่งพิมพ์ทั้งหมด
@@ -76,7 +75,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="card text-center h-100 border-info">
       <div class="card-body">
         <h5 class="card-title text-info"><mat-icon class="align-middle">print</mat-icon> ยอดพิมพ์จริงจากมิเตอร์</h5>
@@ -85,7 +84,16 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
+    <div class="card text-center h-100 border-secondary">
+      <div class="card-body">
+        <h5 class="card-title text-secondary"><mat-icon class="align-middle">file_copy</mat-icon> กระดาษที่ใช้รวม</h5>
+        <h2 class="display-4">{{ totalPaperUsed | number }}</h2>
+        <p class="text-muted">(จำนวนใบที่เบิกและใช้จริงทั้งหมด)</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
     <div class="card text-center h-100"
       [ngClass]="{'border-success': difference <= 0, 'border-danger': difference > 0}">
       <div class="card-body">
@@ -124,6 +132,7 @@
             <th class="py-3 text-end">ยอดขาวดำ (B/W)</th>
             <th class="py-3 text-end">ยอดพิเศษ (Sp)</th>
             <th class="py-3 text-end">ยอดรวม</th>
+            <th class="py-3 text-end">กระดาษที่ใช้</th>
             <th class="py-3 text-center">เริ่มพิมพ์</th>
             <th class="py-3 text-center">จบงานพิมพ์</th>
             <th class="py-3">ผู้ปฏิบัติงาน</th>
@@ -193,6 +202,10 @@
               }}
             </td>
 
+            <td class="text-end font-monospace text-secondary">
+              <div class="fw-bold">{{ log.totalSheetsUsed ? (log.totalSheetsUsed | number) : '0' }}</div>
+            </td>
+
             <td class="text-center">
               <div *ngIf="log.startedAt">
                 <div>{{ log.startedAt | date:'dd/MM/yyyy' }}</div>
@@ -217,9 +230,66 @@
             </td>
           </tr>
           <tr *ngIf="printLogs.length === 0">
-            <td colspan="12" class="text-center py-5 text-muted">
+            <td colspan="13" class="text-center py-5 text-muted">
               <mat-icon style="font-size: 48px; width: 48px; height: 48px; opacity: 0.5;">print_disabled</mat-icon>
               <h5 class="mt-2 text-muted">ไม่พบข้อมูลประวัติการพิมพ์</h5>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ตารางแสดงประวัติขอพิมพ์เพิ่ม ExtraPrints -->
+<div class="card mt-3" *ngIf="extraPrints && extraPrints.length > 0">
+  <div class="card-header" style="background-color: #f8f9fa;">
+    <h4 class="mb-0"><mat-icon class="align-middle text-info">note_add</mat-icon> ประวัติการขอพิมพ์เพิ่ม (Extra Prints)
+    </h4>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light text-dark">
+          <tr>
+            <th class="py-3 text-center">รหัสคำขอ</th>
+            <th class="py-3 text-center">วันที่ขอ</th>
+            <th class="py-3 text-end">จำนวนที่ขอ (ใบ)</th>
+            <th class="py-3 text-center">สถานะ</th>
+            <th class="py-3">ผู้ขอ</th>
+            <th class="py-3">เหตุผล</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let extra of extraPrints">
+            <td class="text-center">#{{ extra.id }}</td>
+            <td class="text-center">
+              <div *ngIf="extra.createdAt">
+                <div>{{ extra.createdAt | date:'dd/MM/yyyy' }}</div>
+                <small class="text-muted">{{ extra.createdAt | date:'HH:mm:ss' }}</small>
+              </div>
+            </td>
+            <td class="text-end font-monospace text-primary fw-bold">
+              {{ extra.additionalQty | number }}
+            </td>
+            <td class="text-center">
+              <span class="badge" [ngClass]="{
+                  'bg-warning text-dark': extra.status === 'PENDING',
+                  'bg-success': extra.status === 'APPROVED',
+                  'bg-danger': extra.status === 'REJECTED'
+                }">
+                {{ extra.status }}
+              </span>
+            </td>
+            <td>
+              <span class="d-flex align-items-center">
+                <mat-icon class="me-1 text-muted fs-6">person</mat-icon>
+                {{ extra.requestedBy || '-' }}
+              </span>
+            </td>
+            <td>
+              <span class="text-muted" style="font-size: 0.85em;">{{ extra.reason || '-' }}</span>
             </td>
           </tr>
         </tbody>

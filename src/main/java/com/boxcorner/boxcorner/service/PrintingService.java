@@ -109,6 +109,7 @@ public class PrintingService {
 
         // 3. Obtain Total Impressions (ยอดที่พิมพ์จริงและเผื่อเสีย) from form
         long totalUsed = (req.getPaperUsed() != null) ? req.getPaperUsed() : 0;
+        log.setTotalSheetsUsed((int) totalUsed);
 
         // 3.5 Deduct Paper Inventory if action is FINISH and unitStockId is provided
         if (("FINISH".equalsIgnoreCase(req.getAction()) || "FINISH_PAGE2".equalsIgnoreCase(req.getAction())
