@@ -95,6 +95,6 @@ export class Dcsm25Service {
   }
 
   getUnitStocks(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/paper-inventory/unit-stock-list`);
+    return this.http.get(`${this.apiUrl}/paper-inventory/unit-stock-list-available`);
   }
 }

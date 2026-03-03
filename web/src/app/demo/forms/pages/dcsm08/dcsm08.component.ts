@@ -51,6 +51,7 @@ export class Dcsm08Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'jobIdDisplay', label: 'รหัสงาน' },
     { key: 'jobType', label: 'ประเภทงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
@@ -82,6 +83,7 @@ export class Dcsm08Component implements OnInit {
   initSearchForm(): void {
     this.searchForm = this.fb.group({
       id: [''],
+      jobId: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -92,17 +94,18 @@ export class Dcsm08Component implements OnInit {
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
-    
+
   }
 
   loadData(): void {
 
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
-      id: formValues.id,    
+      id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: this.tokenService.getCurrentUserFromToken(), 
+      operatorName: this.tokenService.getCurrentUserFromToken(),
       jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
@@ -117,6 +120,7 @@ export class Dcsm08Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -131,10 +135,11 @@ export class Dcsm08Component implements OnInit {
   loadDataSort(): void {
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
-      id: formValues.id,    
+      id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: this.tokenService.getCurrentUserFromToken(), 
+      operatorName: this.tokenService.getCurrentUserFromToken(),
       jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
@@ -149,6 +154,7 @@ export class Dcsm08Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -230,14 +236,14 @@ export class Dcsm08Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm08Detail']); 
+    this.router.navigate(['/Dcsm08Detail']);
   }
 
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm08Detail', row.id]);
   }
 
-  Backlog(){
+  Backlog() {
     this.dcsm08Service.countBacklog().subscribe({
       next: (data: number) => {
         this.countBacklog = data;
@@ -255,7 +261,7 @@ export class Dcsm08Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogInProcess(){
+  BacklogInProcess() {
     this.dcsm08Service.countProcessStatus('กำลังดำเนินการ').subscribe({
       next: (data: number) => {
         this.inProcess = data;
@@ -271,7 +277,7 @@ export class Dcsm08Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogFinished(){
+  BacklogFinished() {
     this.dcsm08Service.countProcessStatus('เสร็จสิ้น รอตรวจสอบ').subscribe({
       next: (data: number) => {
         this.finished = data;
@@ -311,7 +317,7 @@ export class Dcsm08Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogSupplier(){
+  BacklogSupplier() {
     this.dcsm08Service.countBacklogSupplier().subscribe({
       next: (data: number) => {
         this.isSupplier = data;
@@ -328,7 +334,7 @@ export class Dcsm08Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogKeepSupplier(){
+  BacklogKeepSupplier() {
     this.dcsm08Service.countBacklogSupplier().subscribe({
       next: (data: number) => {
         this.isKeepSupplier = data;

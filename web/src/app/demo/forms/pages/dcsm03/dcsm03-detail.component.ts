@@ -27,6 +27,9 @@ export class Dcsm03DetailComponent implements OnInit {
   showCompleteModal = false;
   latestFileName = new FormControl('', Validators.required);
 
+  showRequestDetailsModal = false;
+  requestDetailsNote = new FormControl('', Validators.required);
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -58,6 +61,10 @@ export class Dcsm03DetailComponent implements OnInit {
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
       jobDetails: [''],
+      joId: ['', Validators.required],
+      qtId: [''],
+      qpId: [''],
+      version: [''],
       remarks: [''],
       jobOwner: ['', Validators.required],
       deadlineDate: [''],
@@ -71,6 +78,8 @@ export class Dcsm03DetailComponent implements OnInit {
       rowVersion: [null],
       jobType: [''],
       orderTime: [null],
+      startDatetime: [null],
+      endDatetime: [null],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
@@ -88,7 +97,14 @@ export class Dcsm03DetailComponent implements OnInit {
     this.designForm.controls['fileName'].disable({ emitEvent: false });
     this.designForm.controls['jobType'].disable({ emitEvent: false });
     this.designForm.controls['orderTime'].disable({ emitEvent: false });
+    this.designForm.controls['joId'].disable({ emitEvent: false });
+    this.designForm.controls['qtId'].disable({ emitEvent: false });
+    this.designForm.controls['qpId'].disable({ emitEvent: false });
+    this.designForm.controls['version'].disable({ emitEvent: false });
+    this.designForm.controls['startDatetime'].disable({ emitEvent: false });
+    this.designForm.controls['endDatetime'].disable({ emitEvent: false });
   }
+
   patchFormData(data: any): void {
     const apiData = data as any;
     this.designForm.patchValue(apiData);
@@ -125,6 +141,12 @@ export class Dcsm03DetailComponent implements OnInit {
     }
   }
 
+  getTimeOnly(controlName: string): string {
+    const value = this.designForm.get(controlName)?.value;
+    if (!value) return '';
+    return value.substring(0, 5);
+  }
+
   updateStatus() {
     Swal.fire({
       title: 'ยืนยันการยอมรับงาน',
@@ -135,7 +157,7 @@ export class Dcsm03DetailComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'ยืนยัน',
       cancelButtonText: 'ยกเลิก'
-      
+
     }).then((result) => {
       if (result.isConfirmed) {
         this.designForm.get('processStatus')?.setValue('รอดำเนินการ');
@@ -152,7 +174,7 @@ export class Dcsm03DetailComponent implements OnInit {
             this.router.navigate(['/Dcsm03']);
           },
           error: (error) => {
-            
+
             this.loadingService.hide();
             this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
           }
@@ -217,11 +239,12 @@ export class Dcsm03DetailComponent implements OnInit {
       if (result.isConfirmed) {
         if (this.latestFileName.valid) {
           this.loadingService.show();
-          this.designForm.get('fileName')?.setValue(this.latestFileName.value);
-          this.designForm.get('processStatus')?.setValue('เสร็จสิ้น');
-          this.designForm.get('confirmStatus')?.setValue('รอตรวจสอบ');
+          const data = this.designForm.getRawValue();
+          data.fileName = this.latestFileName.value;
+          data.processStatus = 'เสร็จสิ้น';
+          data.confirmStatus = 'รอตรวจสอบ';
 
-          this.dcsm03Service.save(this.designForm.getRawValue()).subscribe({
+          this.dcsm03Service.save(data).subscribe({
             next: (response) => {
               this.designForm.patchValue(response);
               this.checkButtonVisibility();
@@ -232,10 +255,52 @@ export class Dcsm03DetailComponent implements OnInit {
             },
             error: (error) => {
               this.loadingService.hide();
-              this.sweetAlert.error('Error', error.error|| 'เกิดข้อผิดพลาด');
+              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
             }
           });
         }
+      }
+    });
+  }
+
+  openRequestDetailsModal() {
+    this.requestDetailsNote.setValue('');
+    this.showRequestDetailsModal = true;
+  }
+
+  closeRequestDetailsModal() {
+    this.showRequestDetailsModal = false;
+  }
+
+  confirmRequestDetails() {
+    Swal.fire({
+      title: 'ยืนยันการขอรายละเอียดเพิ่มเติม',
+      text: "คุณต้องการส่งคำขอรายละเอียดเพิ่มเติม ใช่หรือไม่?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed && this.requestDetailsNote.valid) {
+        this.loadingService.show();
+        const data = this.designForm.getRawValue();
+        data.remarkAdd = this.requestDetailsNote.value;
+
+        this.dcsm03Service.save(data).subscribe({
+          next: (response) => {
+            this.designForm.patchValue(response);
+            this.closeRequestDetailsModal();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'ส่งคำขอรายละเอียดเพิ่มเติมสำเร็จ!');
+            this.router.navigate(['/Dcsm03']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        });
       }
     });
   }

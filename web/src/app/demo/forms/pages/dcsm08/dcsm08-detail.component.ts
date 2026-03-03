@@ -41,6 +41,19 @@ export class Dcsm08DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
       this.checkBtn();
+
+      this.mainForm.get('jobId')?.enable({ emitEvent: false });
+      this.mainForm.get('qtId')?.enable({ emitEvent: false });
+      this.mainForm.get('qpId')?.enable({ emitEvent: false });
+
+      this.mainForm.get('qpId')?.valueChanges.subscribe(val => {
+        if (val) {
+          this.mainForm.get('jobId')?.setValidators(null);
+        } else {
+          this.mainForm.get('jobId')?.setValidators([Validators.required]);
+        }
+        this.mainForm.get('jobId')?.updateValueAndValidity();
+      });
     }
   }
 
@@ -74,6 +87,8 @@ export class Dcsm08DetailComponent implements OnInit {
       inspector: [null],
       jobId: [null],
       qtId: [null],
+      createdTime: [null],
+      qpId: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -100,6 +115,8 @@ export class Dcsm08DetailComponent implements OnInit {
     this.mainForm.get('jobId')?.disable();
     this.mainForm.get('qtId')?.disable();
     this.mainForm.get('inspector')?.disable();
+    this.mainForm.get('createdTime')?.disable({ emitEvent: false });
+    this.mainForm.get('qpId')?.disable();
   }
 
   patchFormData(data: any): void {

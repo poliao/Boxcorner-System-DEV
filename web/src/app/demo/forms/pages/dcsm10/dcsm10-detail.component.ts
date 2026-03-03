@@ -38,6 +38,19 @@ export class Dcsm10DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
+
+      this.mainForm.get('jobId')?.enable({ emitEvent: false });
+      this.mainForm.get('qtId')?.enable({ emitEvent: false });
+      this.mainForm.get('qpId')?.enable({ emitEvent: false });
+
+      this.mainForm.get('qpId')?.valueChanges.subscribe(val => {
+        if (val) {
+          this.mainForm.get('jobId')?.setValidators(null);
+        } else {
+          this.mainForm.get('jobId')?.setValidators([Validators.required]);
+        }
+        this.mainForm.get('jobId')?.updateValueAndValidity();
+      });
     }
     if (this.mainForm.getRawValue().printingMachine != null) {
       this.mainForm.get('printingMachine')?.disable();
@@ -73,6 +86,10 @@ export class Dcsm10DetailComponent implements OnInit {
       postpone: [null],
       rowVersion: [null],
       decisionAuthority: [null],
+      createdTime: [null],
+      jobId: [null],
+      qtId: [null],
+      qpId: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -93,6 +110,10 @@ export class Dcsm10DetailComponent implements OnInit {
     this.mainForm.get('operatorName')?.disable();
     this.mainForm.get('remarks')?.disable();
     this.mainForm.get('customerName')?.disable();
+    this.mainForm.get('createdTime')?.disable();
+    this.mainForm.get('jobId')?.disable();
+    this.mainForm.get('qtId')?.disable();
+    this.mainForm.get('qpId')?.disable();
   }
 
   patchFormData(data: any): void {

@@ -83,19 +83,23 @@ public class DesignOrdersController {
             @RequestParam(value = "process_status", required = false) String process_status,
             @RequestParam(value = "confirm_status", required = false) String confirm_status,
             @RequestParam(value = "assignee", required = false) String assignee,
+            @RequestParam(value = "jo_id", required = false) String jo_id,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
+            @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline,
+            @RequestParam(value = "hasRemarkAdd", required = false) Boolean hasRemarkAdd,
+            @RequestParam(value = "remark_status", required = false) String remark_status) {
         try {
             Page<DesignOrders> pageDesignOrders;
             if (Boolean.TRUE.equals(sortByDeadline)) {
                 pageDesignOrders = service.getAllRecipesDesignSorted(id, folder_name, job_details, job_owner,
-                        process_status, confirm_status, assignee, startDate, endDate, page, size);
+                        process_status, confirm_status, assignee, jo_id, startDate, endDate, page, size, hasRemarkAdd,
+                        remark_status);
             } else {
                 pageDesignOrders = service.getAllRecipesDesign(id, folder_name, job_details, job_owner, process_status,
-                        confirm_status, assignee, startDate, endDate, page, size);
+                        confirm_status, assignee, jo_id, startDate, endDate, page, size, hasRemarkAdd, remark_status);
             }
             return ResponseEntity.ok(pageDesignOrders);
         } catch (Exception e) {
@@ -172,6 +176,16 @@ public class DesignOrdersController {
     @GetMapping("/countBacklogCheck")
     public ResponseEntity<Integer> countBacklogCheck(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(service.countBacklogCheck(tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countRequestDetails")
+    public ResponseEntity<Integer> countRequestDetails(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(service.countRequestDetails(tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countDetailsAdded")
+    public ResponseEntity<Integer> countDetailsAdded(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(service.countDetailsAdded(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogCheckDe")

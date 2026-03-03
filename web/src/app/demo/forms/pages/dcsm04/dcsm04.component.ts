@@ -43,7 +43,7 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./dcsm04.component.scss']
 })
 export class Dcsm04Component implements OnInit {
-  
+
   searchForm!: FormGroup;
 
   tableData: any[] = [];
@@ -53,10 +53,12 @@ export class Dcsm04Component implements OnInit {
   shif = 0;
   approveSample = 0;
   sampleCheck = 0;
+  supplierReturned = 0;
   isSortMode: boolean = false;
-  
+
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'jobIdDisplay', label: 'รหัสงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'responsiblePerson', label: 'ผู้รับผิดชอบ' },
@@ -71,7 +73,7 @@ export class Dcsm04Component implements OnInit {
     private dcsm04Service: Dcsm04Service,
     private statusColorService: StatusColorService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initSearchForm();
@@ -79,6 +81,7 @@ export class Dcsm04Component implements OnInit {
     this.BacklogShif();
     this.BacklogApproveSample();
     this.countBacklogSampleCheck()
+    this.countSupplierReturned()
   }
 
   // 1. สร้าง Form
@@ -89,8 +92,9 @@ export class Dcsm04Component implements OnInit {
       jobOwner: [''],
       responsiblePerson: [''],
       status: [''],
+      jobId: [''],
       startDate: [null],
-      endDate: [{value: null, disabled: true}]
+      endDate: [{ value: null, disabled: true }]
     });
   }
 
@@ -100,11 +104,12 @@ export class Dcsm04Component implements OnInit {
     this.dcsm04Service.getOrdersWithSearch(
       this.pageIndex,
       this.pageSize,
-      filters 
+      filters
     ).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           orderDate: this.formatDate(item.orderDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -121,11 +126,12 @@ export class Dcsm04Component implements OnInit {
     this.dcsm04Service.getOrdersWithSearchSort(
       this.pageIndex,
       this.pageSize,
-      filters 
+      filters
     ).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           orderDate: this.formatDate(item.orderDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -150,13 +156,13 @@ export class Dcsm04Component implements OnInit {
 
   onClear(): void {
     this.searchForm.reset({
-        id: '',
-        folderName: '',
-        jobOwner: '',
-        responsiblePerson: '',
-        status: '',
-        startDate: null,
-        endDate: null
+      id: '',
+      folderName: '',
+      jobOwner: '',
+      responsiblePerson: '',
+      status: '',
+      startDate: null,
+      endDate: null
     });
     this.searchForm.get('endDate')?.disable();
     this.onSearch();
@@ -175,7 +181,7 @@ export class Dcsm04Component implements OnInit {
   onStartDateChange(): void {
     const startDate = this.searchForm.get('startDate')?.value;
     const endDate = this.searchForm.get('endDate')?.value;
-    
+
     if (!startDate) {
       this.searchForm.get('endDate')?.disable();
       this.searchForm.patchValue({ endDate: null });
@@ -199,7 +205,7 @@ export class Dcsm04Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm04Detail']); 
+    this.router.navigate(['/Dcsm04Detail']);
   }
 
   onRowClick(row: any): void {
@@ -244,6 +250,20 @@ export class Dcsm04Component implements OnInit {
 
   onFilterSampleCheck() {
     this.searchForm.get('status')?.setValue('รอเจ้าของงานตรวจสอบ');
+    this.searchForm.get('jobOwner')?.setValue(this.authService.getUserFromToken().sub);
+    this.onSearch();
+  }
+
+  countSupplierReturned() {
+    this.dcsm04Service.countSupplierReturned().subscribe({
+      next: (data: number) => {
+        this.supplierReturned = data;
+      },
+    });
+  }
+
+  onFilterSupplierReturned() {
+    this.searchForm.get('status')?.setValue('งาน Supplier ส่งกลับแล้ว');
     this.searchForm.get('jobOwner')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }

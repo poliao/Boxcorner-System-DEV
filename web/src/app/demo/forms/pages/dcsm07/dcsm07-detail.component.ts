@@ -63,6 +63,19 @@ export class Dcsm07DetailComponent implements OnInit {
       if (this.mainForm.getRawValue().cancelRemarks) {
         this.isCancelRemarks = true
       }
+
+      this.mainForm.get('jobId')?.enable({ emitEvent: false });
+      this.mainForm.get('qtId')?.enable({ emitEvent: false });
+      this.mainForm.get('qpId')?.enable({ emitEvent: false });
+
+      this.mainForm.get('qpId')?.valueChanges.subscribe(val => {
+        if (val) {
+          this.mainForm.get('jobId')?.setValidators(null);
+        } else {
+          this.mainForm.get('jobId')?.setValidators([Validators.required]);
+        }
+        this.mainForm.get('jobId')?.updateValueAndValidity();
+      });
     }
   }
 
@@ -95,6 +108,10 @@ export class Dcsm07DetailComponent implements OnInit {
       decisionAuthority: [null],
       decisionAuthorityRemarks: [null],
       print2Page: [false],
+      createdTime: [null],
+      jobId: [null],
+      qtId: [null],
+      qpId: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -117,6 +134,10 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('cancelRemarks')?.disable();
     this.mainForm.get('decisionAuthority')?.disable();
     this.mainForm.get('decisionAuthorityRemarks')?.disable();
+    this.mainForm.get('createdTime')?.disable({ emitEvent: false });
+    this.mainForm.get('jobId')?.disable();
+    this.mainForm.get('qtId')?.disable();
+    this.mainForm.get('qpId')?.disable();
   }
 
   patchFormData(data: any): void {

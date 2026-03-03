@@ -49,6 +49,7 @@ export class Dcsm02Component implements OnInit {
   startDate: Date | null = null;
   endDate: Date | null = null;
   checked: number = 0;
+  requestDetailsCount: number = 0;
 
   private searchJobDetailsSubject = new Subject<string>();
   private searchOwnerListSubject = new Subject<string>();
@@ -57,6 +58,7 @@ export class Dcsm02Component implements OnInit {
   private searchConfirmListSubject = new Subject<string>();
 
   filterfolder: string = '';
+  filterjo: string = '';
   filterjobdetails: string = '';
   filterowner: string = '';
   filterassignee: string = '';
@@ -76,12 +78,13 @@ export class Dcsm02Component implements OnInit {
   constructor(private http: HttpClient, private dcsm02Service: Dcsm02Service, private router: Router, private statusColorService: StatusColorService, private authService: AuthService,) { }
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'joId', label: 'รหัสงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'assignee', label: 'ผู้รับผิดชอบ' },
     { key: 'deadlineDate', label: 'วันที่ต้องส่ง' },
-    { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService)},
-    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService)},
+    { key: 'processStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'confirmStatus', label: 'สถานะคอนเฟิร์ม', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
   ];
 
   tableData: any[] = [];
@@ -94,6 +97,7 @@ export class Dcsm02Component implements OnInit {
   ngOnInit() {
     this.loadData();
     this.countBacklogCheck();
+    this.countRequestDetails();
   }
 
   loadData() {
@@ -107,6 +111,7 @@ export class Dcsm02Component implements OnInit {
       this.filterowner,
       this.filterprocess,
       this.filterassignee,
+      this.filterjo,
       this.filterconfirm,
       startDateStr,
       endDateStr,
@@ -117,6 +122,7 @@ export class Dcsm02Component implements OnInit {
         next: (response: any) => {
           this.tableData = response.content.map((item: any) => ({
             ...item,
+            joId: item.qpId || item.joId,
             orderDate: this.formatDate(item.orderDate),
             deadlineDate: this.formatDate(item.deadlineDate)
           }));
@@ -139,6 +145,7 @@ export class Dcsm02Component implements OnInit {
       this.filterowner,
       this.filterprocess,
       this.filterassignee,
+      this.filterjo,
       this.filterconfirm,
       startDateStr,
       endDateStr,
@@ -149,6 +156,7 @@ export class Dcsm02Component implements OnInit {
         next: (response: any) => {
           this.tableData = response.content.map((item: any) => ({
             ...item,
+            joId: item.qpId || item.joId,
             orderDate: this.formatDate(item.orderDate),
             deadlineDate: this.formatDate(item.deadlineDate)
           }));
@@ -282,7 +290,7 @@ export class Dcsm02Component implements OnInit {
     });
   }
 
-   onFilterCheck() {
+  onFilterCheck() {
     this.clearAll();
     this.filterconfirm = 'รอตรวจสอบ';
     this.filterowner = this.authService.getUserFromToken().sub;
@@ -295,16 +303,67 @@ export class Dcsm02Component implements OnInit {
     }, 0);
   }
 
-   clearAll() {
+  clearAll() {
     this.filterId = '';
     this.filterfolder = '';
     this.filterjobdetails = '';
     this.filterowner = '';
     this.filterassignee = '';
+    this.filterjo = '';
     this.filterprocess = '';
     this.filterconfirm = '';
     this.startDate = null;
     this.endDate = null;
+  }
+
+  countRequestDetails() {
+    this.dcsm02Service.countRequestDetails().subscribe({
+      next: (data: number) => {
+        this.requestDetailsCount = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+  onFilterRequestDetails() {
+    this.clearAll();
+    this.filterowner = this.authService.getUserFromToken().sub;
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
+
+    const startDateStr = this.startDate ? this.formatDateForApi(this.startDate) : '';
+    const endDateStr = this.endDate ? this.formatDateForApi(this.endDate) : '';
+
+    this.dcsm02Service.getAllDesignOrders(
+      this.filterId,
+      this.filterfolder,
+      this.filterjobdetails,
+      this.filterowner,
+      this.filterprocess,
+      this.filterassignee,
+      this.filterjo,
+      this.filterconfirm,
+      startDateStr,
+      endDateStr,
+      this.pageIndex,
+      this.pageSize,
+      true
+    ).subscribe({
+      next: (response: any) => {
+        this.tableData = response.content.map((item: any) => ({
+          ...item,
+          joId: item.qpId || item.joId,
+          orderDate: this.formatDate(item.orderDate),
+          deadlineDate: this.formatDate(item.deadlineDate)
+        }));
+        this.totalElements = response.totalElements;
+      },
+      error: (err) => {
+        console.error('Error loading data:', err);
+      }
+    });
   }
 
 }

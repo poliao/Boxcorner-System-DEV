@@ -29,13 +29,14 @@ export class Dcsm11Service {
       responsiblePerson: filters.responsiblePerson || '', // เดิม assignee
       status: filters.status || '',                   // เดิม process_status
       startDate: filters.startDate || '',
-      endDate: filters.endDate || ''
+      endDate: filters.endDate || '',
+      jobId: filters.jobId || ''
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/sampleOrders/searchVerify`, { params: params });
@@ -52,24 +53,25 @@ export class Dcsm11Service {
       status: filters.status || '',                   // เดิม process_status
       startDate: filters.startDate || '',
       endDate: filters.endDate || '',
+      jobId: filters.jobId || '',
       sortByDeadline: 'true'
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/sampleOrders/searchVerify`, { params: params });
   }
-  
+
   updateFileChecked(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/sampleOrders/updateFileChecked?id=${id}`, {});
   }
 
   updateEditFile(data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditFile`,data);
+    return this.http.put(`${this.apiUrl}/sampleOrders/updateEditFile`, data);
   }
 
   updateConfirmSample(id: number): Observable<any> {
@@ -92,5 +94,5 @@ export class Dcsm11Service {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogApproveShif`);
   }
 
-  
+
 }

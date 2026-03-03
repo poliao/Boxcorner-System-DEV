@@ -64,6 +64,8 @@ export class StatusColorService {
       case 'หยุดชั่วคราว': return '#9e9e9e'; // สีเทา
       case 'ส่ง Supplier': return '#2196f3';
       case 'รับของจากซัพพลายเออร์แล้ว': return '#36f4a5';
+      case 'รับงานแล้วรอส่งกลับ': return '#36f4a5';
+      case 'งาน Supplier ส่งกลับแล้ว': return '#36f4a5';
 
       case 'กำลังพิมพ์': return '#dc3545'; // สีส้มแดง
       case 'กำลังเคลือบ': return '#ffc107'; // สีแดง

@@ -35,25 +35,32 @@ export class Dcsm02Service {
     job_owner: string,
     process_status: string,
     assignee: string,
-    confirm_status: string, // เพิ่มตัวแปรนี้
+    jo_id: string,
+    confirm_status: string,
     startDate: string,
     endDate: string,
     page: number,
-    size: number
+    size: number,
+    hasRemarkAdd?: boolean
   ): Observable<any> {
-    const params = {
+    const params: any = {
       id: id || '',
       folder_name: folder_name || '',
       job_details: job_details || '',
       job_owner: job_owner || '',
       process_status: process_status || '',
       assignee: assignee || '',
-      confirm_status: confirm_status || '', // ส่งไปยัง backend
+      jo_id: jo_id || '',
+      confirm_status: confirm_status || '',
       startDate: startDate || '',
       endDate: endDate || '',
       page: page.toString(),
       size: size.toString()
     };
+
+    if (hasRemarkAdd !== undefined) {
+      params.hasRemarkAdd = hasRemarkAdd.toString();
+    }
 
     return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
   }
@@ -65,6 +72,7 @@ export class Dcsm02Service {
     job_owner: string,
     process_status: string,
     assignee: string,
+    jo_id: string,
     confirm_status: string,
     startDate: string,
     endDate: string,
@@ -78,6 +86,7 @@ export class Dcsm02Service {
       job_owner: job_owner || '',
       process_status: process_status || '',
       assignee: assignee || '',
+      jo_id: jo_id || '',
       confirm_status: confirm_status || '',
       startDate: startDate || '',
       endDate: endDate || '',
@@ -103,6 +112,10 @@ export class Dcsm02Service {
 
   countBacklogCheck(): Observable<any> {
     return this.http.get(`${this.apiUrl}/designs/countBacklogCheck`);
+  }
+
+  countRequestDetails(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countRequestDetails`);
   }
 
   saveProduction(data: any): Observable<any> {

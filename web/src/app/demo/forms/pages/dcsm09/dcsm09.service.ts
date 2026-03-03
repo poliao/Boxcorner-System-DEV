@@ -24,10 +24,11 @@ export class Dcsm09Service {
       page: apiFilters.page.toString(),
       size: apiFilters.size.toString(),
       id: apiFilters.id,
+      jobId: apiFilters.jobId,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
+      jobStatus: apiFilters.jobStatus,
+      operatorName: apiFilters.operatorName,
       processStatus: apiFilters.processStatus,
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
@@ -38,9 +39,9 @@ export class Dcsm09Service {
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production/searchProductCheck`, { params: params });
@@ -53,8 +54,8 @@ export class Dcsm09Service {
       id: apiFilters.id,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
+      jobStatus: apiFilters.jobStatus,
+      operatorName: apiFilters.operatorName,
       processStatus: apiFilters.processStatus,
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
@@ -65,9 +66,9 @@ export class Dcsm09Service {
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production/searchProductCheck`, { params: params });
@@ -88,7 +89,7 @@ export class Dcsm09Service {
   updateInspector(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateInspector?id=${data.id}&inspector=${data.inspector}`, {});
   }
-  
+
   countProcessStatus(status: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countProcessStatusAll?processStatus=${status}`);
   }

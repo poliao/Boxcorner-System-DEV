@@ -15,7 +15,7 @@ export class Dcsm04Service {
   save(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
   }
-  
+
   getById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
   }
@@ -30,18 +30,19 @@ export class Dcsm04Service {
       responsiblePerson: filters.responsiblePerson || '',
       status: filters.status || '',
       startDate: filters.startDate || '',
-      endDate: filters.endDate || ''
+      endDate: filters.endDate || '',
+      jobId: filters.jobId || ''
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/sampleOrders/search`, { params: params });
   }
-  
+
   getOrdersWithSearchSort(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
       page: page.toString(),
@@ -53,13 +54,14 @@ export class Dcsm04Service {
       status: filters.status || '',
       startDate: filters.startDate || '',
       endDate: filters.endDate || '',
+      jobId: filters.jobId || '',
       sortByDeadline: 'true'
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/sampleOrders/search`, { params: params });
@@ -83,6 +85,10 @@ export class Dcsm04Service {
 
   countBacklogSampleCheck(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogSampleCheckAdmin`);
+  }
+
+  countSupplierReturned(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countSupplierReturnedAdmin`);
   }
 
   getSobPAP(oid: number): Observable<any> {

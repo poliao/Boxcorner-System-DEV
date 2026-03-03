@@ -7,6 +7,17 @@
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ยืนยันรับงาน
           </button>
+
+          <!-- หลังรับงานแล้ว (รอดำเนินการ) ให้เลือก งานภายใน / ส่ง Supplier -->
+          <button *ngIf="internalJob == true" type="button" (click)="updateStatusInternalJob()"
+            class="btn text-white px-4 shadow-sm" style="background-color: #0d9488;">
+            งานภายใน
+          </button>
+          <button *ngIf="sendSupplier == true" type="button" (click)="updateStatusSendSupplier()"
+            class="btn text-white px-4 shadow-sm" style="background-color: #ea580c;">
+            ส่ง Supplier
+          </button>
+
           <button *ngIf="confirmDeliver == true" type="submit" (click)="updateStatusDeliver()"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             จัดส่งได้
@@ -15,6 +26,13 @@
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             จัดส่งไม่ได้
           </button>
+
+          <!-- เมื่อสถานะเป็น ส่งSupplier ให้มีปุ่มรับกลับ -->
+          <button *ngIf="receiveBack == true" type="button" (click)="updateStatusReceiveBack()"
+            class="btn text-white px-4 shadow-sm" style="background-color: #2563eb;">
+            รับกลับ
+          </button>
+
           <button *ngIf="clearFile == true" type="submit" (click)="updateStatusClearFile()"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             เริ่มเคลียร์ไฟล์
@@ -61,6 +79,10 @@
         <div class="col-md-2">
           <label class="form-label font-weight-bold">QtId</label>
           <input type="text" formControlName="qtId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" formControlName="qpId" class="form-control">
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>

@@ -30,11 +30,13 @@ export class Dcsm03Service {
     job_owner: string,
     process_status: string,
     assignee: string,
+    jo_id: string,
     confirm_status: string,
     startDate: string,
     endDate: string,
     page: number,
-    size: number
+    size: number,
+    remark_status?: string
   ): Observable<any> {
     const params = {
       id: id || '',
@@ -42,11 +44,13 @@ export class Dcsm03Service {
       job_owner: job_owner || '',
       process_status: process_status || '',
       assignee: assignee || '',
+      jo_id: jo_id || '',
       confirm_status: confirm_status || '',
       startDate: startDate || '',
       endDate: endDate || '',
       page: page.toString(),
-      size: size.toString()
+      size: size.toString(),
+      remark_status: remark_status || ''
     };
 
     return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
@@ -58,11 +62,13 @@ export class Dcsm03Service {
     job_owner: string,
     process_status: string,
     assignee: string,
+    jo_id: string,
     confirm_status: string,
     startDate: string,
     endDate: string,
     page: number,
-    size: number
+    size: number,
+    remark_status?: string
   ): Observable<any> {
     const params = {
       id: id || '',
@@ -70,12 +76,14 @@ export class Dcsm03Service {
       job_owner: job_owner || '',
       process_status: process_status || '',
       assignee: assignee || '',
+      jo_id: jo_id || '',
       confirm_status: confirm_status || '',
       startDate: startDate || '',
       endDate: endDate || '',
       page: page.toString(),
       size: size.toString(),
-      sortByDeadline: 'true'
+      sortByDeadline: 'true',
+      remark_status: remark_status || ''
     };
 
     return this.http.get(`${this.apiUrl}/designs/listDesign`, { params: params });
@@ -103,5 +111,9 @@ export class Dcsm03Service {
 
   countBacklogComplete(): Observable<any> {
     return this.http.get(`${this.apiUrl}/designs/countBacklogComplete`);
+  }
+
+  countDetailsAdded(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/designs/countDetailsAdded`);
   }
 }

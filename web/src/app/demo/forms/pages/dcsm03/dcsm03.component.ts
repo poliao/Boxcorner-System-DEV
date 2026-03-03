@@ -61,11 +61,13 @@ export class Dcsm03Component implements OnInit {
   private searchConfirmListSubject = new Subject<string>();
 
   filterId: string = '';
+  filterjo: string = '';
   filterjobdetails: string = '';
   filterowner: string = '';
   filterassignee: string = '';
   filterprocess: string = '';
   filterconfirm: string = ''; // Filter for process
+  filterRemarkStatus: string = '';
 
   jobdetailsList: string[] = [];
   OwnerList: string[] = [];
@@ -83,6 +85,7 @@ export class Dcsm03Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'joId', label: 'รหัสงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'assignee', label: 'ผู้รับผิดชอบ' },
@@ -97,6 +100,7 @@ export class Dcsm03Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
+  detailsAddedCount = 0;
 
   ngOnInit() {
     this.loadData();
@@ -115,11 +119,13 @@ export class Dcsm03Component implements OnInit {
       this.filterowner,
       this.filterprocess,
       this.filterassignee,
+      this.filterjo,
       this.filterconfirm,
       startDateStr,
       endDateStr,
       this.pageIndex,
       this.pageSize,
+      this.filterRemarkStatus
     )
       .subscribe({
         next: (response: any) => {
@@ -127,6 +133,7 @@ export class Dcsm03Component implements OnInit {
 
           this.tableData = content.map((item: any) => ({
             ...item,
+            joId: item.qpId || item.joId,
 
             _sortDate: item.sendDate || item.deadlineDate,
 
@@ -165,11 +172,13 @@ export class Dcsm03Component implements OnInit {
       this.filterowner,
       this.filterprocess,
       this.filterassignee,
+      this.filterjo,
       this.filterconfirm,
       startDateStr,
       endDateStr,
       this.pageIndex,
       this.pageSize,
+      this.filterRemarkStatus
     )
       .subscribe({
         next: (response: any) => {
@@ -177,6 +186,7 @@ export class Dcsm03Component implements OnInit {
 
           this.tableData = content.map((item: any) => ({
             ...item,
+            joId: item.qpId || item.joId,
             _sortDate: item.sendDate || item.deadlineDate,
             orderDate: this.formatDate(item.orderDate),
             deadlineDate: this.formatDate(item.deadlineDate),
@@ -319,6 +329,7 @@ export class Dcsm03Component implements OnInit {
     this.countBacklogCheck();
     this.countBacklogEdit();
     this.countBacklogComplete();
+    this.countDetailsAdded();
   }
 
   Backlog() {
@@ -427,9 +438,29 @@ export class Dcsm03Component implements OnInit {
     this.filterjobdetails = '';
     this.filterowner = '';
     this.filterassignee = '';
+    this.filterjo = '';
     this.filterprocess = '';
     this.filterconfirm = '';
+    this.filterRemarkStatus = '';
     this.startDate = null;
     this.endDate = null;
+    this.onSearchChange();
+  }
+
+  countDetailsAdded() {
+    this.dcsm03Service.countDetailsAdded().subscribe({
+      next: (data: number) => {
+        this.detailsAddedCount = data;
+      },
+      error: (err) => { }
+    });
+  }
+
+  onFilterDetailsAdded() {
+    this.clearAll();
+    this.filterRemarkStatus = 'เพิ่มรายละเอียดแล้ว';
+    setTimeout(() => {
+      this.onSearchChange();
+    }, 0);
   }
 }

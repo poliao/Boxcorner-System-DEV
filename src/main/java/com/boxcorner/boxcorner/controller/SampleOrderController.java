@@ -31,9 +31,10 @@ public class SampleOrderController {
     private TokenService tokenService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createOrder(@RequestBody SampleOrder sampleOrder,HttpServletRequest httpRequest) {
+    public ResponseEntity<?> createOrder(@RequestBody SampleOrder sampleOrder, HttpServletRequest httpRequest) {
         try {
-            return ResponseEntity.ok(sampleOrderService.saveOrUpdateOrder(sampleOrder,tokenService.getCurrentUser(httpRequest)));
+            return ResponseEntity
+                    .ok(sampleOrderService.saveOrUpdateOrder(sampleOrder, tokenService.getCurrentUser(httpRequest)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -46,6 +47,7 @@ public class SampleOrderController {
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
             @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "jobId", required = false) String jobId,
 
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -61,6 +63,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -72,6 +75,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -88,6 +92,7 @@ public class SampleOrderController {
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
             @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "jobId", required = false) String jobId,
 
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -103,6 +108,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -114,6 +120,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -129,6 +136,7 @@ public class SampleOrderController {
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
             @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "jobId", required = false) String jobId,
 
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -144,6 +152,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -155,6 +164,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -170,6 +180,7 @@ public class SampleOrderController {
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "responsiblePerson", required = false) String responsiblePerson,
             @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "jobId", required = false) String jobId,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -184,6 +195,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -195,6 +207,7 @@ public class SampleOrderController {
                     jobOwner,
                     responsiblePerson,
                     status,
+                    jobId,
                     startDate,
                     endDate,
                     page,
@@ -232,13 +245,13 @@ public class SampleOrderController {
         return ResponseEntity.ok(
                 sampleOrderService.countBacklogStatus("อนุมัติขอเลื่อนส่ง", tokenService.getCurrentUser(httpRequest)));
     }
-    
+
     @GetMapping("/countBacklogApproveShifAdmin")
     public ResponseEntity<Integer> getUniqueStatusCheckAdmin(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(
-                sampleOrderService.countBacklogStatusAdmin("อนุมัติขอเลื่อนส่ง", tokenService.getCurrentUser(httpRequest)));
+                sampleOrderService.countBacklogStatusAdmin("อนุมัติขอเลื่อนส่ง",
+                        tokenService.getCurrentUser(httpRequest)));
     }
-    
 
     @GetMapping("/countBacklogNotApproveShif")
     public ResponseEntity<Integer> countBacklogNotApproveShif(HttpServletRequest httpRequest) {
@@ -313,7 +326,15 @@ public class SampleOrderController {
     @GetMapping("/countBacklogSampleCheckAdmin")
     public ResponseEntity<Integer> countBacklogSampleCheckAdmin(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(
-                sampleOrderService.countBacklogStatusAdmin("รอเจ้าของงานตรวจสอบ", tokenService.getCurrentUser(httpRequest)));
+                sampleOrderService.countBacklogStatusAdmin("รอเจ้าของงานตรวจสอบ",
+                        tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countSupplierReturnedAdmin")
+    public ResponseEntity<Integer> countSupplierReturnedAdmin(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(
+                sampleOrderService.countBacklogStatusAdmin("งาน Supplier ส่งกลับแล้ว",
+                        tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countEditSample")

@@ -4,24 +4,28 @@
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
 
-          <button *ngIf="checkProof == true" (click)="confirmFileProof()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #d000ff;">
+          <button *ngIf="checkProof == true" (click)="confirmFileProof()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #d000ff;">
             ไฟล์ Proof ถูกต้อง
           </button>
-          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isBtnApprove == true" (click)="updateFileChecked()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ไฟล์ถูกต้อง
           </button>
-          <button *ngIf="isBtnReject == true" (click)="confirmEditFile()" type="submit" class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+          <button *ngIf="isBtnReject == true" (click)="confirmEditFile()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ให้เจ้าของงานตรวจสอบ
           </button>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-        <div *ngIf="isDesign" class="col-md-6">
+        <div *ngIf="isDesign" class="col-md-2">
           <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
           <input type="text" formControlName="designOrderId" class="form-control">
         </div>
+
         <div class="col-md-2">
           <label class="form-label font-weight-bold">JobId</label>
           <input type="text" formControlName="jobId" class="form-control">
@@ -30,20 +34,29 @@
           <label class="form-label font-weight-bold">QtId</label>
           <input type="text" formControlName="qtId" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" formControlName="qpId" class="form-control">
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
+          <input type="time" class="form-control" formControlName="orderTime">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เจ้าของงาน</label>
+          <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">เจ้าของงาน</label>
-          <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
-        </div>
+
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
           <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
@@ -56,7 +69,7 @@
           <label class="form-label font-weight-bold">เวลาที่ต้องส่ง<span style="color: red;">*</span></label>
           <input type="time" formControlName="deliveryTime" class="form-control">
         </div>
-         <div class="col-md-6">
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">สถานะ</label>
           <input type="text" formControlName="status" class="form-control">
         </div>
@@ -72,7 +85,7 @@
           <label class="form-label font-weight-bold">ประเภทงาน</label>
           <input type="text" formControlName="typeJob" class="form-control" style="color: black;">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label font-weight-bold">เครื่องพิมพ์</label>
           <select formControlName="machineName" class="form-select" style="color: black;">
             <option value="">เลือกเครื่องพิมพ์</option>
@@ -83,11 +96,13 @@
         </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">วันที่ขอเลื่อนส่ง</label>
-          <input style="background-color: rgb(255, 136, 0); color: white;" type="date" formControlName="updateDateDelivery" class="form-control">
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="date"
+            formControlName="updateDateDelivery" class="form-control">
         </div>
         <div class="col-md-3" *ngIf="isUpdateDelivery">
           <label class="form-label font-weight-bold">เวลาที่ขอเลื่อนส่ง</label>
-          <input style="background-color: rgb(255, 136, 0); color: white;" type="time" formControlName="updateTimeDelivery" class="form-control">
+          <input style="background-color: rgb(255, 136, 0); color: white;" type="time"
+            formControlName="updateTimeDelivery" class="form-control">
         </div>
         <div class="col-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>

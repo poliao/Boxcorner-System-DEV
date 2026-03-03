@@ -72,7 +72,7 @@ export class Dcsm04DetailComponent implements OnInit {
       }
     }
 
-    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'รอเจ้าของงานตรวจสอบ' || this.mainForm.getRawValue().status === 'ส่งProofหน้าแท่นแล้ว' || this.mainForm.getRawValue().status === 'เริ่มเคลียร์ไฟล์ Proof' || this.mainForm.getRawValue().status === 'ไฟล์Proofเสร็จ รอตรวจ' || this.mainForm.getRawValue().status == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์') {
+    if (this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์' || this.mainForm.getRawValue().status === 'ไฟล์เสร็จ รอตรวจสอบไฟล์' || this.mainForm.getRawValue().status === 'ขึ้นตัวอย่างแล้ว' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'สำเร็จ ส่งตรวจสอบ' || this.mainForm.getRawValue().status === 'ผ่าน' || this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต' || this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || this.mainForm.getRawValue().status === 'รอเจ้าของงานตรวจสอบ' || this.mainForm.getRawValue().status === 'ส่งProofหน้าแท่นแล้ว' || this.mainForm.getRawValue().status === 'เริ่มเคลียร์ไฟล์ Proof' || this.mainForm.getRawValue().status === 'ไฟล์Proofเสร็จ รอตรวจ' || this.mainForm.getRawValue().status == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์' || this.mainForm.getRawValue().status == 'งาน Supplier ส่งกลับแล้ว' || this.mainForm.getRawValue().status == 'ส่ง Supplier' || this.mainForm.getRawValue().status == 'รับงานแล้วรอส่งกลับ') {
       this.mainForm.controls['folderName'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryDate'].disable({ emitEvent: false });
       this.mainForm.controls['deliveryTime'].disable({ emitEvent: false });
@@ -92,6 +92,8 @@ export class Dcsm04DetailComponent implements OnInit {
       this.mainForm.controls['jobId'].disable({ emitEvent: false });
       this.mainForm.controls['qtId'].disable({ emitEvent: false });
       this.mainForm.controls['print2Page'].disable({ emitEvent: false });
+      this.mainForm.controls['qpId'].disable({ emitEvent: false });
+
       this.isPap = false
     }
     this.checkBtn();
@@ -102,24 +104,24 @@ export class Dcsm04DetailComponent implements OnInit {
 
   initForm(): void {
     this.mainForm = this.fb.group({
-      id: [''],
-      searchId: [''],
+      id: [null],
+      searchId: [null],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
-      folderName: ['', Validators.required],
-      jobOwner: [''],
-      deliveryDate: ['', Validators.required],
-      deliveryTime: ['', Validators.required],
+      folderName: [null, Validators.required],
+      jobOwner: [null],
+      deliveryDate: [null, Validators.required],
+      deliveryTime: [null, Validators.required],
       responsiblePerson: ['รอผู้รับผิดชอบอนุมัติ'],
-      quantity: ['', Validators.required],
-      unit: ['', Validators.required],
+      quantity: [null, Validators.required],
+      unit: [null, Validators.required],
       isCreateSample: [true],
       status: ['รอผู้รับผิดชอบอนุมัติ'],
-      note: [''],
-      fileName: [''],
-      designOrderId: [''],
+      note: [null],
+      fileName: [null],
+      designOrderId: [null],
       updateDateDelivery: [new Date().toISOString().substring(0, 10)],
-      updateTimeDelivery: [''],
-      customerName: [''],
+      updateTimeDelivery: [null],
+      customerName: [null],
       jobType: [null],
       printType: [null],
       paperType: [null],
@@ -134,7 +136,8 @@ export class Dcsm04DetailComponent implements OnInit {
       print2Page: [false],
       orderTime: [null],
       totalPrintSheets: [null],
-      setupWaste: [null]
+      setupWaste: [null],
+      qpId: [null]
     });
 
     this.mainForm.get('isCreateSample')?.valueChanges.subscribe(value => {
@@ -151,6 +154,16 @@ export class Dcsm04DetailComponent implements OnInit {
 
       quantityControl?.updateValueAndValidity();
       unitControl?.updateValueAndValidity();
+    });
+
+    this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
+      const jobIdControl = this.mainForm.get('jobId');
+      if (value && value.trim() !== '') {
+        jobIdControl?.clearValidators();
+      } else {
+        jobIdControl?.setValidators([Validators.required]);
+      }
+      jobIdControl?.updateValueAndValidity();
     });
 
     this.mainForm.controls['id'].disable({ emitEvent: false });
@@ -339,6 +352,12 @@ export class Dcsm04DetailComponent implements OnInit {
       this.isBtnReject = false;
       this.isBtnApproveSample = false;
       this.isBtnSampleProof = false;
+    } else if (currentUser === formValue.jobOwner && formValue.status === 'งาน Supplier ส่งกลับแล้ว') {
+      this.isBtnSave = false;
+      this.isBtnApprove = false;
+      this.isBtnReject = false;
+      this.isBtnApproveSample = true;
+      this.isBtnSampleProof = false;
     } else {
       this.isBtnSave = false;
       this.isBtnApprove = false;
@@ -459,7 +478,8 @@ export class Dcsm04DetailComponent implements OnInit {
       qtId: this.mainForm.getRawValue().qtId,
       decisionAuthority: this.decisionAuthority.value,
       decisionAuthorityRemarks: this.decisionAuthorityRemarks.value,
-      print2Page: this.mainForm.getRawValue().print2Page
+      print2Page: this.mainForm.getRawValue().print2Page,
+      qpId: this.mainForm.getRawValue().qpId,
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',

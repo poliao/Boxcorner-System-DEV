@@ -52,6 +52,7 @@ export class Dcsm09Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'jobIdDisplay', label: 'รหัสงาน' },
     { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
@@ -83,6 +84,7 @@ export class Dcsm09Component implements OnInit {
   initSearchForm(): void {
     this.searchForm = this.fb.group({
       id: [''],
+      jobId: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -102,6 +104,7 @@ export class Dcsm09Component implements OnInit {
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
       id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
       operatorName: formValues.responsiblePerson,
@@ -116,11 +119,12 @@ export class Dcsm09Component implements OnInit {
       page: this.pageIndex,
       size: this.pageSize
     };
-   
+
     this.dcsm09Service.getOrdersWithSearch(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -139,6 +143,7 @@ export class Dcsm09Component implements OnInit {
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
       id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
       operatorName: formValues.responsiblePerson,
@@ -152,11 +157,12 @@ export class Dcsm09Component implements OnInit {
       page: this.pageIndex,
       size: this.pageSize
     };
-   
+
     this.dcsm09Service.getOrdersWithSearchSort(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -190,10 +196,11 @@ export class Dcsm09Component implements OnInit {
     this.pageIndex = 0;
     this.loadData();
   }
-  
+
   onClear(): void {
     this.searchForm.reset({
       id: '',
+      jobId: '',
       folderName: '',
       jobOwner: '',
       responsiblePerson: '',
@@ -234,7 +241,7 @@ export class Dcsm09Component implements OnInit {
     this.pageSize = event.pageSize;
     if (this.isSortMode == true) {
       this.loadDataSort();
-    }else{
+    } else {
       this.loadData();
     }
   }
@@ -245,11 +252,11 @@ export class Dcsm09Component implements OnInit {
 
   onRowClick(row: any): void {
     console.log(row.id);
-    
+
     this.router.navigate(['/Dcsm09Detail', row.id]);
   }
 
-   Backlog(){
+  Backlog() {
     this.dcsm09Service.countBacklog().subscribe({
       next: (data: number) => {
         this.countBacklog = data;
@@ -266,7 +273,7 @@ export class Dcsm09Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogDelivery(){
+  BacklogDelivery() {
     this.dcsm09Service.countDelivery().subscribe({
       next: (data: number) => {
         this.delivery = data;
@@ -284,7 +291,7 @@ export class Dcsm09Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogWaitCheckFile(){
+  BacklogWaitCheckFile() {
     this.dcsm09Service.countProcessStatus('ตรวจไฟล์แม่พิมพ์แล้ว').subscribe({
       next: (data: number) => {
         this.waitCheckFile = data;
@@ -301,7 +308,7 @@ export class Dcsm09Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogWaitSend(){
+  BacklogWaitSend() {
     this.dcsm09Service.countProcessStatus('ตรวจใบสั่งผลิตแล้ว').subscribe({
       next: (data: number) => {
         this.waitSend = data;
@@ -318,7 +325,7 @@ export class Dcsm09Component implements OnInit {
     this.onSearch();
   }
 
-  BacklogWaitSendFile(){
+  BacklogWaitSendFile() {
     this.dcsm09Service.countProcessStatus('ส่งใบสั่งผลิตแล้ว').subscribe({
       next: (data: number) => {
         this.waitSendFile = data;

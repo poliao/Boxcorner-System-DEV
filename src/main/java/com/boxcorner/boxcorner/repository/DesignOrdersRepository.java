@@ -43,10 +43,13 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:joId IS NULL OR :joId = '' OR UPPER(d.jo_id) LIKE UPPER(CONCAT('%', :joId, '%')) OR UPPER(d.qp_id) LIKE UPPER(CONCAT('%', :joId, '%')))
                             AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
                             AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                            AND (:hasRemarkAdd IS NULL OR (:hasRemarkAdd = true AND d.remark_add IS NOT NULL))
+                            AND (:remarkStatus IS NULL OR :remarkStatus = '' OR d.remark_add = :remarkStatus)
                         ORDER BY d.id DESC
                         """, countQuery = """
                         SELECT count(*) FROM design_orders d
@@ -56,10 +59,13 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:joId IS NULL OR :joId = '' OR UPPER(d.jo_id) LIKE UPPER(CONCAT('%', :joId, '%')) OR UPPER(d.qp_id) LIKE UPPER(CONCAT('%', :joId, '%')))
                             AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
                             AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                            AND (:hasRemarkAdd IS NULL OR (:hasRemarkAdd = true AND d.remark_add IS NOT NULL))
+                            AND (:remarkStatus IS NULL OR :remarkStatus = '' OR d.remark_add = :remarkStatus)
                         """, nativeQuery = true)
         Page<DesignOrders> findByAll(
                         @Param("id") String id,
@@ -67,10 +73,13 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                         @Param("jobDetails") String jobDetails,
                         @Param("jobOwner") String jobOwner,
                         @Param("assignee") String assignee,
+                        @Param("joId") String joId,
                         @Param("processStatus") String processStatus,
                         @Param("confirm") String confirm,
                         @Param("startDate") LocalDate startDate,
                         @Param("endDate") LocalDate endDate,
+                        @Param("hasRemarkAdd") Boolean hasRemarkAdd,
+                        @Param("remarkStatus") String remarkStatus,
                         Pageable pageable);
 
         @Query(value = """
@@ -81,10 +90,13 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:joId IS NULL OR :joId = '' OR UPPER(d.jo_id) LIKE UPPER(CONCAT('%', :joId, '%')) OR UPPER(d.qp_id) LIKE UPPER(CONCAT('%', :joId, '%')))
                             AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
                             AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                            AND (:hasRemarkAdd IS NULL OR (:hasRemarkAdd = true AND d.remark_add IS NOT NULL))
+                            AND (:remarkStatus IS NULL OR :remarkStatus = '' OR d.remark_add = :remarkStatus)
                         ORDER BY d.deadline_date ASC, d.deadline_time ASC
                         """, countQuery = """
                         SELECT count(*) FROM design_orders d
@@ -94,10 +106,13 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                             AND (:jobDetails IS NULL OR :jobDetails = '' OR UPPER(d.job_details) LIKE UPPER(CONCAT('%', :jobDetails, '%')))
                             AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(d.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                             AND (:assignee IS NULL OR :assignee = '' OR UPPER(d.assignee) LIKE UPPER(CONCAT('%', :assignee, '%')))
+                            AND (:joId IS NULL OR :joId = '' OR UPPER(d.jo_id) LIKE UPPER(CONCAT('%', :joId, '%')) OR UPPER(d.qp_id) LIKE UPPER(CONCAT('%', :joId, '%')))
                             AND (:processStatus IS NULL OR :processStatus = '' OR d.process_status = :processStatus)
                             AND (:confirm IS NULL OR :confirm = '' OR d.confirm_status = :confirm)
                             AND (CAST(:startDate AS DATE) IS NULL OR d.order_date >= :startDate)
                             AND (CAST(:endDate AS DATE) IS NULL OR d.order_date <= :endDate)
+                            AND (:hasRemarkAdd IS NULL OR (:hasRemarkAdd = true AND d.remark_add IS NOT NULL))
+                            AND (:remarkStatus IS NULL OR :remarkStatus = '' OR d.remark_add = :remarkStatus)
                         """, nativeQuery = true)
         Page<DesignOrders> findByAllSorted(
                         @Param("id") String id,
@@ -105,10 +120,13 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
                         @Param("jobDetails") String jobDetails,
                         @Param("jobOwner") String jobOwner,
                         @Param("assignee") String assignee,
+                        @Param("joId") String joId,
                         @Param("processStatus") String processStatus,
                         @Param("confirm") String confirm,
                         @Param("startDate") LocalDate startDate,
                         @Param("endDate") LocalDate endDate,
+                        @Param("hasRemarkAdd") Boolean hasRemarkAdd,
+                        @Param("remarkStatus") String remarkStatus,
                         Pageable pageable);
 
         @Query(value = "SELECT DISTINCT job_details FROM design_orders " +
@@ -156,15 +174,26 @@ public interface DesignOrdersRepository extends JpaRepository<DesignOrders, Inte
         Integer countBacklogCheck(@Param("jobOwner") String jobOwner);
 
         @Query(value = "select count(t.id) from design_orders t " +
-                        "where t.confirm_status  = 'รอตรวจสอบ' " + 
+                        "where t.remark_add IS NOT NULL " +
+                        "and t.remark_add != 'เพิ่มรายละเอียดแล้ว' " +
+                        "and t.job_owner = :jobOwner", nativeQuery = true)
+        Integer countRequestDetails(@Param("jobOwner") String jobOwner);
+
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.remark_add = 'เพิ่มรายละเอียดแล้ว' " +
+                        "and t.assignee = :assignee", nativeQuery = true)
+        Integer countDetailsAdded(@Param("assignee") String assignee);
+
+        @Query(value = "select count(t.id) from design_orders t " +
+                        "where t.confirm_status  = 'รอตรวจสอบ' " +
                         "and t.assignee = :assignee", nativeQuery = true)
         Integer countBacklogCheckDe(@Param("assignee") String assignee);
 
         @Query(value = "select count(t.id) from design_orders t " +
-                        "where t.process_status  = 'รอดำเนินการแก้ไข' " + 
+                        "where t.process_status  = 'รอดำเนินการแก้ไข' " +
                         "and t.assignee = :assignee", nativeQuery = true)
         Integer countBacklogEdit(@Param("assignee") String assignee);
-        
+
         @Query(value = "select count(t.id) from design_orders t " +
                         "where t.confirm_status  = 'ผ่าน' AND date_trunc('month', t.confirm_date) = date_trunc('month', CURRENT_DATE)", nativeQuery = true)
         Integer countBacklogComplete();

@@ -17,14 +17,27 @@
           </button>
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ลำดับ</label>
-          <input type="text" formControlName="id" class="form-control">
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
+              style="color: red;">*</span></label>
+          <input type="text" class="form-control" formControlName="jobId">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">QTId</label>
+          <input type="text" class="form-control" formControlName="qtId">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" class="form-control" formControlName="qpId">
+        </div>
+        <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">เวลาที่สั่งงาน</label>
+          <input type="time" formControlName="createdTime" class="form-control">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>

@@ -30,12 +30,13 @@ export class Dcsm12Service {
       status: filters.status || '',                   // เดิม process_status
       startDate: filters.startDate || '',
       endDate: filters.endDate || '',
+      jobId: filters.jobId || '',
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/sampleOrders/searchDetail`, { params: params });
@@ -52,18 +53,19 @@ export class Dcsm12Service {
       status: filters.status || '',                   // เดิม process_status
       startDate: filters.startDate || '',
       endDate: filters.endDate || '',
+      jobId: filters.jobId || '',
       sortByDeadline: 'true'
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/sampleOrders/searchDetail`, { params: params });
   }
-  
+
   countBacklog(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklog`);
   }

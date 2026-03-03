@@ -45,13 +45,14 @@ export class Dcsm18Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'jobId', label: 'รหัสงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
     { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
     { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
     { key: 'jobType', label: 'ประเภทงาน' }
   ];
 
@@ -71,6 +72,7 @@ export class Dcsm18Component implements OnInit {
   initSearchForm(): void {
     this.searchForm = this.fb.group({
       id: [''],
+      jobId: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -81,7 +83,7 @@ export class Dcsm18Component implements OnInit {
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
-    
+
   }
 
   loadData(): void {
@@ -90,10 +92,11 @@ export class Dcsm18Component implements OnInit {
     // Map ข้อมูลให้ตรงกับ Service ที่เตรียมไว้
     const apiFilters = {
       id: formValues.id,                   // ส่ง id
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: formValues.responsiblePerson,
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: 'OD',
@@ -107,6 +110,7 @@ export class Dcsm18Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -123,10 +127,11 @@ export class Dcsm18Component implements OnInit {
 
     const apiFilters = {
       id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: formValues.responsiblePerson,
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: 'OD',
@@ -140,6 +145,7 @@ export class Dcsm18Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -175,6 +181,7 @@ export class Dcsm18Component implements OnInit {
   onClear(): void {
     this.searchForm.reset({
       id: '',
+      jobId: '',
       folderName: '',
       jobOwner: '',
       responsiblePerson: '',
@@ -221,7 +228,7 @@ export class Dcsm18Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm18Detail']); 
+    this.router.navigate(['/Dcsm18Detail']);
   }
 
   onRowClick(row: any): void {
@@ -238,15 +245,16 @@ export class Dcsm18Component implements OnInit {
 
 
 
-  onFilterUnassigned(){
+  onFilterUnassigned() {
     const formValues = this.searchForm.getRawValue();
 
     const apiFilters = {
-      id: formValues.id,              
+      id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: formValues.responsiblePerson,
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: 'OD',
@@ -260,6 +268,7 @@ export class Dcsm18Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));

@@ -46,7 +46,8 @@ export class Dcsm07Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'jobIdDisplay', label: 'รหัสงาน' },
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
@@ -72,6 +73,7 @@ export class Dcsm07Component implements OnInit {
   initSearchForm(): void {
     this.searchForm = this.fb.group({
       id: [''],              // เพิ่ม id
+      jobId: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -88,11 +90,12 @@ export class Dcsm07Component implements OnInit {
     const formValues = this.searchForm.getRawValue();
 
     const apiFilters = {
-      id: formValues.id,                  
+      id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: formValues.responsiblePerson,
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: formValues.jobType,
@@ -106,6 +109,7 @@ export class Dcsm07Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -121,11 +125,12 @@ export class Dcsm07Component implements OnInit {
     const formValues = this.searchForm.getRawValue();
 
     const apiFilters = {
-      id: formValues.id,                  
+      id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: formValues.responsiblePerson,
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: formValues.jobType,
@@ -139,6 +144,7 @@ export class Dcsm07Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -174,6 +180,7 @@ export class Dcsm07Component implements OnInit {
   onClear(): void {
     this.searchForm.reset({
       id: '',
+      jobId: '',
       folderName: '',
       jobOwner: '',
       responsiblePerson: '',
@@ -223,7 +230,7 @@ export class Dcsm07Component implements OnInit {
     this.router.navigate(['/Dcsm07Detail', row.id]);
   }
 
-  Backlog(){
+  Backlog() {
     this.dcsm07Service.countBacklog().subscribe({
       next: (data: number) => {
         this.countBacklog = data;
@@ -232,7 +239,7 @@ export class Dcsm07Component implements OnInit {
       }
     });
   }
-  
+
   onFilterUnassigned() {
     this.searchForm.patchValue({
       status: 'รอผู้รับผิดชอบยืนยัน',

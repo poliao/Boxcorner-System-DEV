@@ -3,18 +3,35 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isCancel == true" class="btn text-white px-5 shadow-sm" (click)="openCancelModal()" style="background-color: #ff0000;">
+          <button *ngIf="isCancel == true" class="btn text-white px-5 shadow-sm" (click)="openCancelModal()"
+            style="background-color: #ff0000;">
             ยกเลิกงานตัวอย่าง
           </button>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">JobId</label>
+          <input type="text" formControlName="jobId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QtId</label>
+          <input type="text" formControlName="qtId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" formControlName="qpId" class="form-control">
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
+          <input type="time" class="form-control" formControlName="orderTime">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
@@ -22,36 +39,40 @@
             [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
         </div>
         <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
           <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
           <input type="date" formControlName="deliveryDate" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
           <input type="time" formControlName="deliveryTime" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะ</label>
           <input type="text" formControlName="status" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">จำนวน</label>
           <input type="number" formControlName="quantity" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">หน่วยนับ</label>
           <input type="text" formControlName="unit" class="form-control">
         </div>
-        <div class="col-3">
+        <div class="col-2">
           <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <input type="text" formControlName="typeJob" class="form-control" >
+          <input type="text" formControlName="typeJob" class="form-control">
         </div>
         <div class="col-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
@@ -61,10 +82,6 @@
           <label class="form-label font-weight-bold">รายละเอียดแก้ไข</label>
           <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="noteEdit"
             class="form-control">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
-          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
         </div>
         <div class="col-md-12">
           <div class="form-check form-switch mt-2"> <input type="checkbox" formControlName="isCreateSample"
@@ -89,15 +106,15 @@
       <div class="modal-body">
         <div class="mb-3">
           <label class="form-label">เหตุผลในการยกเลิก <span style="color: red;">*</span></label>
-          <textarea class="form-control" rows="4" [(ngModel)]="cancelReason" 
-            [ngModelOptions]="{standalone: true}" 
+          <textarea class="form-control" rows="4" [(ngModel)]="cancelReason" [ngModelOptions]="{standalone: true}"
             placeholder="กรุณาระบุเหตุผลในการยกเลิกงาน">
           </textarea>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeCancelModal()">ยกเลิก</button>
-        <button type="button" class="btn btn-danger" (click)="confirmCancel()" [disabled]="!cancelReason?.trim()">ยืนยันการยกเลิก</button>
+        <button type="button" class="btn btn-danger" (click)="confirmCancel()"
+          [disabled]="!cancelReason?.trim()">ยืนยันการยกเลิก</button>
       </div>
     </div>
   </div>

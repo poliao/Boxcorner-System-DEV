@@ -46,13 +46,14 @@ export class Dcsm06Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'jobId', label: 'รหัสงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
     { key: 'jobStatus', label: 'สถานะงาน', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'processStatus', label: 'สถานะดำเนินการ', colorFunction: this.statusColorService.getProcessStatusColor.bind(this.statusColorService) },
     { key: 'moldStatus', label: 'สถานะแม่พิมพ์', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
     { key: 'jobType', label: 'ประเภทงาน' }
   ];
 
@@ -73,6 +74,7 @@ export class Dcsm06Component implements OnInit {
   initSearchForm(): void {
     this.searchForm = this.fb.group({
       id: [''],              // เพิ่ม id
+      jobId: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -80,11 +82,11 @@ export class Dcsm06Component implements OnInit {
       processStatus: [''],   // เพิ่ม processStatus
       moldStatus: [''],      // เพิ่ม moldStatus
       jobType: [''],
-      postpone: [''],        
+      postpone: [''],
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
-    
+
   }
 
   loadData(): void {
@@ -93,10 +95,11 @@ export class Dcsm06Component implements OnInit {
     // Map ข้อมูลให้ตรงกับ Service ที่เตรียมไว้
     const apiFilters = {
       id: formValues.id,                   // ส่ง id
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: formValues.responsiblePerson,
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: formValues.jobType,
@@ -127,10 +130,11 @@ export class Dcsm06Component implements OnInit {
 
     const apiFilters = {
       id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
-      jobStatus: formValues.status,             
+      operatorName: formValues.responsiblePerson,
+      jobStatus: formValues.status,
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: formValues.jobType,
@@ -180,6 +184,7 @@ export class Dcsm06Component implements OnInit {
   onClear(): void {
     this.searchForm.reset({
       id: '',
+      jobId: '',
       folderName: '',
       jobOwner: '',
       responsiblePerson: '',
@@ -226,21 +231,21 @@ export class Dcsm06Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm06Detail']); 
+    this.router.navigate(['/Dcsm06Detail']);
   }
 
   onRowClick(row: any): void {
     this.router.navigate(['/Dcsm06Detail', row.id]);
   }
 
-  countBacklogPostpone(){
+  countBacklogPostpone() {
     this.dcsm06Service.countBacklogPostpone().subscribe({
       next: (data: number) => {
         this.isPostpone = data;
       },
     });
   }
-  
+
   onFilterPostpone() {
     this.searchForm.patchValue({
       postpone: 'มีการเลื่อนเวลาส่ง',

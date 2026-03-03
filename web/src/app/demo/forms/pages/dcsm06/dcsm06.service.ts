@@ -24,6 +24,7 @@ export class Dcsm06Service {
       page: apiFilters.page.toString(),
       size: apiFilters.size.toString(),
       id: apiFilters.id,
+      jobId: apiFilters.jobId,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
       jobStatus: apiFilters.jobStatus,

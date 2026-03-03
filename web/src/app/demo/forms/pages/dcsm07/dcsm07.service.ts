@@ -30,10 +30,11 @@ export class Dcsm07Service {
       page: apiFilters.page.toString(),
       size: apiFilters.size.toString(),
       id: apiFilters.id,
+      jobId: apiFilters.jobId,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
+      jobStatus: apiFilters.jobStatus,
+      operatorName: apiFilters.operatorName,
       processStatus: apiFilters.processStatus,
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
@@ -42,9 +43,9 @@ export class Dcsm07Service {
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });
@@ -55,22 +56,22 @@ export class Dcsm07Service {
       page: apiFilters.page.toString(),
       size: apiFilters.size.toString(),
       id: apiFilters.id,
+      jobId: apiFilters.jobId,
       folderName: apiFilters.folderName,
       jobOwner: apiFilters.jobOwner,
-      jobStatus: apiFilters.jobStatus, 
-      operatorName: apiFilters.operatorName, 
+      jobStatus: apiFilters.jobStatus,
+      operatorName: apiFilters.operatorName,
       processStatus: apiFilters.processStatus,
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
-      endDate: apiFilters.endDate,
-      sortByDeadline: 'true'
+      endDate: apiFilters.endDate
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production/search`, { params: params });

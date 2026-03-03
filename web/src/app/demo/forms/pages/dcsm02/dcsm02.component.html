@@ -9,6 +9,10 @@
               (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterjo" name="filterjo" placeholder="ค้นหา JO"
+              (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterfolder" name="filterfolder"
               placeholder="ค้นหา ชื่อโฟลเดอร์" (keyup.enter)="onSearchChange()">
           </div>
@@ -79,6 +83,19 @@
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ checked }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative"
+                  (click)="onFilterRequestDetails()" style="background-color: #ff8c00;">
+                  <mat-icon>info</mat-icon> <span class="d-none d-lg-inline">รอเพิ่มรายละเอียด</span><span
+                    class="d-lg-none">รอเพิ่มรายละเอียด</span>
+                  <span *ngIf="requestDetailsCount > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ requestDetailsCount }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </button>

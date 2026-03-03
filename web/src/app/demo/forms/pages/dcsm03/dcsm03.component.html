@@ -2,10 +2,14 @@
 <div class="card-body">
   <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-body bg-light">
-      <form >
+      <form>
         <div class="row g-3">
           <div class="col-md-3">
             <input type="text" class="form-control" [(ngModel)]="filterId" name="filterId" placeholder="ค้นหา ลำดับ"
+              (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" [(ngModel)]="filterjo" name="filterjo" placeholder="ค้นหา JO"
               (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
@@ -46,7 +50,8 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button type="button" (click)="onSearchChange()" class="w-100 px-3" style="background-color: #300707;">
+                <button mat-flat-button type="button" (click)="onSearchChange()" class="w-100 px-3"
+                  style="background-color: #300707;">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>
@@ -137,6 +142,19 @@
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ completed }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button type="button" class="w-100 px-3 position-relative"
+                  (click)="onFilterDetailsAdded()" style="background-color: #ff8c00;">
+                  <mat-icon>info</mat-icon> <span class="d-none d-lg-inline">รายละเอียดที่เพิ่มแล้ว</span><span
+                    class="d-lg-none">เพิ่มรายละเอียดแล้ว</span>
+                  <span *ngIf="detailsAddedCount > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ detailsAddedCount }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </button>

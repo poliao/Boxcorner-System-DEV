@@ -32,6 +32,11 @@ export class Dcsm05DetailComponent implements OnInit {
   checkFileProof = false;
   sendFileProof = false;
 
+  // ปุ่ม workflow เพิ่มเติม
+  internalJob = false;      // งานภายใน
+  sendSupplier = false;     // ส่ง Supplier
+  receiveBack = false;      // รับกลับจาก Supplier
+
   showNotDeliverModal = false;
   notDeliverTime = new FormControl('', Validators.required);
   notDeliverDate = new FormControl('', Validators.required);
@@ -100,6 +105,7 @@ export class Dcsm05DetailComponent implements OnInit {
       rowVersion: [null],
       jobId: [null],
       qtId: [null],
+      qpId: [null],
       typeJob: [null],
       machineName: [false],
       print2Page: [false],
@@ -135,8 +141,18 @@ export class Dcsm05DetailComponent implements OnInit {
     this.mainForm.controls['paperGram'].disable({ emitEvent: false });
     this.mainForm.controls['jobId'].disable({ emitEvent: false });
     this.mainForm.controls['qtId'].disable({ emitEvent: false });
+    this.mainForm.controls['qpId'].disable({ emitEvent: false });
     this.mainForm.controls['typeJob'].disable({ emitEvent: false });
     this.mainForm.controls['totalPrintSheets'].disable({ emitEvent: false });
+    this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
+      const jobIdControl = this.mainForm.get('jobId');
+      if (value && value.trim() !== '') {
+        jobIdControl?.clearValidators();
+      } else {
+        jobIdControl?.setValidators([Validators.required]);
+      }
+      jobIdControl?.updateValueAndValidity();
+    });
   }
 
   patchFormData(data: any): void {
@@ -145,74 +161,95 @@ export class Dcsm05DetailComponent implements OnInit {
   }
 
   checkBtn() {
-    if (this.mainForm.getRawValue().status === 'รอผู้รับผิดชอบอนุมัติ') {
+    const currentStatus = this.mainForm.getRawValue().status;
+    const currentUser = this.getCurrentUserFromToken();
+    const responsible = this.mainForm.getRawValue().responsiblePerson;
+
+    // reset flags ทุกครั้ง
+    this.confirm = false;
+    this.confirmDeliver = false;
+    this.notDeliver = false;
+    this.clearFile = false;
+    this.inspection = false;
+    this.samples = false;
+    this.deadline = false;
+    this.inFileProof = false;
+    this.checkFileProof = false;
+    this.sendFileProof = false;
+    this.internalJob = false;
+    this.sendSupplier = false;
+    this.receiveBack = false;
+
+    if (currentStatus === 'รอผู้รับผิดชอบอนุมัติ') {
+      // ยังไม่รับงาน
       this.confirm = true;
-      this.confirmDeliver = false;
-      this.notDeliver = false;
-      this.clearFile = false;
-      this.inspection = false;
-      this.samples = false;
-      this.deadline = false;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอดำเนินการ') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไม่อนุมัติเลื่อนส่ง') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'อนุมัติขอเลื่อนส่ง') || (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'รอเคลียร์ไฟล์ใหม่')) {
-      this.confirm = false;
+    } else if (currentUser === responsible && currentStatus === 'รอดำเนินการ') {
+      // เพิ่งรับงาน → ให้เลือก งานภายใน หรือ ส่ง Supplier ยังไม่ให้กดจัดส่ง
+      this.internalJob = true;
+      this.sendSupplier = true;
+    } else if (
+      currentUser === responsible &&
+      (
+        currentStatus === 'งานภายใน' ||
+        currentStatus === 'ไม่อนุมัติเลื่อนส่ง' ||
+        currentStatus === 'อนุมัติขอเลื่อนส่ง' ||
+        currentStatus === 'รอเคลียร์ไฟล์ใหม่'
+      )
+    ) {
+      // งานภายใน + สถานะที่เกี่ยวข้อง → แสดงปุ่มจัดส่งได้/จัดส่งไม่ได้
       this.confirmDeliver = true;
       this.notDeliver = true;
-      this.clearFile = false;
-      this.inspection = false;
-      this.samples = false;
-      this.deadline = false;
       this.mainForm.controls['totalPrintSheets'].enable({ emitEvent: false });
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'จัดส่งได้ รอเคลียร์ไฟล์') || this.mainForm.getRawValue().status === 'แก้ไขไฟล์') {
-      this.confirm = false;
+
+    } else if (
+      currentUser === responsible &&
+      (currentStatus === 'จัดส่งได้ รอเคลียร์ไฟล์' || currentStatus === 'แก้ไขไฟล์')
+    ) {
       this.confirmDeliver = false;
       this.notDeliver = false;
       this.clearFile = true;
-      this.inspection = false;
-      this.samples = false;
-      this.deadline = false;
-    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'กำลังเคลียร์ไฟล์') {
-      this.confirm = false;
-      this.confirmDeliver = false;
-      this.notDeliver = false;
-      this.clearFile = false;
+    } else if (
+      currentUser === responsible &&
+      currentStatus === 'กำลังเคลียร์ไฟล์'
+    ) {
       this.inspection = true;
-      this.samples = false;
-      this.deadline = false;
-    } else if (this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' && this.mainForm.getRawValue().isCreateSample === true) {
-      this.confirm = false;
-      this.confirmDeliver = false;
-      this.notDeliver = false;
-      this.clearFile = false;
-      this.inspection = false;
+
+    } else if (
+      currentUser === responsible &&
+      currentStatus === 'ไฟล์ถูกต้อง รอขึ้นตัวอย่าง' &&
+      this.mainForm.getRawValue().isCreateSample === true
+    ) {
       this.samples = true;
-      this.deadline = false;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson) && (this.mainForm.getRawValue().status === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง')) {
-      this.confirm = false;
-      this.confirmDeliver = false;
-      this.notDeliver = false;
-      this.clearFile = false;
-      this.inspection = false;
-      this.samples = false;
+
+    } else if (
+      currentUser === responsible &&
+      (currentStatus === 'ไฟล์ถูกต้อง ไม่ต้องขึ้นตัวอย่าง' || currentStatus === 'รับงานแล้วรอส่งกลับ')
+    ) {
       this.deadline = true;
-    } else if ((this.getCurrentUserFromToken() === this.mainForm.getRawValue().responsiblePerson && this.mainForm.getRawValue().status === 'สำเร็จ รออนุมัติไปตารางรอผลิต')) {
-      this.confirm = false;
-      this.confirmDeliver = false;
-      this.notDeliver = false;
-      this.clearFile = false;
-      this.inspection = false;
-      this.samples = false;
-      this.deadline = false;
+
+    } else if (
+      currentUser === responsible &&
+      currentStatus === 'ส่ง Supplier'
+    ) {
+      // งานส่งออกไป Supplier แล้ว → แสดงปุ่ม "รับกลับ"
+      this.receiveBack = true;
+
+    } else if (
+      currentUser === responsible &&
+      currentStatus === 'สำเร็จ รออนุมัติไปตารางรอผลิต'
+    ) {
+      // ปิดทุกปุ่มในสถานะนี้
     }
 
-    if (this.mainForm.getRawValue().status == 'ขอปรู๊ฟหน้าแท่น') {
+    if (currentStatus == 'ขอปรู๊ฟหน้าแท่น') {
       this.inFileProof = true
       this.checkFileProof = false
       this.sendFileProof = false
-    } else if (this.mainForm.getRawValue().status == 'เริ่มเคลียร์ไฟล์ Proof') {
+    } else if (currentStatus == 'เริ่มเคลียร์ไฟล์ Proof') {
       this.inFileProof = false
       this.checkFileProof = true
       this.sendFileProof = false
-    } else if (this.mainForm.getRawValue().status == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์') {
+    } else if (currentStatus == 'ไฟล์Proofถูกต้อง รอส่งไปช่างพิมพ์') {
       this.inFileProof = false
       this.checkFileProof = false
       this.sendFileProof = true
@@ -413,7 +450,8 @@ export class Dcsm05DetailComponent implements OnInit {
           paperGram: this.mainForm.getRawValue().paperGram,
           sampleId: this.mainForm.getRawValue().id,
           print2Page: this.mainForm.getRawValue().print2Page,
-          typeJob: this.mainForm.getRawValue().typeJob
+          typeJob: this.mainForm.getRawValue().typeJob,
+          qpId: this.mainForm.getRawValue().qpId
         };
 
         this.mainForm.get('status')!.setValue('ขึ้นตัวอย่างแล้ว');
@@ -459,13 +497,25 @@ export class Dcsm05DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.mainForm.get('status')!.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
+        const currentStatus = this.mainForm.getRawValue().status;
+
+        if (currentStatus === 'รับงานแล้วรอส่งกลับ') {
+          // กรณีงาน Supplier ส่งกลับแล้ว
+          this.mainForm.get('status')!.setValue('งาน Supplier ส่งกลับแล้ว');
+        } else {
+          // flow เดิม
+          this.mainForm.get('status')!.setValue('สำเร็จ รออนุมัติไปตารางรอผลิต');
+        }
+
         this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
             this.loadingService.hide();
-            this.sweetAlert.success('Success', 'เสร็จสิ้น รอตรวจสอบ!');
+            const successMsg = currentStatus === 'รับงานแล้วรอส่งกลับ'
+              ? 'บันทึกสถานะ งาน Supplier ส่งกลับแล้ว'
+              : 'เสร็จสิ้น รอตรวจสอบ!';
+            this.sweetAlert.success('Success', successMsg);
             this.router.navigate(['/Dcsm05']);
           },
           error: (error) => {
@@ -473,6 +523,101 @@ export class Dcsm05DetailComponent implements OnInit {
             this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
           }
         })
+      }
+    });
+  }
+
+  // --- ปุ่มใหม่: งานภายใน / ส่ง Supplier / รับกลับ ---
+
+  updateStatusInternalJob() {
+    Swal.fire({
+      title: 'ยืนยันเป็นงานภายใน',
+      text: 'ยืนยันให้รายการนี้เป็นงานภายใน ใช่หรือไม่?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')!.setValue('งานภายใน');
+        this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'อัปเดตเป็นงานภายในแล้ว');
+            this.router.navigate(['/Dcsm05']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        });
+      }
+    });
+  }
+
+  updateStatusSendSupplier() {
+    Swal.fire({
+      title: 'ยืนยันส่งงานให้ Supplier',
+      text: 'ยืนยันส่งงานให้ Supplier ใช่หรือไม่?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')!.setValue('ส่ง Supplier');
+        this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'อัปเดตเป็น ส่ง Supplier แล้ว');
+            this.router.navigate(['/Dcsm05']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        });
+      }
+    });
+  }
+
+  updateStatusReceiveBack() {
+    Swal.fire({
+      title: 'ยืนยันรับงานกลับจาก Supplier',
+      text: 'ยืนยันรับงานกลับจาก Supplier ใช่หรือไม่?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('status')!.setValue('รับงานแล้วรอส่งกลับ');
+        this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+            this.checkBtn();
+            this.loadingService.hide();
+            this.sweetAlert.success('Success', 'รับงานกลับแล้ว รอส่งกลับให้ลูกค้า');
+            this.router.navigate(['/Dcsm05']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+          }
+        });
       }
     });
   }
@@ -621,7 +766,8 @@ export class Dcsm05DetailComponent implements OnInit {
           systemPrint: this.mainForm.getRawValue().systemPrint,
           colorPrint: this.mainForm.getRawValue().colorPrint,
           paperGram: this.mainForm.getRawValue().paperGram,
-          sampleId: this.mainForm.getRawValue().id
+          sampleId: this.mainForm.getRawValue().id,
+          qpId: this.mainForm.getRawValue().qpId
         };
 
         this.mainForm.get('status')!.setValue('ส่งProofหน้าแท่นแล้ว');

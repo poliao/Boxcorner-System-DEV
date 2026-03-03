@@ -37,6 +37,19 @@ export class Dcsm18DetailComponent implements OnInit {
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
       this.patchFormData(resolvedData);
+
+      this.mainForm.get('jobId')?.enable({ emitEvent: false });
+      this.mainForm.get('qtId')?.enable({ emitEvent: false });
+      this.mainForm.get('qpId')?.enable({ emitEvent: false });
+
+      this.mainForm.get('qpId')?.valueChanges.subscribe(val => {
+        if (val) {
+          this.mainForm.get('jobId')?.setValidators(null);
+        } else {
+          this.mainForm.get('jobId')?.setValidators([Validators.required]);
+        }
+        this.mainForm.get('jobId')?.updateValueAndValidity();
+      });
     }
 
     if (this.mainForm.getRawValue().sampleOrderId != null && this.mainForm.getRawValue().sampleOrderId != '') {
@@ -44,15 +57,15 @@ export class Dcsm18DetailComponent implements OnInit {
     } else {
       this.isSampleOrderId = false
     }
-    
-    if (this.mainForm.getRawValue().processStatus =='ส่งไฟล์แล้ว' && this.mainForm.getRawValue().printingMachine == null ) {
+
+    if (this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' && this.mainForm.getRawValue().printingMachine == null) {
       this.isSave = true
-    }else{
+    } else {
       this.mainForm.get('printingMachine')?.disable();
       this.isSave = false
     }
 
-    
+
   }
 
   initForm(): void {
@@ -78,13 +91,17 @@ export class Dcsm18DetailComponent implements OnInit {
       updatedAt: [''],
       sampleOrderId: [''],
       moldMakerName: [''],
-      printingMachine: ['',Validators.required],
+      printingMachine: ['', Validators.required],
       inspector: [''],
       customerName: [''],
       dataDalivery: [false],
       postpone: [null],
       rowVersion: [null],
       decisionAuthority: [null],
+      createdTime: [null],
+      jobId: [null],
+      qtId: [null],
+      qpId: [null],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -106,6 +123,10 @@ export class Dcsm18DetailComponent implements OnInit {
     this.mainForm.get('moldMakerName')?.disable({ emitEvent: false });
     this.mainForm.get('inspector')?.disable({ emitEvent: false });
     this.mainForm.get('customerName')?.disable({ emitEvent: false });
+    this.mainForm.get('createdTime')?.disable({ emitEvent: false });
+    this.mainForm.get('jobId')?.disable();
+    this.mainForm.get('qtId')?.disable();
+    this.mainForm.get('qpId')?.disable();
   }
 
   patchFormData(data: any): void {

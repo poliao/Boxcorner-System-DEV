@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -33,7 +34,8 @@ public class DesignOrdersService {
     @Transactional
     public DesignOrders saveDesign(DesignOrders designOrder, String currentUser) {
         if (designOrder.getId() != null) {
-            DesignOrders existing = repository.findById(designOrder.getId()).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลสำหรับการอัปเดต ID: " + designOrder.getId()));
+            DesignOrders existing = repository.findById(designOrder.getId())
+                    .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลสำหรับการอัปเดต ID: " + designOrder.getId()));
 
             if (designOrder.getRowVersion() != null && !existing.getRowVersion().equals(designOrder.getRowVersion())) {
                 throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
@@ -52,10 +54,29 @@ public class DesignOrdersService {
             existing.setCustomerName(designOrder.getCustomerName());
             existing.setAssignee(designOrder.getAssignee());
             existing.setJobOwner(designOrder.getJobOwner());
+            existing.setJoId(designOrder.getJoId());
+            existing.setQtId(designOrder.getQtId());
+            existing.setQpId(designOrder.getQpId());
+            existing.setRemarkAdd(designOrder.getRemarkAdd());
+            if ("กำลังดำเนินการ".equals(designOrder.getProcessStatus())) {
+                if (existing.getStartDatetime() == null) {
+                    existing.setStartDatetime(LocalDateTime.now(ZoneId.of("Asia/Bangkok")));
+                }
+            } else if (designOrder.getStartDatetime() != null) {
+                existing.setStartDatetime(designOrder.getStartDatetime());
+            }
+
+            if ("เสร็จสิ้น".equals(designOrder.getProcessStatus())) {
+                if (existing.getEndDatetime() == null) {
+                    existing.setEndDatetime(LocalDateTime.now(ZoneId.of("Asia/Bangkok")));
+                }
+            } else if (designOrder.getEndDatetime() != null) {
+                existing.setEndDatetime(designOrder.getEndDatetime());
+            }
+
             return repository.save(existing);
         } else {
             designOrder.setJobOwner(currentUser);
-            designOrder.setAssignee("รอผู้รับผิดชอบยืนยัน");
             designOrder.setOrderTime(LocalTime.now(ZoneId.of("Asia/Bangkok")));
             return repository.save(designOrder);
         }
@@ -74,42 +95,50 @@ public class DesignOrdersService {
                 assignee, // 3. assignee (สลับกลับมาตรงนี้)
                 process_status, // 4. processStatus (สลับกลับมาตรงนี้)
                 confirm_status, // 5. confirm
-                startDate, // 6. startDate
-                endDate, // 7. endDate
-                paging);
-    }
-
-    public Page<DesignOrders> getAllRecipesDesign(String id, String folder_name, String job_details, String job_owner,
-            String process_status, String confirm_status, String assignee, LocalDate startDate, LocalDate endDate,
-            int page, int size) {
-        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        return repository.findByAll(
-                id, // 1. id
-                folder_name, // 2. folderName
-                job_details, // 3. jobDetails
-                job_owner, // 4. jobOwner
-                assignee, // 5. assignee
-                process_status, // 6. processStatus
-                confirm_status, // 7. confirm
-                startDate, // 8. startDate
+                startDate,
                 endDate,
                 paging);
     }
 
+    public Page<DesignOrders> getAllRecipesDesign(String id, String folder_name, String job_details, String job_owner,
+            String process_status, String confirm_status, String assignee, String jo_id, LocalDate startDate,
+            LocalDate endDate,
+            int page, int size, Boolean hasRemarkAdd, String remark_status) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
+        return repository.findByAll(
+                id,
+                folder_name,
+                job_details,
+                job_owner,
+                assignee,
+                jo_id,
+                process_status,
+                confirm_status,
+                startDate,
+                endDate,
+                hasRemarkAdd,
+                remark_status,
+                paging);
+    }
+
     public Page<DesignOrders> getAllRecipesDesignSorted(String id, String folder_name, String job_details,
-            String job_owner, String process_status, String confirm_status, String assignee, LocalDate startDate,
-            LocalDate endDate, int page, int size) {
+            String job_owner, String process_status, String confirm_status, String assignee, String jo_id,
+            LocalDate startDate,
+            LocalDate endDate, int page, int size, Boolean hasRemarkAdd, String remark_status) {
         Pageable paging = PageRequest.of(page, size);
         return repository.findByAllSorted(
-                id, // 1. id
-                folder_name, // 2. folderName
-                job_details, // 3. jobDetails
-                job_owner, // 4. jobOwner
-                assignee, // 5. assignee
-                process_status, // 6. processStatus
-                confirm_status, // 7. confirm
-                startDate, // 8. startDate
-                endDate, // 9. endDate
+                id,
+                folder_name,
+                job_details,
+                job_owner,
+                assignee,
+                jo_id,
+                process_status,
+                confirm_status,
+                startDate,
+                endDate,
+                hasRemarkAdd,
+                remark_status,
                 paging);
     }
 
@@ -148,6 +177,7 @@ public class DesignOrdersService {
                 .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("รอตรวจสอบ");
+        existingOrder.setEndDatetime(LocalDateTime.now(ZoneId.of("Asia/Bangkok")));
         return repository.save(existingOrder);
     }
 
@@ -157,6 +187,7 @@ public class DesignOrdersService {
         existingOrder.setProcessStatus("เสร็จสิ้น");
         existingOrder.setConfirmStatus("รอตรวจสอบ");
         existingOrder.setFileName(fileName);
+        existingOrder.setEndDatetime(LocalDateTime.now(ZoneId.of("Asia/Bangkok")));
         return repository.save(existingOrder);
     }
 
@@ -193,8 +224,16 @@ public class DesignOrdersService {
         return repository.countBacklogCheck(jobOwner);
     }
 
+    public Integer countRequestDetails(String jobOwner) {
+        return repository.countRequestDetails(jobOwner);
+    }
+
     public Integer countBacklogCheckDe(String assignee) {
         return repository.countBacklogCheckDe(assignee);
+    }
+
+    public Integer countDetailsAdded(String assignee) {
+        return repository.countDetailsAdded(assignee);
     }
 
     public Integer countBacklogEdit(String assignee) {

@@ -21,13 +21,27 @@
           <input type="text" formControlName="sampleOrderId" class="form-control">
         </div>
         <div class="col-md-2">
-          <label class="form-label font-weight-bold">JobId <span style="color: red;">*</span></label>
+          <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
+              style="color: red;">*</span></label>
           <input type="text" formControlName="jobId" class="form-control"
-            [class.is-invalid]="mainForm.get('job_id')?.invalid && mainForm.get('job_id')?.touched">
+            [class.is-invalid]="mainForm.get('jobId')?.invalid && mainForm.get('jobId')?.touched">
         </div>
         <div class="col-md-2">
-          <label class="form-label font-weight-bold">QtId</label>
+          <label class="form-label font-weight-bold">QTId</label>
           <input type="text" formControlName="qtId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" formControlName="qpId" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
+          <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
+            [class.is-invalid]="mainForm.get('orderDate')?.invalid && mainForm.get('orderDate')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลาที่สร้างงาน</label>
+          <input type="text" class="form-control" formControlName="createdTime">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
@@ -36,21 +50,6 @@
         <div class="col-md-2">
           <label class="form-label font-weight-bold">สีตัวอย่าง</label>
           <input type="text" formControlName="colorSample" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
-          <input type="text" class="form-control" [value]="getThaiDateInput('orderDate')" readonly disabled
-            [class.is-invalid]="mainForm.get('orderDate')?.invalid && mainForm.get('orderDate')?.touched">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
-          <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
-            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
-        </div>
-
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">เจ้าของงาน</label>
-          <input type="text" formControlName="jobOwner" class="form-control">
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
@@ -62,6 +61,18 @@
           <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
           <input type="time" formControlName="deadlineTime" class="form-control">
         </div>
+
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
+          <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
+            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เจ้าของงาน</label>
+          <input type="text" formControlName="jobOwner" class="form-control">
+        </div>
+
         <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
           <input type="text" class="form-control" [value]="getThaiDateInput('deliveryDate')" readonly disabled>
@@ -86,7 +97,7 @@
           <label class="form-label font-weight-bold">ผู้รับผิดชอบแม่พิมพ์</label>
           <input type="text" formControlName="moldMakerName" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เครื่องทำแม่พิมพ์</label>
           <input type="text" formControlName="printingMachine" class="form-control">
         </div>
@@ -98,7 +109,7 @@
           <label class="form-label font-weight-bold">ประเภทงาน</label>
           <input type="text" formControlName="jobType" class="form-control">
         </div>
-        <div class="col-md-9">
+        <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
           <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
         </div>

@@ -72,6 +72,17 @@ public class PaperInventoryController {
         }
     }
 
+  /** สำหรับ dropdown เลือก unit_stock ที่ยังมีสต็อคคงเหลือ */
+  @GetMapping("/unit-stock-list-available")
+  public ResponseEntity<?> getAvailableUnitStockList() {
+      try {
+          List<UnitStock> list = unitStockRepository.findAllWithPositiveInventory();
+          return ResponseEntity.ok(list);
+      } catch (Exception e) {
+          return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+      }
+  }
+
     /** เช็คว่ากระดาษพอหรือไม่ก่อนเริ่มพิมพ์ */
     @GetMapping("/check-stock")
     public ResponseEntity<?> checkStock(

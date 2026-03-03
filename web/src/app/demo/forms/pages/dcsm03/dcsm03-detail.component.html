@@ -3,6 +3,10 @@
     <div style="padding: 10px;">
       <form [formGroup]="designForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button *ngIf="isBtnWorking == true" (click)="openRequestDetailsModal()" type="button"
+            class="btn text-white px-5 shadow-sm" style="background-color: #ff8c00;">
+            ขอรายละเอียดเพิ่มเติม
+          </button>
           <button *ngIf="isBtnAccept == true" (click)="updateStatus()" type="submit"
             class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
             ยอมรับงาน
@@ -21,64 +25,83 @@
           <input type="text" formControlName="id" class="form-control">
         </div>
         <div class="col-md-2">
-          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
-          <input type="date" formControlName="orderDate" class="form-control"
-            [class.is-invalid]="designForm.get('order_date')?.invalid && designForm.get('order_date')?.touched">
+          <label class="form-label font-weight-bold">JOId</label>
+          <input type="text" formControlName="joId" class="form-control"
+            [class.is-invalid]="designForm.get('joId')?.invalid && designForm.get('joId')?.touched">
         </div>
         <div class="col-md-2">
-          <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
-          <input type="time" class="form-control" formControlName="orderTime" >
+          <label class="form-label font-weight-bold">QTId</label>
+          <input type="text" formControlName="qtId" class="form-control">
         </div>
-        <div class="col-md-3">
-          <label class="form-label font-weight-bold">วันที่ต้องส่ง</label>
-          <input type="date" formControlName="deadlineDate" class="form-control">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" formControlName="qpId" class="form-control">
         </div>
-        <div class="col-md-3">
-          <label class="form-label font-weight-bold">เวลาที่ต้องส่ง</label>
-          <input type="time" formControlName="deadlineTime" class="form-control">
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
             [class.is-invalid]="designForm.get('folder_name')?.invalid && designForm.get('folder_name')?.touched">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">Version</label>
+          <input type="text" formControlName="version" class="form-control" readonly>
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">รายละเอียดงาน</label>
           <input type="text" formControlName="jobDetails" class="form-control" placeholder="ระบุรายละเอียดงาน">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">วันส่ง</label>
+          <input type="date" formControlName="deadlineDate" class="form-control" maxlength="8"
+            [class.is-invalid]="designForm.get('deadlineDate')?.invalid && designForm.get('deadlineDate')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลาส่ง</label>
+          <input type="time" formControlName="deadlineTime" class="form-control"
+            [class.is-invalid]="designForm.get('deadlineTime')?.invalid && designForm.get('deadlineTime')?.touched">
+        </div>
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
           <input type="text" formControlName="assignee" class="form-control" placeholder="ชื่อผู้ออกแบบ">
         </div>
-
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
           <input type="text" formControlName="processStatus" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะคอนเฟิร์ม</label>
           <input type="text" formControlName="confirmStatus" class="form-control">
         </div>
-        <div class="col-12" *ngIf="isNoteEdit == true">
-          <label class="form-label font-weight-bold">รายละเอียดแก้ไข</label>
-          <input style="background-color: rgb(255, 136, 1); color: white;" type="text" formControlName="noteEdit"
-            class="form-control">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
+          <input type="date" formControlName="orderDate" class="form-control"
+            [class.is-invalid]="designForm.get('orderDate')?.invalid && designForm.get('orderDate')?.touched">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">เวลาสั่งงาน</label>
+          <input type="text" class="form-control" [value]="getTimeOnly('orderTime')" readonly disabled>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
+          <input type="text" formControlName="fileName" class="form-control"
+            style="background-color: #ff7b00; color: white;">
         </div>
         <div class="col-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control" placeholder="หมายเหตุเพิ่มเติม">
+          <textarea formControlName="remarks" class="form-control" rows="3" placeholder="หมายเหตุเพิ่มเติม"></textarea>
         </div>
-        <div class="col-md-12">
-          <label class="form-label font-weight-bold">ชื่อไฟล์ล่าสุด</label>
-          <input type="text" formControlName="fileName" class="form-control" style="background-color: #ff7b00; color: white;">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
-          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        <div class="col-12" *ngIf="designForm.get('noteEdit')?.value">
+          <label class="form-label font-weight-bold">หมายเหตุแก้ไข</label>
+          <textarea formControlName="noteEdit" class="form-control" rows="3"
+            style="background-color: #ff7b00; color: white;"></textarea>
         </div>
       </form>
     </div>
@@ -104,6 +127,34 @@
         <button type="button" class="btn btn-secondary" (click)="closeCompleteModal()">ยกเลิก</button>
         <button type="button" class="btn btn-success" (click)="confirmComplete()" [disabled]="latestFileName.invalid">
           ยืนยันเสร็จสิ้น
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Request Details Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showRequestDetailsModal"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ขอรายละเอียดเพิ่มเติม</h5>
+        <button type="button" class="btn-close" (click)="closeRequestDetailsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label font-weight-bold">หมายเหตุ <span class="text-danger">*</span></label>
+          <textarea class="form-control" rows="4" [formControl]="requestDetailsNote"
+            placeholder="ระบุรายละเอียดที่ต้องการเพิ่มเติม..."
+            [class.is-invalid]="requestDetailsNote.invalid && requestDetailsNote.touched"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeRequestDetailsModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="confirmRequestDetails()"
+          [disabled]="requestDetailsNote.invalid">
+          ยืนยันส่งคำขอ
         </button>
       </div>
     </div>

@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "production_orders") 
+@Table(name = "production_orders")
 public class ProductionOrder extends BaseEntity {
 
     @Id
@@ -22,7 +22,7 @@ public class ProductionOrder extends BaseEntity {
     private Integer id;
 
     @Column(name = "folder_name", nullable = false)
-    private String folderName; 
+    private String folderName;
 
     @Column(name = "used_file")
     private String usedFile;
@@ -34,34 +34,34 @@ public class ProductionOrder extends BaseEntity {
     private String jobOwner;
 
     @Column(name = "deadline_date")
-    private LocalDate deadlineDate; 
+    private LocalDate deadlineDate;
 
     @Column(name = "deadline_time")
-    private LocalTime deadlineTime; 
+    private LocalTime deadlineTime;
 
     @Column(name = "delivery_date")
-    private LocalDate deliveryDate; 
+    private LocalDate deliveryDate;
 
     @Column(name = "job_status")
-    private String jobStatus; 
+    private String jobStatus;
 
     @Column(name = "process_status")
     private String processStatus;
 
     @Column(name = "operator_name")
-    private String operatorName; 
+    private String operatorName;
 
     @Column(name = "inspection_date")
-    private LocalDate inspectionDate; 
+    private LocalDate inspectionDate;
 
     @Column(name = "remarks", columnDefinition = "TEXT")
     private String remarks;
 
     @Column(name = "mold_status")
-    private String moldStatus; 
+    private String moldStatus;
 
     @Column(name = "job_type")
-    private String jobType; 
+    private String jobType;
 
     @Column(name = "created_at", updatable = false)
     private LocalDate createdAt;
@@ -99,6 +99,9 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "qt_id")
     private String qtId;
 
+    @Column(name = "qp_id")
+    private String qpId;
+
     @Column(name = "decision_authority")
     private String decisionAuthority;
 
@@ -107,4 +110,7 @@ public class ProductionOrder extends BaseEntity {
 
     @Column(name = "print2_page")
     private Boolean print2Page;
+
+    @Column(name = "created_time", updatable = false)
+    private LocalTime createdTime;
 }

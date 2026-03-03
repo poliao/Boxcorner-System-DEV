@@ -1,10 +1,14 @@
 <h2>ตารางสั่งงานตัวอย่าง</h2>
 <div class="card-body">
-  <div class="card border-0 shadow-sm mb-4 overflow-hidden" >
+  <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-body bg-light">
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
         <div class="row g-3">
-          
+
+          <div class="col-md-3">
+            <input type="text" class="form-control" formControlName="jobId" placeholder="ค้นหา JO">
+          </div>
+
           <div class="col-md-3">
             <input type="number" class="form-control" formControlName="id" placeholder="ค้นหา ลำดับ">
           </div>
@@ -18,7 +22,8 @@
           </div>
 
           <div class="col-md-3">
-            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ค้นหา ผู้รับผิดชอบ">
+            <input type="text" class="form-control" formControlName="responsiblePerson"
+              placeholder="ค้นหา ผู้รับผิดชอบ">
           </div>
 
           <div class="col-md-3">
@@ -33,6 +38,7 @@
               <option value="ไฟล์เสร็จ รอตรวจสอบไฟล์">ไฟล์เสร็จ รอตรวจสอบไฟล์</option>
               <option value="สำเร็จ รออนุมัติไปตารางรอผลิต">สำเร็จ รออนุมัติไปตารางรอผลิต</option>
               <option value="รอเจ้าของงานตรวจสอบ">รอเจ้าของงานตรวจสอบ</option>
+              <option value="งาน Supplier ส่งกลับแล้ว">งาน Supplier ส่งกลับแล้ว</option>
               <option value="แก้ไขงานตัวอย่าง">แก้ไขงานตัวอย่าง</option>
               <option value="แก้ไขไฟล์">แก้ไขไฟล์</option>
               <option value="ไฟล์ถูกต้อง">ไฟล์ถูกต้อง</option>
@@ -44,28 +50,35 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="primary" type="submit" class="w-100 px-3" style="background-color: #003747;">
+                <button mat-flat-button color="primary" type="submit" class="w-100 px-3"
+                  style="background-color: #003747;">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-stroked-button color="warn" type="button" class="w-100 px-3" (click)="onClear()" style="color: #003747;">
+                <button mat-stroked-button color="warn" type="button" class="w-100 px-3" (click)="onClear()"
+                  style="color: #003747;">
                   <mat-icon>refresh</mat-icon> ล้างค่า
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" type="button" class="w-100 px-3" (click)="add()" style="background-color: #10bb00;">
+                <button mat-flat-button color="accent" type="button" class="w-100 px-3" (click)="add()"
+                  style="background-color: #10bb00;">
                   <mat-icon>add_circle</mat-icon> เพิ่มข้อมูล
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" type="button" class="w-100 px-3" (click)="onSearchSort()" style="background-color: #003747;">
-                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่ง</span><span class="d-lg-none">เรียงตามวันส่ง</span>
+                <button mat-flat-button color="accent" type="button" class="w-100 px-3" (click)="onSearchSort()"
+                  style="background-color: #003747;">
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่ง</span><span
+                    class="d-lg-none">เรียงตามวันส่ง</span>
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterUnassigned()" style="background-color: #003747;">
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ขอเลื่อนวันส่ง</span><span class="d-lg-none">งานที่ขอเลื่อนวันส่ง</span>
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterUnassigned()" style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ขอเลื่อนวันส่ง</span><span
+                    class="d-lg-none">งานที่ขอเลื่อนวันส่ง</span>
                   <span *ngIf="shif > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
@@ -75,8 +88,10 @@
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterApproveSample()" style="background-color: #003747;">
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รออนุมัติไปตารางรอผลิต</span><span class="d-lg-none">งานที่รออนุมัติไปตารางรอผลิต</span>
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterApproveSample()" style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รออนุมัติไปตารางรอผลิต</span><span
+                    class="d-lg-none">งานที่รออนุมัติไปตารางรอผลิต</span>
                   <span *ngIf="approveSample > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
@@ -86,12 +101,27 @@
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" class="w-100 px-3 position-relative" (click)="onFilterSampleCheck()" style="background-color: #003747;">
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">รอเจ้าของงานตรวจสอบ</span><span class="d-lg-none">รอเจ้าของงานตรวจสอบ</span>
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterSampleCheck()" style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">รอเจ้าของงานตรวจสอบ</span><span
+                    class="d-lg-none">รอเจ้าของงานตรวจสอบ</span>
                   <span *ngIf="sampleCheck > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ sampleCheck }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterSupplierReturned()" style="background-color: #003747;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งาน Supplier ส่งกลับแล้ว</span><span
+                    class="d-lg-none">Supplier ส่งกลับแล้ว</span>
+                  <span *ngIf="supplierReturned > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ supplierReturned }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </button>
@@ -103,15 +133,8 @@
     </div>
   </div>
 
-  <app-data-table 
-    [headerStyle]="'background: #003747; color: #ffffff;'"
-    [columns]="tableColumns" 
-    [data]="tableData" 
-    [totalElements]="totalElements" 
-    [pageSize]="pageSize"
-    [pageIndex]="pageIndex" 
-    [clickableColumn]="'id'" 
-    (pageChange)="onPageChange($event)"
-    (rowClick)="onRowClick($event)">
+  <app-data-table [headerStyle]="'background: #003747; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
+    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
 </div>

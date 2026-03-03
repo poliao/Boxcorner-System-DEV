@@ -9,17 +9,30 @@
           </button>
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ลำดับ</label>
-          <input type="text" formControlName="id" class="form-control">
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
+              style="color: red;">*</span></label>
+          <input type="text" class="form-control" formControlName="jobId">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">QTId</label>
+          <input type="text" class="form-control" formControlName="qtId">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" class="form-control" formControlName="qpId">
         </div>
         <div *ngIf="isSampleOrderId == true" class="col-md-6">
           <label class="form-label font-weight-bold">อ้างอิงตารางตัวอย่าง</label>
           <input type="text" formControlName="sampleOrderId" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="text" class="form-control" formControlName="orderDate">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">เวลาที่สั่งงาน</label>
+          <input type="time" formControlName="createdTime" class="form-control">
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
@@ -64,19 +77,19 @@
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
-          <input type="text" formControlName="operatorName" class="form-control" >
+          <input type="text" formControlName="operatorName" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <input type="text" formControlName="jobType" class="form-control" >
+          <input type="text" formControlName="jobType" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบแม่พิมพ์</label>
-          <input type="text" formControlName="moldMakerName" class="form-control" >
+          <input type="text" formControlName="moldMakerName" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ผู้ตรวจไฟล์</label>
-          <input type="text" formControlName="inspector" class="form-control" >
+          <input type="text" formControlName="inspector" class="form-control">
         </div>
         <div class="col-md-3">
           <label class="form-label fw-bold">เครื่องพิมพ์ <span style="color: red;">*</span></label>
@@ -91,11 +104,10 @@
         </div>
         <div class="col-md-12">
           <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control" >
+          <input type="text" formControlName="remarks" class="form-control">
         </div>
 
       </form>
     </div>
   </div>
 </div>
-

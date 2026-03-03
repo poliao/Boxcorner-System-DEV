@@ -54,6 +54,7 @@ export class Dcsm11Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
+    { key: 'jobIdDisplay', label: 'รหัสงาน' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'responsiblePerson', label: 'ผู้รับผิดชอบ' },
@@ -79,6 +80,7 @@ export class Dcsm11Component implements OnInit {
   initSearchForm(): void {
     this.searchForm = this.fb.group({
       id: [''],
+      jobId: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -99,7 +101,8 @@ export class Dcsm11Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
-           deliveryDate: this.formatDate(item.deliveryDate)
+          jobIdDisplay: item.qpId || item.jobId,
+          deliveryDate: this.formatDate(item.deliveryDate)
         }));
         this.totalElements = res.totalElements;
       },
@@ -119,6 +122,7 @@ export class Dcsm11Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
         this.totalElements = res.totalElements;

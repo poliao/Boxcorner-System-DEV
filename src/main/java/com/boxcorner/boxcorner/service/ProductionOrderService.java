@@ -57,10 +57,12 @@ public class ProductionOrderService {
             existingOrder.setDecisionAuthority(productionOrder.getDecisionAuthority());
             existingOrder.setDecisionAuthorityRemarks(productionOrder.getDecisionAuthorityRemarks());
             existingOrder.setPrint2Page(productionOrder.getPrint2Page());
+            existingOrder.setQpId(productionOrder.getQpId());
 
             return productionOrderRepository.save(existingOrder);
         } else {
             productionOrder.setJobOwner(jobOwner);
+            productionOrder.setCreatedTime(LocalTime.now());
             productionOrder.setCreatedAt(LocalDate.now());
             productionOrder.setUpdatedAt(LocalDate.now());
             productionOrder.setOperatorName("รอผู้รับผิดชอบยืนยัน");
@@ -75,8 +77,9 @@ public class ProductionOrderService {
         return productionOrderRepository.findById(id).orElse(null);
     }
 
-    public ProductionOrder updateDataDalivery(Integer id , Boolean processStatus) {
-        ProductionOrder existingOrder = productionOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
+    public ProductionOrder updateDataDalivery(Integer id, Boolean processStatus) {
+        ProductionOrder existingOrder = productionOrderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูล Design ID: " + id));
         existingOrder.setDataDalivery(processStatus);
         return productionOrderRepository.save(existingOrder);
     }

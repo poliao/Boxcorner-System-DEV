@@ -97,6 +97,10 @@ export class Dcsm02DetailComponent implements OnInit {
       this.designForm.controls['deadlineDate'].disable({ emitEvent: false });
       this.designForm.controls['deadlineTime'].disable({ emitEvent: false });
       this.designForm.controls['customerName'].disable({ emitEvent: false });
+      this.designForm.controls['joId'].disable({ emitEvent: false });
+      this.designForm.controls['qtId'].disable({ emitEvent: false });
+      this.designForm.controls['qpId'].disable({ emitEvent: false });
+
       this.isBtnSave = false;
     }
     if (this.designForm.getRawValue().processStatus == 'เสร็จสิ้น') {
@@ -108,23 +112,29 @@ export class Dcsm02DetailComponent implements OnInit {
   initForm(): void {
     this.designForm = this.fb.group({
       id: [''],
+      joId: ['', Validators.required],
+      qtId: [''],
+      qpId: [''],
+      version: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
       jobDetails: ['', Validators.required],
       remarks: [''],
-      jobOwner: ['', Validators.required],
+      jobOwner: [''],
       deadlineDate: ['', Validators.required],
       deadlineTime: ['', Validators.required],
-      assignee: [''],
-      processStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
-      confirmStatus: ['รอผู้รับผิดชอบยืนยัน', Validators.required],
+      assignee: ['รอผู้รับผิดชอบยืนยัน'],
+      processStatus: ['รอผู้รับผิดชอบยืนยัน'],
+      confirmStatus: ['รอผู้รับผิดชอบยืนยัน'],
       fileName: [''],
       customerName: [''],
       rowVersion: [null],
       confirmDate: [null],
       orderTime: [null],
+      remarkAdd: [null],
     });
     this.designForm.controls['id'].disable({ emitEvent: false });
+    this.designForm.controls['version'].disable({ emitEvent: false });
     this.designForm.controls['orderDate'].disable({ emitEvent: false });
     this.designForm.controls['jobOwner'].disable({ emitEvent: false });
     this.designForm.controls['assignee'].disable({ emitEvent: false });
@@ -132,6 +142,16 @@ export class Dcsm02DetailComponent implements OnInit {
     this.designForm.controls['confirmStatus'].disable({ emitEvent: false });
     this.designForm.controls['fileName'].disable({ emitEvent: false });
     this.designForm.controls['orderTime'].disable({ emitEvent: false });
+    this.designForm.controls['remarkAdd'].disable({ emitEvent: false });
+
+    this.designForm.get('qpId')?.valueChanges.subscribe(value => {
+      if (value) {
+        this.designForm.get('joId')?.clearValidators();
+      } else {
+        this.designForm.get('joId')?.setValidators([Validators.required]);
+      }
+      this.designForm.get('joId')?.updateValueAndValidity();
+    });
   }
 
   patchFormData(data: any): void {
@@ -153,6 +173,9 @@ export class Dcsm02DetailComponent implements OnInit {
       if (this.designForm.valid) {
         this.loadingService.show();
         const data = this.designForm.getRawValue();
+        if (data.remarkAdd != null && data.remarkAdd != 'เพิ่มรายละเอียดแล้ว') {
+          data.remarkAdd = 'เพิ่มรายละเอียดแล้ว';
+        }
         this.dcsm02Service.save(data).subscribe(
           {
             next: (response) => {
@@ -309,7 +332,9 @@ export class Dcsm02DetailComponent implements OnInit {
       customerName: this.designForm.getRawValue().customerName,
       fileName: this.designForm.getRawValue().fileName,
       jobId: this.jobId.value,
-      print2Page: this.print2Page.value
+      print2Page: this.print2Page.value,
+      qtId: this.designForm.getRawValue().qtId,
+      qpId: this.designForm.getRawValue().qpId,
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางขึ้นตัวอย่าง',
@@ -386,82 +411,107 @@ export class Dcsm02DetailComponent implements OnInit {
       cancelButtonText: 'ยกเลิก'
     }).then((result) => {
       if (result.isConfirmed) {
-        const data = this.designForm.getRawValue();
-        data.noteEdit = note;
-        data.processStatus = 'รอดำเนินการแก้ไข';
-        data.confirmStatus = 'ไม่ผ่าน'
         this.loadingService.show();
-        this.dcsm02Service.save(data).subscribe((response) => {
-          try {
-            this.patchFormData(response);
+
+        // 1. Update original record
+        const originalData = this.designForm.getRawValue();
+        originalData.processStatus = 'แก้ไข';
+        originalData.confirmStatus = 'แก้ไข';
+
+        this.dcsm02Service.save(originalData).subscribe({
+          next: () => {
+            // 2. Create and save new record (copy)
+            const newData = { ...originalData };
+            newData.id = '';
+            newData.rowVersion = null;
+            newData.processStatus = 'รอดำเนินการแก้ไข';
+            newData.confirmStatus = 'ไม่ผ่าน';
+            newData.noteEdit = note;
+
+            this.dcsm02Service.save(newData).subscribe({
+              next: () => {
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+                this.router.navigate(['/Dcsm02']);
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาดในการสร้างรายการใหม่');
+              }
+            });
+          },
+          error: (error) => {
             this.loadingService.hide();
-            this.checkBtn();
-            this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-            this.router.navigate(['/Dcsm02']);
-          } catch (error) {
-            this.loadingService.hide();
-            this.sweetAlert.error('Save', error.error);
+            this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาดในการอัปเดตรายการเดิม');
           }
         });
       }
     });
   }
 
-  formatDateThai(dateString: string): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString().slice(-2); // เอาแค่ 2 หลักท้าย ค.ศ.
-    return `${day}/${month}/${year}`;
-  }
-
-  getThaiDateInput(controlName: string): string {
+  getTimeOnly(controlName: string): string {
     const value = this.designForm.get(controlName)?.value;
-    return this.formatDateThai(value);
+    if (!value) return '';
+    return value.substring(0, 5);
   }
 
-  onThaiDateInput(event: any, controlName: string): void {
-    let value = event.target.value.replace(/[^0-9]/g, '');
-
-    if (value.length >= 2) {
-      value = value.substring(0, 2) + '/' + value.substring(2);
-    }
-    if (value.length >= 5) {
-      value = value.substring(0, 5) + '/' + value.substring(5, 7);
-    }
-
-    event.target.value = value;
-
-    if (value.length === 8) {
-      const parts = value.split('/');
-      if (parts.length === 3) {
-        const day = parseInt(parts[0]);
-        const month = parseInt(parts[1]);
-        let year = parseInt(parts[2]);
-
-        if (year <= 50) {
-          year += 2000;
-        } else {
-          year += 1900;
-        }
-
-        if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
-          const isoDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-          if (this.designForm.get(controlName)) {
-            this.designForm.get(controlName)?.setValue(isoDate);
-          }
-        }
-      }
-    } else {
-      if (this.designForm.get(controlName)) {
-        this.designForm.get(controlName)?.setValue('');
-      }
-    }
-  }
 
   closeCancelModal() {
     this.showCancelModal = false;
+  }
+
+  onCopy() {
+    Swal.fire({
+      title: 'ยืนยันการคัดลอก',
+      text: "คุณต้องการคัดลอกข้อมูลนี้เพื่อสร้างงานใหม่ ใช่หรือไม่?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#ff8c00',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const currentData = this.designForm.getRawValue();
+        this.designForm.patchValue({
+          id: null,
+          joId: currentData.joId,
+          qtId: currentData.qtId,
+          qpId: currentData.qpId,
+          version: null,
+          folderName: currentData.folderName,
+          jobDetails: currentData.jobDetails,
+          customerName: currentData.customerName,
+          deadlineDate: currentData.deadlineDate,
+          deadlineTime: currentData.deadlineTime,
+          remarks: currentData.remarks,
+          orderDate: new Date().toISOString().substring(0, 10),
+          jobOwner: null,
+          assignee: 'รอผู้รับผิดชอบยืนยัน',
+          processStatus: 'รอผู้รับผิดชอบยืนยัน',
+          confirmStatus: 'รอผู้รับผิดชอบยืนยัน',
+          fileName: null,
+          rowVersion: null,
+          confirmDate: null,
+          orderTime: null
+        });
+        this.dcsm02Service.save(this.designForm.getRawValue()).subscribe(
+          {
+            next: (response) => {
+              this.patchFormData(response);
+              this.loadingService.hide();
+              this.checkBtn();
+              this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+              this.router.navigate(['/Dcsm02']);
+            },
+            error: (error) => {
+              this.loadingService.hide();
+              this.sweetAlert.error('Error', error.error || 'เกิดข้อผิดพลาด');
+            }
+          }
+        );
+      }
+    });
   }
 
   confirmApproveProduction() {
@@ -490,7 +540,9 @@ export class Dcsm02DetailComponent implements OnInit {
       jobId: this.jobId.value,
       decisionAuthority: this.decisionAuthority.value,
       decisionAuthorityRemarks: this.decisionAuthorityRemarks.value,
-      print2Page: this.print2Page.value
+      print2Page: this.print2Page.value,
+      qtId: this.designForm.getRawValue().qtId,
+      qpId: this.designForm.getRawValue().qpId,
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',

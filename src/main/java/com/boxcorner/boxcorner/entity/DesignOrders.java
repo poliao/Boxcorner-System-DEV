@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import jakarta.persistence.Column;
@@ -66,4 +67,24 @@ public class DesignOrders extends BaseEntity {
     @Column(name = "order_time")
     private LocalTime orderTime;
 
+    @Column(name = "jo_id")
+    private String JoId;
+
+    @Column(name = "qt_id")
+    private String QtId;
+
+    @Column(name = "qp_id")
+    private String QpId;
+
+    @Column(name = "version")
+    private String version;
+
+    @Column(name = "remark_add")
+    private String remarkAdd;
+
+    @Column(name = "start_datetime")
+    private LocalDateTime startDatetime;
+
+    @Column(name = "end_datetime")
+    private LocalDateTime endDatetime;
 }

@@ -8,6 +8,9 @@
             <input type="number" class="form-control" formControlName="id" placeholder="ค้นหา ลำดับ">
           </div>
           <div class="col-md-3">
+            <input type="text" class="form-control" formControlName="jobId" placeholder="ค้นหา JO">
+          </div>
+          <div class="col-md-3">
             <input type="text" class="form-control" formControlName="folderName" placeholder="ค้นหา ชื่อโฟลเดอร์">
           </div>
           <div class="col-md-3">
@@ -56,7 +59,8 @@
             <div class="row g-2">
 
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="primary" type="submit" class="w-100 px-3" style="background-color: #350142;">
+                <button mat-flat-button color="primary" type="submit" class="w-100 px-3"
+                  style="background-color: #350142;">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>
@@ -66,7 +70,8 @@
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button color="accent" type="button" class="w-100 px-3" (click)="add()" style="background-color: #10bb00;">
+                <button mat-flat-button color="accent" type="button" class="w-100 px-3" (click)="add()"
+                  style="background-color: #10bb00;">
                   <mat-icon>add_circle</mat-icon> เพิ่มข้อมูล
                 </button>
               </div>
@@ -78,14 +83,16 @@
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button type="button" mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterUnassigned()" style="background-color: #350142;">
+                <button type="button" mat-flat-button class="w-100 px-3 text-white position-relative"
+                  (click)="onFilterUnassigned()" style="background-color: #350142;">
                   <span *ngIf="machine > 0"
                     class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ machine }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">รอยืนยันเสร็จสิ้น</span><span class="d-lg-none">รอยืนยันเสร็จสิ้น</span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">รอยืนยันเสร็จสิ้น</span><span
+                    class="d-lg-none">รอยืนยันเสร็จสิ้น</span>
                 </button>
               </div>
             </div>

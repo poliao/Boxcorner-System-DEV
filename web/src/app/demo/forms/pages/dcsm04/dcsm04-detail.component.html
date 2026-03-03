@@ -41,20 +41,25 @@
             </button>
           </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">รหัสงาน <span style="color: red;">*</span></label>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
+              style="color: red;">*</span></label>
           <input type="text" formControlName="jobId" class="form-control"
             [class.is-invalid]="mainForm.get('jobId')?.invalid && mainForm.get('jobId')?.touched">
         </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">รหัสใบเสนอราคา</label>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QTId</label>
           <input type="text" formControlName="qtId" class="form-control">
         </div>
-        <div *ngIf="isDesign" class="col-md-6">
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">QPId</label>
+          <input type="text" formControlName="qpId" class="form-control">
+        </div>
+        <div *ngIf="isDesign" class="col-md-2">
           <label class="form-label font-weight-bold">อ้างอิงตารางสั่งออกแบบ</label>
           <input type="text" formControlName="designOrderId" class="form-control">
         </div>
@@ -71,6 +76,10 @@
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
         </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
+          <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
+        </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน<span style="color: red;">*</span></label>
           <input type="text" formControlName="folderName" class="form-control" placeholder="ระบุชื่อโฟลเดอร์"
@@ -80,14 +89,7 @@
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
           <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
         </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">เจ้าของงาน</label>
-          <input type="text" formControlName="jobOwner" class="form-control" placeholder="ชื่อผู้สั่งงาน">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ผู้รับผิดชอบ (Assignee)</label>
-          <input type="text" formControlName="responsiblePerson" class="form-control" placeholder="ชื่อผู้ออกแบบ">
-        </div>
+
         <div class="col-md-3">
           <label class="form-label font-weight-bold">วันที่ต้องส่ง<span style="color: red;">*</span></label>
           <input type="text" #deliveryDateInput class="form-control" (input)="onThaiDateInput($event, 'deliveryDate')"

@@ -68,6 +68,9 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('decisionAuthority')?.enable();
       this.mainForm.get('decisionAuthorityRemarks')?.enable();
       this.mainForm.get('print2Page')?.enable();
+      this.mainForm.get('jobId')?.enable();
+      this.mainForm.get('qtId')?.enable();
+      this.mainForm.get('qpId')?.enable();
       this.isSave = true
     }
   }
@@ -105,7 +108,9 @@ export class Dcsm06DetailComponent implements OnInit {
       decisionAuthorityRemarks: [null],
       print2Page: [false],
       jobId: [null, Validators.required],
-      qtId: [null, Validators.required],
+      qtId: [null],
+      qpId: [null],
+      createdTime: [null],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -134,6 +139,19 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('print2Page')?.disable({ emitEvent: false });
     this.mainForm.get('jobId')?.disable({ emitEvent: false });
     this.mainForm.get('qtId')?.disable({ emitEvent: false });
+    this.mainForm.get('createdTime')?.disable({ emitEvent: false });
+    this.mainForm.get('qpId')?.disable({ emitEvent: false });
+
+    // Conditional Validation: If QP is filled, JO is not required. If no QP, JO is required.
+    this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
+      const jobIdControl = this.mainForm.get('jobId');
+      if (value && value.trim() !== '') {
+        jobIdControl?.clearValidators();
+      } else {
+        jobIdControl?.setValidators([Validators.required]);
+      }
+      jobIdControl?.updateValueAndValidity();
+    });
   }
 
   patchFormData(data: any): void {
@@ -266,5 +284,12 @@ export class Dcsm06DetailComponent implements OnInit {
       decisionAuthority: null,
       decisionAuthorityRemarks: null
     });
+  }
+
+  getCreatedTime(): string {
+    const createdAt = this.mainForm.get('createdAt')?.value;
+    if (!createdAt) return '';
+    const date = new Date(createdAt);
+    return date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
   }
 }

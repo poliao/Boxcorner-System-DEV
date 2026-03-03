@@ -8,6 +8,9 @@
             <input type="number" class="form-control" formControlName="id" placeholder="ค้นหา ลำดับ">
           </div>
           <div class="col-md-3">
+            <input type="text" class="form-control" formControlName="jobId" placeholder="ค้นหา JO">
+          </div>
+          <div class="col-md-3">
             <input type="text" class="form-control" formControlName="folderName" placeholder="ค้นหา ชื่อโฟลเดอร์">
           </div>
           <div class="col-md-3">
@@ -56,7 +59,8 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button type="button" class="w-100 px-3 text-white" (click)="onClear()" style="background-color: #350142;">
+                <button mat-flat-button type="button" class="w-100 px-3 text-white" (click)="onClear()"
+                  style="background-color: #350142;">
                   <mat-icon>clear_all</mat-icon> ล้างค่า
                 </button>
               </div>
@@ -66,61 +70,71 @@
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterUnassigned()" style="background-color: #350142;">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterUnassigned()"
+                  style="background-color: #350142;">
                   <span *ngIf="countBacklog > 0"
                     class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ countBacklog }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่เริ่มดำเนินการ</span><span class="d-lg-none">ยังไม่เริ่ม</span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่เริ่มดำเนินการ</span><span
+                    class="d-lg-none">ยังไม่เริ่ม</span>
                 </button>
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterInProcess()" style="background-color: #350142;">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterInProcess()"
+                  style="background-color: #350142;">
                   <span *ngIf="inProcess > 0"
                     class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ inProcess }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่กำลังดำเนินการ</span><span class="d-lg-none">กำลังดำเนินการ</span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่กำลังดำเนินการ</span><span
+                    class="d-lg-none">กำลังดำเนินการ</span>
                 </button>
               </div>
 
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterSupplier()" style="background-color: #350142;">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterSupplier()"
+                  style="background-color: #350142;">
                   <span *ngIf="isSupplier > 0"
                     class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ isSupplier }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานรอส่ง Supplier</span><span class="d-lg-none">รอส่งSupplier</span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานรอส่ง Supplier</span><span
+                    class="d-lg-none">รอส่งSupplier</span>
                 </button>
               </div>
 
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterKeepSupplier()" style="background-color: #350142;">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterKeepSupplier()"
+                  style="background-color: #350142;">
                   <span *ngIf="isKeepSupplier > 0"
                     class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ isKeepSupplier }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอรับกลับจาก Supplier</span><span class="d-lg-none">งานที่รอรับกลับ</span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอรับกลับจาก Supplier</span><span
+                    class="d-lg-none">งานที่รอรับกลับ</span>
                 </button>
               </div>
 
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
-                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterFinished()" style="background-color: #350142;">
+                <button mat-flat-button class="w-100 px-3 text-white position-relative" (click)="onFilterFinished()"
+                  style="background-color: #350142;">
                   <span *ngIf="finished > 0"
                     class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ finished }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจสอบ</span><span class="d-lg-none">รอตรวจสอบ</span>
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอตรวจสอบ</span><span
+                    class="d-lg-none">รอตรวจสอบ</span>
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">

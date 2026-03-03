@@ -54,7 +54,7 @@ export class Dcsm12DetailComponent implements OnInit {
 
   initForm(): void {
     this.mainForm = this.fb.group({
-       id: [''],
+      id: [''],
       searchId: [''],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
       folderName: ['', Validators.required],
@@ -84,9 +84,11 @@ export class Dcsm12DetailComponent implements OnInit {
       rowVersion: [null],
       jobId: [null],
       qtId: [null],
+      qpId: [null],
       typeJob: [null],
       machineName: [null],
       print2Page: [null],
+      orderTime: [null],
     });
     this.mainForm.controls['id'].disable({ emitEvent: false });
     this.mainForm.controls['orderDate'].disable({ emitEvent: false });
@@ -102,7 +104,20 @@ export class Dcsm12DetailComponent implements OnInit {
     this.mainForm.controls['note'].disable({ emitEvent: false });
     this.mainForm.controls['noteEdit'].disable({ emitEvent: false });
     this.mainForm.controls['customerName'].disable({ emitEvent: false });
+    this.mainForm.controls['jobId'].disable({ emitEvent: false });
+    this.mainForm.controls['qtId'].disable({ emitEvent: false });
+    this.mainForm.controls['qpId'].disable({ emitEvent: false });
     this.mainForm.controls['typeJob'].disable({ emitEvent: false });
+    this.mainForm.controls['orderTime'].disable({ emitEvent: false });
+    this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
+      const jobIdControl = this.mainForm.get('jobId');
+      if (value && value.trim() !== '') {
+        jobIdControl?.clearValidators();
+      } else {
+        jobIdControl?.setValidators([Validators.required]);
+      }
+      jobIdControl?.updateValueAndValidity();
+    });
   }
 
   patchFormData(data: any): void {

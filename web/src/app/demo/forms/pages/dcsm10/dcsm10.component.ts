@@ -49,7 +49,8 @@ export class Dcsm10Component implements OnInit {
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
-    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' }, 
+    { key: 'jobIdDisplay', label: 'รหัสงาน' },
+    { key: 'deadlineDate', label: 'กำหนดส่งลูกค้า' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'operatorName', label: 'ผู้รับผิดชอบ' },
@@ -78,6 +79,7 @@ export class Dcsm10Component implements OnInit {
   initSearchForm(): void {
     this.searchForm = this.fb.group({
       id: [''],
+      jobId: [''],
       folderName: [''],
       jobOwner: [''],
       responsiblePerson: [''],
@@ -88,17 +90,18 @@ export class Dcsm10Component implements OnInit {
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
-    
+
   }
 
   loadData(): void {
 
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
-      id: formValues.id,    
+      id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
+      operatorName: formValues.responsiblePerson,
       jobStatus: 'เสร็จสิ้น',
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
@@ -113,6 +116,7 @@ export class Dcsm10Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -127,10 +131,11 @@ export class Dcsm10Component implements OnInit {
   loadDataSort(): void {
     const formValues = this.searchForm.getRawValue();
     const apiFilters = {
-      id: formValues.id,    
+      id: formValues.id,
+      jobId: formValues.jobId,
       folderName: formValues.folderName,
       jobOwner: formValues.jobOwner,
-      operatorName: formValues.responsiblePerson, 
+      operatorName: formValues.responsiblePerson,
       jobStatus: 'เสร็จสิ้น',
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
@@ -145,6 +150,7 @@ export class Dcsm10Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
           ...item,
+          jobIdDisplay: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -180,6 +186,7 @@ export class Dcsm10Component implements OnInit {
   onClear(): void {
     this.searchForm.reset({
       id: '',
+      jobId: '',
       folderName: '',
       jobOwner: '',
       responsiblePerson: '',
@@ -218,9 +225,9 @@ export class Dcsm10Component implements OnInit {
   onPageChange(event: any): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    if(this.isSortMode == true){
+    if (this.isSortMode == true) {
       this.loadDataSort();
-    }else{
+    } else {
       this.loadData();
     }
   }
@@ -229,7 +236,7 @@ export class Dcsm10Component implements OnInit {
     this.router.navigate(['/Dcsm10Detail', row.id]);
   }
 
-  Backlog(){
+  Backlog() {
     this.dcsm10Service.countBacklog().subscribe({
       next: (data: number) => {
         this.countBacklog = data;
@@ -246,7 +253,7 @@ export class Dcsm10Component implements OnInit {
     this.onSearch();
   }
 
-  BackloginProcessMold(){
+  BackloginProcessMold() {
     this.dcsm10Service.countMoldStatus('กำลังทำแม่พิมพ์').subscribe({
       next: (data: number) => {
         this.inProcessMold = data;
@@ -261,7 +268,7 @@ export class Dcsm10Component implements OnInit {
     this.onSearch();
   }
 
-  BackloginSendMold(){
+  BackloginSendMold() {
     this.dcsm10Service.countMoldStatus('แม่พิมพ์เสร็จแล้ว').subscribe({
       next: (data: number) => {
         this.sendMold = data;
