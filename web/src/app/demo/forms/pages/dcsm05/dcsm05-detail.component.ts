@@ -542,7 +542,7 @@ export class Dcsm05DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.mainForm.get('status')!.setValue('งานภายใน');
+        this.mainForm.get('status')!.setValue('รอดำเนินการ');
         this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);

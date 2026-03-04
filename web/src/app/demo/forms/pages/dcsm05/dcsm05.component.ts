@@ -60,6 +60,8 @@ export class Dcsm05Component implements OnInit {
   backSample = 0;
   countEdit = 0;
   back = 0;
+  sendSupplierCount = 0;
+  waitReturnCount = 0;
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
@@ -95,6 +97,8 @@ export class Dcsm05Component implements OnInit {
     this.countBacklogBackSample();
     this.countBacklogSendBack();
     this.countEditSample();
+    this.countBacklogSendSupplier();
+    this.countBacklogWaitReturn();
   }
 
   initSearchForm(): void {
@@ -392,8 +396,38 @@ export class Dcsm05Component implements OnInit {
   }
 
   onFilterEditSample() {
-    this.onClearAll()
+    this.onClearAll();
     this.searchForm.get('status')?.setValue('รอเคลียร์ไฟล์ใหม่');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
+    this.onSearch();
+  }
+
+  countBacklogSendSupplier() {
+    this.dcsm05Service.countBacklogSendSupplier().subscribe({
+      next: (data: number) => {
+        this.sendSupplierCount = data;
+      },
+    });
+  }
+
+  onFilterSendSupplier() {
+    this.onClearAll();
+    this.searchForm.get('status')?.setValue('ส่ง Supplier');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
+    this.onSearch();
+  }
+
+  countBacklogWaitReturn() {
+    this.dcsm05Service.countBacklogWaitReturn().subscribe({
+      next: (data: number) => {
+        this.waitReturnCount = data;
+      },
+    });
+  }
+
+  onFilterWaitReturn() {
+    this.onClearAll();
+    this.searchForm.get('status')?.setValue('รับงานแล้วรอส่งกลับ');
     this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
     this.onSearch();
   }

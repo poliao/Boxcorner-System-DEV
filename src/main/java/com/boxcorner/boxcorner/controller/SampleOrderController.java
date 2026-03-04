@@ -342,4 +342,16 @@ public class SampleOrderController {
         return ResponseEntity.ok(
                 sampleOrderService.countBacklogStatus("รอเคลียร์ไฟล์ใหม่", tokenService.getCurrentUser(httpRequest)));
     }
+
+    @GetMapping("/countBacklogSendSupplier")
+    public ResponseEntity<Integer> countBacklogSendSupplier(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(
+                sampleOrderService.countBacklogStatus("ส่ง Supplier", tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countBacklogWaitReturn")
+    public ResponseEntity<Integer> countBacklogWaitReturn(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(
+                sampleOrderService.countBacklogStatus("รับงานแล้วรอส่งกลับ", tokenService.getCurrentUser(httpRequest)));
+    }
 }

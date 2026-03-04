@@ -45,6 +45,9 @@
               <option value="สำเร็จ รออนุมัติไปตารางรอผลิต">สำเร็จ รออนุมัติไปตารางรอผลิต</option>
               <option value="แก้ไขงานตัวอย่าง">แก้ไขงานตัวอย่าง</option>
               <option value="รอเคลียร์ไฟล์ใหม่">รอเคลียร์ไฟล์ใหม่</option>
+              <option value="ส่ง Supplier">ส่ง Supplier</option>
+              <option value="รับงานแล้วรอส่งกลับ">รอรับกลับจาก Supplier</option>
+              <option value="งาน Supplier ส่งกลับแล้ว">งาน Supplier ส่งกลับแล้ว</option>
               <option value="แก้ไข">แก้ไข</option>
               <option value="ผ่าน">ผ่าน</option>
             </select>
@@ -203,6 +206,32 @@
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
                     {{ countEdit }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterSendSupplier()" style="background-color: #350142; color: #67ffc5;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานส่ง Supplier</span><span
+                    class="d-lg-none">งานส่ง Supplier</span>
+                  <span *ngIf="sendSupplierCount > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #67ffc5;">
+                    {{ sendSupplierCount }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterWaitReturn()" style="background-color: #350142; color: #67ffc5;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานSupplierรอส่งกลับ</span><span
+                    class="d-lg-none">งานSupplierรอส่งกลับ</span>
+                  <span *ngIf="waitReturnCount > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #67ffc5;">
+                    {{ waitReturnCount }}
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </button>

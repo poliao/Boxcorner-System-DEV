@@ -312,11 +312,14 @@ export class Dcsm03Component implements OnInit {
   }
 
   clearAllFilters() {
+    this.filterId = '';
+    this.filterjo = '';
     this.filterjobdetails = '';
     this.filterowner = '';
     this.filterassignee = '';
     this.filterprocess = '';
     this.filterconfirm = '';
+    this.filterRemarkStatus = '';
     this.startDate = null;
     this.endDate = null;
     this.onSearchChange();
@@ -344,9 +347,7 @@ export class Dcsm03Component implements OnInit {
   onFilterUnassigned() {
     this.clearAll();
     this.filterassignee = 'รอผู้รับผิดชอบยืนยัน';
-    setTimeout(() => {
-      this.onSearchChange();
-    }, 0);
+    this.onSearchChange();
   }
 
   countBacklogInProgress() {
@@ -361,9 +362,7 @@ export class Dcsm03Component implements OnInit {
   onFilterInProgress() {
     this.clearAll();
     this.filterprocess = 'กำลังดำเนินการ';
-    setTimeout(() => {
-      this.onSearchChange();
-    }, 0);
+    this.onSearchChange();
   }
 
   countBacklogPending() {
@@ -378,9 +377,7 @@ export class Dcsm03Component implements OnInit {
   onFilterPending() {
     this.clearAll();
     this.filterprocess = 'รอดำเนินการ';
-    setTimeout(() => {
-      this.onSearchChange();
-    }, 0);
+    this.onSearchChange();
   }
 
   countBacklogCheck() {
@@ -395,9 +392,7 @@ export class Dcsm03Component implements OnInit {
   onFilterCheck() {
     this.clearAll();
     this.filterconfirm = 'รอตรวจสอบ';
-    setTimeout(() => {
-      this.onSearchChange();
-    }, 0);
+    this.onSearchChange();
   }
 
   countBacklogEdit() {
@@ -412,9 +407,7 @@ export class Dcsm03Component implements OnInit {
   onFilterEdit() {
     this.clearAll();
     this.filterprocess = 'รอดำเนินการแก้ไข';
-    setTimeout(() => {
-      this.onSearchChange();
-    }, 0);
+    this.onSearchChange();
   }
 
   countBacklogComplete() {
@@ -429,12 +422,11 @@ export class Dcsm03Component implements OnInit {
   onFilterComplete() {
     this.clearAll();
     this.filterconfirm = 'ผ่าน';
-    setTimeout(() => {
-      this.onSearchChange();
-    }, 0);
+    this.onSearchChange();
   }
 
   clearAll() {
+    this.filterId = '';
     this.filterjobdetails = '';
     this.filterowner = '';
     this.filterassignee = '';
@@ -444,7 +436,7 @@ export class Dcsm03Component implements OnInit {
     this.filterRemarkStatus = '';
     this.startDate = null;
     this.endDate = null;
-    this.onSearchChange();
+    // Don't call onSearchChange() here if we're using it as a helper
   }
 
   countDetailsAdded() {
@@ -459,8 +451,6 @@ export class Dcsm03Component implements OnInit {
   onFilterDetailsAdded() {
     this.clearAll();
     this.filterRemarkStatus = 'เพิ่มรายละเอียดแล้ว';
-    setTimeout(() => {
-      this.onSearchChange();
-    }, 0);
+    this.onSearchChange();
   }
 }
