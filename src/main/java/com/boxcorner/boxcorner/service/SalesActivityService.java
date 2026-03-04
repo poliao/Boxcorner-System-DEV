@@ -96,14 +96,16 @@ public class SalesActivityService {
             int page,
             int size) {
         Pageable paging = PageRequest.of(page, size);
+        LocalDateTime startDateStart = startDate != null ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateNextDay = endDate != null ? endDate.atStartOfDay().plusDays(1) : null;
         return salesActivityRepository.findByFilters(
                 activityId,
                 salesName,
                 customerName,
                 contactPerson,
                 isNewCustomer,
-                startDate,
-                endDate,
+                startDateStart,
+                endDateNextDay,
                 startDateMain,
                 endDateMain,
                 paging);
@@ -123,14 +125,16 @@ public class SalesActivityService {
             int page,
             int size) {
         Pageable paging = PageRequest.of(page, size);
+        LocalDateTime startDateStart = startDate != null ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateNextDay = endDate != null ? endDate.atStartOfDay().plusDays(1) : null;
         return salesActivityRepository.findByFiltersAdmin(
                 activityId,
                 salesName,
                 customerName,
                 contactPerson,
                 isNewCustomer,
-                startDate,
-                endDate,
+                startDateStart,
+                endDateNextDay,
                 startDateMain,
                 endDateMain,
                 paging);

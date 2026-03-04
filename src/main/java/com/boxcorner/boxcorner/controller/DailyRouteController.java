@@ -36,7 +36,7 @@ public class DailyRouteController {
                     .orElseThrow(() -> new RuntimeException("ไม่พบผู้ใช้"));
 
             LocalDate today = LocalDate.now(ZoneId.of("Asia/Bangkok"));
-            
+
             // ตรวจสอบว่ามีการเริ่มงานวันนี้แล้วหรือไม่
             boolean exists = dailyRouteRepository.existsByEmployeeIdAndWorkDate(user.getId(), today);
             if (exists) {
@@ -66,7 +66,7 @@ public class DailyRouteController {
                     .orElseThrow(() -> new RuntimeException("ไม่พบผู้ใช้"));
 
             LocalDate today = LocalDate.now(ZoneId.of("Asia/Bangkok"));
-            
+
             DailyRoute dailyRoute = dailyRouteRepository.findByEmployeeIdAndWorkDate(user.getId(), today)
                     .orElseThrow(() -> new RuntimeException("คุณยังไม่ได้เริ่มงานวันน้"));
 
@@ -80,6 +80,31 @@ public class DailyRouteController {
 
             dailyRouteRepository.save(dailyRoute);
             return ResponseEntity.ok(dailyRoute);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/searchAdmin")
+    public ResponseEntity<?> searchAdmin(
+            @org.springframework.web.bind.annotation.RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @org.springframework.web.bind.annotation.RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @org.springframework.web.bind.annotation.RequestParam(value = "salesName", required = false) String salesName) {
+        try {
+            return ResponseEntity.ok(dailyRouteRepository.findByFiltersAdmin(startDate, endDate, salesName));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/search")
+    public ResponseEntity<?> search(
+            @org.springframework.web.bind.annotation.RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @org.springframework.web.bind.annotation.RequestParam(value = "endDate", required = false) LocalDate endDate,
+            Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            return ResponseEntity.ok(dailyRouteRepository.findByFilters(startDate, endDate, username));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

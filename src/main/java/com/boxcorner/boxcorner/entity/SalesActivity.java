@@ -21,6 +21,7 @@ import lombok.Data;
 @Entity
 @Table(name = "sales_activities")
 @Data
+@lombok.EqualsAndHashCode(callSuper = false)
 public class SalesActivity extends BaseEntity {
 
     @Id
@@ -66,7 +67,7 @@ public class SalesActivity extends BaseEntity {
 
     // FK relationship — ใช้ LAZY fetch ป้องกัน circular reference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "daily_route_id", nullable = true)
+    @JoinColumn(name = "daily_route_id", referencedColumnName = "id", insertable = false, updatable = false)
     @JsonIgnoreProperties({ "salesActivities", "hibernateLazyInitializer", "handler" })
     private DailyRoute dailyRoute;
 

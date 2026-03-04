@@ -42,6 +42,26 @@ export class Dcsm28Service {
     }
   }
 
+  getDailyRoutes(filters: any): Observable<any> {
+    let params: any = {
+      startDate: filters.startDate || null,
+      endDate: filters.endDate || null,
+      salesName: filters.salesName || null
+    };
+
+    Object.keys(params).forEach(key => {
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
+    });
+
+    if (this.authService.getUserFromToken().role == 'salesAdmin' || this.authService.getUserFromToken().role == 'SupperAdmin') {
+      return this.http.get(`${this.apiUrl}/dailyRoutes/searchAdmin`, { params: params });
+    } else {
+      return this.http.get(`${this.apiUrl}/dailyRoutes/search`, { params: params });
+    }
+  }
+
   getById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/salesActivities/getById?id=${id}`);
   }

@@ -11,6 +11,7 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
+import { forkJoin, catchError, of } from 'rxjs';
 
 // Fix for default marker icons in Leaflet with webpack
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
@@ -135,20 +136,33 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
             salesName: this.filterSalesName
         };
 
-        this.dcsm28Service.search(0, 500, filters).subscribe({
+        forkJoin({
+            activities: this.dcsm28Service.search(0, 500, filters).pipe(catchError(() => of({ content: [] }))),
+            dailyRoutes: this.dcsm28Service.getDailyRoutes(filters).pipe(catchError(() => of([])))
+        }).subscribe({
             next: (response: any) => {
                 this.loadingService.hide();
-                const activities = response.content;
+                const activities = response.activities.content || [];
+                const dailyRoutes = response.dailyRoutes || [];
                 let bounds = L.latLngBounds([]);
 
-                if (!activities || activities.length === 0) {
-                    this.sweetAlert.warning('ไม่พบข้อมูล', 'ไม่มีข้อมูลกิจกรรมในช่วงเวลานี้');
+                if (activities.length === 0 && dailyRoutes.length === 0) {
+                    this.sweetAlert.warning('ไม่พบข้อมูล', 'ไม่มีข้อมูลในช่วงเวลานี้');
                     return;
                 }
 
                 const routesMap = new Map<number, any>();
 
-                // จัดกลุ่มตาม dailyRoute (แต่ละ 1 วันการทำงานต่อเซล)
+                // 1. นำเอาเส้นทางประจำวันมาตั้งต้น
+                dailyRoutes.forEach((dr: any) => {
+                    // หา salesName จาก employeeId 
+                    const salesUser = this.salesUsers.find(u => u.id === dr.employeeId);
+                    routesMap.set(dr.id, {
+                        dailyRoute: dr,
+                        salesName: salesUser ? salesUser.username : 'ไม่ระบุ',
+                        activities: []
+                    });
+                });
                 activities.forEach((activity: any) => {
                     if (activity.dailyRoute) {
                         const drId = activity.dailyRoute.id;
