@@ -2,7 +2,7 @@ package com.boxcorner.boxcorner.service;
 
 import com.boxcorner.boxcorner.entity.PapProductionOrder;
 import com.boxcorner.boxcorner.repository.PapProductionOrderRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,10 +10,10 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class PapProductionOrderService {
 
-    private final PapProductionOrderRepository repository;
+    @Autowired
+    private PapProductionOrderRepository repository;
 
     @Transactional
     @SuppressWarnings("unchecked")

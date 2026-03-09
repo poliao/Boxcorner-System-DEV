@@ -12,6 +12,10 @@ export class Dcsm20Service {
 
   constructor(private http: HttpClient) { }
 
+  savePapOrder(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/pap/saveJob`, data);
+  }
+
   save(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
   }

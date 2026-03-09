@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.boxcorner.boxcorner.entity.BaseEntity;
 import com.boxcorner.boxcorner.entity.CoatingJob;
 import com.boxcorner.boxcorner.repository.CoatingJobRepository;
 
@@ -29,7 +30,19 @@ public class CoatingJobService {
             coatingJob.setOrderDatetime(LocalDateTime.now());
         }
 
+        if (coatingJob.getStatus() == null) {
+            coatingJob.setStatus(BaseEntity.JobStatus.PENDING);
+        }
+
         return coatingJobRepository.save(coatingJob);
+    }
+
+    @Transactional
+    public CoatingJob updateStatus(int id, BaseEntity.JobStatus status) {
+        CoatingJob job = coatingJobRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบงานเคลือบ id=" + id));
+        job.setStatus(status);
+        return coatingJobRepository.save(job);
     }
 
     public Page<CoatingJob> getCoatingJobsWithSearch(

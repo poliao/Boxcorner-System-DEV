@@ -67,6 +67,7 @@ public class PrintJobService {
             existing.setProductionOrderId(printJob.getProductionOrderId());
             existing.setDecisionAuthority(printJob.getDecisionAuthority());
             existing.setDecisionAuthorityRemarks(printJob.getDecisionAuthorityRemarks());
+            existing.setPapOrderId(printJob.getPapOrderId());
 
             return repository.save(existing);
         }

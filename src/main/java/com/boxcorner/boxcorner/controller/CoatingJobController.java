@@ -102,6 +102,10 @@ public class CoatingJobController {
 
             coatingLogService.save(logEntry, technicianName != null ? technicianName : "");
 
+            // Update CoatingJob status to IN_PROGRESS
+            coatingJobService.updateStatus(coatingJobId,
+                    com.boxcorner.boxcorner.entity.BaseEntity.JobStatus.IN_PROGRESS);
+
             return ResponseEntity.ok(Map.of("message", "เริ่มเคลือบสำเร็จ"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));

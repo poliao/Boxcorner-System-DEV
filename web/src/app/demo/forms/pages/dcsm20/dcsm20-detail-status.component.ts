@@ -18,6 +18,7 @@ import { Dcsm09Service } from '../dcsm09/dcsm09.service';
 })
 
 export class Dcsm20DetailStatusComponent implements OnInit {
+  papOrder: any;
   productionForm!: FormGroup;
   isEditMode = false;
   id: string | null = null;
@@ -184,7 +185,8 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       imageUrl: [null],
       dataDalivery: [false],
       machineSetupCount: [''],
-      rowVersion: [null]
+      rowVersion: [null],
+      papOrderId: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -268,7 +270,6 @@ export class Dcsm20DetailStatusComponent implements OnInit {
 
   onSubmit(): void {
     if (this.productionForm.valid) {
-      const data = this.productionForm.getRawValue();
       const apiFilters = {
         id: this.referenceId,
         dataDalivery: true
@@ -286,14 +287,17 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.loadingService.show();
-          this.dcsm20Service.save(data).subscribe((response) => {
-            this.checkJob(response.id)
-            this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
-              this.patchFormData(response);
-              this.loadingService.hide();
-              this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-              this.router.navigate(['/Dcsm09Detail', this.referenceId]);
-            });
+          this.dcsm20Service.savePapOrder(this.papOrder).subscribe((response) => {
+            this.setFromSave(response);
+            this.dcsm20Service.save(this.productionForm.getRawValue()).subscribe((response) => {
+              this.checkJob(response.id)
+              this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
+                this.patchFormData(response);
+                this.loadingService.hide();
+                this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+                this.router.navigate(['/Dcsm09Detail', this.referenceId]);
+              });
+            })
           })
         }
       });
@@ -368,28 +372,12 @@ export class Dcsm20DetailStatusComponent implements OnInit {
   onFetchData(): void {
     this.loadingService.show();
     const oidPapValue = this.productionForm.get('oidPap')?.value;
-
     this.dcsm20Service.getJobPAP(oidPapValue).subscribe((response) => {
-      this.loadingService.show();
-      this.productionForm.get('jobId')?.setValue(response.header.job_code);
-      this.productionForm.get('customerJobName')?.setValue(response.header.job_name + ' - ' + response.header.customer_name);
-      this.productionForm.get('dueDate')?.setValue(this.convertDateFormat(response.header.delivery_date));
-      this.productionForm.get('printQuantity')?.setValue(response.header.print_sheets);
-      this.productionForm.get('productionQuantity')?.setValue(response.header.quantity);
-      this.productionForm.get('printingDate')?.setValue(response.form_data.d_print === '-' ? null : this.convertDateFormat(response.form_data.d_print));
-      this.productionForm.get('printingResponsible')?.setValue(response.form_data.printer === '-' ? null : (response.form_data.printer === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.printer));
-      this.productionForm.get('coatingDate')?.setValue(response.form_data.d_coat === '-' ? null : this.convertDateFormat(response.form_data.d_coat));
-      this.productionForm.get('coatingResponsible')?.setValue(response.form_data.l_coat === '-' ? null : (response.form_data.l_coat === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.l_coat));
-      this.productionForm.get('stampingDate')?.setValue(response.form_data.d_daicut === '-' ? null : this.convertDateFormat(response.form_data.d_daicut));
-      this.productionForm.get('stampingResponsible')?.setValue(response.form_data.l_pcut === '-' ? null : (response.form_data.l_pcut === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.l_pcut));
-      this.productionForm.get('gluingDate')?.setValue(response.form_data.d_pa === '-' ? null : this.convertDateFormat(response.form_data.d_pa));
-      this.productionForm.get('gluingResponsible')?.setValue(response.form_data.l_pa === '-' ? null : (response.form_data.l_pa === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.form_data.l_pa));
-      this.productionForm.get('qcDate')?.setValue(response.form_data.d_qc === '-' ? null : this.convertDateFormat(response.form_data.d_qc));
-      this.productionForm.get('imageUrl')?.setValue(response.header.image_url === '-' ? null : response.header.image_url);
-      this.productionForm.get('machineSetupCount')?.setValue(response.header.machine_setup_count === '-' ? null : response.header.machine_setup_count);
-      this.jobImageUrl = response.header.image_url || '';
-      this.loadingService.hide();
+      this.setFrom(response)
+      this.papOrder = response
     })
+
+    this.loadingService.hide();
   }
 
   private convertDateFormat(dateStr: string): string {
@@ -449,6 +437,50 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     }
   }
 
+  setFrom(response) {
+    this.productionForm.get('jobId')?.setValue(response.header.jobCode);
+    this.productionForm.get('customerJobName')?.setValue(response.header.jobName + ' - ' + response.header.customerName);
+    this.productionForm.get('dueDate')?.setValue(this.convertDateFormat(response.header.deliveryDate));
+    this.productionForm.get('printQuantity')?.setValue(response.cutting.paper.printQty);
+    this.productionForm.get('productionQuantity')?.setValue(response.header.totalPrintQty);
+    this.productionForm.get('printingDate')?.setValue(response.printing.scheduledDate === '-' ? null : this.convertDateFormat(response.printing.scheduledDate));
+    this.productionForm.get('printingResponsible')?.setValue(response.printing.machine === '-' ? null : (response.printing.machine === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.printing.machine));
+    this.productionForm.get('coatingDate')?.setValue(response.coating.scheduledDate === '-' ? null : this.convertDateFormat(response.coating.scheduledDate));
+    this.productionForm.get('coatingResponsible')?.setValue(response.coating.location === '-' ? null : (response.coating.location === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.coating.location));
+    this.productionForm.get('stampingDate')?.setValue(response.dieCutting.dieCutDeadline === '-' ? null : this.convertDateFormat(response.dieCutting.dieCutDeadline));
+    this.productionForm.get('stampingResponsible')?.setValue(response.dieCutting.location === '-' ? null : (response.dieCutting.location === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.dieCutting.location));
+    this.productionForm.get('gluingDate')?.setValue(response.gluing.scheduledDate === '-' ? null : this.convertDateFormat(response.gluing.scheduledDate));
+    this.productionForm.get('gluingResponsible')?.setValue(response.gluing.location === '-' ? null : (response.gluing.location === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.gluing.location));
+    this.productionForm.get('qcDate')?.setValue(response.qcAndDelivery.scheduledDate === '-' ? null : this.convertDateFormat(response.qcAndDelivery.scheduledDate));
+    this.productionForm.get('imageUrl')?.setValue(response.header.imageUrl === '-' ? null : response.header.imageUrl);
+    this.productionForm.get('machineSetupCount')?.setValue(response.cutting.paper.machineSetup === '-' ? null : response.cutting.paper.machineSetup);
+    this.jobImageUrl = response.header.imageUrl || '';
+    this.loadingService.hide();
+  }
+
+  setFromSave(response) {
+    this.productionForm.get('jobId')?.setValue(response.jobCode);
+    this.productionForm.get('customerJobName')?.setValue(response.jobName + ' - ' + response.customerName);
+    this.productionForm.get('dueDate')?.setValue(this.convertDateFormat(response.deliveryDate));
+    this.productionForm.get('printQuantity')?.setValue(response.cutPaperPrintQty);
+    this.productionForm.get('productionQuantity')?.setValue(response.totalPrintQty);
+    this.productionForm.get('printingDate')?.setValue(response.printScheduledDate === '-' ? null : this.convertDateFormat(response.printScheduledDate));
+    this.productionForm.get('printingResponsible')?.setValue(response.printMachine === '-' ? null : (response.printMachine === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.printMachine));
+    this.productionForm.get('coatingDate')?.setValue(response.coatScheduledDate === '-' ? null : this.convertDateFormat(response.coatScheduledDate));
+    this.productionForm.get('coatingResponsible')?.setValue(response.coatLocation === '-' ? null : (response.coatLocation === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.coatLocation));
+    this.productionForm.get('stampingDate')?.setValue(response.dieCutDeadline === '-' ? null : this.convertDateFormat(response.dieCutDeadline));
+    this.productionForm.get('stampingResponsible')?.setValue(response.dieLocation === '-' ? null : (response.dieLocation === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.dieLocation));
+    this.productionForm.get('gluingDate')?.setValue(response.glueScheduledDate === '-' ? null : this.convertDateFormat(response.glueScheduledDate));
+    this.productionForm.get('gluingResponsible')?.setValue(response.glueLocation === '-' ? null : (response.glueLocation === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.glueLocation));
+    this.productionForm.get('qcDate')?.setValue(response.qcScheduledDate === '-' ? null : this.convertDateFormat(response.qcScheduledDate));
+    this.productionForm.get('imageUrl')?.setValue(response.imageUrl === '-' ? null : response.imageUrl);
+    this.productionForm.get('machineSetupCount')?.setValue(response.cutPaperMachineSetupp === '-' ? null : response.cutPaperMachineSetup);
+    this.productionForm.get('papOrderId')?.setValue(response.id === '-' ? null : response.id);
+
+    this.jobImageUrl = response.imageUrl || '';
+    this.loadingService.hide();
+  }
+
   setPrintJob(id) {
     const DataJob = {
       id: null,
@@ -475,7 +507,8 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       productionOrderId: this.referenceId,
       decisionAuthority: this.decisionAuthority,
       decisionAuthorityRemarks: this.decisionAuthorityRemarks,
-      print2Page: this.print2Page
+      print2Page: this.print2Page,
+      papOrderId: this.productionForm.getRawValue().papOrderId,
     }
     this.dcsm20Service.savePrintJob(DataJob).subscribe({
       next: (response) => {
@@ -483,19 +516,16 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     })
   }
 
-  setCoatJob(id) {
 
+  setCoatJob(id) {
   }
 
   setStampingJob(id) {
-
   }
 
   setGluingJob(id) {
-
   }
 
   setQcJob(id) {
-
   }
 }

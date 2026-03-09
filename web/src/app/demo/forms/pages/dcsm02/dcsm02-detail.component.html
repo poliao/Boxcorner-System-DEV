@@ -3,21 +3,26 @@
     <div style="padding: 10px;">
       <form [formGroup]="designForm" class="row g-3">
         <div class="col-12 d-flex  gap-2 mt-4">
-          <button *ngIf="isBtnApprove == true" (click)="Complete()" class="btn text-white px-5 shadow-sm" style="background-color: #2c005f;">
+          <button *ngIf="isBtnApprove == true" (click)="Complete()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #2c005f;">
             สำเร็จ
           </button>
-          <button *ngIf="isBtnApprove == true" (click)="openApproveProductModal()" class="btn text-white px-5 shadow-sm" style="background-color: #16bd2c;">
+          <button *ngIf="isBtnApprove == true" (click)="openApproveProductModal()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #16bd2c;">
             อนุมัติไปตารางผลิต
           </button>
-          <button *ngIf="isBtnApprove == true" (click)="openApproveSampleModal()" class="btn text-white px-5 shadow-sm" style="background-color: #050046;">
+          <button *ngIf="isBtnApprove == true" (click)="openApproveSampleModal()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #050046;">
             อนุมัติไปตารางสั่งงานตัวอย่าง
           </button>
-          <button *ngIf="isBtnApprove == true" (click)="openEditModal()" class="btn text-white px-5 shadow-sm" style="background-color: #b61a1a;">
+          <button *ngIf="isBtnApprove == true" (click)="openEditModal()" class="btn text-white px-5 shadow-sm"
+            style="background-color: #b61a1a;">
             แก้ไข
           </button>
         </div>
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isEditMode" (click)="onCopy()" type="button" class="btn text-white px-5 shadow-sm" style="background-color: #ff8c00;">
+          <button *ngIf="isEditMode" (click)="onCopy()" type="button" class="btn text-white px-5 shadow-sm"
+            style="background-color: #ff8c00;">
             คัดลอก
           </button>
           <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
@@ -30,7 +35,8 @@
           <input type="text" formControlName="id" class="form-control">
         </div>
         <div class="col-md-2">
-          <label class="form-label font-weight-bold">JOId<span style="color: red;" *ngIf="!designForm.get('qpId')?.value">*</span></label>
+          <label class="form-label font-weight-bold">JOId<span style="color: red;"
+              *ngIf="!designForm.get('qpId')?.value">*</span></label>
           <input type="text" formControlName="joId" class="form-control"
             [class.is-invalid]="designForm.get('joId')?.invalid && designForm.get('joId')?.touched">
         </div>
@@ -87,7 +93,7 @@
         </div>
         <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
-          <input type="date" formControlName="orderDate" class="form-control" 
+          <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="designForm.get('orderDate')?.invalid && designForm.get('orderDate')?.touched">
         </div>
         <div class="col-md-2">
@@ -99,7 +105,8 @@
           <input type="text" formControlName="fileName" class="form-control"
             style="background-color: #ff7b00; color: white;">
         </div>
-        <div class="col-md-12" *ngIf="designForm.getRawValue().remarkAdd != null && designForm.getRawValue().remarkAdd != 'เพิ่มรายละเอียดแล้ว'">
+        <div class="col-md-12"
+          *ngIf="designForm.getRawValue().remarkAdd != null && designForm.getRawValue().remarkAdd != 'เพิ่มรายละเอียดแล้ว'">
           <label class="form-label font-weight-bold">ขอรายละเอียดเพิ่มเติม</label>
           <textarea type="text" formControlName="remarkAdd" class="form-control"></textarea>
         </div>
@@ -181,7 +188,6 @@
     </div>
   </div>
 </div>
-
 <div class="modal fade show d-block" tabindex="-1" *ngIf="showEditModal" style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -207,7 +213,8 @@
   </div>
 </div>
 
-<div class="modal fade show d-block" tabindex="-1" *ngIf="showApproveProductModal" style="background-color: rgba(0,0,0,0.5);">
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showApproveProductModal"
+  style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -234,7 +241,6 @@
               [class.is-invalid]="colorSample.invalid && colorSample.touched">
           </div>
         </div>
-
         <div class="row mb-3">
           <div class="col-6">
             <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า <span style="color: red;">*</span></label>
@@ -260,7 +266,6 @@
               [class.is-invalid]="remarks.invalid && remarks.touched"></textarea>
           </div>
         </div>
-
         <div class="row mb-3">
           <div class="col-12">
             <label class="form-label font-weight-bold">เงื่อนไขการรันงาน (ผู้มีอำนาจตัดสินใจ) </label>
@@ -318,11 +323,9 @@
               [class.is-invalid]="decisionAuthorityRemarks.invalid && decisionAuthorityRemarks.touched"></textarea>
           </div>
         </div>
-
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeApproveProductModal()">ยกเลิก</button>
-
         <button type="button" class="btn btn-success" (click)="confirmApproveProduction()"
           [disabled]="usedFile.invalid || colorSample.invalid || deadlineDate.invalid || deadlineTime.invalid || remarks.invalid || !decisionAuthority.value">
           ยืนยันอนุมัติ

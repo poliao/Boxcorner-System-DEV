@@ -110,6 +110,9 @@ public class PrintJob extends BaseEntity {
     @Column(name = "decision_authority_remarks")
     private String decisionAuthorityRemarks;
 
+    @Column(name = "pap_order_id")
+    private Integer papOrderId;
+
     @jakarta.persistence.Transient
     private Boolean hasRealJob = false;
 }
