@@ -144,6 +144,7 @@ export class Dcsm05DetailComponent implements OnInit {
     this.mainForm.controls['qpId'].disable({ emitEvent: false });
     this.mainForm.controls['typeJob'].disable({ emitEvent: false });
     this.mainForm.controls['totalPrintSheets'].disable({ emitEvent: false });
+    this.mainForm.controls['orderTime'].disable({ emitEvent: false });
     this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
       const jobIdControl = this.mainForm.get('jobId');
       if (value && value.trim() !== '') {
@@ -196,7 +197,6 @@ export class Dcsm05DetailComponent implements OnInit {
         currentStatus === 'รอเคลียร์ไฟล์ใหม่'
       )
     ) {
-      // งานภายใน + สถานะที่เกี่ยวข้อง → แสดงปุ่มจัดส่งได้/จัดส่งไม่ได้
       this.confirmDeliver = true;
       this.notDeliver = true;
       this.mainForm.controls['totalPrintSheets'].enable({ emitEvent: false });
@@ -542,7 +542,7 @@ export class Dcsm05DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.mainForm.get('status')!.setValue('รอดำเนินการ');
+        this.mainForm.get('status')!.setValue('งานภายใน');
         this.dcsm05Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.patchFormData(response);

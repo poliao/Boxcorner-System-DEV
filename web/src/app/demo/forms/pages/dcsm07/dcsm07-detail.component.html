@@ -17,33 +17,33 @@
           </button>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-        <div *ngIf="isSampleOrderId == true" class="col-md-6">
+        <div *ngIf="isSampleOrderId == true" class="col-md-2">
           <label class="form-label font-weight-bold">อ้างอิงตารางตัวอย่าง</label>
           <input type="text" formControlName="sampleOrderId" class="form-control">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
               style="color: red;">*</span></label>
           <input type="text" class="form-control" formControlName="jobId">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">QTId</label>
           <input type="text" class="form-control" formControlName="qtId">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">QPId</label>
           <input type="text" class="form-control" formControlName="qpId">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เวลาที่สร้างงาน</label>
           <input type="text" class="form-control" formControlName="createdTime">
         </div>
@@ -60,39 +60,39 @@
           <label class="form-label font-weight-bold">สีตัวอย่าง</label>
           <input type="text" formControlName="colorSample" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
           <div class="input-group">
             <input type="date" formControlName="deadlineDate" class="form-control" readonly>
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
           <div class="input-group">
             <input type="time" formControlName="deadlineTime" class="form-control" readonly>
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง<span style="color: red;">*</span></label>
           <input type="date" formControlName="deliveryDate" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะงาน</label>
           <input type="text" formControlName="jobStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
           <input type="text" formControlName="processStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะแม่พิมพ์</label>
           <input type="text" formControlName="moldStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ <span style="color: red;">*</span></label>
           <select formControlName="operatorName" class="form-control form-select">
             <option value="" disabled selected>-- เลือกผู้รับผิดชอบ --</option>
@@ -104,7 +104,7 @@
             กรุณาเลือกผู้รับผิดชอบ
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ประเภทงาน<span style="color: red;">*</span></label>
           <select formControlName="jobType" class="form-control form-select">
             <option value="" disabled selected>-- เลือกประเภทงาน --</option>
@@ -125,7 +125,6 @@
           <label class="form-label font-weight-bold">หมายเหตุที่ยกเลิกงาน</label>
           <input type="text" formControlName="cancelRemarks" class="form-control">
         </div>
-
       </form>
     </div>
   </div>

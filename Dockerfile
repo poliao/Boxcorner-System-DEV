@@ -1,5 +1,4 @@
-# 1. ใช้ Java 17 (หรือเวอร์ชันที่คุณใช้)
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-jdk-jammy
 
 # 2. ตั้งค่าตัวแปร
 WORKDIR /app

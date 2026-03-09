@@ -29,8 +29,9 @@
           <div class="col-md-3">
             <select class="form-select" formControlName="status">
               <option value="">สถานะ ทั้งหมด</option>
-              <option value="รอผู้รับผิดชอบอนุมัติ">รอผู้รับผิดชอบอนุมัติ</option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
+              <option value="รอผู้รับผิดชอบอนุมัติ">รอผู้รับผิดชอบอนุมัติ</option>
+              <option value="งานภายใน">งานภายใน</option>
               <option value="ขอเลื่อนวันส่ง">ขอเลื่อนวันส่ง</option>
               <option value="อนุมัติขอเลื่อนส่ง">อนุมัติขอเลื่อนส่ง</option>
               <option value="ไม่อนุมัติเลื่อนส่ง">ไม่อนุมัติเลื่อนส่ง</option>
@@ -107,9 +108,22 @@
               </div>
               <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
                 <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
-                  (click)="onFilterwaitProcess()" style="background-color: #350142;">
-                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่รอดำเนินการ</span><span
-                    class="d-lg-none">งานที่รอดำเนินการ</span>
+                  (click)="onFilterWaitPending()" style="background-color: #1a6b3a; color: #ffffff;">
+                  <mat-icon>pending_actions</mat-icon> <span class="d-none d-lg-inline">งานรอดำเนินการ</span><span
+                    class="d-lg-none">งานรอดำเนินการ</span>
+                  <span *ngIf="waitPending > 0"
+                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 0.75rem; border: 2px solid #fff;">
+                    {{ waitPending }}
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </button>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-auto">
+                <button mat-flat-button color="accent" class="w-100 px-3 position-relative"
+                  (click)="onFilterInternalJob()" style="background-color: #350142;">
+                  <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานภายในของคุณ</span><span
+                    class="d-lg-none">งานภายในของคุณ</span>
                   <span *ngIf="waitProcess > 0"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 0.75rem; border: 2px solid #fff;">
@@ -236,6 +250,7 @@
                   </span>
                 </button>
               </div>
+
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <button mat-flat-button class="w-100 px-3" type="button" (click)="loadDataSort()"
                   style="background: #350142; color: white; ">

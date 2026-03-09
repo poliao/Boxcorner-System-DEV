@@ -34,6 +34,7 @@ import { Dcsm28DetailResolver } from './demo/forms/pages/dcsm28/dcsm28-detail.re
 import { Dcsm29DetailResolver } from './demo/forms/pages/dcsm29/dcsm29-detail.resolver';
 import { Dcsm30DetailResolver } from './demo/forms/pages/dcsm30/dcsm30-detail.resolver';
 import { Dcsm31DetailResolver } from './demo/forms/pages/dcsm31/dcsm31-detail.resolver';
+import { Dcsm33DetailResolver } from './demo/forms/pages/dcsm33/dcsm33-detail.resolver';
 
 const routes: Routes = [
   {
@@ -622,6 +623,28 @@ const routes: Routes = [
         path: 'Dcsm32',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm32/dcsm32.component').then((c) => c.Dcsm32Component)
+      }, {
+        path: 'Dcsm33Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm33/dcsm33-detail.component').then((c) => c.Dcsm33DetailComponent),
+        resolve: {
+          printJob: Dcsm33DetailResolver
+        }
+      },
+      {
+        path: 'Dcsm33Detail',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm33/dcsm33-detail.component').then((c) => c.Dcsm33DetailComponent)
+      },
+      {
+        path: 'Dcsm33',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm33/dcsm33.component').then((c) => c.Dcsm33Component)
+      },
+      {
+        path: 'Dcsm34',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm34/dcsm34.component').then((c) => c.Dcsm34Component)
       },
     ]
   },

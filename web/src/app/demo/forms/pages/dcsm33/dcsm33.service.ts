@@ -12,31 +12,14 @@ export class Dcsm33Service {
 
   constructor(private http: HttpClient) { }
 
-
-  save(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/print-job/save`, data);
-  }
-
-  saveProduction(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/production-job/save`, data);
-  }
-
-  saveRecordOS(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/printing-record-os/save`, data);
-  }
-
-  savePrintLogOs(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/print-log-os/save`, data);
-  }
-
-  getOrdersWithSearch(page: number, size: number, filters: any): Observable<any> {
+  getCoatingJobsWithSearch(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
       page: page.toString(),
       size: size.toString(),
-      id: filters.id || null,
-      jobId: filters.jobId || null,
-      customerJobName: filters.customerJobName || null,
-      printerName: filters.printerName || null,
+      joId: filters.joId || null,
+      jobCustomerName: filters.jobCustomerName || null,
+      jobOwnerName: filters.jobOwnerName || null,
+      technicianName: filters.technicianName || null,
     };
 
     Object.keys(params).forEach(key => {
@@ -45,42 +28,32 @@ export class Dcsm33Service {
       }
     });
 
-    return this.http.get(`${this.apiUrl}/print-job/searchOs`, { params: params });
+    return this.http.get(`${this.apiUrl}/coating-jobs/search`, { params: params });
   }
 
   getById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/print-job/getById?id=${id}`);
+    return this.http.get(`${this.apiUrl}/coating-jobs/getById?id=${id}`);
   }
 
-  getRecipesByJobId(jobId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/recipes/detailByJo?jobId=${jobId}`);
+  save(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/coating-jobs/create`, data);
   }
 
-  saveSample(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/sampleOrders/create`, data);
+  getFilmUsagesByJobId(jobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/coating-film-usages/job/${jobId}`);
   }
 
-  getByIdSample(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/sampleOrders/getById?id=${id}`,);
+  saveFilmUsage(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/coating-film-usages`, data);
   }
 
-  getByIdProductionJob(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
+  /** ดึงรายการฟิล์มที่ยังมีสต็อคคงเหลือ (กรองเฉพาะ category ฟิล์ม) */
+  getFilmStockAvailable(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/paper-inventory/film-stock-available`);
   }
 
-  saveProductionJob(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/production-job/save`, data);
-  }
-
-  getLogById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/print-log-os/getById?logId=${id}`);
-  }
-
-  saveQa(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/print-log-qa/save`, data);
-  }
-
-  getQaByJobId(jobId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/print-log-qa/job/${jobId}`);
+  /** บันทึกการเริ่มเคลือบ */
+  startCoating(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/coating-jobs/start-coating`, payload);
   }
 }

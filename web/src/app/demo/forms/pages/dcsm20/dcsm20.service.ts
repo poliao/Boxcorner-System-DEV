@@ -37,9 +37,9 @@ export class Dcsm20Service {
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/production-job/search`, { params: params });
@@ -60,14 +60,14 @@ export class Dcsm20Service {
     };
 
     Object.keys(params).forEach(key => {
-        if (params[key] === null || params[key] === '') {
-            delete params[key];
-        }
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
     });
 
     return this.http.get(`${this.apiUrl}/sampleOrders/searchDetailBack`, { params: params });
   }
-  
+
   countBacklog(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklog`);
   }
@@ -105,11 +105,11 @@ export class Dcsm20Service {
   }
 
   getJobPAP(oid: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/pap/getJo?oid=${oid}`);
+    return this.http.get(`${this.apiUrl}/pap/getJob?oid=${oid}`);
   }
 
   updateDataDalivery(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateDataDalivery?id=${data.id}&dataDalivery=true`, {});
   }
-  
+
 }

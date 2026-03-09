@@ -30,11 +30,21 @@ public interface UnitStockRepository extends JpaRepository<UnitStock, Long> {
       Pageable pageable);
 
   @Query(value = """
-      SELECT DISTINCT us.* 
+      SELECT DISTINCT us.*
       FROM unit_stock us
       JOIN paper_inventory pi ON pi.unit_stock_id = us.id
       WHERE (pi.current_major_qty > 0 OR pi.current_minor_qty > 0)
       ORDER BY us.item_name ASC
       """, nativeQuery = true)
   java.util.List<UnitStock> findAllWithPositiveInventory();
+
+  @Query(value = """
+      SELECT DISTINCT us.*
+      FROM unit_stock us
+      JOIN paper_inventory pi ON pi.unit_stock_id = us.id
+      WHERE (pi.current_major_qty > 0 OR pi.current_minor_qty > 0)
+        AND us.category LIKE '%ฟิล์ม%'
+      ORDER BY us.item_name ASC
+      """, nativeQuery = true)
+  java.util.List<UnitStock> findFilmStockAvailable();
 }

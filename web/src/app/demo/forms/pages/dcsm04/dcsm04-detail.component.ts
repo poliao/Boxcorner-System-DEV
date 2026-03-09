@@ -750,7 +750,7 @@ export class Dcsm04DetailComponent implements OnInit {
               jobOwner: this.mainForm.getRawValue().jobOwner,
               deadlineDate: this.designDate.value,
               deadlineTime: this.designTime.value,
-              assignee: null,
+              assignee: 'รอผู้รับผิดชอบยืนยัน',
               processStatus: 'รอผู้รับผิดชอบยืนยัน',
               confirmStatus: 'รอผู้รับผิดชอบยืนยัน',
               fileName: null,

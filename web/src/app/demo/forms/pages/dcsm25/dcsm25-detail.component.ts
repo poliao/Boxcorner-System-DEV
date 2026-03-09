@@ -287,6 +287,21 @@ export class Dcsm25DetailComponent implements OnInit {
       if (response.coatingDate != null) {
         response.printStatus = 'กำลังเคลือบ';
         this.sendToProductJob(response);
+        const payload = {
+          joId: response.jobId,
+          jobCustomerName: response.customerJobName,
+          jobOwnerName: null,
+          technicianName: response.coatingResponsible,
+          deliveryDatetime: response.dueDate ? response.dueDate + 'T00:00:00' : null,
+          receivedSheetsQty: this.printingForm.getRawValue().totalPrintSheets,
+          requiredSheetsQty: response.productionQuantity,
+          productJobId: response.id ? response.id.toString() : null
+        };
+        this.dcsm25Service.saveCoatingJob(payload).subscribe({
+          next: () => console.log('Coating Job created successfully'),
+          error: (err) => console.error('Failed to create Coating Job', err)
+        });
+
       } else if (response.stampingDate != null) {
         response.printStatus = 'กำลังปั้ม';
         this.sendToProductJob(response);

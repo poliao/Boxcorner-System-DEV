@@ -82,7 +82,7 @@ export class Dcsm28Component implements OnInit {
     { key: 'activityId', label: 'ลำดับ' },
     { key: 'activityDate', label: 'วันที่' },
     { key: 'salesName', label: 'พนักงานขาย' },
-    { key: 'customerName', label: 'ชื่อลูกค้า' },
+    { key: 'companyName', label: 'ชื่อบริษัท' },
     { key: 'contactPerson', label: 'ผู้ติดต่อ' },
     { key: 'contactChannel', label: 'ช่องทางติดต่อ' },
     { key: 'isNewCustomer', label: 'ลูกค้าใหม่' },

@@ -21,29 +21,29 @@
           </button>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ลำดับ</label>
           <input type="text" formControlName="id" class="form-control">
         </div>
-        <div class="col-4">
+        <div class="col-2">
           <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
               style="color: red;">*</span></label>
           <input type="text" class="form-control" formControlName="jobId">
         </div>
-        <div class="col-4">
+        <div class="col-2">
           <label class="form-label font-weight-bold">QTId</label>
           <input type="text" class="form-control" formControlName="qtId">
         </div>
-        <div class="col-4">
+        <div class="col-2">
           <label class="form-label font-weight-bold">QPId</label>
           <input type="text" class="form-control" formControlName="qpId">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
           <input type="date" formControlName="orderDate" class="form-control"
             [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เวลาที่สั่งงาน</label>
           <input type="time" formControlName="createdTime" class="form-control">
         </div>
@@ -61,53 +61,54 @@
           <label class="form-label font-weight-bold">สีตัวอย่าง</label>
           <input type="text" formControlName="colorSample" class="form-control">
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เจ้าของงาน</label>
           <input type="text" formControlName="jobOwner" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
           <input type="date" formControlName="deadlineDate" class="form-control"
             style="background-color: #ff0000; color: #ffffff;">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
           <input type="time" formControlName="deadlineTime" class="form-control"
             style="background-color: #ff0000; color: #ffffff;">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
           <input type="date" formControlName="deliveryDate" class="form-control"
             style="background-color: #ff9900; color: #000000;">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะงาน</label>
           <input type="text" formControlName="jobStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
           <input type="text" formControlName="processStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">สถานะแม่พิมพ์</label>
           <input type="text" formControlName="moldStatus" class="form-control">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
           <input type="text" formControlName="operatorName" class="form-control">
         </div>
-        <div class="col-md-9">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
-          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
-        </div>
-        <div class="col-md-9">
-          <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <input type="text" formControlName="remarks" class="form-control">
-        </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label font-weight-bold">ประเภทงาน</label>
           <input type="text" formControlName="jobType" class="form-control">
         </div>
+        <div class="col-md-6">
+          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+        </div>
+        <div class="col-md-12">
+          <label class="form-label font-weight-bold">หมายเหตุ</label>
+          <textarea type="text" formControlName="remarks" class="form-control"></textarea>
+        </div>
+
         <!-- <div class="col-md-3">
           <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
           <input type="text" formControlName="updatedAt" class="form-control" >

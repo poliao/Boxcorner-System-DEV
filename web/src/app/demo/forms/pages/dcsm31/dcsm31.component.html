@@ -21,17 +21,12 @@
       <!-- Search -->
       <div class="row mb-4 g-2 align-items-center p-3 dcsm31-search">
         <div class="col-md-5">
-          <div class="input-group input-group-sm">
-            <span class="input-group-text bg-white border-end-0">
-              <mat-icon style="font-size:16px;width:16px;height:16px;">search</mat-icon>
-            </span>
-            <input type="text" class="form-control border-start-0" placeholder="ค้นหาชื่อสินค้า..."
-              [(ngModel)]="searchParams.itemName" (keyup.enter)="onSearch()">
-          </div>
+          <input type="text" class="form-control" placeholder="ค้นหาชื่อสินค้า..." [(ngModel)]="searchParams.itemName"
+            (keyup.enter)="onSearch()">
         </div>
         <div class="col-md-4">
-          <input type="text" class="form-control form-control-sm" placeholder="ประเภทสินค้า"
-            [(ngModel)]="searchParams.category" (keyup.enter)="onSearch()">
+          <input type="text" class="form-control" placeholder="ประเภทสินค้า" [(ngModel)]="searchParams.category"
+            (keyup.enter)="onSearch()">
         </div>
         <div class="col-md-3">
           <div class="d-flex gap-2 dcsm31-search-actions">
@@ -42,9 +37,9 @@
       </div>
 
       <!-- Table -->
-      <app-data-table [headerStyle]="'background: #171851; color: #ffffff;'" [columns]="tableColumns"
-        [data]="tableData" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex"
-        [clickableColumn]="'itemName'" (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
+      <app-data-table [headerStyle]="'background: #171851; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+        [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'itemName'"
+        (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
       </app-data-table>
 
     </div>

@@ -41,11 +41,6 @@ export class Dcsm09DetailComponent implements OnInit {
     if (resolvedData) {
       this.patchFormData(resolvedData);
       this.checkBtn();
-
-      this.mainForm.get('jobId')?.enable({ emitEvent: false });
-      this.mainForm.get('qtId')?.enable({ emitEvent: false });
-      this.mainForm.get('qpId')?.enable({ emitEvent: false });
-
       this.mainForm.get('qpId')?.valueChanges.subscribe(val => {
         if (val) {
           this.mainForm.get('jobId')?.setValidators(null);

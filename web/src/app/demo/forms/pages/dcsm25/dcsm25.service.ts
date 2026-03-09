@@ -97,4 +97,9 @@ export class Dcsm25Service {
   getUnitStocks(): Observable<any> {
     return this.http.get(`${this.apiUrl}/paper-inventory/unit-stock-list-available`);
   }
+
+  // Coating Job API
+  saveCoatingJob(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/coating-jobs/create`, data);
+  }
 }

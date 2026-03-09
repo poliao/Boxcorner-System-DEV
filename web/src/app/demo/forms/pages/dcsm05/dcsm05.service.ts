@@ -128,4 +128,8 @@ export class Dcsm05Service {
   countBacklogWaitReturn(): Observable<any> {
     return this.http.get(`${this.apiUrl}/sampleOrders/countBacklogWaitReturn`);
   }
+
+  countWaitPending(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/sampleOrders/countWaitPending`);
+  }
 }

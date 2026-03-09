@@ -231,7 +231,7 @@ public class SampleOrderController {
     @GetMapping("/countBacklogWaitProcess")
     public ResponseEntity<Integer> getUniqueStatusWaitProcess(HttpServletRequest httpRequest) {
         return ResponseEntity
-                .ok(sampleOrderService.countBacklogStatus("รอดำเนินการ", tokenService.getCurrentUser(httpRequest)));
+                .ok(sampleOrderService.countBacklogStatus("งานภายใน", tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/countBacklogShif")
@@ -353,5 +353,10 @@ public class SampleOrderController {
     public ResponseEntity<Integer> countBacklogWaitReturn(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(
                 sampleOrderService.countBacklogStatus("รับงานแล้วรอส่งกลับ", tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countWaitPending")
+    public ResponseEntity<Integer> countWaitPending() {
+        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอดำเนินการ", null));
     }
 }

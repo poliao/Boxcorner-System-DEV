@@ -29,6 +29,97 @@ const iconDefault = L.icon({
 });
 L.Marker.prototype.options.icon = iconDefault;
 
+/**
+ * Custom Router for Generoute.io integration with Leaflet Routing Machine
+ */
+const GenerouteRouter = L.Class.extend({
+    options: {
+        apiKey: 'IO1r4sqgGUaSPrrhHSmP0oiV4h1E7wfQ81LUytRd4U3mVD8x',
+        serviceUrl: 'https://api.generoute.io/v1/trip'
+    },
+
+    initialize: function (apiKey: string, options: any) {
+        this.options.apiKey = apiKey || this.options.apiKey;
+        L.Util.setOptions(this, options);
+    },
+
+    route: function (waypoints: any[], callback: (err: any, routes: any[]) => void, context: any) {
+        const locations = waypoints.filter(wp => wp.latLng).map((wp, idx) => ({
+            coordinates: [wp.latLng.lng, wp.latLng.lat],
+            title: `Waypoint ${idx + 1}`,
+            data: { id: `wp_${idx}` }
+        }));
+
+        if (locations.length < 2) {
+            callback({ message: 'At least two waypoints are required' }, []);
+            return;
+        }
+
+        const body = {
+            region: "TH", // Default to TH for this project
+            locations: locations
+        };
+
+        fetch(this.options.serviceUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.options.apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        })
+            .then(async res => {
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(`Generoute API error (${res.status}): ${errText || res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('Generoute API Response:', data);
+                // Generoute returns geometry in trip[0].geometry (GeoJSON)
+                // We need to parse it into an array of L.LatLng
+                if (!data.trips || !data.trips[0]) {
+                    throw new Error('No route found in Generoute response');
+                }
+
+                const trip = data.trips[0];
+                const coordinates = trip.geometry.coordinates; // [lng, lat]
+                const latLngs = coordinates.map((c: any) => L.latLng(c[1], c[0]));
+
+                // Calculate distance manually based on road path if API doesn't provide it
+                let calculatedDistance = 0;
+                for (let i = 0; i < latLngs.length - 1; i++) {
+                    calculatedDistance += latLngs[i].distanceTo(latLngs[i + 1]);
+                }
+
+                const route = {
+                    name: 'Generoute Route',
+                    summary: {
+                        totalDistance: trip.distance || calculatedDistance,
+                        totalTime: trip.duration || 0
+                    },
+                    coordinates: latLngs,
+                    waypoints: waypoints,
+                    inputWaypoints: waypoints,
+                    instructions: [] // Generoute trip endpoint might not provide verbal instructions by default
+                };
+
+                callback.call(context, null, [route]);
+            })
+            .catch(err => {
+                console.error('Generoute Router Error:', err);
+                callback.call(context, err, []);
+            });
+
+        return this;
+    }
+});
+
+(L as any).Routing.generoute = function (apiKey: string, options?: any) {
+    return new (GenerouteRouter as any)(apiKey, options);
+};
+
 @Component({
     selector: 'app-dcsm28-map',
     standalone: true,
@@ -239,6 +330,7 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                     // 4. วาดเส้นทางจริงตามถนนและคำนวณระยะทาง
                     if (latlngs.length > 1) {
                         const routingControl = (L as any).Routing.control({
+                            router: (L as any).Routing.generoute('IO1r4sqgGUaSPrrhHSmP0oiV4h1E7wfQ81LUytRd4U3mVD8x'),
                             waypoints: latlngs,
                             routeWhileDragging: false,
                             addWaypoints: false,
@@ -272,6 +364,40 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                                 });
                                 this.cdr.detectChanges(); // บังคับให้ Angular อัปเดตหน้าจอ
                             }
+                        });
+
+                        // FALLBACK: ถ้า Routing พัง (เช่น API Key ผิดหรือ Timeout) ให้วาดเส้นตรงแทน
+                        routingControl.on('routingerror', (err: any) => {
+                            console.warn('Mapbox Routing error, falling back to straight lines:', err);
+
+                            // วาดเส้นตรง (Polyline)
+                            const fallbackLine = L.polyline(latlngs, {
+                                color: '#6c757d', // สีเทาสำหรับ fallback
+                                weight: 4,
+                                dashArray: '5, 10',
+                                opacity: 0.6
+                            });
+
+                            if (this.map) {
+                                fallbackLine.addTo(this.map);
+                            }
+
+                            // คำนวณระยะทางแบบเส้นตรงคร่าวๆ (Haversine)
+                            let fallbackDistM = 0;
+                            for (let i = 0; i < latlngs.length - 1; i++) {
+                                fallbackDistM += latlngs[i].distanceTo(latlngs[i + 1]);
+                            }
+                            const totalKm = (fallbackDistM / 1000).toFixed(2);
+
+                            if (startMarker && dr.startLat && dr.startLng) {
+                                startMarker.bindPopup(`<b>📍 จุดเริ่มงาน</b><br>พนักงาน: ${routeData.salesName}<br><b>ระยะทาง (เส้นตรง):</b> ${totalKm} กม.<br><small style="color:red;">*ไม่สามารถดึงข้อมูลเส้นทางถนนได้</small>`);
+                            }
+
+                            this.routeDistances.push({
+                                salesName: routeData.salesName,
+                                distanceKm: totalKm + ' (ตรง)'
+                            });
+                            this.cdr.detectChanges();
                         });
                     }
                 });

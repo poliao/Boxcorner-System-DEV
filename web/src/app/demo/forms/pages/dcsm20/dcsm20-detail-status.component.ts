@@ -436,15 +436,15 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     const gluingDate = this.productionForm.getRawValue().gluingDate;
     const qcDate = this.productionForm.getRawValue().qcDate;
 
-    if(printingDate && printingDate !== '' && printingDate !== null){
+    if (printingDate && printingDate !== '' && printingDate !== null) {
       this.setPrintJob(id);
-    }else if(coatingDate && coatingDate !== '' && coatingDate !== null){
+    } else if (coatingDate && coatingDate !== '' && coatingDate !== null) {
       this.setCoatJob(id);
-    }else if(stampingDate && stampingDate !== '' && stampingDate !== null){
+    } else if (stampingDate && stampingDate !== '' && stampingDate !== null) {
       this.setStampingJob(id);
-    }else if(gluingDate && gluingDate !== '' && gluingDate !== null){
+    } else if (gluingDate && gluingDate !== '' && gluingDate !== null) {
       this.setGluingJob(id);
-    }else if(qcDate && qcDate !== '' && qcDate !== null){
+    } else if (qcDate && qcDate !== '' && qcDate !== null) {
       this.setQcJob(id);
     }
   }
@@ -483,19 +483,19 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     })
   }
 
-  setCoatJob(id){
+  setCoatJob(id) {
 
   }
 
-  setStampingJob(id){
-    
+  setStampingJob(id) {
+
   }
 
-  setGluingJob(id){
-    
+  setGluingJob(id) {
+
   }
 
-  setQcJob(id){
-    
+  setQcJob(id) {
+
   }
 }

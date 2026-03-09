@@ -62,6 +62,7 @@ export class Dcsm05Component implements OnInit {
   back = 0;
   sendSupplierCount = 0;
   waitReturnCount = 0;
+  waitPending = 0;
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
@@ -99,6 +100,7 @@ export class Dcsm05Component implements OnInit {
     this.countEditSample();
     this.countBacklogSendSupplier();
     this.countBacklogWaitReturn();
+    this.countWaitPending();
   }
 
   initSearchForm(): void {
@@ -245,9 +247,10 @@ export class Dcsm05Component implements OnInit {
     });
   }
 
-  onFilterwaitProcess() {
+  onFilterInternalJob() {
     this.onClearAll()
-    this.searchForm.get('status')?.setValue('รอดำเนินการ');
+    this.searchForm.get('status')?.setValue('งานภายใน');
+    this.searchForm.get('responsiblePerson')?.setValue(this.authService.getFullName());
     this.onSearch();
   }
 
@@ -429,6 +432,20 @@ export class Dcsm05Component implements OnInit {
     this.onClearAll();
     this.searchForm.get('status')?.setValue('รับงานแล้วรอส่งกลับ');
     this.searchForm.get('responsiblePerson')?.setValue(this.authService.getUserFromToken().sub);
+    this.onSearch();
+  }
+
+  countWaitPending() {
+    this.dcsm05Service.countWaitPending().subscribe({
+      next: (data: number) => {
+        this.waitPending = data;
+      },
+    });
+  }
+
+  onFilterWaitPending() {
+    this.onClearAll();
+    this.searchForm.get('status')?.setValue('รอดำเนินการ');
     this.onSearch();
   }
 }

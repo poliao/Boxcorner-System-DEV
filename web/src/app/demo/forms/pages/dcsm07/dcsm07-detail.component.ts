@@ -63,11 +63,6 @@ export class Dcsm07DetailComponent implements OnInit {
       if (this.mainForm.getRawValue().cancelRemarks) {
         this.isCancelRemarks = true
       }
-
-      this.mainForm.get('jobId')?.enable({ emitEvent: false });
-      this.mainForm.get('qtId')?.enable({ emitEvent: false });
-      this.mainForm.get('qpId')?.enable({ emitEvent: false });
-
       this.mainForm.get('qpId')?.valueChanges.subscribe(val => {
         if (val) {
           this.mainForm.get('jobId')?.setValidators(null);
