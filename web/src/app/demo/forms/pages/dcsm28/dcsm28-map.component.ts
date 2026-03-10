@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -30,85 +30,59 @@ const iconDefault = L.icon({
 L.Marker.prototype.options.icon = iconDefault;
 
 /**
- * Custom Router for Generoute.io integration with Leaflet Routing Machine
+ * Custom Router using OSRM public API
+ * วาดเส้นทางตาม ORDER ที่กำหนด (ไม่ re-optimize ลำดับ) :
+ * จุดเริ่มต้น → จุดเช็คอิน (เรียงตามเวลา) → จุดสิ้นสุด
  */
-const GenerouteRouter = L.Class.extend({
+const OsrmOrderedRouter = L.Class.extend({
     options: {
-        apiKey: 'IO1r4sqgGUaSPrrhHSmP0oiV4h1E7wfQ81LUytRd4U3mVD8x',
-        serviceUrl: 'https://api.generoute.io/v1/trip'
+        serviceUrl: 'https://router.project-osrm.org/route/v1/driving/'
     },
 
-    initialize: function (apiKey: string, options: any) {
-        this.options.apiKey = apiKey || this.options.apiKey;
+    initialize: function (options: any) {
         L.Util.setOptions(this, options);
     },
 
     route: function (waypoints: any[], callback: (err: any, routes: any[]) => void, context: any) {
-        const locations = waypoints.filter(wp => wp.latLng).map((wp, idx) => ({
-            coordinates: [wp.latLng.lng, wp.latLng.lat],
-            title: `Waypoint ${idx + 1}`,
-            data: { id: `wp_${idx}` }
-        }));
+        const validWps = waypoints.filter(wp => wp.latLng);
 
-        if (locations.length < 2) {
+        if (validWps.length < 2) {
             callback({ message: 'At least two waypoints are required' }, []);
             return;
         }
 
-        const body = {
-            region: "TH", // Default to TH for this project
-            locations: locations
-        };
+        // สร้าง coordinate string สำหรับ OSRM: lng,lat;lng,lat;...
+        const coords = validWps.map((wp: any) => `${wp.latLng.lng},${wp.latLng.lat}`).join(';');
+        const url = `${this.options.serviceUrl}${coords}?overview=full&geometries=geojson`;
 
-        fetch(this.options.serviceUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${this.options.apiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        })
+        fetch(url)
             .then(async res => {
-                if (!res.ok) {
-                    const errText = await res.text();
-                    throw new Error(`Generoute API error (${res.status}): ${errText || res.statusText}`);
-                }
+                if (!res.ok) throw new Error(`OSRM error (${res.status}): ${res.statusText}`);
                 return res.json();
             })
             .then(data => {
-                console.log('Generoute API Response:', data);
-                // Generoute returns geometry in trip[0].geometry (GeoJSON)
-                // We need to parse it into an array of L.LatLng
-                if (!data.trips || !data.trips[0]) {
-                    throw new Error('No route found in Generoute response');
+                if (!data.routes || !data.routes[0]) {
+                    throw new Error('No route found in OSRM response');
                 }
-
-                const trip = data.trips[0];
-                const coordinates = trip.geometry.coordinates; // [lng, lat]
+                const r = data.routes[0];
+                const coordinates = r.geometry.coordinates; // [lng, lat]
                 const latLngs = coordinates.map((c: any) => L.latLng(c[1], c[0]));
 
-                // Calculate distance manually based on road path if API doesn't provide it
-                let calculatedDistance = 0;
-                for (let i = 0; i < latLngs.length - 1; i++) {
-                    calculatedDistance += latLngs[i].distanceTo(latLngs[i + 1]);
-                }
-
                 const route = {
-                    name: 'Generoute Route',
+                    name: 'Route',
                     summary: {
-                        totalDistance: trip.distance || calculatedDistance,
-                        totalTime: trip.duration || 0
+                        totalDistance: r.distance,
+                        totalTime: r.duration
                     },
                     coordinates: latLngs,
                     waypoints: waypoints,
                     inputWaypoints: waypoints,
-                    instructions: [] // Generoute trip endpoint might not provide verbal instructions by default
+                    instructions: []
                 };
-
                 callback.call(context, null, [route]);
             })
             .catch(err => {
-                console.error('Generoute Router Error:', err);
+                console.error('OSRM Router Error:', err);
                 callback.call(context, err, []);
             });
 
@@ -116,8 +90,8 @@ const GenerouteRouter = L.Class.extend({
     }
 });
 
-(L as any).Routing.generoute = function (apiKey: string, options?: any) {
-    return new (GenerouteRouter as any)(apiKey, options);
+(L as any).Routing.osrmOrdered = function (options?: any) {
+    return new (OsrmOrderedRouter as any)(options);
 };
 
 @Component({
@@ -127,13 +101,16 @@ const GenerouteRouter = L.Class.extend({
     templateUrl: './dcsm28-map.component.html',
     styleUrls: ['./dcsm28.component.scss']
 })
-export class Dcsm28MapComponent implements OnInit, OnDestroy {
+export class Dcsm28MapComponent implements OnInit, OnDestroy, AfterViewChecked {
     private map: L.Map | undefined;
     private tileLayer: L.TileLayer | undefined;
+    private mapInitialized: boolean = false; // ป้องกันการ init ซ้ำ
 
     public routeDistances: { salesName: string, distanceKm: string }[] = [];
+    private distanceAccumulator: Map<string, number> = new Map(); // รวมระยะทางตามชื่อพนักงาน
     public isAdmin: boolean = false;
     public salesUsers: any[] = [];
+    public mapReady: boolean = false;  // แสดงแผนที่เมื่อเลือกพนักงานแล้ว
 
     // Filters
     public filterActivityDate: string = '';
@@ -159,8 +136,18 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
         }
 
         this.loadSalesUsers();
-        this.initMap();
-        this.loadMapData();
+        // ไม่โหลดข้อมูลก่อน เพราะต้องเลือกพนักงานก่อน
+    }
+
+    ngAfterViewChecked(): void {
+        // init แผนที่เมื่อ div#map ปรากฏใน DOM แล้ว (หลัง mapReady = true)
+        if (this.mapReady && !this.mapInitialized) {
+            const mapDiv = document.getElementById('map');
+            if (mapDiv) {
+                this.mapInitialized = true;
+                this.initMap();
+            }
+        }
     }
 
     private loadSalesUsers(): void {
@@ -194,13 +181,61 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
     }
 
     public onSearch(): void {
-        this.loadMapData();
+        if (!this.filterSalesName || !this.filterActivityDate) {
+            this.sweetAlert.warning('กรุณาเลือกข้อมูล ให้ครบถ้วน', 'กรุณาเลือกพนักงานขาย และวันที่ก่อนค้นหา');
+            return;
+        }
+        this.mapReady = true;
+        this.cdr.detectChanges();
+        setTimeout(() => this.loadMapData(), 100);
+    }
+
+    public onSalesChange(): void {
+        // ต้องเลือกทั้งพนักงานและวันที่ก่อนจึงแสดงแผนที่
+        if (this.filterSalesName && this.filterActivityDate) {
+            this.mapReady = true;
+            this.cdr.detectChanges();
+            setTimeout(() => this.loadMapData(), 100);
+        } else {
+            this.mapReady = false;
+            this.mapInitialized = false;
+            if (this.map) {
+                this.map.remove();
+                this.map = undefined;
+            }
+            this.clearMapLayers();
+            this.routeDistances = [];
+        }
+    }
+
+    public onDateChange(): void {
+        // ต้องเลือกทั้งพนักงานและวันที่ก่อนจึงแสดงแผนที่
+        if (this.filterSalesName && this.filterActivityDate) {
+            this.mapReady = true;
+            this.cdr.detectChanges();
+            setTimeout(() => this.loadMapData(), 100);
+        } else {
+            this.mapReady = false;
+            this.mapInitialized = false;
+            if (this.map) {
+                this.map.remove();
+                this.map = undefined;
+            }
+            this.clearMapLayers();
+            this.routeDistances = [];
+        }
     }
 
     public clearFilters(): void {
         this.filterActivityDate = '';
         this.filterSalesName = '';
-        this.loadMapData();
+        this.mapReady = false;
+        this.mapInitialized = false;
+        if (this.map) {
+            this.map.remove();
+            this.map = undefined;
+        }
+        this.routeDistances = [];
     }
 
     private clearMapLayers(): void {
@@ -220,6 +255,7 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
         this.loadingService.show();
         this.clearMapLayers();
         this.routeDistances = [];
+        this.distanceAccumulator.clear(); // ล้างตัวสะสมทุกครั้ง
 
         const filters = {
             startDate: this.filterActivityDate,
@@ -255,21 +291,39 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                     });
                 });
                 activities.forEach((activity: any) => {
-                    if (activity.dailyRoute) {
-                        const drId = activity.dailyRoute.id;
-                        if (!routesMap.has(drId)) {
-                            routesMap.set(drId, {
-                                dailyRoute: activity.dailyRoute,
-                                salesName: activity.salesName || 'ไม่ระบุ',
-                                activities: []
+                    if (!activity.checkInLat || !activity.checkInLng) return; // ไม่มีพิกัด ข้ามไป
+
+                    const drId = activity.dailyRoute?.id;
+
+                    if (drId && routesMap.has(drId)) {
+                        // กรณีปกติ: มี dailyRoute ที่ตรงกันใน routesMap
+                        routesMap.get(drId).activities.push(activity);
+                    } else if (drId && !routesMap.has(drId)) {
+                        // มี dailyRoute reference แต่ไม่ได้โหลดมา — สร้าง entry ใหม่
+                        routesMap.set(drId, {
+                            dailyRoute: activity.dailyRoute,
+                            salesName: activity.salesName || 'ไม่ระบุ',
+                            activities: [activity]
+                        });
+                    } else {
+                        // ไม่มี dailyRoute — ลอง merge เข้า routesMap ของ salesName เดียวกัน
+                        const salesName = activity.salesName || '';
+                        let matched = false;
+                        routesMap.forEach((routeData) => {
+                            if (!matched && (routeData.salesName === salesName || routeData.salesName === 'ไม่ระบุ')) {
+                                routeData.activities.push(activity);
+                                matched = true;
+                            }
+                        });
+                        if (!matched) {
+                            // ไม่มี routesMap เลย: สร้าง standalone entry ด้วย check-in เป็น waypoint เดียว
+                            const fakeKey = `isolated_${salesName}_${Date.now()}_${Math.random()}`;
+                            routesMap.set(fakeKey as any, {
+                                dailyRoute: { startLat: null, startLng: null, endLat: null, endLng: null, startTime: null, endTime: null },
+                                salesName: salesName || 'ไม่ระบุ',
+                                activities: [activity]
                             });
                         }
-                        if (activity.checkInLat && activity.checkInLng) {
-                            routesMap.get(drId).activities.push(activity);
-                        }
-                    } else if (activity.checkInLat && activity.checkInLng) {
-                        // กรณีเก่าๆที่ไม่มี dailyRoute แต่มีพิกัด
-                        this.plotIsolatedActivity(activity, bounds);
                     }
                 });
 
@@ -291,7 +345,7 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                         if (this.map) startMarker.addTo(this.map);
                     }
 
-                    // 2. หมุดเช็คอินทำงาน (เรียงตามเวลา)
+                    // 2. หมุดเช็คอินทำงาน (เรียงตามเวลาก่อน-หลัง)
                     routeData.activities.sort((a: any, b: any) => {
                         const timeA = a.checkInTime ? new Date(a.checkInTime).getTime() : 0;
                         const timeB = b.checkInTime ? new Date(b.checkInTime).getTime() : 0;
@@ -303,11 +357,31 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                         latlngs.push(cp);
                         bounds.extend(cp);
 
-                        const marker = L.marker(cp);
+                        // หมุดพร้อมหมายเลขลำดับที่ไป
+                        const numberIcon = L.divIcon({
+                            className: '',
+                            html: `<div style="
+                                background:#007bff;
+                                color:#fff;
+                                border-radius:50%;
+                                width:28px;
+                                height:28px;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                font-weight:bold;
+                                font-size:13px;
+                                border:2px solid #fff;
+                                box-shadow:0 2px 4px rgba(0,0,0,0.4);
+                            ">${index + 1}</div>`,
+                            iconSize: [28, 28],
+                            iconAnchor: [14, 14]
+                        });
+                        const marker = L.marker(cp, { icon: numberIcon });
                         const checkInTimeStr = act.checkInTime ? new Date(act.checkInTime).toLocaleString('th-TH') : 'ไม่ระบุ';
                         marker.bindPopup(`
               <div style="font-family: 'Kanit', sans-serif;">
-                <h6 style="margin-bottom: 5px; font-weight: bold; color: #007bff;">${index + 1}. ${act.customerName || 'ไม่ระบุชื่อลูกค้า'}</h6>
+                <h6 style="margin-bottom: 5px; font-weight: bold; color: #007bff;">จุดที่ ${index + 1}: ${act.customerName || 'ไม่ระบุชื่อลูกค้า'}</h6>
                 <div><b>พนักงาน:</b> ${act.salesName || 'ไม่ระบุ'}</div>
                 <div><b>เช็คอินเมื่อ:</b> ${checkInTimeStr}</div>
                 <div><b>ช่องทาง:</b> ${act.contactChannel || '-'}</div>
@@ -327,78 +401,10 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                         if (this.map) endMarker.addTo(this.map);
                     }
 
-                    // 4. วาดเส้นทางจริงตามถนนและคำนวณระยะทาง
+                    // 4. วาดเส้นทางจริงตามถนน โดยเรียก OSRM โดยตรง (เร็วกว่า LRM control มาก)
+                    // เรียงลำดับ: เริ่มต้น → เช็คอิน(ตามเวลา) → สิ้นสุด
                     if (latlngs.length > 1) {
-                        const routingControl = (L as any).Routing.control({
-                            router: (L as any).Routing.generoute('IO1r4sqgGUaSPrrhHSmP0oiV4h1E7wfQ81LUytRd4U3mVD8x'),
-                            waypoints: latlngs,
-                            routeWhileDragging: false,
-                            addWaypoints: false,
-                            show: false, // ซ่อน panel บอกทาง
-                            createMarker: () => null, // ไม่ต้องสร้างหมุดซ้ำ
-                            lineOptions: {
-                                styles: [{ color: '#007bff', opacity: 0.7, weight: 5 }]
-                            },
-                            fitSelectedRoutes: false
-                        });
-
-                        if (this.map) {
-                            routingControl.addTo(this.map);
-                        }
-
-                        routingControl.on('routesfound', (e: any) => {
-                            const routes = e.routes;
-                            if (routes && routes.length > 0) {
-                                const summary = routes[0].summary;
-                                const totalKm = (summary.totalDistance / 1000).toFixed(2);
-
-                                // อัปเดต Popup ของจุดเริ่มงานให้มีระยะทางบอกด้วย
-                                if (startMarker && dr.startLat && dr.startLng) {
-                                    startMarker.bindPopup(`<b>📍 จุดเริ่มงาน</b><br>พนักงาน: ${routeData.salesName}<br><b>ระยะทางเดินรถจริง:</b> ${totalKm} กม.<br>เวลาเริ่ม: ${dr.startTime ? new Date(dr.startTime).toLocaleString('th-TH') : 'ไม่ระบุ'}`);
-                                }
-
-                                // นำระยะทางไปแสดงใน Card ข้างนอกแผนที่
-                                this.routeDistances.push({
-                                    salesName: routeData.salesName,
-                                    distanceKm: totalKm
-                                });
-                                this.cdr.detectChanges(); // บังคับให้ Angular อัปเดตหน้าจอ
-                            }
-                        });
-
-                        // FALLBACK: ถ้า Routing พัง (เช่น API Key ผิดหรือ Timeout) ให้วาดเส้นตรงแทน
-                        routingControl.on('routingerror', (err: any) => {
-                            console.warn('Mapbox Routing error, falling back to straight lines:', err);
-
-                            // วาดเส้นตรง (Polyline)
-                            const fallbackLine = L.polyline(latlngs, {
-                                color: '#6c757d', // สีเทาสำหรับ fallback
-                                weight: 4,
-                                dashArray: '5, 10',
-                                opacity: 0.6
-                            });
-
-                            if (this.map) {
-                                fallbackLine.addTo(this.map);
-                            }
-
-                            // คำนวณระยะทางแบบเส้นตรงคร่าวๆ (Haversine)
-                            let fallbackDistM = 0;
-                            for (let i = 0; i < latlngs.length - 1; i++) {
-                                fallbackDistM += latlngs[i].distanceTo(latlngs[i + 1]);
-                            }
-                            const totalKm = (fallbackDistM / 1000).toFixed(2);
-
-                            if (startMarker && dr.startLat && dr.startLng) {
-                                startMarker.bindPopup(`<b>📍 จุดเริ่มงาน</b><br>พนักงาน: ${routeData.salesName}<br><b>ระยะทาง (เส้นตรง):</b> ${totalKm} กม.<br><small style="color:red;">*ไม่สามารถดึงข้อมูลเส้นทางถนนได้</small>`);
-                            }
-
-                            this.routeDistances.push({
-                                salesName: routeData.salesName,
-                                distanceKm: totalKm + ' (ตรง)'
-                            });
-                            this.cdr.detectChanges();
-                        });
+                        this.drawRouteViaOSRM(latlngs, routeData.salesName, startMarker, dr);
                     }
                 });
 
@@ -413,6 +419,60 @@ export class Dcsm28MapComponent implements OnInit, OnDestroy {
                 this.sweetAlert.error('Error', 'ไม่สามารถโหลดข้อมูลแผนที่ได้');
             }
         });
+    }
+
+    /**
+     * วาดเส้นทางตามถนน โดยเรียก OSRM โดยตรง (ไม่ผ่าน Leaflet Routing Machine)
+     * เร็วกว่ามากเพราะตัด overhead ของ LRM control ออกทั้งหมด
+     */
+    private drawRouteViaOSRM(
+        latlngs: L.LatLng[],
+        salesName: string,
+        startMarker: L.CircleMarker | null,
+        dr: any
+    ): void {
+        const coords = latlngs.map(ll => `${ll.lng},${ll.lat}`).join(';');
+        const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+
+        fetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error(`OSRM error ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                if (!data.routes || !data.routes[0]) throw new Error('No route');
+                const r = data.routes[0];
+                const routeLatLngs: L.LatLng[] = r.geometry.coordinates.map(
+                    (c: number[]) => L.latLng(c[1], c[0])
+                );
+
+                // วาด polyline ทันทีที่ได้ข้อมูล
+                if (this.map) {
+                    L.polyline(routeLatLngs, {
+                        color: '#007bff',
+                        opacity: 0.8,
+                        weight: 5
+                    }).addTo(this.map);
+                }
+
+                const totalKm = r.distance / 1000;
+                if (startMarker && dr.startLat && dr.startLng) {
+                    startMarker.bindPopup(`<b>📍 จุดเริ่มงาน</b><br>พนักงาน: ${salesName}<br><b>ระยะทางเดินรถจริง:</b> ${totalKm.toFixed(2)} กม.<br>เวลาเริ่ม: ${dr.startTime ? new Date(dr.startTime).toLocaleString('th-TH') : 'ไม่ระบุ'}`);
+                }
+                // สะสมระยะทางตามชื่อพนักงาน (รวมแต่ละ session เข้าด้วยกัน)
+                const prev = this.distanceAccumulator.get(salesName) ?? 0;
+                this.distanceAccumulator.set(salesName, prev + totalKm);
+
+                // อัปเดต routeDistances ให้แสดรวมสรุปเสมอ (overwrite ใหม่)
+                this.routeDistances = Array.from(this.distanceAccumulator.entries()).map(([name, km]) => ({
+                    salesName: name,
+                    distanceKm: km.toFixed(2)
+                }));
+                this.cdr.detectChanges();
+            })
+            .catch(err => {
+                console.warn('OSRM failed, skipping route line:', err);
+            });
     }
 
     // เผื่อมีรายการเก่าๆ ที่ไม่ได้พ่วง DailyRoute

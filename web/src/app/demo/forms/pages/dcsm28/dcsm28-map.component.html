@@ -10,14 +10,21 @@
         <div class="card-body">
             <div class="row align-items-end g-3">
                 <div class="col-md-3">
-                    <label class="form-label text-muted small mb-1 fw-bold">วันที่</label>
-                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filterActivityDate">
+                    <label class="form-label text-muted small mb-1 fw-bold">
+                        วันที่ <span class="text-danger">*</span>
+                    </label>
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filterActivityDate"
+                        (change)="onDateChange()">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label text-muted small mb-1 fw-bold">ชื่อพนักงานขาย</label>
-                    <select class="form-select form-select-sm" [(ngModel)]="filterSalesName" (change)="onSearch()">
-                        <option value="">-- ทั้งหมด --</option>
-                        <option *ngFor="let sales of salesUsers" [value]="sales.text">{{ sales.text }}</option>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small mb-1 fw-bold">
+                        พนักงานขาย <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select form-select-sm" [(ngModel)]="filterSalesName" (change)="onSalesChange()">
+                        <option value="">-- เลือกพนักงานขาย --</option>
+                        <option *ngFor="let sales of salesUsers" [value]="sales.text || sales.username">
+                            {{ sales.text || sales.username }}
+                        </option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex gap-2">
@@ -32,26 +39,59 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm overflow-hidden">
-        <div class="card-body p-0 position-relative">
-            <!-- Floating Summary Panel -->
-            <div *ngIf="routeDistances.length > 0" class="position-absolute top-0 end-0 m-3 p-3 bg-white rounded shadow"
-                style="z-index: 1000; min-width: 250px; max-width: 350px;">
-                <h5 class="mb-2 fw-bold text-primary border-bottom pb-2">
-                    <mat-icon
-                        style="vertical-align: middle; font-size: 20px; width: 20px; height: 20px;">directions_car</mat-icon>
-                    ระยะทางเดินรถจริง
-                </h5>
-                <div *ngFor="let rd of routeDistances" class="mb-2 pb-2 border-bottom">
-                    <div class="fw-bold">{{ rd.salesName }}</div>
-                    <div class="text-muted d-flex justify-content-between">
-                        <span>รวมระยะทาง:</span>
-                        <span class="text-danger fw-bold">{{ rd.distanceKm }} กม.</span>
+    <!-- ข้อความแนะนำเมื่อยังไม่เลือกพนักงานหรือวันที่ -->
+    <div *ngIf="!mapReady" class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <mat-icon style="font-size: 64px; width: 64px; height: 64px; color: #adb5bd;">map</mat-icon>
+            <h5 class="mt-3 text-muted">กรุณาเลือกพนักงานขายและวันที่เพื่อแสดงแผนที่</h5>
+            <p class="text-muted small">ระบบจะแสดงจุดเริ่มต้น จุดเช็คอิน และจุดสิ้นสุด พร้อมเส้นทางตามถนน</p>
+        </div>
+    </div>
+
+    <ng-container *ngIf="mapReady">
+        <!-- แผนที่ -->
+        <div class="card border-0 shadow-sm overflow-hidden mb-3">
+            <div class="card-body p-0 position-relative">
+                <!-- Legend มุมล่างซ้าย (เล็กๆ ไม่บัง) -->
+                <div class="position-absolute bottom-0 start-0 m-2 p-2 bg-white rounded shadow-sm"
+                    style="z-index: 1000; font-size: 11px; opacity: 0.9;">
+                    <div class="fw-bold mb-1 small">สัญลักษณ์</div>
+                    <div class="d-flex align-items-center mb-1">
+                        <span
+                            style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#28a745;margin-right:5px;"></span>
+                        จุดเริ่มต้น
+                    </div>
+                    <div class="d-flex align-items-center mb-1">
+                        <span
+                            style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#007bff;margin-right:5px;"></span>
+                        จุดเช็คอิน
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span
+                            style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#dc3545;margin-right:5px;"></span>
+                        จุดสิ้นสุด
+                    </div>
+                </div>
+                <div id="map" style="height: 65vh; width: 100%; z-index: 1;"></div>
+            </div>
+        </div>
+
+        <!-- ระยะทาง — แสดงใต้แผนที่เป็น card เต็มความกว้าง -->
+        <div *ngIf="routeDistances.length > 0" class="card border-0 shadow-sm">
+            <div class="card-body py-2 px-3">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <mat-icon style="color:#007bff; font-size:20px; width:20px; height:20px;">directions_car</mat-icon>
+                    <span class="fw-bold text-primary small">ระยะทางเดินรถจริง</span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12 col-sm-6 col-md-4" *ngFor="let rd of routeDistances">
+                        <div class="p-2 rounded border d-flex justify-content-between align-items-center bg-light">
+                            <span class="fw-bold small text-truncate me-2">{{ rd.salesName }}</span>
+                            <span class="badge bg-danger text-white fs-6 px-2">{{ rd.distanceKm }} กม.</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div id="map" style="height: 70vh; width: 100%; z-index: 1;"></div>
         </div>
-    </div>
+    </ng-container>
 </div>

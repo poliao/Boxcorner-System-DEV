@@ -18,7 +18,7 @@ public class ProductionJobService {
 
     @Autowired
     private ProductionJobRepository productionJobRepository;
-    
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -27,11 +27,11 @@ public class ProductionJobService {
         if (productionJob.getId() != null) {
             ProductionJob existing = productionJobRepository.findById(productionJob.getId()).orElse(null);
             if (existing != null) {
-                if (productionJob.getRowVersion() != null && 
-                    !existing.getRowVersion().equals(productionJob.getRowVersion())) {
+                if (productionJob.getRowVersion() != null &&
+                        !existing.getRowVersion().equals(productionJob.getRowVersion())) {
                     throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
                 }
-                
+
                 existing.setDate(productionJob.getDate());
                 existing.setJobId(productionJob.getJobId());
                 existing.setCustomerJobName(productionJob.getCustomerJobName());
@@ -70,11 +70,11 @@ public class ProductionJobService {
     }
 
     public Page<ProductionJob> findByFilters(Long id, String jobId, String customerJobName,
-            String printStatus, LocalDate startDate, LocalDate endDate,
+            String printStatus, String deliveryStatus, LocalDate startDate, LocalDate endDate,
             int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.unsorted());
         return productionJobRepository.findByFilters(id, jobId, customerJobName, printStatus,
-                startDate, endDate, paging);
+                deliveryStatus, startDate, endDate, paging);
     }
 
     public Page<ProductionJob> findByFilters(int page, int size) {

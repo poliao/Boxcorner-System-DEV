@@ -40,12 +40,13 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
   styleUrls: ['./dcsm20.component.scss']
 })
 export class Dcsm20Component implements OnInit {
-  
+
   // Filter properties
   filterId: string = '';
   filterJobId: string = '';
   filterCustomerName: string = '';
   filterPrintStatus: string = '';
+  filterDeliveryStatus: string = '';
   filterStartDate: string = '';
   filterEndDate: string = '';
 
@@ -71,7 +72,7 @@ export class Dcsm20Component implements OnInit {
     { key: 'qcDate', label: 'วันที่ส่งQC', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #670097ff; color: white;' },
     { key: 'dueDate', label: 'วันที่ส่งลูกค้า' },
     { key: 'printStatus', label: 'สถานะงาน', styleFunction: this.getStatusColumnStyle.bind(this) },
-    { key: 'deliveryStatus', label: 'สถานะจัดส่ง',colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) }
+    { key: 'deliveryStatus', label: 'สถานะจัดส่ง', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) }
   ];
 
   constructor(
@@ -89,12 +90,13 @@ export class Dcsm20Component implements OnInit {
 
   loadData() {
     this.loadingService.show();
-    
+
     const filters = {
       id: this.filterId,
       jobId: this.filterJobId,
       customerName: this.filterCustomerName,
       printStatus: this.filterPrintStatus,
+      deliveryStatus: this.filterDeliveryStatus,
       startDate: this.filterStartDate,
       endDate: this.filterEndDate
     };
@@ -161,6 +163,7 @@ export class Dcsm20Component implements OnInit {
     this.filterJobId = '';
     this.filterCustomerName = '';
     this.filterPrintStatus = '';
+    this.filterDeliveryStatus = '';
     this.filterStartDate = '';
     this.filterEndDate = '';
     this.onSearchChange();
@@ -169,17 +172,17 @@ export class Dcsm20Component implements OnInit {
   getStatusColumnStyle(columnKey: string, rowData: any): any {
     if (columnKey === 'printStatus') {
       const status = rowData.printStatus;
-      
+
       // หาขั้นตอนสุดท้ายของงานนี้
       const isLastStep = this.isLastStepForJob(rowData, status);
-      
+
       if (isLastStep) {
         return {
           'background-color': '#6c757d',
           'color': '#ffffff'
         };
       }
-      
+
       const statusColor = this.statusColorService.getStatusColor(rowData.printStatus);
       return {
         'background-color': statusColor,
@@ -197,7 +200,7 @@ export class Dcsm20Component implements OnInit {
       { status: 'ปะแล้ว', hasData: rowData.gluingDate || rowData.gluingResponsible },
       { status: 'Qcแล้ว', hasData: rowData.qcDate }
     ];
-    
+
     let lastStepWithData = null;
     for (let i = steps.length - 1; i >= 0; i--) {
       if (steps[i].hasData) {
@@ -205,26 +208,26 @@ export class Dcsm20Component implements OnInit {
         break;
       }
     }
-    
+
     return currentStatus === lastStepWithData;
   }
 
   getColumnStyle(columnKey: string, rowData: any): any {
     const status = rowData.printStatus;
-    
+
     const columnOrder = [
       'printingDate', 'printingResponsible',
-      'coatingDate', 'coatingResponsible', 
+      'coatingDate', 'coatingResponsible',
       'stampingDate', 'stampingResponsible',
       'gluingDate', 'gluingResponsible',
       'qcDate'
     ];
-    
+
     const currentIndex = columnOrder.indexOf(columnKey);
     if (currentIndex === -1) return {};
-    
+
     let highlightUntil = -1;
-    
+
     if (status === 'กำลังเคลือบ') highlightUntil = 1;
     else if (status === 'กำลังปั้ม') highlightUntil = 3;
     else if (status === 'กำลังปะ') highlightUntil = 5;
@@ -235,7 +238,7 @@ export class Dcsm20Component implements OnInit {
     if (currentIndex <= highlightUntil) {
       return { 'background-color': '#222222ff', 'color': '#777777ff' };
     }
-    
+
     // ตรวจสอบวันที่สำหรับคอลัมน์วันที่แต่ละขั้นตอน
     const dateColumns = ['printingDate', 'coatingDate', 'stampingDate', 'gluingDate', 'qcDate'];
     if (dateColumns.includes(columnKey)) {
@@ -243,21 +246,21 @@ export class Dcsm20Component implements OnInit {
       if (columnDate) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-        
+
         // แปลงวันที่จาก DD/MM/YYYY เป็น Date object
         const dateParts = columnDate.split('/');
         if (dateParts.length === 3) {
           const targetDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
           targetDate.setHours(0, 0, 0, 0);
-          
+
           // ถ้าต้องส่งวันนี้ ให้เป็นสีแดง
           if (targetDate.getTime() === today.getTime()) {
             return { 'background-color': '#dc3545', 'color': '#ffffff' };
           }
-          
+
           // ถ้าต้องส่งพรุ่งนี้ ให้เป็นสีเหลือง
           if (targetDate.getTime() === tomorrow.getTime()) {
             return { 'background-color': '#ffc107', 'color': '#000000' };
@@ -265,7 +268,7 @@ export class Dcsm20Component implements OnInit {
         }
       }
     }
-    
+
     return {};
   }
 }

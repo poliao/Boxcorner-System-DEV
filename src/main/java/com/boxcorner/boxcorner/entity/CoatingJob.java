@@ -70,4 +70,7 @@ public class CoatingJob extends BaseEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "pap_order_id")
+    private Integer papOrderId;
 }

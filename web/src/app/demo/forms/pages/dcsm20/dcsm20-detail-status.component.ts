@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +9,8 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 import { Dcsm09Service } from '../dcsm09/dcsm09.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dcsm20-detail-status.component',
@@ -16,8 +18,8 @@ import { Dcsm09Service } from '../dcsm09/dcsm09.service';
   templateUrl: './dcsm20-detail-status.component.html',
   styleUrl: './dcsm20-detail-status.component.scss'
 })
-
-export class Dcsm20DetailStatusComponent implements OnInit {
+export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   papOrder: any;
   productionForm!: FormGroup;
   isEditMode = false;
@@ -64,9 +66,9 @@ export class Dcsm20DetailStatusComponent implements OnInit {
 
     if (state?.referenceId) {
       this.referenceId = state.referenceId;
-      this.decisionAuthority = state.decisionAuthority
-      this.decisionAuthorityRemarks = state.decisionAuthorityRemarks
-      this.print2Page = state.print2Page
+      this.decisionAuthority = state.decisionAuthority;
+      this.decisionAuthorityRemarks = state.decisionAuthorityRemarks;
+      this.print2Page = state.print2Page;
     }
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
@@ -75,87 +77,58 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     this.checkButton();
   }
 
-  checkButton() {
-    if (this.productionForm.getRawValue().printingDate != null && this.productionForm.getRawValue().printStatus != 'พิมพ์แล้ว' && this.productionForm.getRawValue().printStatus != 'เคลือบแล้ว' && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isPrint = true
-      this.isCoating = false
-      this.isStamping = false
-      this.isGluing = false
-      this.isQc = false
-    } else if (this.productionForm.getRawValue().coatingDate != null && this.productionForm.getRawValue().printStatus != 'เคลือบแล้ว' && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isCoating = true
-      this.isPrint = false
-      this.isStamping = false
-      this.isGluing = false
-      this.isQc = false
-    } else if (this.productionForm.getRawValue().stampingDate != null && this.productionForm.getRawValue().printStatus != 'ปั้มแล้ว' && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isStamping = true
-      this.isPrint = false
-      this.isCoating = false
-      this.isGluing = false
-      this.isQc = false
-    } else if (this.productionForm.getRawValue().gluingDate != null && this.productionForm.getRawValue().printStatus != 'ปะแล้ว' && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isGluing = true
-      this.isPrint = false
-      this.isCoating = false
-      this.isStamping = false
-      this.isQc = false
-    } else if (this.productionForm.getRawValue().qcDate != null && this.productionForm.getRawValue().printStatus != 'Qcแล้ว' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isQc = true
-      this.isPrint = false
-      this.isCoating = false
-      this.isStamping = false
-      this.isGluing = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isAddress = true
-      this.isWaitDelivery = true
-      this.isDelivery = false
-      this.isDeliveryComplete = false
-      this.isPrint = false
-      this.isCoating = false
-      this.isStamping = false
-      this.isGluing = false
-      this.isQc = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isAddress = false
-      this.isWaitDelivery = true
-      this.isDelivery = false
-      this.isDeliveryComplete = false
-      this.isPrint = false
-      this.isCoating = false
-      this.isStamping = false
-      this.isGluing = false
-      this.isQc = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isAddress = false
-      this.isWaitDelivery = false
-      this.isDelivery = true
-      this.isDeliveryComplete = false
-      this.isPrint = false
-      this.isCoating = false
-      this.isStamping = false
-      this.isGluing = false
-      this.isQc = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
-      this.isAddress = false
-      this.isWaitDelivery = false
-      this.isDelivery = false
-      this.isDeliveryComplete = true
-      this.isPrint = false
-      this.isCoating = false
-      this.isStamping = false
-      this.isGluing = false
-      this.isQc = false
-    } else {
-      this.isAddress = false
-      this.isWaitDelivery = false
-      this.isDelivery = false
-      this.isDeliveryComplete = false
-      this.isPrint = false
-      this.isCoating = false
-      this.isStamping = false
-      this.isGluing = false
-      this.isQc = false
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  checkButton(): void {
+    const rawValue = this.productionForm.getRawValue();
+    const printStatus = rawValue.printStatus;
+    const deliveryStatus = rawValue.deliveryStatus;
+
+    // Condition helpers
+    const notPrinted = !['พิมพ์แล้ว', 'เคลือบแล้ว', 'ปั้มแล้ว', 'ปะแล้ว', 'Qcแล้ว'].includes(printStatus);
+    const notCoated = !['เคลือบแล้ว', 'ปั้มแล้ว', 'ปะแล้ว', 'Qcแล้ว'].includes(printStatus);
+    const notStamped = !['ปั้มแล้ว', 'ปะแล้ว', 'Qcแล้ว'].includes(printStatus);
+    const notGlued = !['ปะแล้ว', 'Qcแล้ว'].includes(printStatus);
+    const notQc = printStatus !== 'Qcแล้ว';
+
+    const notAddress = !['รอที่อยู่จัดส่ง', 'รอจัดส่ง', 'กำลังส่ง', 'จัดส่งเรียบร้อย'].includes(deliveryStatus);
+    const notWaitDelivery = !['รอจัดส่ง', 'กำลังส่ง', 'จัดส่งเรียบร้อย'].includes(deliveryStatus);
+    const notDelivery = !['กำลังส่ง', 'จัดส่งเรียบร้อย'].includes(deliveryStatus);
+    const notDeliveryComplete = deliveryStatus !== 'จัดส่งเรียบร้อย';
+
+    // Reset flags
+    this.isPrint = false;
+    this.isCoating = false;
+    this.isStamping = false;
+    this.isGluing = false;
+    this.isQc = false;
+    this.isAddress = false;
+    this.isWaitDelivery = false;
+    this.isDelivery = false;
+    this.isDeliveryComplete = false;
+
+    if (rawValue.printingDate != null && notPrinted && notAddress) {
+      this.isPrint = true;
+    } else if (rawValue.coatingDate != null && notCoated && notAddress) {
+      this.isCoating = true;
+    } else if (rawValue.stampingDate != null && notStamped && notAddress) {
+      this.isStamping = true;
+    } else if (rawValue.gluingDate != null && notGlued && notAddress) {
+      this.isGluing = true;
+    } else if (rawValue.qcDate != null && notQc && notAddress) {
+      this.isQc = true;
+    } else if (rawValue.id != null && notAddress) {
+      this.isAddress = true;
+      this.isWaitDelivery = true;
+    } else if (rawValue.id != null && notWaitDelivery) {
+      this.isWaitDelivery = true;
+    } else if (rawValue.id != null && notDelivery) {
+      this.isDelivery = true;
+    } else if (rawValue.id != null && notDeliveryComplete) {
+      this.isDeliveryComplete = true;
     }
   }
 
@@ -195,72 +168,42 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     this.productionForm.get('stampingResponsible')?.disable();
     this.productionForm.get('gluingResponsible')?.disable();
 
-    this.productionForm.get('printingDate')?.valueChanges.subscribe(value => {
-      if (value) {
-        this.productionForm.get('printingResponsible')?.setValidators([Validators.required]);
-        this.productionForm.get('printingResponsible')?.enable();
-      } else {
-        this.productionForm.get('printingResponsible')?.clearValidators();
-        this.productionForm.get('printingResponsible')?.setValue(null);
-        this.productionForm.get('printingResponsible')?.disable();
-      }
-      this.productionForm.get('printingResponsible')?.updateValueAndValidity();
-    });
-    this.productionForm.get('coatingDate')?.valueChanges.subscribe(value => {
-      if (value) {
-        this.productionForm.get('coatingResponsible')?.setValidators([Validators.required]);
-        this.productionForm.get('coatingResponsible')?.enable();
-      } else {
-        this.productionForm.get('coatingResponsible')?.clearValidators();
-        this.productionForm.get('coatingResponsible')?.setValue(null);
-        this.productionForm.get('coatingResponsible')?.disable();
-      }
-      this.productionForm.get('coatingResponsible')?.updateValueAndValidity();
-    });
-    this.productionForm.get('stampingDate')?.valueChanges.subscribe(value => {
-      if (value) {
-        this.productionForm.get('stampingResponsible')?.setValidators([Validators.required]);
-        this.productionForm.get('stampingResponsible')?.enable();
-      } else {
-        this.productionForm.get('stampingResponsible')?.clearValidators();
-        this.productionForm.get('stampingResponsible')?.setValue(null);
-        this.productionForm.get('stampingResponsible')?.disable();
-      }
-      this.productionForm.get('stampingResponsible')?.updateValueAndValidity();
-    });
-    this.productionForm.get('gluingDate')?.valueChanges.subscribe(value => {
-      if (value) {
-        this.productionForm.get('gluingResponsible')?.setValidators([Validators.required]);
-        this.productionForm.get('gluingResponsible')?.enable();
-      } else {
-        this.productionForm.get('gluingResponsible')?.clearValidators();
-        this.productionForm.get('gluingResponsible')?.setValue(null);
-        this.productionForm.get('gluingResponsible')?.disable();
-      }
-      this.productionForm.get('gluingResponsible')?.updateValueAndValidity();
+    const dependencies = [
+      { dateCtrl: 'printingDate', respCtrl: 'printingResponsible' },
+      { dateCtrl: 'coatingDate', respCtrl: 'coatingResponsible' },
+      { dateCtrl: 'stampingDate', respCtrl: 'stampingResponsible' },
+      { dateCtrl: 'gluingDate', respCtrl: 'gluingResponsible' },
+    ];
+
+    dependencies.forEach(dep => {
+      this.productionForm.get(dep.dateCtrl)?.valueChanges.pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(value => {
+        const respControl = this.productionForm.get(dep.respCtrl);
+        if (value) {
+          respControl?.setValidators([Validators.required]);
+          respControl?.enable();
+        } else {
+          respControl?.clearValidators();
+          respControl?.setValue(null);
+          respControl?.disable();
+        }
+        respControl?.updateValueAndValidity();
+      });
     });
   }
 
   disableForm(): void {
     if (this.productionForm.getRawValue().id != null) {
-      this.productionForm.get('date')?.disable();
-      this.productionForm.get('jobId')?.disable();
-      this.productionForm.get('customerJobName')?.disable();
-      this.productionForm.get('printQuantity')?.disable();
-      this.productionForm.get('productionQuantity')?.disable();
-      this.productionForm.get('printingDate')?.disable();
-      this.productionForm.get('printingResponsible')?.disable();
-      this.productionForm.get('coatingDate')?.disable();
-      this.productionForm.get('coatingResponsible')?.disable();
-      this.productionForm.get('stampingDate')?.disable();
-      this.productionForm.get('stampingResponsible')?.disable();
-      this.productionForm.get('gluingDate')?.disable();
-      this.productionForm.get('gluingResponsible')?.disable();
-      this.productionForm.get('qcDate')?.disable();
-      this.productionForm.get('dueDate')?.disable();
-      this.productionForm.get('printStatus')?.disable();
+      const controlsToDisable = [
+        'date', 'jobId', 'customerJobName', 'printQuantity', 'productionQuantity',
+        'printingDate', 'printingResponsible', 'coatingDate', 'coatingResponsible',
+        'stampingDate', 'stampingResponsible', 'gluingDate', 'gluingResponsible',
+        'qcDate', 'dueDate', 'printStatus'
+      ];
+      controlsToDisable.forEach(ctrl => this.productionForm.get(ctrl)?.disable());
     } else {
-      this.isCreate = true
+      this.isCreate = true;
     }
   }
 

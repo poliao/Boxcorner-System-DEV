@@ -356,7 +356,8 @@ public class SampleOrderController {
     }
 
     @GetMapping("/countWaitPending")
-    public ResponseEntity<Integer> countWaitPending() {
-        return ResponseEntity.ok(sampleOrderService.countBacklogStatus("รอดำเนินการ", null));
+    public ResponseEntity<Integer> countWaitPending(HttpServletRequest httpRequest) {
+        return ResponseEntity
+                .ok(sampleOrderService.countBacklogStatus("รอดำเนินการ", tokenService.getCurrentUser(httpRequest)));
     }
 }

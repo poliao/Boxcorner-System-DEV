@@ -36,6 +36,7 @@ export class Dcsm20Service {
       jobId: filters.jobId || '',
       customerName: filters.customerName || '',
       printStatus: filters.printStatus || '',
+      deliveryStatus: filters.deliveryStatus || '',
       startDate: filters.startDate || '',
       endDate: filters.endDate || '',
     };

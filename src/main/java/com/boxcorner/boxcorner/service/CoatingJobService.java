@@ -21,26 +21,18 @@ public class CoatingJobService {
 
     @Transactional
     public CoatingJob createCoatingJob(CoatingJob coatingJob) {
-
-        if (coatingJobRepository.existsByJoId(coatingJob.getJoId())) {
-            throw new RuntimeException("มีงานเคลือบของ JO นี้ในระบบอยู่แล้ว: " + coatingJob.getJoId());
-        }
-
         if (coatingJob.getOrderDatetime() == null) {
             coatingJob.setOrderDatetime(LocalDateTime.now());
         }
-
         if (coatingJob.getStatus() == null) {
             coatingJob.setStatus(BaseEntity.JobStatus.PENDING);
         }
-
         return coatingJobRepository.save(coatingJob);
     }
 
     @Transactional
     public CoatingJob updateStatus(int id, BaseEntity.JobStatus status) {
-        CoatingJob job = coatingJobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ไม่พบงานเคลือบ id=" + id));
+        CoatingJob job = coatingJobRepository.findById(id).orElseThrow(() -> new RuntimeException("ไม่พบงานเคลือบ id=" + id));
         job.setStatus(status);
         return coatingJobRepository.save(job);
     }

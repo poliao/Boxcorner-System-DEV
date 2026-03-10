@@ -33,7 +33,7 @@
     </div>
 
     <div class="card-body bg-light">
-      <div class="mb-3" *ngIf="isCreate == true">
+      <div class="mb-3" *ngIf="isCreate">
         <form [formGroup]="productionForm">
           <div class="input-group">
             <input type="number" formControlName="oidPap" class="form-control form-control-sm"

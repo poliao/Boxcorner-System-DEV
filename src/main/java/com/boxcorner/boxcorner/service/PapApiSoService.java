@@ -72,11 +72,22 @@ public class PapApiSoService {
         result.put("header", header);
 
         Map<String, String> customer = new LinkedHashMap<>();
-        Elements cusRights = doc.select(".cus-info-right");
-        if (cusRights.size() >= 3) {
-            customer.put("name", cusRights.get(0).text().trim()); //
-            customer.put("address", cusRights.get(1).text().trim()); //
-            customer.put("contact_person", cusRights.get(2).text().trim()); //
+        Elements leftLabels = doc.select(".cus-info-left");
+        Elements rightValues = doc.select(".cus-info-right");
+        for (int i = 0; i < leftLabels.size(); i++) {
+            if (i < rightValues.size()) {
+                String label = leftLabels.get(i).text().trim();
+                String value = rightValues.get(i).text().trim();
+                if (label.contains("ลูกค้า"))
+                    customer.put("name", value);
+                else if (label.contains("ที่อยู่"))
+                    customer.put("address", value);
+                else if (label.contains("ติดต่อ"))
+                    customer.put("contact_person", value);
+                else if (value.contains("เลขประจำตัวผู้เสียภาษีอากร")) {
+                    customer.put("tax_id", value.replace("เลขประจำตัวผู้เสียภาษีอากร ", "").trim());
+                }
+            }
         }
         result.put("customer_info", customer);
 
@@ -86,6 +97,8 @@ public class PapApiSoService {
             String value = el.text().replace(label, "").trim();
             if (label.contains("วันที่"))
                 docInfo.put("doc_date", value); //
+            else if (label.contains("เลขใบเสนอราคา"))
+                docInfo.put("quotation_no", value); //
             else if (label.contains("เลขที่เอกสาร"))
                 docInfo.put("doc_no", value); //
             else if (label.contains("เซลล์"))

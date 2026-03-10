@@ -4,7 +4,7 @@
     <div class="card-body bg-light">
       <form>
         <div class="row g-3">
-          <div class="col-md-3">
+          <div class="col-md-2">
             <input type="number" class="form-control" [(ngModel)]="filterId" name="filterId" placeholder="ค้นหา ลำดับ"
               (keyup.enter)="onSearchChange()">
           </div>
@@ -16,26 +16,34 @@
             <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
               placeholder="ค้นหา ชื่องาน/ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
           </div>
-          <div class="col-md-3">
-            <select class="form-select" [(ngModel)]="filterPrintStatus" name="filterPrintStatus" (change)="onSearchChange()">
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filterPrintStatus" name="filterPrintStatus"
+              (change)="onSearchChange()">
               <option value="">สถานะพิมพ์ ทั้งหมด</option>
-              <option value="พิมพ์แล้ว">พิมพ์แล้ว</option>
-              <option value="เคลือบแล้ว">เคลือบแล้ว</option>
-              <option value="ปั้มแล้ว">ปั้มแล้ว</option>
-              <option value="ปะแล้ว">ปะแล้ว</option>
-              <option value="Qcแล้ว">QCแล้ว</option>
+              <option value="กำลังพิมพ์">กำลังพิมพ์</option>
+              <option value="กำลังเคลือบ">กำลังเคลือบ</option>
+              <option value="กำลังปั้ม">กำลังปั้ม</option>
+              <option value="กำลังปะ">กำลังปะ</option>
+              <option value="กำลังQc">กำลังQc</option>
+              <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="filterDeliveryStatus" name="filterDeliveryStatus"
+              (change)="onSearchChange()">
+              <option value="">สถานะจัดส่ง ทั้งหมด</option>
               <option value="รอที่อยู่จัดส่ง">รอที่อยู่จัดส่ง</option>
               <option value="รอจัดส่ง">รอจัดส่ง</option>
               <option value="กำลังส่ง">กำลังส่ง</option>
               <option value="จัดส่งเรียบร้อย">จัดส่งเรียบร้อย</option>
             </select>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label for="text">วันที่ส่งจาก</label>
             <input type="date" class="form-control" [(ngModel)]="filterStartDate" name="filterStartDate"
               placeholder="วันที่เริ่ม" (change)="onSearchChange()">
           </div>
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label for="text">ถึงวันที่</label>
             <input type="date" class="form-control" [(ngModel)]="filterEndDate" name="filterEndDate"
               placeholder="วันที่สิ้นสุด" (change)="onSearchChange()">
@@ -43,7 +51,8 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #003747;" (click)="onSearchChange()">
+                <button mat-flat-button type="button" class="w-100 px-3" style="background-color: #003747;"
+                  (click)="onSearchChange()">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>

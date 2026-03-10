@@ -132,7 +132,7 @@ export class Dcsm04DetailComponent implements OnInit {
       paperGram: [null],
       rowVersion: [null],
       jobId: [null, Validators.required],
-      qtId: [null],
+      qtId: [null, Validators.required],
       print2Page: [false],
       orderTime: [null],
       totalPrintSheets: [null],
@@ -216,6 +216,7 @@ export class Dcsm04DetailComponent implements OnInit {
         this.mainForm.get('jobId')?.setValue(response.document_info.doc_no);
         this.mainForm.get('customerName')?.setValue(response.customer_info.name);
         this.mainForm.get('folderName')?.setValue(response.job_specifications.job_name);
+        this.mainForm.get('qtId')?.setValue(response.document_info.quotation_no);
         this.checkBtn();
         this.sweetAlert.success('ดึงข้อมูลสำเร็จ');
       },
@@ -706,8 +707,6 @@ export class Dcsm04DetailComponent implements OnInit {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.mainForm.get('status')?.setValue('แก้ไขงานตัวอย่าง');
-          console.log(this.mainForm.getRawValue().designOrderId);
-
           if (this.mainForm.getRawValue().designOrderId != null && this.mainForm.getRawValue().designOrderId != '') {
             this.dcsm02Service.getById(this.mainForm.getRawValue().designOrderId).subscribe({
               next: (response) => {
@@ -757,6 +756,9 @@ export class Dcsm04DetailComponent implements OnInit {
               customerName: this.mainForm.getRawValue().customerName,
               rowVersion: null,
               confirmDate: null,
+              qtId: this.mainForm.getRawValue().qtId,
+              joId: this.mainForm.getRawValue().jobId,
+              qpId: this.mainForm.getRawValue().qpId,
             }
             this.dcsm02Service.save(data).subscribe({
               next: (response) => {

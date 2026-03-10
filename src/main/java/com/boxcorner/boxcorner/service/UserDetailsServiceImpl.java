@@ -30,4 +30,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public List<OptionDTO> getSalesUsers() {
         return userRepository.findSalesUsers();
     }
+
+    public List<OptionDTO> getDesignUsers() {
+        return userRepository.findDesignUsers();
+    }
 }
