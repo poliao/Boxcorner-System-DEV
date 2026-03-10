@@ -287,10 +287,9 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.loadingService.show();
-          this.dcsm20Service.savePapOrder(this.papOrder).subscribe((response) => {
-            this.setFromSave(response);
+          this.dcsm20Service.savePapOrder(this.papOrder).subscribe((responsePap) => {
             this.dcsm20Service.save(this.productionForm.getRawValue()).subscribe((response) => {
-              this.checkJob(response.id)
+              this.checkJob(response.id, responsePap)
               this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
                 this.patchFormData(response);
                 this.loadingService.hide();
@@ -417,7 +416,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     return dateStr;
   }
 
-  checkJob(id) {
+  checkJob(id, response) {
     const printingDate = this.productionForm.getRawValue().printingDate;
     const coatingDate = this.productionForm.getRawValue().coatingDate;
     const stampingDate = this.productionForm.getRawValue().stampingDate;
@@ -425,7 +424,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     const qcDate = this.productionForm.getRawValue().qcDate;
 
     if (printingDate && printingDate !== '' && printingDate !== null) {
-      this.setPrintJob(id);
+      this.setPrintJob(id, response);
     } else if (coatingDate && coatingDate !== '' && coatingDate !== null) {
       this.setCoatJob(id);
     } else if (stampingDate && stampingDate !== '' && stampingDate !== null) {
@@ -458,41 +457,18 @@ export class Dcsm20DetailStatusComponent implements OnInit {
     this.loadingService.hide();
   }
 
-  setFromSave(response) {
-    this.productionForm.get('jobId')?.setValue(response.jobCode);
-    this.productionForm.get('customerJobName')?.setValue(response.jobName + ' - ' + response.customerName);
-    this.productionForm.get('dueDate')?.setValue(this.convertDateFormat(response.deliveryDate));
-    this.productionForm.get('printQuantity')?.setValue(response.cutPaperPrintQty);
-    this.productionForm.get('productionQuantity')?.setValue(response.totalPrintQty);
-    this.productionForm.get('printingDate')?.setValue(response.printScheduledDate === '-' ? null : this.convertDateFormat(response.printScheduledDate));
-    this.productionForm.get('printingResponsible')?.setValue(response.printMachine === '-' ? null : (response.printMachine === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.printMachine));
-    this.productionForm.get('coatingDate')?.setValue(response.coatScheduledDate === '-' ? null : this.convertDateFormat(response.coatScheduledDate));
-    this.productionForm.get('coatingResponsible')?.setValue(response.coatLocation === '-' ? null : (response.coatLocation === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.coatLocation));
-    this.productionForm.get('stampingDate')?.setValue(response.dieCutDeadline === '-' ? null : this.convertDateFormat(response.dieCutDeadline));
-    this.productionForm.get('stampingResponsible')?.setValue(response.dieLocation === '-' ? null : (response.dieLocation === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.dieLocation));
-    this.productionForm.get('gluingDate')?.setValue(response.glueScheduledDate === '-' ? null : this.convertDateFormat(response.glueScheduledDate));
-    this.productionForm.get('gluingResponsible')?.setValue(response.glueLocation === '-' ? null : (response.glueLocation === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : response.glueLocation));
-    this.productionForm.get('qcDate')?.setValue(response.qcScheduledDate === '-' ? null : this.convertDateFormat(response.qcScheduledDate));
-    this.productionForm.get('imageUrl')?.setValue(response.imageUrl === '-' ? null : response.imageUrl);
-    this.productionForm.get('machineSetupCount')?.setValue(response.cutPaperMachineSetupp === '-' ? null : response.cutPaperMachineSetup);
-    this.productionForm.get('papOrderId')?.setValue(response.id === '-' ? null : response.id);
-
-    this.jobImageUrl = response.imageUrl || '';
-    this.loadingService.hide();
-  }
-
-  setPrintJob(id) {
+  setPrintJob(id: any, response: any) {
     const DataJob = {
       id: null,
       createdAt: new Date(),
-      jobId: this.productionForm.getRawValue().jobId,
+      jobId: response.jobCode,
       deliveryDate: this.productionForm.getRawValue().printingDate,
-      customerJobName: this.productionForm.getRawValue().customerJobName,
+      customerJobName: response.jobName + ':' + response.customerName,
       jobStatus: null,
-      totalPrintSheets: this.productionForm.getRawValue().printQuantity,
-      productionQty: this.productionForm.getRawValue().productionQuantity,
-      printerName: this.productionForm.getRawValue().printingResponsible,
-      setupWaste: this.productionForm.getRawValue().machineSetupCount,
+      totalPrintSheets: response.cutPaperPrintQty,
+      productionQty: response.totalPrintQty,
+      printerName: response.printMachine,
+      setupWaste: response.cutPaperMachineSetup,
       issample: false,
       jobType: null,
       printType: null,
@@ -508,7 +484,7 @@ export class Dcsm20DetailStatusComponent implements OnInit {
       decisionAuthority: this.decisionAuthority,
       decisionAuthorityRemarks: this.decisionAuthorityRemarks,
       print2Page: this.print2Page,
-      papOrderId: this.productionForm.getRawValue().papOrderId,
+      papOrderId: response.id,
     }
     this.dcsm20Service.savePrintJob(DataJob).subscribe({
       next: (response) => {
