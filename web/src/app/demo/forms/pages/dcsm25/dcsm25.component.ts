@@ -144,7 +144,8 @@ export class Dcsm25Component implements OnInit {
             isClosedSample: item.issample && item.jobStatus === 'COMPLETED' && !!item.productionOrderId,
             hasRealJob: item.hasRealJob
           }));
-
+          console.log(jobs);
+          
           // Load extra prints for each job
           this.loadExtraPrints(jobs);
 

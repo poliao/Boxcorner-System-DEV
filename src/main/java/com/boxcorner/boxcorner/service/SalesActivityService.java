@@ -170,7 +170,15 @@ public class SalesActivityService {
             } catch (Exception ignored) {
             }
         }
-
         salesActivityRepository.save(activity);
+    }
+
+    @Transactional
+    public java.util.List<com.boxcorner.boxcorner.dto.SalesSummaryDTO> getSummaryReport(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null)
+            startDate = LocalDate.now().minusMonths(1);
+        if (endDate == null)
+            endDate = LocalDate.now();
+        return salesActivityRepository.getSummaryReport(startDate, endDate);
     }
 }

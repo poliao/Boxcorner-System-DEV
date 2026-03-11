@@ -1,0 +1,39 @@
+<h2>รายงานสรุปผลการปฏิบัติงานฝ่ายขาย (DCSM-35)</h2>
+<div class="card-body">
+  <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+    <div class="card-body bg-light">
+      <form>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">วันที่เริ่มต้น</label>
+            <input type="date" class="form-control" [(ngModel)]="searchParams.startDate" name="startDate">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">วันที่สิ้นสุด</label>
+            <input type="date" class="form-control" [(ngModel)]="searchParams.endDate" name="endDate">
+          </div>
+
+          <div class="col-12">
+            <div class="row g-2">
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-flat-button color="primary" type="button" class="w-100 px-3" (click)="onSearch()"
+                  style="background-color: #350142;">
+                  <mat-icon>search</mat-icon> ค้นหา
+                </button>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <button mat-stroked-button color="warn" type="button" class="w-100 px-3" (click)="onClearSearch()">
+                  <mat-icon>clear</mat-icon> ล้างค่า
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <app-data-table [headerStyle]="'background: #350142; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="tableData.length" [pageSize]="tableData.length" [pageIndex]="0" [clickableColumn]="'salesName'">
+  </app-data-table>
+</div>

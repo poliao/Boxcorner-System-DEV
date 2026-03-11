@@ -646,6 +646,11 @@ const routes: Routes = [
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm34/dcsm34.component').then((c) => c.Dcsm34Component)
       },
+      {
+        path: 'Dcsm35',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm35/dcsm35.component').then((c) => c.Dcsm35Component)
+      },
     ]
   },
   {

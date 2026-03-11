@@ -157,4 +157,11 @@ public class SalesActivityController {
             this.checkInLng = checkInLng;
         }
     }
+
+    @GetMapping("/summaryReport")
+    public ResponseEntity<java.util.List<com.boxcorner.boxcorner.dto.SalesSummaryDTO>> summaryReport(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return ResponseEntity.ok(salesActivityService.getSummaryReport(startDate, endDate));
+    }
 }

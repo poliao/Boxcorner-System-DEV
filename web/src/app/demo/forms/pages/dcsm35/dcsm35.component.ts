@@ -19,19 +19,62 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 })
 export class Dcsm35Component implements OnInit {
 
+
   tableColumns = [
-    { key: '', label: '' },
+    { key: 'salesName', label: 'พนักงานขาย' },
+    { key: 'visitCount', label: 'จำนวนครั้งที่เข้าพบ' },
+    { key: 'quotationCount', label: 'จำนวนใบเสนอราคา' },
+    { key: 'totalSales', label: 'ยอดขายรวม' },
+    { key: 'newCustomerCount', label: 'ลูกค้าใหม่' }
   ];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  tableData: any[] = [];
+  searchParams = {
+    startDate: '',
+    endDate: ''
+  };
 
   constructor(
     private dcsm35Service: Dcsm35Service,
     private router: Router,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService
-  ) { }
+  ) {
+    const today = new Date();
+    const lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1);
+    this.searchParams.startDate = lastMonth.toISOString().split('T')[0];
+    this.searchParams.endDate = today.toISOString().split('T')[0];
+  }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.loadingService.show();
+    this.dcsm35Service.getSummaryReport(this.searchParams).subscribe({
+      next: (data) => {
+        this.tableData = data;
+        this.loadingService.hide();
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('Error', 'ไม่สามารถโหลดข้อมูลรายงานได้');
+      }
+    });
+  }
+
+  onSearch() {
+    this.loadData();
+  }
+
+  onClearSearch() {
+    const today = new Date();
+    const lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1);
+    this.searchParams.startDate = lastMonth.toISOString().split('T')[0];
+    this.searchParams.endDate = today.toISOString().split('T')[0];
+    this.loadData();
   }
 }

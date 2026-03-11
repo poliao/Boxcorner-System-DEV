@@ -66,4 +66,20 @@ public interface SalesActivityRepository extends JpaRepository<SalesActivity, Lo
                         @Param("startDateMain") LocalDate startDateMain,
                         @Param("endDateMain") LocalDate endDateMain,
                         Pageable pageable);
+
+        @Query(value = """
+                        SELECT new com.boxcorner.boxcorner.dto.SalesSummaryDTO(
+                            s.salesName,
+                            SUM(CASE WHEN s.checkInTime IS NOT NULL THEN 1 ELSE 0 END),
+                            SUM(CASE WHEN s.quotation = true THEN 1 ELSE 0 END),
+                            (SELECT SUM(q.amount) FROM Quotation q WHERE q.activityId IN (SELECT s2.activityId FROM SalesActivity s2 WHERE s2.salesName = s.salesName AND s2.activityDate >= :startDate AND s2.activityDate <= :endDate) AND q.isCurrent = true),
+                            SUM(CASE WHEN s.isNewCustomer = true THEN 1 ELSE 0 END)
+                        )
+                        FROM SalesActivity s
+                        WHERE s.activityDate >= :startDate AND s.activityDate <= :endDate
+                        GROUP BY s.salesName
+                        """)
+        java.util.List<com.boxcorner.boxcorner.dto.SalesSummaryDTO> getSummaryReport(
+                        @Param("startDate") LocalDate startDate,
+                        @Param("endDate") LocalDate endDate);
 }
