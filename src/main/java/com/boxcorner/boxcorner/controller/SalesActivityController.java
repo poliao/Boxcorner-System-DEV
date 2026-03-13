@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boxcorner.boxcorner.entity.SalesActivity;
+import com.boxcorner.boxcorner.entity.dto.SalesSummaryDTO;
 import com.boxcorner.boxcorner.security.jwt.TokenService;
 import com.boxcorner.boxcorner.service.SalesActivityService;
 
@@ -159,7 +161,7 @@ public class SalesActivityController {
     }
 
     @GetMapping("/summaryReport")
-    public ResponseEntity<java.util.List<com.boxcorner.boxcorner.dto.SalesSummaryDTO>> summaryReport(
+    public ResponseEntity<List<SalesSummaryDTO>> summaryReport(
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return ResponseEntity.ok(salesActivityService.getSummaryReport(startDate, endDate));

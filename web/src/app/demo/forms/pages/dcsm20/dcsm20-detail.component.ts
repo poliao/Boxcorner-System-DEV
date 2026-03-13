@@ -87,7 +87,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isCoating = false
       this.isStamping = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().qcDate != null && this.productionForm.getRawValue().printStatus != 'เสร็จสิ้น' &&  this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().qcDate != null && this.productionForm.getRawValue().printStatus != 'เสร็จสิ้น' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isQc = true
       this.isPrint = false
       this.isCoating = false
@@ -171,6 +171,7 @@ export class Dcsm20DetailComponent implements OnInit {
       deliveryStatus: [''],
       machineSetupCount: [''],
       imageUrl: [null],
+      papOrderId: [null],
       rowVersion: [null]
     });
     this.productionForm.get('printStatus')?.disable();
@@ -361,6 +362,7 @@ export class Dcsm20DetailComponent implements OnInit {
             }
           } else if (status === 'Qc') {
             this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+            this.saveQcJob();
           } else if (status === 'Address') {
             this.productionForm.get('deliveryStatus')?.setValue('รอที่อยู่จัดส่ง');
           } else if (status === 'WaitDelivery') {
@@ -460,6 +462,22 @@ export class Dcsm20DetailComponent implements OnInit {
     }
 
     return dateStr;
+  }
+
+  saveQcJob() {
+    this.loadingService.show();
+    const data = {
+      status: 'PENDING',
+      joId: this.productionForm.getRawValue().jobId,
+      jobName: this.productionForm.getRawValue().customerJobName,
+      responsibleName: 'PENDING',
+      deliveryDatetime: this.productionForm.getRawValue().qcDate,
+      productJobId: this.productionForm.getRawValue().id,
+      papOrderId: this.productionForm.getRawValue().papOrderId,
+    }
+    this.dcsm20Service.saveQcJob(data).subscribe((response) => {
+      this.loadingService.hide();
+    })
   }
 
 

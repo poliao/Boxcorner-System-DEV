@@ -3,6 +3,7 @@ package com.boxcorner.boxcorner.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,5 +55,16 @@ public class PapController {
     @PostMapping("/saveJob")
     public PapProductionOrder saveJob(@RequestBody Map<String, Object> data) {
         return papProductionOrderService.saveFromMap(data);
+    }
+
+    @GetMapping("/getById")
+    public ResponseEntity<?> getPapOrderById(@RequestParam(value = "id") Long id) {
+        try {
+            return ResponseEntity.ok(papProductionOrderService.getById(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
     }
 }

@@ -231,6 +231,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
         if (result.isConfirmed) {
           this.loadingService.show();
           this.dcsm20Service.savePapOrder(this.papOrder).subscribe((responsePap) => {
+            this.productionForm.get('papOrderId')?.setValue(responsePap.id);
             this.dcsm20Service.save(this.productionForm.getRawValue()).subscribe((response) => {
               this.checkJob(response.id, responsePap)
               this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {

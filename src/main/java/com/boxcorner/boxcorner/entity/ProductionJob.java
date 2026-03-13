@@ -1,4 +1,5 @@
 package com.boxcorner.boxcorner.entity;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -26,22 +27,21 @@ public class ProductionJob extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "job_date", nullable = false)
-    private LocalDate date; 
+    private LocalDate date;
 
     @Column(name = "job_code")
-    private String jobId; 
+    private String jobId;
 
     @Column(name = "customer_job_name", nullable = false)
-    private String customerJobName; 
+    private String customerJobName;
 
     @Column(name = "print_quantity")
     private Integer printQuantity;
 
     @Column(name = "production_quantity")
     private Integer productionQuantity;
-
 
     // งานพิมพ์
     @Column(name = "printing_date")
@@ -109,6 +109,9 @@ public class ProductionJob extends BaseEntity {
 
     @Column(name = "printing_record_id")
     private String printingRecordId;
+
+    @Column(name = "pap_order_id")
+    private Integer papOrderId;
 
     @PrePersist
     protected void onCreate() {

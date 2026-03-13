@@ -158,6 +158,8 @@ public class PapProductionOrder extends BaseEntity {
     private Integer qcBookletSt;
     @Column(name = "qc_scheduled_date")
     private LocalDate qcScheduledDate;
+    @Column(name = "qc_note", length = 500)
+    private String qcNote;
     @Column(name = "delivery_location", length = 255)
     private String deliveryLocation;
     @Column(name = "delivery_pattern", length = 255)

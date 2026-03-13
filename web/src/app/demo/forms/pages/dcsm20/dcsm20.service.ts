@@ -20,6 +20,10 @@ export class Dcsm20Service {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
   }
 
+  saveQcJob(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/qc/job`, data);
+  }
+
   savePrintJob(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/print-job/save`, data);
   }

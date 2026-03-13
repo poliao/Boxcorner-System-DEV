@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white d-flex align-items-center py-3">
+        <h4 class="card-title mb-0" style="color: #003747;">รายละเอียดงาน QC</h4>
+        <div class="ms-auto">
+          <button mat-stroked-button color="primary" class="me-2" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon> กลับ
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="qcJobForm" *ngIf="qcJobForm">
+          <div class="row g-3">
+            <div class="col-12 col-md-6 col-lg-2">
+              <label class="form-label fw-bold">ID ลำดับ</label>
+              <input type="text" class="form-control bg-light" formControlName="id" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+              <label class="form-label fw-bold">JOB ID</label>
+              <input type="text" class="form-control bg-light" formControlName="joId" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+              <label class="form-label fw-bold">สถานะ QC</label>
+              <input type="text" class="form-control bg-light text-primary fw-bold" formControlName="status" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+              <label class="form-label fw-bold">ผู้รับผิดชอบ</label>
+              <input type="text" class="form-control bg-light" formControlName="responsibleName" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+              <label class="form-label fw-bold" style="color: #ff9900;">วันที่ส่งมอบ</label>
+              <input style="background-color: #ff9900; color: white;" type="text" class="form-control"
+                formControlName="deliveryDatetime">
+            </div>
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-bold">ชื่องาน</label>
+              <input type="text" class="form-control bg-light" formControlName="jobName" readonly>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+              <label class="form-label fw-bold text-muted small">วันที่สั่ง</label>
+              <input type="text" class="form-control bg-light text-muted small" formControlName="createdAt" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+              <label class="form-label fw-bold text-muted small">อัพเดตล่าสุด</label>
+              <input type="text" class="form-control bg-light text-muted small" formControlName="updatedAt" readonly>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white py-3">
+        <h5 class="card-title mb-0" style="color: #003747;"><mat-icon
+            class="align-middle me-2">receipt</mat-icon>ข้อมูลใบสั่งผลิตการพิมพ์ (PAP)</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="papOrderForm" *ngIf="papOrderForm">
+          <div class="row g-3">
+            <div class="col-12 col-md-6 col-lg-4">
+              <label class="form-label fw-bold">จำนวนที่ต้องการ</label>
+              <input type="text" class="form-control bg-light" formControlName="qcRequiredQty" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+              <label class="form-label fw-bold">ความละเอียดงาน</label>
+              <input type="text" class="form-control bg-light" formControlName="qcDetail" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+              <label class="form-label fw-bold">เล่มST</label>
+              <input type="text" class="form-control bg-light" formControlName="qcBookletSt" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+              <label class="form-label fw-bold">ผู้ขาย</label>
+              <input type="text" class="form-control bg-light" formControlName="sale" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+              <label class="form-label fw-bold">ผู้สั่งผลิต</label>
+              <input type="text" class="form-control bg-light" formControlName="orderedBy" readonly>
+            </div>
+            <div class="col-12 col-md-12 col-lg-12">
+              <label class="form-label fw-bold">หมายเหตุ</label>
+              <textarea type="text" class="form-control bg-light" formControlName="qcNote" readonly></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

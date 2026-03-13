@@ -1,0 +1,50 @@
+package com.boxcorner.boxcorner.service;
+
+import com.boxcorner.boxcorner.entity.QcJob;
+import com.boxcorner.boxcorner.repository.QcJobRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class QcService {
+
+    private final QcJobRepository qcJobRepository;
+
+    @Transactional
+    public QcJob saveQcJob(QcJob qcJob) {
+        try {
+            if (qcJob.getId() != null) {
+                QcJob existingJob = qcJobRepository.findById(qcJob.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + qcJob.getId()));
+
+                if (qcJob.getRowVersion() != null) {
+                    existingJob.setRowVersion(qcJob.getRowVersion());
+                }
+                existingJob.setStatus(qcJob.getStatus());
+                existingJob.setJoId(qcJob.getJoId());
+                existingJob.setJobName(qcJob.getJobName());
+                existingJob.setResponsibleName(qcJob.getResponsibleName());
+                existingJob.setDeliveryDatetime(qcJob.getDeliveryDatetime());
+                existingJob.setProductJobId(qcJob.getProductJobId());
+                existingJob.setPapOrderId(qcJob.getPapOrderId());
+
+                return qcJobRepository.save(existingJob);
+            } else {
+                return qcJobRepository.save(qcJob);
+            }
+        } catch (OptimisticLockingFailureException e) {
+            throw new IllegalStateException("The QC job was updated by another user. Please refresh and try again.", e);
+        }
+    }
+
+    public org.springframework.data.domain.Page<QcJob> getAllQcJobs(org.springframework.data.domain.Pageable pageable) {
+        return qcJobRepository.findAll(pageable);
+    }
+
+    public QcJob getQcJobById(Integer id) {
+        return qcJobRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
+    }
+}

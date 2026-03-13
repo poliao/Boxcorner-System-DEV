@@ -25,4 +25,27 @@ export class Dcsm36Service {
     });
     return this.http.get<any[]>(`${this.apiUrl}/salesActivities/summaryReport`, { params });
   }
+
+  getQcJobs(page: number, size: number, filters: any): Observable<any> {
+    let params: any = {
+      page: page.toString(),
+      size: size.toString(),
+      startDate: filters.startDate || null,
+      endDate: filters.endDate || null
+    };
+    Object.keys(params).forEach(key => {
+      if (params[key] === null || params[key] === '') {
+        delete params[key];
+      }
+    });
+    return this.http.get<any>(`${this.apiUrl}/qc/jobs`, { params });
+  }
+
+  getQcJobById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/qc/getById`, { params: { id } });
+  }
+
+  getPapOrderById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/pap/getById`, { params: { id } });
+  }
 }

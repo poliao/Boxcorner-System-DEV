@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.boxcorner.boxcorner.entity.DailyRoute;
 import com.boxcorner.boxcorner.entity.SalesActivity;
 import com.boxcorner.boxcorner.entity.User;
+import com.boxcorner.boxcorner.entity.dto.SalesSummaryDTO;
 import com.boxcorner.boxcorner.repository.DailyRouteRepository;
 import com.boxcorner.boxcorner.repository.SalesActivityRepository;
 import com.boxcorner.boxcorner.repository.UserRepository;
@@ -174,7 +176,7 @@ public class SalesActivityService {
     }
 
     @Transactional
-    public java.util.List<com.boxcorner.boxcorner.dto.SalesSummaryDTO> getSummaryReport(LocalDate startDate, LocalDate endDate) {
+    public List<SalesSummaryDTO> getSummaryReport(LocalDate startDate, LocalDate endDate) {
         if (startDate == null)
             startDate = LocalDate.now().minusMonths(1);
         if (endDate == null)

@@ -1,4 +1,4 @@
-package com.boxcorner.boxcorner.dto;
+package com.boxcorner.boxcorner.entity.dto;
 
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;

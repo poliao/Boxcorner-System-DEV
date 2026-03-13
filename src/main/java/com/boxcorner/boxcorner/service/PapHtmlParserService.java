@@ -366,13 +366,18 @@ public class PapHtmlParserService {
             }
         }
 
-        // Note: แถวที่ค่าแรกเป็นวันที่ (เช่น 13/03/2026 ...)
-        for (Element th : sec.select("th:has(div.f-blue)")) {
-            var b = th.select("div.f-blue");
-            String first = b.isEmpty() ? "" : b.get(0).text().trim();
-            if (first.contains("/202") || first.contains("/256")) {
-                m.put("note", first);
-                break;
+        String note = getBlueText(sec, "หมายเหตุ");
+        if (note != null && !note.isEmpty()) {
+            m.put("note", note);
+        } else {
+            // Note: แถวที่ค่าแรกเป็นวันที่ (เช่น 13/03/2026 ...) (Fallback)
+            for (Element th : sec.select("th:has(div.f-blue)")) {
+                var b = th.select("div.f-blue");
+                String first = b.isEmpty() ? "" : b.get(0).text().trim();
+                if (first.contains("/202") || first.contains("/256")) {
+                    m.put("note", first);
+                    break;
+                }
             }
         }
 

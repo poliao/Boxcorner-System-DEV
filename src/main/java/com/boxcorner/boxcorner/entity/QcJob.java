@@ -1,5 +1,6 @@
 package com.boxcorner.boxcorner.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,26 +43,20 @@ public class QcJob extends BaseEntity {
     @Column(name = "jo_id", length = 50, nullable = false)
     private String joId;
 
-    @Column(name = "customer_name", length = 255)
-    private String customerName;
-
     @Column(name = "job_name", length = 255)
     private String jobName;
 
     @Column(name = "responsible_name", length = 100)
     private String responsibleName;
 
-    @Column(name = "order_datetime")
-    private LocalDateTime orderDatetime;
-
     @Column(name = "delivery_datetime")
-    private LocalDateTime deliveryDatetime;
-
-    @Column(name = "total_quantity")
-    private Integer totalQuantity;
+    private LocalDate deliveryDatetime;
 
     @Column(name = "product_job_id", length = 50)
     private String productJobId;
+
+    @Column(name = "pap_order_id")
+    private Integer papOrderId;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

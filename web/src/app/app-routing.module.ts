@@ -651,6 +651,16 @@ const routes: Routes = [
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm35/dcsm35.component').then((c) => c.Dcsm35Component)
       },
+      {
+        path: 'Dcsm36',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm36/dcsm36.component').then((c) => c.Dcsm36Component)
+      },
+      {
+        path: 'Dcsm36Detail/:id',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm36/dcsm36-detail.component').then((c) => c.Dcsm36DetailComponent)
+      },
     ]
   },
   {

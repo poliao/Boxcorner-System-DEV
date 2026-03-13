@@ -28,8 +28,6 @@ import com.boxcorner.boxcorner.repository.PrintLogRepository;
 import com.boxcorner.boxcorner.repository.PrinterRepository;
 import com.boxcorner.boxcorner.repository.UnitStockRepository;
 import com.boxcorner.boxcorner.repository.PaperInventoryRepository;
-import com.boxcorner.boxcorner.service.StockLogService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service

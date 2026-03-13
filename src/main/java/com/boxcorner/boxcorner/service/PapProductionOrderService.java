@@ -16,6 +16,11 @@ public class PapProductionOrderService {
     private PapProductionOrderRepository repository;
 
     @Transactional
+    public PapProductionOrder getById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("PapProductionOrder not found with id: " + id));
+    }
+
+    @Transactional
     @SuppressWarnings("unchecked")
     public PapProductionOrder saveFromMap(Map<String, Object> data) {
         if (data == null || data.isEmpty())
@@ -141,6 +146,7 @@ public class PapProductionOrderService {
             entity.setQcDetail((String) qc.get("detail"));
             entity.setQcBookletSt(parseInt(qc.get("bookletST"), "qcBookletSt"));
             entity.setQcScheduledDate(parseDate(qc.get("scheduledDate"), "qcScheduledDate"));
+            entity.setQcNote((String) qc.get("note"));
             entity.setDeliveryLocation((String) qc.get("deliveryLocation"));
             entity.setDeliveryPattern((String) qc.get("deliveryPattern"));
             entity.setDeliveryDateTime(parseDate(qc.get("deliveryDateTime"), "deliveryDateTime"));
