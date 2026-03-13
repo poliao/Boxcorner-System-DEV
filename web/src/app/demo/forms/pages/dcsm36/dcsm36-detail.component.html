@@ -20,6 +20,10 @@
       *ngIf="qcJobForm.get('status')?.value === 'PENDING'">
       <mat-icon class="me-2">play_arrow</mat-icon> เริ่ม QC
     </button>
+    <button mat-flat-button color="accent" class="rounded-pill px-4" (click)="completeQc()"
+      *ngIf="qcJobForm.get('status')?.value === 'IN_PROGRESS'">
+      <mat-icon class="me-2">check_circle</mat-icon> QC แล้ว
+    </button>
   </div>
 </div>
 <div class="row">

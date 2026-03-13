@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Dcsm36Service } from './dcsm36.service';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm36-detail',
@@ -28,7 +29,8 @@ export class Dcsm36DetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private sweetAlert: SweetAlertService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -135,23 +137,68 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   startQc() {
-    this.sweetAlert.input('เริ่ม QC', 'กรุณากรอกจำนวนที่รับมา', 'number').then((res) => {
+    const receivedQty = this.qcJobForm.get('receivedQty')?.value;
+    const operatorName = this.authService.getFullName();
+    
+    if (receivedQty) {
+      this.loadingService.show();
+
+      this.dcsm36Service.startQc(this.jobId!, receivedQty, operatorName).subscribe({
+        next: () => {
+          this.updateQcStatusProductionJob();
+          this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
+          this.loadJobDetails(this.jobId!);
+        },
+        error: (err) => {
+          this.sweetAlert.error('Error', 'ไม่สามารถเริ่มงาน QC ได้');
+          this.loadingService.hide();
+        }
+      });
+    } else {
+      this.sweetAlert.input('เริ่ม QC', 'กรุณากรอกจำนวนที่รับมา', 'number').then((res) => {
+        if (res.isConfirmed && res.value) {
+          const qty = parseInt(res.value, 10);
+          if (isNaN(qty) || qty <= 0) {
+            this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่ถูกต้อง');
+            return;
+          }
+
+          this.loadingService.show();
+          this.dcsm36Service.startQc(this.jobId!, qty, operatorName).subscribe({
+            next: () => {
+              this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
+              this.loadJobDetails(this.jobId!);
+            },
+            error: (err) => {
+              console.error('Error starting QC', err);
+              this.sweetAlert.error('Error', 'ไม่สามารถเริ่มงาน QC ได้');
+              this.loadingService.hide();
+            }
+          });
+        }
+      });
+    }
+  }
+
+  completeQc() {
+    this.sweetAlert.input('QC แล้ว', 'กรุณากรอกยอดงานดี', 'number').then((res) => {
       if (res.isConfirmed && res.value) {
-        const qty = parseInt(res.value, 10);
-        if (isNaN(qty) || qty <= 0) {
+        const passedQty = parseInt(res.value, 10);
+        if (isNaN(passedQty) || passedQty < 0) {
           this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่ถูกต้อง');
           return;
         }
 
         this.loadingService.show();
-        this.dcsm36Service.startQc(this.jobId!, qty).subscribe({
+        this.dcsm36Service.completeQc(this.jobId!, passedQty).subscribe({
           next: () => {
-            this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
+            this.updateCompletedStatusProductionJob();
+            this.sweetAlert.success('สำเร็จ', 'QC เสร็จสิ้นแล้ว');
             this.loadJobDetails(this.jobId!);
           },
           error: (err) => {
-            console.error('Error starting QC', err);
-            this.sweetAlert.error('Error', 'ไม่สามารถเริ่มงาน QC ได้');
+            console.error('Error completing QC', err);
+            this.sweetAlert.error('Error', 'ไม่สามารถบันทึกข้อมูล QC ได้');
             this.loadingService.hide();
           }
         });
@@ -161,5 +208,35 @@ export class Dcsm36DetailComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/Dcsm36']);
+  }
+
+  updateQcStatusProductionJob() {
+    this.dcsm36Service.getByIdProductionJob(this.qcJobForm.getRawValue().productJobId).subscribe({
+      next: (data) => {
+        data.printStatus = 'เริ่มQc' 
+        this.dcsm36Service.updateProductionJob(data).subscribe({
+          next: (updateResponse) => {
+          },
+        })
+      },
+      error: (err) => {
+        console.error('Error fetching production job:', err);
+      }
+    });
+  }
+
+  updateCompletedStatusProductionJob() {
+    this.dcsm36Service.getByIdProductionJob(this.qcJobForm.getRawValue().productJobId).subscribe({
+      next: (data) => {
+        data.printStatus = 'เสร็จสิ้น' 
+        this.dcsm36Service.updateProductionJob(data).subscribe({
+          next: (updateResponse) => {
+          },
+        })
+      },
+      error: (err) => {
+        console.error('Error fetching production job:', err);
+      }
+    });
   }
 }

@@ -74,6 +74,7 @@ export class StatusColorService {
       case 'กำลังQc': return '#a61ee6ff';
       case 'รอที่อยู่จัดส่ง': return '#001affff'; // สีส้มแดง
       case 'รอจัดส่ง': return '#7f36f4ff'; // สีแดง
+      case 'เริ่มQc': return 'rgb(83, 0, 56)'; // สีเทา
       case 'กำลังส่ง': return '#ff05acff'; // สีเทา
       case 'จัดส่งเรียบร้อย': return '#00af0fff';
 

@@ -52,9 +52,23 @@ public class QcController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<?> startQc(@RequestParam Integer id, @RequestParam Integer receivedQty) {
+    public ResponseEntity<?> startQc(
+            @RequestParam Integer id, 
+            @RequestParam Integer receivedQty,
+            @RequestParam String operatorName) {
         try {
-            return ResponseEntity.ok(qcService.startQc(id, receivedQty));
+            return ResponseEntity.ok(qcService.startQc(id, receivedQty, operatorName));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/complete")
+    public ResponseEntity<?> completeQc(
+            @RequestParam Integer id,
+            @RequestParam Integer passedQty) {
+        try {
+            return ResponseEntity.ok(qcService.completeQc(id, passedQty));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }

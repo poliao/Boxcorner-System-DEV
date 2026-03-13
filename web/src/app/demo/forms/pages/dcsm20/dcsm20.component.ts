@@ -231,6 +231,7 @@ export class Dcsm20Component implements OnInit {
     if (status === 'กำลังเคลือบ') highlightUntil = 1;
     else if (status === 'กำลังปั้ม') highlightUntil = 3;
     else if (status === 'กำลังปะ') highlightUntil = 5;
+    else if (status === 'เริ่มQc') highlightUntil = 7;
     else if (status === 'กำลังQc') highlightUntil = 7;
     else if (status === 'เสร็จสิ้น') highlightUntil = 8;
 

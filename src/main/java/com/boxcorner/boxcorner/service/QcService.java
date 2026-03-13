@@ -1,17 +1,23 @@
 package com.boxcorner.boxcorner.service;
 
+import com.boxcorner.boxcorner.entity.LogQc;
 import com.boxcorner.boxcorner.entity.QcJob;
+import com.boxcorner.boxcorner.repository.LogQcRepository;
 import com.boxcorner.boxcorner.repository.QcJobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class QcService {
 
     private final QcJobRepository qcJobRepository;
+    private final LogQcRepository logQcRepository;
 
     @Transactional
     public QcJob saveQcJob(QcJob qcJob) {
@@ -41,14 +47,26 @@ public class QcService {
     }
 
     @Transactional
-    public QcJob startQc(Integer id, Integer receivedQty) {
+    public QcJob startQc(Integer id, Integer receivedQty, String operatorName) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
         qcJob.setStatus(QcJob.JobStatus.IN_PROGRESS);
         qcJob.setReceivedQty(receivedQty);
 
-        return qcJobRepository.save(qcJob);
+        QcJob savedJob = qcJobRepository.save(qcJob);
+
+        // บันทึก LogQc
+        LogQc logQc = LogQc.builder()
+                .qcJobId(id)
+                .operatorName(operatorName)
+                .reportDate(LocalDate.now())
+                .startTime(LocalTime.now())
+                .receivedQty(receivedQty)
+                .build();
+        logQcRepository.save(logQc);
+
+        return savedJob;
     }
 
     public org.springframework.data.domain.Page<QcJob> getAllQcJobs(org.springframework.data.domain.Pageable pageable) {
@@ -57,5 +75,24 @@ public class QcService {
 
     public QcJob getQcJobById(Integer id) {
         return qcJobRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
+    }
+
+    @Transactional
+    public QcJob completeQc(Integer id, Integer passedQty) {
+        QcJob qcJob = qcJobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
+
+        qcJob.setStatus(QcJob.JobStatus.COMPLETED);
+        QcJob savedJob = qcJobRepository.save(qcJob);
+
+        // อัพเดต LogQc ล่าสุด
+        LogQc logQc = logQcRepository.findTopByQcJobIdOrderByIdDesc(id)
+                .orElseThrow(() -> new IllegalArgumentException("LogQc not found for qcJobId: " + id));
+        
+        logQc.setEndTime(LocalTime.now());
+        logQc.setPassedQty(passedQty);
+        logQcRepository.save(logQc);
+
+        return savedJob;
     }
 }

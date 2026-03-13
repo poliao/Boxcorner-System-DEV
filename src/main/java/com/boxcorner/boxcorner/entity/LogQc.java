@@ -50,6 +50,9 @@ public class LogQc extends BaseEntity {
     @Column(name = "end_time")
     private LocalTime endTime;
 
+    @Column(name = "received_qty")
+    private Integer receivedQty;
+
     @Column(name = "passed_qty")
     private Integer passedQty;
 
