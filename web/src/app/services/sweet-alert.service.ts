@@ -54,4 +54,23 @@ export class SweetAlertService {
       cancelButtonText: 'ยกเลิก'
     });
   }
+
+  input(title: string, text: string, type: 'text' | 'number' | 'password' | 'email' = 'text') {
+    return Swal.fire({
+      title,
+      text,
+      input: type,
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ตกลง',
+      cancelButtonText: 'ยกเลิก',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'กรุณากรอกข้อมูล';
+        }
+        return null;
+      }
+    });
+  }
 }

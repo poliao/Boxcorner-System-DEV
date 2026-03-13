@@ -1,15 +1,30 @@
+<div class="row align-items-center mb-4 g-3">
+  <div class="col-12 col-md-6">
+    <div class="d-flex align-items-center">
+      <button mat-icon-button (click)="goBack()" class="me-3">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h4 class="mb-0 fw-bold" style="color: #003747;">รายละเอียดงาน QC</h4>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a [routerLink]="['/Dcsm36']" class="text-decoration-none">DCSM36</a></li>
+            <li class="breadcrumb-item active">รายละเอียด</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 text-md-end">
+    <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="startQc()"
+      *ngIf="qcJobForm.get('status')?.value === 'PENDING'">
+      <mat-icon class="me-2">play_arrow</mat-icon> เริ่ม QC
+    </button>
+  </div>
+</div>
 <div class="row">
   <div class="col-sm-12">
     <div class="card border-0 shadow-sm mb-4">
-      <div class="card-header bg-white d-flex align-items-center py-3">
-        <h4 class="card-title mb-0" style="color: #003747;">รายละเอียดงาน QC</h4>
-        <div class="ms-auto">
-          <button mat-stroked-button color="primary" class="me-2" (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon> กลับ
-          </button>
-        </div>
-      </div>
-
       <div class="card-body">
         <form [formGroup]="qcJobForm" *ngIf="qcJobForm">
           <div class="row g-3">
@@ -26,13 +41,17 @@
               <input type="text" class="form-control bg-light text-primary fw-bold" formControlName="status" readonly>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-              <label class="form-label fw-bold">ผู้รับผิดชอบ</label>
-              <input type="text" class="form-control bg-light" formControlName="responsibleName" readonly>
+              <label class="form-label fw-bold">เลขที่ใบส่งของ (Product Job Id)</label>
+              <input type="text" class="form-control bg-light" formControlName="productJobId" readonly>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+              <label class="form-label fw-bold">จำนวนที่รับมา</label>
+              <input type="text" class="form-control bg-light" formControlName="receivedQty" readonly>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
               <label class="form-label fw-bold" style="color: #ff9900;">วันที่ส่งมอบ</label>
-              <input style="background-color: #ff9900; color: white;" type="text" class="form-control"
-                formControlName="deliveryDatetime">
+              <input style="background-color: #ff9900;" type="text" class="form-control bg-light"
+                formControlName="deliveryDatetime" readonly>
             </div>
             <div class="col-12 col-lg-6">
               <label class="form-label fw-bold">ชื่องาน</label>

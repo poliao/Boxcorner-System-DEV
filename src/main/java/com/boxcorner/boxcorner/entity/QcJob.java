@@ -58,6 +58,9 @@ public class QcJob extends BaseEntity {
     @Column(name = "pap_order_id")
     private Integer papOrderId;
 
+    @Column(name = "received_qty")
+    private Integer receivedQty;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

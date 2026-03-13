@@ -52,6 +52,7 @@ export class Dcsm36DetailComponent implements OnInit {
       deliveryDatetime: [''],
       productJobId: [''],
       papOrderId: [''],
+      receivedQty: [''],
       createdAt: [''],
       updatedAt: ['']
     });
@@ -75,14 +76,12 @@ export class Dcsm36DetailComponent implements OnInit {
     this.loadingService.show();
     this.dcsm36Service.getQcJobById(id).subscribe({
       next: (job) => {
-        // Format dates
         if (job.deliveryDatetime) job.deliveryDatetime = this.formatDate(job.deliveryDatetime);
         if (job.createdAt) job.createdAt = this.formatDate(job.createdAt);
         if (job.updatedAt) job.updatedAt = this.formatDate(job.updatedAt);
 
         this.qcJobForm.patchValue(job);
 
-        // Fetch Pap details if a papOrderId is present
         if (job.papOrderId) {
           this.loadPapOrderDetails(job.papOrderId);
         } else {
@@ -101,14 +100,12 @@ export class Dcsm36DetailComponent implements OnInit {
   formatDate(dateStr: any): string {
     if (!dateStr) return '-';
     try {
-      // Handle ISO format: 2026-03-13T11:42:58.053456
       if (dateStr.includes('T')) {
         const [datePart, timePart] = dateStr.split('T');
         const [y, m, d] = datePart.split('-');
-        const time = timePart.substring(0, 5); // 11:42
+        const time = timePart.substring(0, 5);
         return `${d}/${m}/${y} ${time}`;
       }
-      // Handle LocalDate format: 2026-03-13
       if (dateStr.includes('-')) {
         const [y, m, d] = dateStr.split('-');
         return `${d}/${m}/${y}`;
@@ -132,9 +129,32 @@ export class Dcsm36DetailComponent implements OnInit {
         this.loadingService.hide();
       },
       error: (err) => {
-        console.error('Error loading Pap Order details', err);
-        // non-blocking if pap details fail
         this.loadingService.hide();
+      }
+    });
+  }
+
+  startQc() {
+    this.sweetAlert.input('เริ่ม QC', 'กรุณากรอกจำนวนที่รับมา', 'number').then((res) => {
+      if (res.isConfirmed && res.value) {
+        const qty = parseInt(res.value, 10);
+        if (isNaN(qty) || qty <= 0) {
+          this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่ถูกต้อง');
+          return;
+        }
+
+        this.loadingService.show();
+        this.dcsm36Service.startQc(this.jobId!, qty).subscribe({
+          next: () => {
+            this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
+            this.loadJobDetails(this.jobId!);
+          },
+          error: (err) => {
+            console.error('Error starting QC', err);
+            this.sweetAlert.error('Error', 'ไม่สามารถเริ่มงาน QC ได้');
+            this.loadingService.hide();
+          }
+        });
       }
     });
   }

@@ -48,4 +48,8 @@ export class Dcsm36Service {
   getPapOrderById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/pap/getById`, { params: { id } });
   }
+
+  startQc(id: number, receivedQty: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/qc/start`, null, { params: { id, receivedQty } });
+  }
 }

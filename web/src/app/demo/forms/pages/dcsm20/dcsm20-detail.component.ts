@@ -322,71 +322,82 @@ export class Dcsm20DetailComponent implements OnInit {
         cancelButtonText: 'ยกเลิก'
       }).then((result) => {
         if (result.isConfirmed) {
-
-          this.loadingService.show();
-          if (status === 'Print') {
-            if (this.productionForm.getRawValue().coatingDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังเคลือบ');
-            } else if (this.productionForm.getRawValue().stampingDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
-            } else if (this.productionForm.getRawValue().gluingDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-            } else if (this.productionForm.getRawValue().qcDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังQc');
-            } else {
-              this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+          if (status === 'Qc') {
+            this.sweetAlert.input('ยอดก่อน QC', 'กรุณากรอกจำนวนยอดก่อน QC', 'number').then((res) => {
+              if (res.isConfirmed && res.value) {
+                const qty = parseInt(res.value, 10);
+                this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+                this.saveQcJob(qty);
+                this.performStatusUpdate();
+              }
+            });
+          } else {
+            this.loadingService.show();
+            if (status === 'Print') {
+              if (this.productionForm.getRawValue().coatingDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังเคลือบ');
+              } else if (this.productionForm.getRawValue().stampingDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
+              } else if (this.productionForm.getRawValue().gluingDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังปะ');
+              } else if (this.productionForm.getRawValue().qcDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังQc');
+              } else {
+                this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+              }
+            } else if (status === 'Coating') {
+              if (this.productionForm.getRawValue().stampingDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
+              } else if (this.productionForm.getRawValue().gluingDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังปะ');
+              } else if (this.productionForm.getRawValue().qcDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังQc');
+              } else {
+                this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+              }
+            } else if (status === 'Stamping') {
+              if (this.productionForm.getRawValue().gluingDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังปะ');
+              } else if (this.productionForm.getRawValue().qcDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังQc');
+              } else {
+                this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+              }
+            } else if (status === 'Gluing') {
+              if (this.productionForm.getRawValue().qcDate != null) {
+                this.productionForm.get('printStatus')?.setValue('กำลังQc');
+              } else {
+                this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+              }
+            } else if (status === 'Address') {
+              this.productionForm.get('deliveryStatus')?.setValue('รอที่อยู่จัดส่ง');
+            } else if (status === 'WaitDelivery') {
+              this.productionForm.get('deliveryStatus')?.setValue('รอจัดส่ง');
+            } else if (status === 'Delivery') {
+              this.productionForm.get('deliveryStatus')?.setValue('กำลังส่ง');
+            } else if (status === 'DeliveryComplete') {
+              this.productionForm.get('deliveryStatus')?.setValue('จัดส่งเรียบร้อย');
             }
-          } else if (status === 'Coating') {
-            if (this.productionForm.getRawValue().stampingDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
-            } else if (this.productionForm.getRawValue().gluingDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-            } else if (this.productionForm.getRawValue().qcDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังQc');
-            } else {
-              this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-            }
-          } else if (status === 'Stamping') {
-            if (this.productionForm.getRawValue().gluingDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-            } else if (this.productionForm.getRawValue().qcDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังQc');
-            } else {
-              this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-            }
-          } else if (status === 'Gluing') {
-            if (this.productionForm.getRawValue().qcDate != null) {
-              this.productionForm.get('printStatus')?.setValue('กำลังQc');
-            } else {
-              this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-            }
-          } else if (status === 'Qc') {
-            this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-            this.saveQcJob();
-          } else if (status === 'Address') {
-            this.productionForm.get('deliveryStatus')?.setValue('รอที่อยู่จัดส่ง');
-          } else if (status === 'WaitDelivery') {
-            this.productionForm.get('deliveryStatus')?.setValue('รอจัดส่ง');
-          } else if (status === 'Delivery') {
-            this.productionForm.get('deliveryStatus')?.setValue('กำลังส่ง');
-          } else if (status === 'DeliveryComplete') {
-            this.productionForm.get('deliveryStatus')?.setValue('จัดส่งเรียบร้อย');
+            this.performStatusUpdate();
           }
-          const data = this.productionForm.getRawValue();
-
-          this.dcsm20Service.save(data).subscribe((response) => {
-            this.patchFormData(response);
-            this.disableForm();
-            this.checkButton();
-            this.loadingService.hide();
-            this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
-          })
         }
       });
     } else {
       this.markFormGroupTouched();
       this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
     }
+  }
+
+  performStatusUpdate(): void {
+    const data = this.productionForm.getRawValue();
+    this.loadingService.show();
+    this.dcsm20Service.save(data).subscribe((response) => {
+      this.patchFormData(response);
+      this.disableForm();
+      this.checkButton();
+      this.loadingService.hide();
+      this.sweetAlert.success('Success', 'ยืนยันอัพเดตสถานะ!');
+    });
   }
 
   onFetchData(): void {
@@ -464,7 +475,7 @@ export class Dcsm20DetailComponent implements OnInit {
     return dateStr;
   }
 
-  saveQcJob() {
+  saveQcJob(receivedQty: number) {
     this.loadingService.show();
     const data = {
       status: 'PENDING',
@@ -474,6 +485,7 @@ export class Dcsm20DetailComponent implements OnInit {
       deliveryDatetime: this.productionForm.getRawValue().qcDate,
       productJobId: this.productionForm.getRawValue().id,
       papOrderId: this.productionForm.getRawValue().papOrderId,
+      receivedQty: receivedQty
     }
     this.dcsm20Service.saveQcJob(data).subscribe((response) => {
       this.loadingService.hide();

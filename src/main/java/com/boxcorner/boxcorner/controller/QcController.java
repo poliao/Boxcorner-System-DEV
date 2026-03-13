@@ -50,4 +50,13 @@ public class QcController {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }
     }
+
+    @PostMapping("/start")
+    public ResponseEntity<?> startQc(@RequestParam Integer id, @RequestParam Integer receivedQty) {
+        try {
+            return ResponseEntity.ok(qcService.startQc(id, receivedQty));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
+    }
 }

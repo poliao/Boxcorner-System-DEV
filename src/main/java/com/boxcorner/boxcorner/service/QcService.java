@@ -40,6 +40,17 @@ public class QcService {
         }
     }
 
+    @Transactional
+    public QcJob startQc(Integer id, Integer receivedQty) {
+        QcJob qcJob = qcJobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
+
+        qcJob.setStatus(QcJob.JobStatus.IN_PROGRESS);
+        qcJob.setReceivedQty(receivedQty);
+
+        return qcJobRepository.save(qcJob);
+    }
+
     public org.springframework.data.domain.Page<QcJob> getAllQcJobs(org.springframework.data.domain.Pageable pageable) {
         return qcJobRepository.findAll(pageable);
     }
