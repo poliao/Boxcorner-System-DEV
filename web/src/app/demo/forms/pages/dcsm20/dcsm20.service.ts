@@ -41,6 +41,9 @@ export class Dcsm20Service {
       customerName: filters.customerName || '',
       printStatus: filters.printStatus || '',
       deliveryStatus: filters.deliveryStatus || '',
+      coatingLocation: filters.coatingLocation || '',
+      stampingLocation: filters.stampingLocation || '',
+      gluingLocation: filters.gluingLocation || '',
       startDate: filters.startDate || '',
       endDate: filters.endDate || '',
     };

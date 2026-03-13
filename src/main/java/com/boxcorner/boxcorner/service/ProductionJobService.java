@@ -41,10 +41,13 @@ public class ProductionJobService {
                 existing.setPrintingResponsible(productionJob.getPrintingResponsible());
                 existing.setCoatingDate(productionJob.getCoatingDate());
                 existing.setCoatingResponsible(productionJob.getCoatingResponsible());
+                existing.setCoatingLocation(productionJob.getCoatingLocation());
                 existing.setStampingDate(productionJob.getStampingDate());
                 existing.setStampingResponsible(productionJob.getStampingResponsible());
+                existing.setStampingLocation(productionJob.getStampingLocation());
                 existing.setGluingDate(productionJob.getGluingDate());
                 existing.setGluingResponsible(productionJob.getGluingResponsible());
+                existing.setGluingLocation(productionJob.getGluingLocation());
                 existing.setQcDate(productionJob.getQcDate());
                 existing.setQcStatus(productionJob.getQcStatus());
                 existing.setDueDate(productionJob.getDueDate());
@@ -70,11 +73,13 @@ public class ProductionJobService {
     }
 
     public Page<ProductionJob> findByFilters(Long id, String jobId, String customerJobName,
-            String printStatus, String deliveryStatus, LocalDate startDate, LocalDate endDate,
+            String printStatus, String deliveryStatus, String coatingLocation, 
+            String stampingLocation, String gluingLocation, LocalDate startDate, LocalDate endDate,
             int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.unsorted());
         return productionJobRepository.findByFilters(id, jobId, customerJobName, printStatus,
-                deliveryStatus, startDate, endDate, paging);
+                deliveryStatus, coatingLocation, stampingLocation, gluingLocation, 
+                startDate, endDate, paging);
     }
 
     public Page<ProductionJob> findByFilters(int page, int size) {

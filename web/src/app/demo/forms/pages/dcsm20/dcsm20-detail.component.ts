@@ -157,12 +157,16 @@ export class Dcsm20DetailComponent implements OnInit {
       productionQuantity: [0],
       printingDate: [null],
       printingResponsible: [''],
+      printingLocation: [''],
       coatingDate: [null],
       coatingResponsible: [''],
+      coatingLocation: [''],
       stampingDate: [null],
       stampingResponsible: [''],
+      stampingLocation: [''],
       gluingDate: [null],
       gluingResponsible: [''],
+      gluingLocation: [''],
       qcDate: [null],
       dueDate: ['', Validators.required],
       printStatus: [''],
@@ -177,6 +181,7 @@ export class Dcsm20DetailComponent implements OnInit {
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
     this.productionForm.get('printingResponsible')?.disable();
+    this.productionForm.get('printingLocation')?.disable();
     this.productionForm.get('coatingResponsible')?.disable();
     this.productionForm.get('stampingResponsible')?.disable();
     this.productionForm.get('gluingResponsible')?.disable();
@@ -187,10 +192,13 @@ export class Dcsm20DetailComponent implements OnInit {
       if (value) {
         this.productionForm.get('printingResponsible')?.setValidators([Validators.required]);
         this.productionForm.get('printingResponsible')?.enable();
+        this.productionForm.get('printingLocation')?.enable();
       } else {
         this.productionForm.get('printingResponsible')?.clearValidators();
         this.productionForm.get('printingResponsible')?.setValue(null);
         this.productionForm.get('printingResponsible')?.disable();
+        this.productionForm.get('printingLocation')?.setValue(null);
+        this.productionForm.get('printingLocation')?.disable();
       }
       this.productionForm.get('printingResponsible')?.updateValueAndValidity();
     });

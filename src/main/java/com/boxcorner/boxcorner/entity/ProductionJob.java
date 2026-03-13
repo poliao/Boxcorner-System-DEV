@@ -57,6 +57,9 @@ public class ProductionJob extends BaseEntity {
     @Column(name = "coating_responsible", length = 100)
     private String coatingResponsible;
 
+    @Column(name = "coating_location", length = 200)
+    private String coatingLocation;
+
     // งานปั๊ม
     @Column(name = "stamping_date")
     private LocalDate stampingDate;
@@ -64,12 +67,18 @@ public class ProductionJob extends BaseEntity {
     @Column(name = "stamping_responsible", length = 100)
     private String stampingResponsible;
 
+    @Column(name = "stamping_location", length = 200)
+    private String stampingLocation;
+
     // งานปะ
     @Column(name = "gluing_date")
     private LocalDate gluingDate;
 
     @Column(name = "gluing_responsible", length = 100)
     private String gluingResponsible;
+
+    @Column(name = "gluing_location", length = 200)
+    private String gluingLocation;
 
     // QC/QA
     @Column(name = "qc_date")

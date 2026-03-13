@@ -12,7 +12,7 @@
             <input type="text" class="form-control" [(ngModel)]="filterJobId" name="filterJobId"
               placeholder="ค้นหา JOB ID" (keyup.enter)="onSearchChange()">
           </div>
-          <div class="col-md-3">
+          <div class="col-md-6">
             <input type="text" class="form-control" [(ngModel)]="filterCustomerName" name="filterCustomerName"
               placeholder="ค้นหา ชื่องาน/ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
           </div>
@@ -28,7 +28,7 @@
               <option value="เสร็จสิ้น">เสร็จสิ้น</option>
             </select>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-3">
             <select class="form-select" [(ngModel)]="filterDeliveryStatus" name="filterDeliveryStatus"
               (change)="onSearchChange()">
               <option value="">สถานะจัดส่ง ทั้งหมด</option>
@@ -37,6 +37,18 @@
               <option value="กำลังส่ง">กำลังส่ง</option>
               <option value="จัดส่งเรียบร้อย">จัดส่งเรียบร้อย</option>
             </select>
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" [(ngModel)]="filterCoatingLocation" name="filterCoatingLocation"
+              placeholder="สถานที่เคลือบ" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" [(ngModel)]="filterStampingLocation" name="filterStampingLocation"
+              placeholder="สถานที่ปั้ม" (keyup.enter)="onSearchChange()">
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" [(ngModel)]="filterGluingLocation" name="filterGluingLocation"
+              placeholder="สถานที่ปะ" (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-2">
             <label for="text">วันที่ส่งจาก</label>

@@ -56,13 +56,17 @@ public class ProductionJobController {
             @RequestParam(required = false, name = "customerName") String customerName,
             @RequestParam(required = false, name = "printStatus") String printStatus,
             @RequestParam(required = false, name = "deliveryStatus") String deliveryStatus,
+            @RequestParam(required = false, name = "coatingLocation") String coatingLocation,
+            @RequestParam(required = false, name = "stampingLocation") String stampingLocation,
+            @RequestParam(required = false, name = "gluingLocation") String gluingLocation,
             @RequestParam(required = false, name = "startDate") LocalDate startDate,
             @RequestParam(required = false, name = "endDate") LocalDate endDate,
             @RequestParam(defaultValue = "0", name = "page") int page,
             @RequestParam(defaultValue = "10", name = "size") int size) {
 
         Page<ProductionJob> result = productionJobService.findByFilters(
-                id, jobId, customerName, printStatus, deliveryStatus, startDate, endDate, page, size);
+                id, jobId, customerName, printStatus, deliveryStatus, coatingLocation, 
+                stampingLocation, gluingLocation, startDate, endDate, page, size);
         return ResponseEntity.ok(result);
     }
 

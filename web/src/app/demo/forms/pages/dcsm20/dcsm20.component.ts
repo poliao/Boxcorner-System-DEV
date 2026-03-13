@@ -49,6 +49,9 @@ export class Dcsm20Component implements OnInit {
   filterDeliveryStatus: string = '';
   filterStartDate: string = '';
   filterEndDate: string = '';
+  filterCoatingLocation: string = '';
+  filterStampingLocation: string = '';
+  filterGluingLocation: string = '';
 
   // Table properties
   tableData: any[] = [];
@@ -98,7 +101,10 @@ export class Dcsm20Component implements OnInit {
       printStatus: this.filterPrintStatus,
       deliveryStatus: this.filterDeliveryStatus,
       startDate: this.filterStartDate,
-      endDate: this.filterEndDate
+      endDate: this.filterEndDate,
+      coatingLocation: this.filterCoatingLocation,
+      stampingLocation: this.filterStampingLocation,
+      gluingLocation: this.filterGluingLocation
     };
 
     this.dcsm20Service.getOrdersWithSearch(this.pageIndex, this.pageSize, filters)
@@ -166,6 +172,9 @@ export class Dcsm20Component implements OnInit {
     this.filterDeliveryStatus = '';
     this.filterStartDate = '';
     this.filterEndDate = '';
+    this.filterCoatingLocation = '';
+    this.filterStampingLocation = '';
+    this.filterGluingLocation = '';
     this.onSearchChange();
   }
 
