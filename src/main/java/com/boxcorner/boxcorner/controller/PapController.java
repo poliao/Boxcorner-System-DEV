@@ -1,5 +1,6 @@
 package com.boxcorner.boxcorner.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +45,14 @@ public class PapController {
     }
 
     @GetMapping("/getJob")
-    public Map<String, Object> getOrderDataJob(@RequestParam(value = "oid", required = true) String orderId) {
-        Map<String, Object> data = papHtmlParserService.getOrderDataJob(orderId);
-        if (data != null && !data.isEmpty()) {
-            papProductionOrderService.saveFromMap(data);
+    public List<Map<String, Object>> getOrderDataJob(@RequestParam(value = "oid", required = true) String orderId) {
+        List<Map<String, Object>> dataList = papHtmlParserService.getOrderDataJob(orderId);
+        if (dataList != null && !dataList.isEmpty()) {
+            for (Map<String, Object> data : dataList) {
+                papProductionOrderService.saveFromMap(data);
+            }
         }
-        return data;
+        return dataList;
     }
 
     @PostMapping("/saveJob")

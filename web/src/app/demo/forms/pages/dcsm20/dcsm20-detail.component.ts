@@ -33,6 +33,8 @@ export class Dcsm20DetailComponent implements OnInit {
   jobImageUrl: string = '';
   isCreate = false;
   referenceId: any
+  showJobModal = false;
+  availableJobs: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -93,7 +95,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isCoating = false
       this.isStamping = false
       this.isGluing = false
-    } else if (this.productionForm.getRawValue().id != null  && this.productionForm.getRawValue().printStatus == 'เสร็จสิ้น' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().printStatus == 'เสร็จสิ้น' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isAddress = true
       this.isWaitDelivery = true
       this.isDelivery = false
@@ -412,28 +414,55 @@ export class Dcsm20DetailComponent implements OnInit {
     this.loadingService.show();
     const oidPapValue = this.productionForm.get('oidPap')?.value;
 
-    this.dcsm20Service.getJobPAP(oidPapValue).subscribe((response) => {
-      this.loadingService.show();
-      this.productionForm.get('jobId')?.setValue(response.header.job_code);
-      this.productionForm.get('customerJobName')?.setValue(response.header.job_name + ' - ' + response.header.customer_name);
-      this.productionForm.get('dueDate')?.setValue(this.convertDateFormat(response.header.delivery_date));
-      this.productionForm.get('printQuantity')?.setValue(response.header.print_sheets);
-      this.productionForm.get('productionQuantity')?.setValue(response.header.quantity);
-      this.productionForm.get('printingDate')?.setValue(response.form_data.d_print === '-' ? null : this.convertDateFormat(response.form_data.d_print));
-      this.productionForm.get('printingResponsible')?.setValue(response.form_data.printer === '-' ? null : response.form_data.printer);
-      this.productionForm.get('coatingDate')?.setValue(response.form_data.d_coat === '-' ? null : this.convertDateFormat(response.form_data.d_coat));
-      this.productionForm.get('coatingResponsible')?.setValue(response.form_data.l_coat === '-' ? null : response.form_data.l_coat);
-      this.productionForm.get('stampingDate')?.setValue(response.form_data.d_daicut === '-' ? null : this.convertDateFormat(response.form_data.d_daicut));
-      this.productionForm.get('stampingResponsible')?.setValue(response.form_data.l_pcut === '-' ? null : response.form_data.l_pcut);
-      this.productionForm.get('gluingDate')?.setValue(response.form_data.d_pa === '-' ? null : this.convertDateFormat(response.form_data.d_pa));
-      this.productionForm.get('gluingResponsible')?.setValue(response.form_data.l_pa === '-' ? null : response.form_data.l_pa);
-      this.productionForm.get('qcDate')?.setValue(response.form_data.d_qc === '-' ? null : this.convertDateFormat(response.form_data.d_qc));
-      this.productionForm.get('imageUrl')?.setValue(response.form_data.image_url === '-' ? null : response.form_data.image_url);
+    this.dcsm20Service.getJobPAP(oidPapValue).subscribe({
+      next: (response: any[]) => {
+        this.loadingService.hide();
+        if (response && response.length > 0) {
+          if (response.length === 1) {
+            this.setFrom(response[0]);
+          } else {
+            this.availableJobs = response;
+            this.showJobModal = true;
+          }
+        } else {
+          this.sweetAlert.error('ไม่พบข้อมูล', 'ไม่พบใบงานสำหรับ OID นี้');
+        }
+      },
+      error: () => {
+        this.loadingService.hide();
+        this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถดึงข้อมูลได้');
+      }
+    });
+  }
 
-      this.jobImageUrl = response.header.image_url || '';
-      this.loadingService.hide();
-    })
+  closeJobModal(): void {
+    this.showJobModal = false;
+    this.availableJobs = [];
+  }
 
+  selectJob(job: any): void {
+    this.setFrom(job);
+    this.closeJobModal();
+  }
+
+  setFrom(response: any) {
+    this.productionForm.get('jobId')?.setValue(response.header?.jobCode);
+    this.productionForm.get('customerJobName')?.setValue((response.header?.jobName || '') + ' - ' + (response.header?.customerName || ''));
+    this.productionForm.get('dueDate')?.setValue(this.convertDateFormat(response.header?.deliveryDate));
+    this.productionForm.get('printQuantity')?.setValue(response.cutting?.paper?.printQty);
+    this.productionForm.get('productionQuantity')?.setValue(response.header?.totalPrintQty);
+    this.productionForm.get('printingDate')?.setValue(response.printing?.scheduledDate === '-' ? null : this.convertDateFormat(response.printing?.scheduledDate));
+    this.productionForm.get('printingResponsible')?.setValue(response.printing?.machine === '-' ? null : response.printing?.machine);
+    this.productionForm.get('coatingDate')?.setValue(response.coating?.scheduledDate === '-' ? null : this.convertDateFormat(response.coating?.scheduledDate));
+    this.productionForm.get('coatingResponsible')?.setValue(response.coating?.location === '-' ? null : response.coating?.location);
+    this.productionForm.get('stampingDate')?.setValue(response.dieCutting?.dieCutDeadline === '-' ? null : this.convertDateFormat(response.dieCutting?.dieCutDeadline));
+    this.productionForm.get('stampingResponsible')?.setValue(response.dieCutting?.location === '-' ? null : response.dieCutting?.location);
+    this.productionForm.get('gluingDate')?.setValue(response.gluing?.scheduledDate === '-' ? null : this.convertDateFormat(response.gluing?.scheduledDate));
+    this.productionForm.get('gluingResponsible')?.setValue(response.gluing?.location === '-' ? null : response.gluing?.location);
+    this.productionForm.get('qcDate')?.setValue(response.qcAndDelivery?.scheduledDate === '-' ? null : this.convertDateFormat(response.qcAndDelivery?.scheduledDate));
+    this.productionForm.get('imageUrl')?.setValue(response.header?.imageUrl === '-' ? null : response.header?.imageUrl);
+    
+    this.jobImageUrl = response.header?.imageUrl || '';
   }
 
   private convertDateFormat(dateStr: string): string {

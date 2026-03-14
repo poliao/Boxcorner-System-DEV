@@ -169,3 +169,28 @@
     </div>
   </div>
 </div>
+
+<!-- Custom Job Selection Modal -->
+<div *ngIf="showJobModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">เลือกใบงาน</h5>
+        <button type="button" class="btn-close" (click)="closeJobModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3 text-muted">พบหลายใบงานใน OID นี้ กรุณาเลือกใบงานที่ต้องการ</p>
+        <div class="list-group">
+          <button *ngFor="let job of availableJobs" type="button" 
+            class="list-group-item list-group-item-action"
+            (click)="selectJob(job)">
+            {{ job.header?.jobCode || 'ไม่ระบุ' }} - {{ job.header?.jobName || 'ไม่ระบุชื่องาน' }}
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeJobModal()">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+</div>

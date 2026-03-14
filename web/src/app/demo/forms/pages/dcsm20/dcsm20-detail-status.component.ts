@@ -40,6 +40,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   decisionAuthority: string = null;
   decisionAuthorityRemarks: string = null;
   print2Page = false
+  showJobModal = false;
+  availableJobs: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -274,7 +276,6 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
         cancelButtonText: 'ยกเลิก'
       }).then((result) => {
         if (result.isConfirmed) {
-
           this.loadingService.show();
           if (status === 'Print') {
             this.productionForm.get('printStatus')?.setValue('พิมพ์แล้ว');
@@ -315,12 +316,37 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   onFetchData(): void {
     this.loadingService.show();
     const oidPapValue = this.productionForm.get('oidPap')?.value;
-    this.dcsm20Service.getJobPAP(oidPapValue).subscribe((response) => {
-      this.setFrom(response)
-      this.papOrder = response
-    })
+    this.dcsm20Service.getJobPAP(oidPapValue).subscribe({
+      next: (response: any[]) => {
+        this.loadingService.hide();
+        if (response && response.length > 0) {
+          if (response.length === 1) {
+            this.setFrom(response[0]);
+            this.papOrder = response[0];
+          } else {
+            this.availableJobs = response;
+            this.showJobModal = true;
+          }
+        } else {
+          this.sweetAlert.error('ไม่พบข้อมูล', 'ไม่พบใบงานสำหรับ OID นี้');
+        }
+      },
+      error: () => {
+        this.loadingService.hide();
+        this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถดึงข้อมูลได้');
+      }
+    });
+  }
 
-    this.loadingService.hide();
+  closeJobModal(): void {
+    this.showJobModal = false;
+    this.availableJobs = [];
+  }
+
+  selectJob(job: any): void {
+    this.setFrom(job);
+    this.papOrder = job;
+    this.closeJobModal();
   }
 
   private convertDateFormat(dateStr: string): string {

@@ -1,11 +1,14 @@
 package com.boxcorner.boxcorner.service;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,12 +30,11 @@ public class PapHtmlParserService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Map<String, Object> getOrderDataJob(String orderId) {
+    public List<Map<String, Object>> getOrderDataJob(String orderId) {
         String sessionId = login();
         String html = fetchHtml(sessionId, orderId);
 
-        Map<String, Object> result = parse(html);
-        return result;
+        return parse(html);
     }
 
     private String login() {
@@ -65,24 +67,44 @@ public class PapHtmlParserService {
 
     /* ===================== PUBLIC ===================== */
 
-    public Map<String, Object> parse(String html) {
+    public List<Map<String, Object>> parse(String html) {
         Document doc = Jsoup.parse(html);
+        List<Map<String, Object>> resultList = new ArrayList<>();
 
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("header", extractHeader(doc));
-        result.put("platemaking", extractPlatemaking(doc));
-        result.put("cutting", extractCutting(doc));
-        result.put("printing", extractPrinting(doc));
-        result.put("coating", extractCoating(doc));
-        result.put("dieCutting", extractDieCutting(doc));
-        result.put("gluing", extractGluing(doc));
-        result.put("qcAndDelivery", extractQcDelivery(doc));
-        return result;
+        Elements eheads = doc.select(".e-head");
+        List<Element> containers = new ArrayList<>();
+
+        if (eheads.isEmpty()) {
+            containers.add(doc);
+        } else {
+            for (Element head : eheads) {
+                Element container = head;
+                while (container.parent() != null && container.parent().select(".e-head").size() == 1) {
+                    container = container.parent();
+                }
+                containers.add(container);
+            }
+        }
+
+        for (Element container : containers) {
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("header", extractHeader(container));
+            result.put("platemaking", extractPlatemaking(container));
+            result.put("cutting", extractCutting(container));
+            result.put("printing", extractPrinting(container));
+            result.put("coating", extractCoating(container));
+            result.put("dieCutting", extractDieCutting(container));
+            result.put("gluing", extractGluing(container));
+            result.put("qcAndDelivery", extractQcDelivery(container));
+            resultList.add(result);
+        }
+
+        return resultList;
     }
 
     /* ===================== HEADER ===================== */
 
-    private Map<String, Object> extractHeader(Document doc) {
+    private Map<String, Object> extractHeader(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
 
         // JO / QN / QT code — ดึงตาม position ของ .pd-order
@@ -115,7 +137,7 @@ public class PapHtmlParserService {
 
     /* ===================== SECTION EXTRACTORS ===================== */
 
-    private Map<String, Object> extractPlatemaking(Document doc) {
+    private Map<String, Object> extractPlatemaking(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
         Element sec = section(doc, "จัดทำแม่พิมพ์");
         if (sec == null)
@@ -142,7 +164,7 @@ public class PapHtmlParserService {
         return m;
     }
 
-    private Map<String, Object> extractCutting(Document doc) {
+    private Map<String, Object> extractCutting(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
         Element sec = section(doc, "แผนกงานตัด");
         if (sec == null)
@@ -183,7 +205,7 @@ public class PapHtmlParserService {
         return m;
     }
 
-    private Map<String, Object> extractPrinting(Document doc) {
+    private Map<String, Object> extractPrinting(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
         Element sec = section(doc, "งานพิมพ์");
         if (sec == null)
@@ -216,7 +238,7 @@ public class PapHtmlParserService {
         return m;
     }
 
-    private Map<String, Object> extractCoating(Document doc) {
+    private Map<String, Object> extractCoating(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
         Element sec = section(doc, "งานเคลือบ");
         if (sec == null)
@@ -245,7 +267,7 @@ public class PapHtmlParserService {
         return m;
     }
 
-    private Map<String, Object> extractDieCutting(Document doc) {
+    private Map<String, Object> extractDieCutting(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
         Element sec = section(doc, "งานปั้มพิเศษ/ไดคัท");
         if (sec == null)
@@ -315,7 +337,7 @@ public class PapHtmlParserService {
         return m;
     }
 
-    private Map<String, Object> extractGluing(Document doc) {
+    private Map<String, Object> extractGluing(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
         Element sec = section(doc, "งานปะกล่อง");
         if (sec == null)
@@ -340,7 +362,7 @@ public class PapHtmlParserService {
         return m;
     }
 
-    private Map<String, Object> extractQcDelivery(Document doc) {
+    private Map<String, Object> extractQcDelivery(Element doc) {
         Map<String, Object> m = new LinkedHashMap<>();
         Element sec = section(doc, "งานคิวซี/จัดส่ง");
         if (sec == null)
@@ -404,7 +426,7 @@ public class PapHtmlParserService {
      * เพื่อรองรับ
      * ตัวอักขระเกิน เช่น trailing apostrophe ใน "งานคิวซี/จัดส่ง'"
      */
-    private Element section(Document doc, String title) {
+    private Element section(Element doc, String title) {
         if (doc == null)
             return null;
         return doc.selectFirst("table:has(div.bg-l-yellow:contains(" + title + "))");
