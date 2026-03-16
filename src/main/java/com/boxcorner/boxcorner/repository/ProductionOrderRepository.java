@@ -2,12 +2,14 @@ package com.boxcorner.boxcorner.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import com.boxcorner.boxcorner.entity.ProductionOrder;
 
 @Repository
@@ -230,6 +232,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             "AND (p.process_status != 'ยกเลิก') " +
             "AND (p.operator_name != 'ยกเลิก') " +
             "AND (:id IS NULL OR p.id = :id) " +
+            "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
             "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
             +
             "AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%'))) " +
@@ -253,6 +256,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     "AND (p.process_status != 'ยกเลิก') " +
                     "AND (p.operator_name != 'ยกเลิก') " +
                     "AND (:id IS NULL OR p.id = :id) " +
+                    "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
                     "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
                     +
                     "AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%'))) "
@@ -277,6 +281,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))",  nativeQuery = true)
     Page<ProductionOrder> findProductionCheck(
             @Param("id") Integer id,
+            @Param("jobId") String jobId,
             @Param("folderName") String folderName,
             @Param("jobOwner") String jobOwner,
             @Param("startDate") LocalDate startDate,
@@ -296,6 +301,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             "AND (p.process_status != 'ยกเลิก') " +
             "AND (p.operator_name != 'ยกเลิก') " +
             "AND (:id IS NULL OR p.id = :id) " +
+            "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
             "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
             +
             "AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%'))) " +
@@ -319,6 +325,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     "AND (p.process_status != 'ยกเลิก') " +
                     "AND (p.operator_name != 'ยกเลิก') " +
                     "AND (:id IS NULL OR p.id = :id) " +
+                    "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
                     "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
                     +
                     "AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%'))) "
@@ -341,6 +348,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))", nativeQuery = true)
     Page<ProductionOrder> findProductionCheckSort(
             @Param("id") Integer id,
+            @Param("jobId") String jobId,
             @Param("folderName") String folderName,
             @Param("jobOwner") String jobOwner,
             @Param("startDate") LocalDate startDate,

@@ -232,6 +232,10 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       }).then((result) => {
         if (result.isConfirmed) {
           this.loadingService.show();
+          this.papOrder.printing.machine = this.productionForm.getRawValue().printingResponsible
+          this.papOrder.coating.location = this.productionForm.getRawValue().coatingResponsible
+          this.papOrder.dieCutting.location = this.productionForm.getRawValue().stampingResponsible
+          this.papOrder.gluing.location = this.productionForm.getRawValue().gluingResponsible
           this.dcsm20Service.savePapOrder(this.papOrder).subscribe((responsePap) => {
             this.productionForm.get('papOrderId')?.setValue(responsePap.id);
             this.dcsm20Service.save(this.productionForm.getRawValue()).subscribe((response) => {
