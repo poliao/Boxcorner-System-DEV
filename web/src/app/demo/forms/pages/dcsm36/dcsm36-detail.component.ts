@@ -55,6 +55,9 @@ export class Dcsm36DetailComponent implements OnInit {
       productJobId: [''],
       papOrderId: [''],
       receivedQty: [''],
+      passedQty: [''],
+      bundlesPerPack: [''],
+      boxesPerBundle: [''],
       createdAt: [''],
       updatedAt: ['']
     });
@@ -181,16 +184,35 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   completeQc() {
-    this.sweetAlert.input('QC แล้ว', 'กรุณากรอกยอดงานดี', 'number').then((res) => {
-      if (res.isConfirmed && res.value) {
-        const passedQty = parseInt(res.value, 10);
+    const modalContent = document.getElementById('qcCompleteModalTemplate')?.innerHTML;
+    if (!modalContent) return;
+
+    this.sweetAlert.html(
+      'QC แล้ว (เสร็จสิ้น)',
+      modalContent,
+      'ยืนยัน',
+      'ยกเลิก'
+    ).then((res) => {
+      if (res.isConfirmed) {
+        const passedQty = parseInt((document.querySelector('.swal2-html-container #passedQty') as HTMLInputElement).value, 10);
+        const bundlesPerPack = parseInt((document.querySelector('.swal2-html-container #bundlesPerPack') as HTMLInputElement).value, 10);
+        const boxesPerBundle = parseInt((document.querySelector('.swal2-html-container #boxesPerBundle') as HTMLInputElement).value, 10);
+
         if (isNaN(passedQty) || passedQty < 0) {
-          this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่ถูกต้อง');
+          this.sweetAlert.error('Error', 'กรุณากรอกยอดงานดีที่ถูกต้อง');
+          return;
+        }
+        if (isNaN(bundlesPerPack) || bundlesPerPack <= 0) {
+          this.sweetAlert.error('Error', 'กรุณากรอกจำนวนมัดต่อห่อที่ถูกต้อง');
+          return;
+        }
+        if (isNaN(boxesPerBundle) || boxesPerBundle <= 0) {
+          this.sweetAlert.error('Error', 'กรุณากรอกจำนวนกล่องต่อมัดที่ถูกต้อง');
           return;
         }
 
         this.loadingService.show();
-        this.dcsm36Service.completeQc(this.jobId!, passedQty).subscribe({
+        this.dcsm36Service.completeQc(this.jobId!, passedQty, bundlesPerPack, boxesPerBundle).subscribe({
           next: () => {
             this.updateCompletedStatusProductionJob();
             this.sweetAlert.success('สำเร็จ', 'QC เสร็จสิ้นแล้ว');

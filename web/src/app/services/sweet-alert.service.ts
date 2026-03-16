@@ -73,4 +73,16 @@ export class SweetAlertService {
       }
     });
   }
+
+  html(title: string, html: string, confirmButtonText: string = 'ตกลง', cancelButtonText: string = 'ยกเลิก') {
+    return Swal.fire({
+      title,
+      html,
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText,
+      cancelButtonText
+    });
+  }
 }

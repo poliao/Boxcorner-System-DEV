@@ -375,23 +375,7 @@ export class Dcsm26DetailComponent implements OnInit {
   }
 
   onInkTypeChange(type: string) {
-    if (type === 'CMYK') {
-      if (this.checklistForm.get('hasCMYK')?.value) {
-        this.checklistForm.get('hasSpecial')?.setValue(false);
-      }
-    } else if (type === 'SPECIAL') {
-      if (this.checklistForm.get('hasSpecial')?.value) {
-        this.checklistForm.get('hasCMYK')?.setValue(false);
-      }
-    } else if (type === 'NEW') {
-      if (this.checklistForm.get('isNewInk')?.value) {
-        this.checklistForm.get('isOldInk')?.setValue(false);
-      }
-    } else if (type === 'OLD') {
-      if (this.checklistForm.get('isOldInk')?.value) {
-        this.checklistForm.get('isNewInk')?.setValue(false);
-      }
-    }
+    // Allows CMYK and Special to be selected together, as well as NEW and OLD ink
   }
 
   confirmPrintComplete(): void {

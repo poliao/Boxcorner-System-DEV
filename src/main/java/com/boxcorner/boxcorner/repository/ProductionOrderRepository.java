@@ -17,6 +17,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             SELECT * FROM production_orders p
             WHERE
                 (:id IS NULL OR p.id = :id)
+                AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%')))
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
@@ -33,6 +34,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             SELECT count(*) FROM production_orders p
             WHERE
                 (:id IS NULL OR p.id = :id)
+                AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%')))
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
@@ -47,6 +49,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             """, nativeQuery = true)
     Page<ProductionOrder> findByFilters(
             @Param("id") Integer id,
+            @Param("jobId") String jobId,
             @Param("folderName") String folderName,
             @Param("jobOwner") String jobOwner,
             @Param("startDate") LocalDate startDate,
@@ -64,6 +67,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             SELECT * FROM production_orders p
             WHERE
                 (:id IS NULL OR p.id = :id)
+                AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%')))
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
@@ -80,6 +84,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             SELECT count(*) FROM production_orders p
             WHERE
                 (:id IS NULL OR p.id = :id)
+                AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%')))
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
                 AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
@@ -94,6 +99,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             """, nativeQuery = true)
     Page<ProductionOrder> findByFiltersSort(
             @Param("id") Integer id,
+            @Param("jobId") String jobId,
             @Param("folderName") String folderName,
             @Param("jobOwner") String jobOwner,
             @Param("startDate") LocalDate startDate,

@@ -55,9 +55,9 @@ export class Dcsm36Service {
     });
   }
 
-  completeQc(id: number, passedQty: number): Observable<any> {
+  completeQc(id: number, passedQty: number, bundlesPerPack: number, boxesPerBundle: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/qc/complete`, null, {
-      params: { id, passedQty }
+      params: { id, passedQty, bundlesPerPack, boxesPerBundle }
     });
   }
 

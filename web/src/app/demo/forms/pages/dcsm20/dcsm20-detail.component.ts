@@ -125,7 +125,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isStamping = false
       this.isGluing = false
       this.isQc = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().id && this.productionForm.getRawValue().printStatus == 'เสร็จสิ้น' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       this.isAddress = false
       this.isWaitDelivery = false
       this.isDelivery = false
@@ -461,7 +461,7 @@ export class Dcsm20DetailComponent implements OnInit {
     this.productionForm.get('gluingResponsible')?.setValue(response.gluing?.location === '-' ? null : response.gluing?.location);
     this.productionForm.get('qcDate')?.setValue(response.qcAndDelivery?.scheduledDate === '-' ? null : this.convertDateFormat(response.qcAndDelivery?.scheduledDate));
     this.productionForm.get('imageUrl')?.setValue(response.header?.imageUrl === '-' ? null : response.header?.imageUrl);
-    
+
     this.jobImageUrl = response.header?.imageUrl || '';
   }
 

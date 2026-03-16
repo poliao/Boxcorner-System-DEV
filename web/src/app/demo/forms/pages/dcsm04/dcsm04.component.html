@@ -4,23 +4,18 @@
     <div class="card-body bg-light">
       <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
         <div class="row g-3">
-
-          <div class="col-md-3">
-            <input type="text" class="form-control" formControlName="jobId" placeholder="ค้นหา JO">
-          </div>
-
           <div class="col-md-3">
             <input type="number" class="form-control" formControlName="id" placeholder="ค้นหา ลำดับ">
           </div>
-
+          <div class="col-md-3">
+            <input type="text" class="form-control" formControlName="jobId" placeholder="ค้นหา JO">
+          </div>
           <div class="col-md-3">
             <input type="text" class="form-control" formControlName="folderName" placeholder="ค้นหา ชื่อโฟลเดอร์">
           </div>
-
           <div class="col-md-3">
             <input type="text" class="form-control" formControlName="jobOwner" placeholder="ค้นหา เจ้าของงาน">
           </div>
-
           <div class="col-md-3">
             <input type="text" class="form-control" formControlName="responsiblePerson"
               placeholder="ค้นหา ผู้รับผิดชอบ">

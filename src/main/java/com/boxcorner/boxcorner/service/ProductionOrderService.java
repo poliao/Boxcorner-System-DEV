@@ -84,21 +84,21 @@ public class ProductionOrderService {
         return productionOrderRepository.save(existingOrder);
     }
 
-    public Page<ProductionOrder> findByFilters(Integer id, String folderName, String jobOwner,
+    public Page<ProductionOrder> findByFilters(Integer id, String jobId, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
             String moldStatus, String jobType, String postpone, Pageable pageable) {
         return productionOrderRepository.findByFilters(
-                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
     }
 
-    public Page<ProductionOrder> findByFiltersSort(Integer id, String folderName, String jobOwner,
+    public Page<ProductionOrder> findByFiltersSort(Integer id, String jobId, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
             String moldStatus, String jobType, String postpone, Pageable pageable) {
         return productionOrderRepository.findByFiltersSort(
-                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
     }
 

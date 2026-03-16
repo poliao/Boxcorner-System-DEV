@@ -36,6 +36,10 @@ public class QcService {
                 existingJob.setDeliveryDatetime(qcJob.getDeliveryDatetime());
                 existingJob.setProductJobId(qcJob.getProductJobId());
                 existingJob.setPapOrderId(qcJob.getPapOrderId());
+                existingJob.setReceivedQty(qcJob.getReceivedQty());
+                existingJob.setPassedQty(qcJob.getPassedQty());
+                existingJob.setBundlesPerPack(qcJob.getBundlesPerPack());
+                existingJob.setBoxesPerBundle(qcJob.getBoxesPerBundle());
 
                 return qcJobRepository.save(existingJob);
             } else {
@@ -78,11 +82,15 @@ public class QcService {
     }
 
     @Transactional
-    public QcJob completeQc(Integer id, Integer passedQty) {
+    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
         qcJob.setStatus(QcJob.JobStatus.COMPLETED);
+        qcJob.setPassedQty(passedQty);
+        qcJob.setBundlesPerPack(bundlesPerPack);
+        qcJob.setBoxesPerBundle(boxesPerBundle);
+        
         QcJob savedJob = qcJobRepository.save(qcJob);
 
         // อัพเดต LogQc ล่าสุด
@@ -91,6 +99,8 @@ public class QcService {
         
         logQc.setEndTime(LocalTime.now());
         logQc.setPassedQty(passedQty);
+        logQc.setBundlesPerPack(bundlesPerPack);
+        logQc.setBoxesPerBundle(boxesPerBundle);
         logQcRepository.save(logQc);
 
         return savedJob;

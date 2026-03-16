@@ -59,6 +59,12 @@ public class LogQc extends BaseEntity {
     @Column(name = "failed_qty")
     private Integer failedQty;
 
+    @Column(name = "bundles_per_pack")
+    private Integer bundlesPerPack;
+
+    @Column(name = "boxes_per_bundle")
+    private Integer boxesPerBundle;
+
     @Column(name = "remarks", columnDefinition = "TEXT")
     private String remarks;
 
