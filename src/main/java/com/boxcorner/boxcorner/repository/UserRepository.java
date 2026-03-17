@@ -28,4 +28,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
                         "FROM users u " +
                         "WHERE LOWER(u.role) LIKE '%designs%'", nativeQuery = true)
         List<OptionDTO> findDesignUsers();
+
+        @Query(value = "SELECT CAST(u.id AS TEXT) as value, u.username as text " +
+                        "FROM users u ", nativeQuery = true)
+        List<OptionDTO> findAllUsers();
 }

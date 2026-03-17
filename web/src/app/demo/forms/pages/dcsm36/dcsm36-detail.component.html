@@ -146,3 +146,65 @@
     </div>
   </div>
 </div>
+
+<!-- Custom Modal for QC Complete -->
+<div class="modal-overlay" *ngIf="isCompleteModalOpen">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h5 class="mb-0">QC แล้ว (เสร็จสิ้น)</h5>
+      <button type="button" class="btn-close" (click)="closeCompleteModal()"></button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-bold">ยอดงานดี (ชิ้น/แผ่น)</label>
+          <input type="number" id="modalPassedQty" class="form-control" placeholder="ยอดงานดี">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-bold">1 ห่อมีกี่มัด</label>
+          <input type="number" id="modalBundlesPerPack" class="form-control" placeholder="มัดต่อห่อ">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-bold">1 มัดมีกี่กล่อง</label>
+          <input type="number" id="modalBoxesPerBundle" class="form-control" placeholder="กล่องต่อมัด">
+        </div>
+      </div>
+
+      <hr>
+      <h6 class="fw-bold mb-3">ผู้ QC และผลงาน</h6>
+      
+      <div class="staff-row mb-3 pb-3 border-bottom" *ngFor="let staff of qcStaffList; let i = index">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label small fw-bold">ผู้ QC</label>
+            <select class="form-select" [(ngModel)]="staff.userId" (change)="onStaffUserChange(i, $event)">
+              <option value="">เลือกพนักงาน</option>
+              <option *ngFor="let user of usersList" [value]="user.value">{{user.text}}</option>
+            </select>
+          </div>
+          <div class="col-5 col-md-3">
+            <label class="form-label small fw-bold">จำนวนห่อ</label>
+            <input type="number" class="form-control" [(ngModel)]="staff.packs" placeholder="ห่อ">
+          </div>
+          <div class="col-5 col-md-3">
+            <label class="form-label small fw-bold">จำนวนมัด</label>
+            <input type="number" class="form-control" [(ngModel)]="staff.bundles" placeholder="มัด">
+          </div>
+          <div class="col-2 col-md-2 text-end">
+            <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeStaffRow(i)" [disabled]="qcStaffList.length === 1">
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button mat-stroked-button color="primary" class="w-100 mt-2" (click)="addStaffRow()">
+        <mat-icon>add</mat-icon> เพิ่มคน
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button mat-button class="me-2" (click)="closeCompleteModal()">ยกเลิก</button>
+      <button mat-flat-button color="primary" (click)="onSubmitComplete()">บันทึกข้อมูล</button>
+    </div>
+  </div>
+</div>

@@ -26,4 +26,9 @@ public class UserController {
     public List<OptionDTO> getSalesUsers() {
         return userService.getSalesUsers();
     }
+
+    @GetMapping("/all")
+    public List<OptionDTO> getAllUsers() {
+        return userService.getAllUsers();
+    }
 }

@@ -64,13 +64,15 @@ public class QcController {
     }
 
     @PostMapping("/complete")
-    public ResponseEntity<?> completeQc(
-            @RequestParam(value = "id") Integer id,
-            @RequestParam(value = "passedQty") Integer passedQty,
-            @RequestParam(value = "bundlesPerPack", required = false) Integer bundlesPerPack,
-            @RequestParam(value = "boxesPerBundle", required = false) Integer boxesPerBundle) {
+    public ResponseEntity<?> completeQc(@RequestBody com.boxcorner.boxcorner.entity.dto.CompleteQcRequest request) {
         try {
-            return ResponseEntity.ok(qcService.completeQc(id, passedQty, bundlesPerPack, boxesPerBundle));
+            return ResponseEntity.ok(qcService.completeQc(
+                request.getId(), 
+                request.getPassedQty(), 
+                request.getBundlesPerPack(), 
+                request.getBoxesPerBundle(),
+                request.getStaffList()
+            ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }

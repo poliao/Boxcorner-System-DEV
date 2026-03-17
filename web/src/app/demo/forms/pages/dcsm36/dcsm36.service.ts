@@ -55,10 +55,8 @@ export class Dcsm36Service {
     });
   }
 
-  completeQc(id: number, passedQty: number, bundlesPerPack: number, boxesPerBundle: number): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/qc/complete`, null, {
-      params: { id, passedQty, bundlesPerPack, boxesPerBundle }
-    });
+  completeQc(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/qc/complete`, data);
   }
 
   getByIdProductionJob(id: number): Observable<any> {
@@ -67,5 +65,9 @@ export class Dcsm36Service {
 
   updateProductionJob(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/production-job/save`, data);
+  }
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/all`);
   }
 }

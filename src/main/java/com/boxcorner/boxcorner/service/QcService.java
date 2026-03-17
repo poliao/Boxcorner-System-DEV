@@ -18,6 +18,7 @@ public class QcService {
 
     private final QcJobRepository qcJobRepository;
     private final LogQcRepository logQcRepository;
+    private final com.boxcorner.boxcorner.repository.QcStaffRepository qcStaffRepository;
 
     @Transactional
     public QcJob saveQcJob(QcJob qcJob) {
@@ -82,7 +83,7 @@ public class QcService {
     }
 
     @Transactional
-    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle) {
+    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle, java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
@@ -102,6 +103,14 @@ public class QcService {
         logQc.setBundlesPerPack(bundlesPerPack);
         logQc.setBoxesPerBundle(boxesPerBundle);
         logQcRepository.save(logQc);
+
+        // บันทึกข้อมูลพนักงาน QC
+        if (staffList != null && !staffList.isEmpty()) {
+            for (com.boxcorner.boxcorner.entity.QcStaff staff : staffList) {
+                staff.setQcJobId(id);
+                qcStaffRepository.save(staff);
+            }
+        }
 
         return savedJob;
     }
