@@ -51,20 +51,23 @@ export class Dcsm36DetailComponent implements OnInit {
 
   initForm() {
     this.qcJobForm = this.fb.group({
-      id: [''],
-      status: [''],
-      joId: [''],
-      jobName: [''],
-      responsibleName: [''],
-      deliveryDatetime: [''],
-      productJobId: [''],
-      papOrderId: [''],
-      receivedQty: [''],
-      passedQty: [''],
-      bundlesPerPack: [''],
-      boxesPerBundle: [''],
-      createdAt: [''],
-      updatedAt: ['']
+      id: [null],
+      status: [null],
+      joId: [null],
+      jobName: [null],
+      responsibleName: [null],
+      deliveryDatetime: [null],
+      productJobId: [null],
+      papOrderId: [null],
+      receivedQty: [null],
+      passedQty: [null],
+      bundlesPerPack: [null],
+      boxesPerBundle: [null],
+      passedQtyFraction:[null],
+      bundlesPerPackFraction:[null],
+      piecesFraction:[null],
+      createdAt: [null],
+      updatedAt: [null]
     });
 
     this.papOrderForm = this.fb.group({
@@ -245,33 +248,20 @@ export class Dcsm36DetailComponent implements OnInit {
     const piecesFraction = parseInt(piecesFractionInput?.value, 10) || 0;
 
     if (isNaN(passedQty) || passedQty < 0) {
-      this.sweetAlert.error('Error', 'กรุณากรอกยอดงานดีที่ถูกต้อง');
+      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนห่อเต็มที่ถูกต้อง');
       return;
     }
     if (isNaN(bundlesPerPack) || bundlesPerPack <= 0) {
-      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนมัดต่อห่อที่ถูกต้อง');
+      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนแพคต่อห่อที่ถูกต้อง');
       return;
     }
     if (isNaN(boxesPerBundle) || boxesPerBundle <= 0) {
-      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนกล่องต่อมัดที่ถูกต้อง');
+      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนชิ้นต่อแพคที่ถูกต้อง');
       return;
     }
 
     // Validate staff list
     for (const staff of this.qcStaffList) {
-      if (!staff.userName) {
-        this.sweetAlert.error('Error', 'กรุณาเลือกผู้ QC ให้ครบถ้วน');
-        return;
-      }
-      if (staff.packs === null || staff.packs < 0) {
-        this.sweetAlert.error('Error', 'กรุณากรอกจำนวนห่อให้ถูกต้อง');
-        return;
-      }
-      if (staff.bundles === null || staff.bundles < 0) {
-        this.sweetAlert.error('Error', 'กรุณากรอกจำนวนมัดให้ถูกต้อง');
-        return;
-      }
-      
       staff.packsFraction = parseInt(staff.packsFraction, 10) || null;
       staff.bundlesFraction = parseInt(staff.bundlesFraction, 10) || null;
       staff.piecesFraction = parseInt(staff.piecesFraction, 10) || null;
