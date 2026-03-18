@@ -50,8 +50,8 @@ export class Dcsm36Service {
   }
 
   startQc(id: number, receivedQty: number, operatorName: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/qc/start`, null, { 
-      params: { id, receivedQty, operatorName } 
+    return this.http.post<any>(`${this.apiUrl}/qc/start`, null, {
+      params: { id, receivedQty, operatorName }
     });
   }
 
@@ -69,5 +69,9 @@ export class Dcsm36Service {
 
   getAllUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/user/all`);
+  }
+
+  printReport(data: any): Observable<Blob> {
+    return this.http.post(`${this.apiUrl}/test-report/pdf`, data, { responseType: 'blob' });
   }
 }

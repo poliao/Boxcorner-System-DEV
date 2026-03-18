@@ -8,6 +8,7 @@ import { Dcsm36Service } from './dcsm36.service';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { AuthService } from 'src/app/services/auth.service';
+import { count } from 'rxjs';
 
 @Component({
   selector: 'app-dcsm36-detail',
@@ -157,7 +158,7 @@ export class Dcsm36DetailComponent implements OnInit {
   startQc() {
     const receivedQty = this.qcJobForm.get('receivedQty')?.value;
     const operatorName = this.authService.getFullName();
-    
+
     if (receivedQty) {
       this.loadingService.show();
 
@@ -295,7 +296,7 @@ export class Dcsm36DetailComponent implements OnInit {
   updateQcStatusProductionJob() {
     this.dcsm36Service.getByIdProductionJob(this.qcJobForm.getRawValue().productJobId).subscribe({
       next: (data) => {
-        data.printStatus = 'เริ่มQc' 
+        data.printStatus = 'เริ่มQc'
         this.dcsm36Service.updateProductionJob(data).subscribe({
           next: (updateResponse) => {
           },
@@ -310,7 +311,7 @@ export class Dcsm36DetailComponent implements OnInit {
   updateCompletedStatusProductionJob() {
     this.dcsm36Service.getByIdProductionJob(this.qcJobForm.getRawValue().productJobId).subscribe({
       next: (data) => {
-        data.printStatus = 'เสร็จสิ้น' 
+        data.printStatus = 'เสร็จสิ้น'
         this.dcsm36Service.updateProductionJob(data).subscribe({
           next: (updateResponse) => {
           },
@@ -318,6 +319,55 @@ export class Dcsm36DetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching production job:', err);
+      }
+    });
+  }
+
+  dowloadReportQc() {
+    const data = {
+      "reportName": "QcReport",
+      "jobId": this.qcJobForm.get('joId')?.value,
+    }
+    this.dcsm36Service.printReport(data).subscribe({
+      next: (response) => {
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'QcReport.pdf';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error printing report:', err);
+      }
+    });
+  }
+
+  printReportQc() {
+    const data = {
+      "reportName": "QcReport",
+      "jobId": this.qcJobForm.get('joId')?.value,
+    }
+    this.dcsm36Service.printReport(data).subscribe({
+      next: (response) => {
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+
+        iframe.onload = () => {
+          setTimeout(() => {
+            iframe.contentWindow?.print();
+          }, 100);
+        };
+
+        document.body.appendChild(iframe);
+      },
+      error: (err) => {
+        console.error('Error printing report:', err);
       }
     });
   }

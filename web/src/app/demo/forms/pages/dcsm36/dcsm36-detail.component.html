@@ -24,6 +24,10 @@
       *ngIf="qcJobForm.get('status')?.value === 'IN_PROGRESS'">
       <mat-icon class="me-2">check_circle</mat-icon> QC แล้ว
     </button>
+    <mat-icon class="me-2" (click)="dowloadReportQc()" style="cursor: pointer;"
+      *ngIf="qcJobForm.get('status')?.value === 'COMPLETED'">get_app</mat-icon>
+    <mat-icon class="me-2" (click)="printReportQc()" style="cursor: pointer;"
+      *ngIf="qcJobForm.get('status')?.value === 'COMPLETED'">printer</mat-icon>
   </div>
 </div>
 
@@ -55,7 +59,8 @@
             </div>
             <div class="col-12 col-md-6 col-lg-3">
               <label class="form-label fw-bold">จำนวนที่ผ่าน QC</label>
-              <input type="text" class="form-control bg-light text-success fw-bold" formControlName="passedQty" readonly>
+              <input type="text" class="form-control bg-light text-success fw-bold" formControlName="passedQty"
+                readonly>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
               <label class="form-label fw-bold">1 ห่อมีกี่มัด</label>
@@ -172,7 +177,7 @@
 
       <hr>
       <h6 class="fw-bold mb-3">ผู้ QC และผลงาน</h6>
-      
+
       <div class="staff-row mb-3 pb-3 border-bottom" *ngFor="let staff of qcStaffList; let i = index">
         <div class="row g-2 align-items-end">
           <div class="col-12 col-md-4">
@@ -191,7 +196,8 @@
             <input type="number" class="form-control" [(ngModel)]="staff.bundles" placeholder="มัด">
           </div>
           <div class="col-2 col-md-2 text-end">
-            <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeStaffRow(i)" [disabled]="qcStaffList.length === 1">
+            <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeStaffRow(i)"
+              [disabled]="qcStaffList.length === 1">
               <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
             </button>
           </div>
@@ -207,4 +213,4 @@
       <button mat-flat-button color="primary" (click)="onSubmitComplete()">บันทึกข้อมูล</button>
     </div>
   </div>
-</div>
+</div>

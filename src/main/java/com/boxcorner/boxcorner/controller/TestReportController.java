@@ -1,17 +1,18 @@
 package com.boxcorner.boxcorner.controller;
 
-import com.boxcorner.boxcorner.service.JasperService;
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Collections;
+import com.boxcorner.boxcorner.service.JasperService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/test-report")
@@ -20,16 +21,15 @@ public class TestReportController {
 
     private final JasperService jasperService;
 
-    @GetMapping("/pdf")
-    public ResponseEntity<byte[]> testPdf() {
+    @PostMapping("/pdf")
+    public ResponseEntity<byte[]> testPdf(@RequestBody Map<String, Object> parameters) {
         try {
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("jobId", "JO6903-0125_7530");
-
-            byte[] pdf = jasperService.generatePdfReport("reports/QcReport.jrxml", parameters);
-
+            byte[] pdf = jasperService.generatePdfReportWithDbConnection(
+                    "reports/" + parameters.get("reportName") + ".jrxml",
+                    parameters);
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=QcReport.pdf")
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=" + parameters.get("reportName") + ".pdf")
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(pdf);
         } catch (Exception e) {
