@@ -25,7 +25,7 @@ export class Dcsm36DetailComponent implements OnInit {
   isLoading = false;
   isCompleteModalOpen = false;
   usersList: any[] = [];
-  qcStaffList: any[] = [{ userId: '', userName: '', packs: null, bundles: null }];
+  qcStaffList: any[] = [{ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
 
   constructor(
     private fb: FormBuilder,
@@ -201,7 +201,7 @@ export class Dcsm36DetailComponent implements OnInit {
 
   completeQc() {
     this.isCompleteModalOpen = true;
-    this.qcStaffList = [{ userId: '', userName: '', packs: null, bundles: null }];
+    this.qcStaffList = [{ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
   }
 
   closeCompleteModal() {
@@ -209,7 +209,7 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   addStaffRow() {
-    this.qcStaffList.push({ userId: '', userName: '', packs: null, bundles: null });
+    this.qcStaffList.push({ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null });
   }
 
   removeStaffRow(index: number) {
@@ -232,9 +232,17 @@ export class Dcsm36DetailComponent implements OnInit {
     const bundlesInput = document.getElementById('modalBundlesPerPack') as HTMLInputElement;
     const boxesInput = document.getElementById('modalBoxesPerBundle') as HTMLInputElement;
 
+    const passedQtyFractionInput = document.getElementById('modalPassedQtyFraction') as HTMLInputElement;
+    const bundlesPerPackFractionInput = document.getElementById('modalBundlesPerPackFraction') as HTMLInputElement;
+    const piecesFractionInput = document.getElementById('modalPiecesFraction') as HTMLInputElement;
+
     const passedQty = parseInt(passedQtyInput.value, 10);
     const bundlesPerPack = parseInt(bundlesInput.value, 10);
     const boxesPerBundle = parseInt(boxesInput.value, 10);
+
+    const passedQtyFraction = parseInt(passedQtyFractionInput?.value, 10) || 0;
+    const bundlesPerPackFraction = parseInt(bundlesPerPackFractionInput?.value, 10) || 0;
+    const piecesFraction = parseInt(piecesFractionInput?.value, 10) || 0;
 
     if (isNaN(passedQty) || passedQty < 0) {
       this.sweetAlert.error('Error', 'กรุณากรอกยอดงานดีที่ถูกต้อง');
@@ -263,6 +271,10 @@ export class Dcsm36DetailComponent implements OnInit {
         this.sweetAlert.error('Error', 'กรุณากรอกจำนวนมัดให้ถูกต้อง');
         return;
       }
+      
+      staff.packsFraction = parseInt(staff.packsFraction, 10) || null;
+      staff.bundlesFraction = parseInt(staff.bundlesFraction, 10) || null;
+      staff.piecesFraction = parseInt(staff.piecesFraction, 10) || null;
     }
 
     const data = {
@@ -270,6 +282,9 @@ export class Dcsm36DetailComponent implements OnInit {
       passedQty,
       bundlesPerPack,
       boxesPerBundle,
+      passedQtyFraction,
+      bundlesPerPackFraction,
+      piecesFraction,
       staffList: this.qcStaffList
     };
 

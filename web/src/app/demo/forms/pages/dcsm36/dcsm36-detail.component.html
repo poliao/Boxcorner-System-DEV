@@ -162,38 +162,57 @@
     <div class="modal-body">
       <div class="row g-3 mb-4">
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">ยอดงานดี (ชิ้น/แผ่น)</label>
-          <input type="number" id="modalPassedQty" class="form-control" placeholder="ยอดงานดี">
+          <label class="form-label fw-bold">จำนวนห่อเต็ม</label>
+          <input type="number" id="modalPassedQty" class="form-control" placeholder="จำนวนห่อเต็ม">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">1 ห่อมีกี่มัด</label>
-          <input type="number" id="modalBundlesPerPack" class="form-control" placeholder="มัดต่อห่อ">
+          <label class="form-label fw-bold">จำนวนชิ้นต่อแพค</label>
+          <input type="number" id="modalBoxesPerBundle" class="form-control" placeholder="จำนวนกล่องต่อมัด">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">1 มัดมีกี่กล่อง</label>
-          <input type="number" id="modalBoxesPerBundle" class="form-control" placeholder="กล่องต่อมัด">
+          <label class="form-label fw-bold">จำนวนแพคต่อห่อ</label>
+          <input type="number" id="modalBundlesPerPack" class="form-control" placeholder="จำนวนมัดต่อห่อ">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-bold">จำนวนห่อ(เศษ)</label>
+          <input type="number" id="modalPassedQtyFraction" class="form-control" placeholder="จำนวนห่อเศษ">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-bold">จำนวนแพคต่อห่อ(เศษ)</label>
+          <input type="number" id="modalBundlesPerPackFraction" class="form-control" placeholder="จำนวนกล่องเศษ">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-bold">จำนวนชิ้น(เศษ)</label>
+          <input type="number" id="modalPiecesFraction" class="form-control" placeholder="จำนวนกล่องเศษ">
         </div>
       </div>
 
       <hr>
-      <h6 class="fw-bold mb-3">ผู้ QC และผลงาน</h6>
-
+      <h6 class="fw-bold mb-3">พนักงานQC/กรอกจำนวนห่อที่QC</h6>
       <div class="staff-row mb-3 pb-3 border-bottom" *ngFor="let staff of qcStaffList; let i = index">
         <div class="row g-2 align-items-end">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-2">
             <label class="form-label small fw-bold">ผู้ QC</label>
             <select class="form-select" [(ngModel)]="staff.userId" (change)="onStaffUserChange(i, $event)">
               <option value="">เลือกพนักงาน</option>
               <option *ngFor="let user of usersList" [value]="user.value">{{user.text}}</option>
             </select>
           </div>
-          <div class="col-5 col-md-3">
+          <div class="col-5 col-md-2">
             <label class="form-label small fw-bold">จำนวนห่อ</label>
             <input type="number" class="form-control" [(ngModel)]="staff.packs" placeholder="ห่อ">
           </div>
-          <div class="col-5 col-md-3">
-            <label class="form-label small fw-bold">จำนวนมัด</label>
-            <input type="number" class="form-control" [(ngModel)]="staff.bundles" placeholder="มัด">
+          <div class="col-5 col-md-2">
+            <label class="form-label small fw-bold">จำนวนห่อ(เศษ)</label>
+            <input type="number" class="form-control" [(ngModel)]="staff.packsFraction" placeholder="ห่อ">
+          </div>
+          <div class="col-5 col-md-2">
+            <label class="form-label small fw-bold">จำนวนมัด(เศษ)</label>
+            <input type="number" class="form-control" [(ngModel)]="staff.bundlesFraction" placeholder="มัด">
+          </div>
+          <div class="col-5 col-md-2">
+            <label class="form-label small fw-bold">จำนวนชิ้น(เศษ)</label>
+            <input type="number" class="form-control" [(ngModel)]="staff.piecesFraction" placeholder="ชิ้น">
           </div>
           <div class="col-2 col-md-2 text-end">
             <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeStaffRow(i)"

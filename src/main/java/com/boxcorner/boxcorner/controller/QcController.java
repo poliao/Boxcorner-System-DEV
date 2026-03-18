@@ -71,6 +71,9 @@ public class QcController {
                 request.getPassedQty(), 
                 request.getBundlesPerPack(), 
                 request.getBoxesPerBundle(),
+                request.getPassedQtyFraction(),
+                request.getBundlesPerPackFraction(),
+                request.getPiecesFraction(),
                 request.getStaffList()
             ));
         } catch (Exception e) {

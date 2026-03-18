@@ -165,6 +165,352 @@
   </div>
 </div>
 
+<div class="card total-income-card warning overflow-hidden mt-3" *ngIf="printingForm.get('decisionAuthority')?.value">
+  <div class="card-header" style="background-color: #1e1b4b; color: white; padding: 15px;">
+    <h6 class="mb-0 font-weight-bold">
+      <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
+    </h6>
+  </div>
+  <div class="card-body" style="padding: 15px;">
+    <div class="border rounded p-3 shadow-sm"
+      [style.border-left]="'4px solid ' + getDecisionAuthorityColor() + ' !important'">
+      <strong class="d-block mb-2" [ngClass]="getDecisionAuthorityClass()" style="font-size: 1rem;">{{
+        getDecisionAuthorityLabel() }}</strong>
+      <span class="badge mt-1" [ngClass]="getDecisionAuthorityBadgeClass()" style="font-size: 0.75rem;">{{
+        getDecisionAuthorityBadge() }}</span>
+      <small class="text-muted d-block mt-2" style="font-size: 0.8rem;">{{ getDecisionAuthorityDescription() }}</small>
+      <div *ngIf="printingForm.get('decisionAuthorityRemarks')?.value" class="mt-3 p-2"
+        style="background-color: #f8fafc; border-radius: 6px;">
+        <div class="d-flex align-items-start">
+          <i class="fas fa-comment-dots text-muted me-2" style="margin-top: 2px;"></i>
+          <div>
+            <small class="text-muted d-block" style="font-size: 0.7rem; font-weight: 600;">หมายเหตุ:</small>
+            <small class="d-block" style="font-size: 0.8rem;">{{ printingForm.get('decisionAuthorityRemarks')?.value
+              }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Extra Print History Table -->
+<div class="card-body p-0">
+  <div class="card total-income-card info overflow-hidden">
+    <div style="padding: 20px;">
+      <h5 class="card-title mb-4">ประวัติการพิมพ์เพิ่มเติม</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0;">
+          <thead style="background-color: #1e3a8a !important; color: white !important;">
+            <tr>
+              <th class="text-center py-3"
+                style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">
+                วันที่สร้าง</th>
+              <th class="text-center py-3"
+                style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">
+                จำนวน</th>
+              <th class="py-3"
+                style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">
+                เหตุผล</th>
+              <th class="text-center py-3"
+                style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">
+                สถานะ</th>
+              <th class="text-center py-3"
+                style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">
+                ผู้ขอ</th>
+              <th class="text-center py-3"
+                style="border: none; font-weight: 600; background-color: #1e3a8a !important; color: white !important;">
+                การดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody style="background-color: white !important;">
+            <tr *ngFor="let print of extraPrints; let i = index"
+              style="cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #e5e7eb !important;"
+              [style.background-color]="i % 2 === 0 ? '#ffffff !important' : '#f9fafb !important'">
+              <td class="text-center py-3">
+                <span class="badge"
+                  style="background-color: #3b82f6 !important; color: white !important; font-size: 13px; padding: 6px 12px; font-weight: 500;">
+                  {{ print.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </td>
+              <td class="text-center py-3">
+                <span class="badge rounded-pill"
+                  style="background-color: #ec4899 !important; color: white !important; font-size: 14px; padding: 8px 16px; font-weight: 600;">
+                  {{ print.additionalQty }} ใบ
+                </span>
+              </td>
+              <td class="py-3" style="color: #374151; font-weight: 500;">
+                <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{
+                  print.reason }}</div>
+              </td>
+              <td class="text-center py-3">
+                <span class="badge rounded-pill px-3 py-2" style="font-size: 13px; font-weight: 600;"
+                  [style.background-color]="print.status === 'PENDING' ? '#fbbf24' : print.status === 'IN_PROGRESS' ? '#3b82f6' : print.status === 'PAUSED' ? '#9ca3af' : '#10b981'"
+                  [style.color]="print.status === 'PENDING' ? '#1f2937' : 'white'">
+                  {{ print.status === 'PENDING' ? 'รอดำเนินการ' : print.status === 'IN_PROGRESS' ? 'กำลังพิมพ์' :
+                  print.status === 'PAUSED' ? 'หยุดชั่วคราว' : 'เสร็จสิ้น' }}
+                </span>
+              </td>
+              <td class="text-center py-3" style="color: #374151; font-weight: 600;">{{ print.requestedBy }}</td>
+              <td class="text-center py-3">
+                <div class="d-flex justify-content-center gap-1 flex-wrap">
+                  <button *ngIf="print.status === 'PENDING'" class="btn btn-sm text-white"
+                    style="background-color: #1e3a8a; border: none; padding: 6px 12px; font-weight: 600;"
+                    (click)="startExtraPrint(print)">เริ่มพิมพ์</button>
+                  <button *ngIf="print.status === 'IN_PROGRESS'" class="btn btn-sm text-white"
+                    style="background-color: #16a34a; border: none; padding: 6px 12px; font-weight: 600;"
+                    (click)="openQcModal()">เช็คคุณภาพ</button>
+                  <button *ngIf="print.status === 'IN_PROGRESS'" class="btn btn-sm text-white"
+                    style="background-color: #0891b2; border: none; padding: 6px 12px; font-weight: 600;"
+                    (click)="openStopExtraPrintModal(print)">พิมพ์จบ</button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="extraPrints.length === 0">
+              <td colspan="6" class="text-center py-5" style="background-color: #f8f9fa;">
+                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px;">
+                  <div class="mb-3"
+                    style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 48px; color: white;">📄</span>
+                  </div>
+                  <h5 class="text-muted mb-2">ไม่มีข้อมูลการพิมพ์เพิ่ม</h5>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><br>
+</div>
+
+<!-- Modal Extra Print Start – Checklist -->
+<div class="modal fade" [class.show]="showExtraPrintChecklistModal"
+  [style.display]="showExtraPrintChecklistModal ? 'block' : 'none'"
+  style="background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);">
+  <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 1200px;">
+    <div class="modal-content border-0 shadow-lg"
+      style="border-radius: 16px; overflow: hidden; max-height: 95vh; display: flex; flex-direction: column;">
+      <div class="modal-header border-0"
+        style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 16px 24px; flex-shrink: 0;">
+        <div>
+          <h5 class="modal-title text-white mb-0" style="font-weight: 600;">✓ Checklist ก่อนเริ่มพิมพ์เพิ่ม</h5>
+          <small class="text-white opacity-75" *ngIf="selectedExtraPrint">จำนวน {{ selectedExtraPrint?.additionalQty }}
+            ใบ – {{ selectedExtraPrint?.reason }}</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="closeExtraPrintChecklistModal()"></button>
+      </div>
+      <div class="modal-body" style="padding: 20px 24px; background-color: #f8fafc; overflow-y: auto; flex: 1 1 auto;">
+        <form [formGroup]="checklistForm">
+          <!-- Machine Selection -->
+          <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
+            <div class="card-body" style="padding: 16px;">
+              <h6 class="fw-bold mb-2" style="color: #1e293b; font-size: 0.95rem;">
+                <i class="fas fa-print text-primary me-2"></i>เลือกเครื่อง
+              </h6>
+              <div class="row g-2">
+                <div class="col-md-12">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🖨️ เครื่องพิมพ์</label>
+                  <select formControlName="machineType" class="form-select form-select-sm" style="border-radius: 6px;">
+                    <option value="">-- เลือกเครื่อง --</option>
+                    <option value="SM">SM</option>
+                    <option value="CD">CD</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Machine Parameters -->
+          <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
+            <div class="card-body" style="padding: 16px;">
+              <h6 class="fw-bold mb-2" style="color: #1e293b; font-size: 0.95rem;">
+                <i class="fas fa-cog text-primary me-2"></i>พารามิเตอร์เครื่อง
+              </h6>
+              <div class="row g-2">
+                <div class="col-md-6 col-lg-3">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🌡️ อุณหภูมิน้ำยา (°C)</label>
+                  <input type="number" formControlName="waterTemp" class="form-control form-control-sm" placeholder="ระบุ" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💧 IPA (≤10%)</label>
+                  <input type="number" formControlName="ipaValue" class="form-control form-control-sm" placeholder="ระบุ" max="10" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">⚡ Conductivity</label>
+                  <input type="number" formControlName="conductivity" class="form-control form-control-sm" placeholder="8000-12000" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💨 แรงดันลม (bar)</label>
+                  <input type="number" formControlName="airPressure" class="form-control form-control-sm" placeholder="8-10" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💡 ความสว่างกระดาษ</label>
+                  <input type="number" formControlName="paperBrightness" class="form-control form-control-sm" placeholder="ระบุ" style="border-radius: 6px;">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Ink Information -->
+          <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
+            <div class="card-body" style="padding: 16px;">
+              <h6 class="fw-bold mb-2" style="color: #1e293b; font-size: 0.95rem;">
+                <i class="fas fa-fill-drip text-primary me-2"></i>ข้อมูลหมึก
+              </h6>
+              <div class="d-flex flex-wrap gap-2 mb-3 p-2" style="background-color: #f1f5f9; border-radius: 8px;">
+                <label class="btn btn-sm btn-outline-primary" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="hasCMYK" (change)="onInkTypeChange('CMYK')" style="margin-top: 0;">
+                  <span style="font-size: 0.8rem;">มี CMYK</span>
+                </label>
+                <label class="btn btn-sm btn-outline-secondary" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="hasSpecial" (change)="onInkTypeChange('SPECIAL')" style="margin-top: 0;">
+                  <span style="font-size: 0.8rem;">พิเศษ</span>
+                </label>
+                <label class="btn btn-sm btn-outline-success" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="isNewInk" (change)="onInkTypeChange('NEW')" style="margin-top: 0;">
+                  <span style="font-size: 0.8rem;">หมึกใหม่</span>
+                </label>
+                <label class="btn btn-sm btn-outline-warning" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="isOldInk" (change)="onInkTypeChange('OLD')" style="margin-top: 0;">
+                  <span style="font-size: 0.8rem;">หมึกเก่า</span>
+                </label>
+              </div>
+              <div class="row g-2" *ngIf="checklistForm.get('hasCMYK')?.value">
+                <div class="col-md-6 col-lg-3">
+                  <div class="p-2" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border-radius: 8px;">
+                    <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">🔵 C</div>
+                    <div class="row g-1">
+                      <div class="col-6"><input type="text" formControlName="cLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="cBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <div class="p-2" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-radius: 8px;">
+                    <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">🔴 M</div>
+                    <div class="row g-1">
+                      <div class="col-6"><input type="text" formControlName="mLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="mBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <div class="p-2" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 8px;">
+                    <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">🟡 Y</div>
+                    <div class="row g-1">
+                      <div class="col-6"><input type="text" formControlName="yLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="yBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                  <div class="p-2" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); border-radius: 8px;">
+                    <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">⚫ K</div>
+                    <div class="row g-1">
+                      <div class="col-6"><input type="text" formControlName="kLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="kBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row g-2">
+            <!-- Equipment Check -->
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+                <div class="card-body" style="padding: 16px;">
+                  <h6 class="fw-bold mb-2" style="color: #1e293b; font-size: 0.95rem;">
+                    <i class="fas fa-check-circle text-success me-2"></i>การตรวจสอบอุปกรณ์
+                  </h6>
+                  <div class="d-flex flex-column gap-2">
+                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="plateCondition" style="width: 18px; height: 18px;">
+                      <span style="font-size: 0.85rem;">เพลทสภาพสมบูรณ์</span>
+                    </label>
+                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="rubberCondition" style="width: 18px; height: 18px;">
+                      <span style="font-size: 0.85rem;">ยางไม่แข็ง / ไม่ลื่น</span>
+                    </label>
+                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="cleanedBed" style="width: 18px; height: 18px;">
+                      <span style="font-size: 0.85rem;">ล้างแท่นก่อนรันแล้ว</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Color Matching -->
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+                <div class="card-body" style="padding: 16px;">
+                  <h6 class="fw-bold mb-2" style="color: #1e293b; font-size: 0.95rem;">
+                    <i class="fas fa-palette text-info me-2"></i>เทียบสีจาก
+                  </h6>
+                  <div class="d-flex flex-column gap-2">
+                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchProof" style="width: 18px; height: 18px;">
+                      <span style="font-size: 0.85rem;">ใบปรู๊ฟ</span>
+                    </label>
+                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchDigital" style="width: 18px; height: 18px;">
+                      <span style="font-size: 0.85rem;">ไฟล์ดิจิทัล</span>
+                    </label>
+                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchPrevious" style="width: 18px; height: 18px;">
+                      <span style="font-size: 0.85rem;">งานเดิม</span>
+                    </label>
+                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorNotSerious" style="width: 18px; height: 18px;">
+                      <span style="font-size: 0.85rem;">ลูกค้าไม่ซีเรียสสี</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0" style="padding: 12px 24px; background-color: #f8fafc; flex-shrink: 0;">
+        <button type="button" class="btn btn-light" (click)="closeExtraPrintChecklistModal()"
+          style="border-radius: 8px; padding: 8px 20px; font-weight: 500;">ยกเลิก</button>
+        <button type="button" class="btn" (click)="submitExtraPrintChecklist()"
+          style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500;">
+          <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์เพิ่ม
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Extra Print Stop/Finish – จำนวนที่พิมพ์ได้ -->
+<div class="modal fade" [class.show]="showExtraPrintQtyModal"
+  [style.display]="showExtraPrintQtyModal ? 'block' : 'none'"
+  style="background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header border-0"
+        style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 16px 24px;">
+        <h5 class="modal-title text-white mb-0" style="font-weight: 600;">🖨️ จำนวนที่พิมพ์ได้ (พิมพ์เพิ่ม)</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeExtraPrintQtyModal()"></button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <div class="mb-3">
+          <label class="form-label fw-bold">จำนวนที่พิมพ์ได้ (แผ่น) <span class="text-danger">*</span></label>
+          <input type="number" [(ngModel)]="extraPrintedQuantity" class="form-control" placeholder="กรอกจำนวน" min="0">
+        </div>
+      </div>
+      <div class="modal-footer border-0" style="padding: 12px 24px;">
+        <button type="button" class="btn btn-secondary" (click)="closeExtraPrintQtyModal()"
+          style="border-radius: 8px;">ยกเลิก</button>
+        <button type="button" class="btn btn-success" (click)="confirmExtraPrintAction('FINISH')"
+          style="border-radius: 8px;">
+          <i class="fas fa-check me-2"></i>พิมพ์จบ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Checklist -->
 <div class="modal fade" [class.show]="showChecklistModal" [style.display]="showChecklistModal ? 'block' : 'none'"
   style="background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);">
@@ -415,56 +761,39 @@
       <div class="modal-footer border-0" style="padding: 12px 24px; background-color: #f8fafc; flex-shrink: 0;">
         <button type="button" class="btn btn-light" (click)="closeChecklistModal()"
           style="border-radius: 8px; padding: 8px 20px; font-weight: 500;">ยกเลิก</button>
+        <!-- PENDING + ไม่ใช่ sampleToCustomer → พิมพ์ปกติ -->
         <button
           *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer'"
           type="button" class="btn" (click)="submitChecklist('inPrint')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์
         </button>
+        <!-- PENDING + sampleToCustomer → พิมพ์ตัวอย่างก่อน -->
+        <button
+          *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+          type="button" class="btn" (click)="submitChecklist('PROOF')"
+          style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);">
+          <i class="fas fa-check me-2"></i>เริ่มพิมพ์ส่งลูกค้า
+        </button>
+        <!-- PROOFCOMPLETED → ลูกค้าอนุมัติแล้ว พิมพ์จริง -->
+        <button
+          *ngIf="printingForm.get('jobStatus')?.value === 'PROOFCOMPLETED'"
+          type="button" class="btn" (click)="submitChecklist('inPrint')"
+          style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
+          <i class="fas fa-print me-2"></i>ยืนยันเริ่มพิมพ์จริง
+        </button>
+        <!-- WAITPAGE2 → พิมพ์หน้า 2 -->
         <button *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2'" type="button" class="btn"
           (click)="submitChecklist('WAITPAGE2')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์หน้า2
-        </button>
-        <button
-          *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
-          type="button" class="btn" (click)="submitChecklist('PROOF')"
-          style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
-          <i class="fas fa-check me-2"></i>เริ่มพิมพ์ส่งลูกค้า
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="card total-income-card warning overflow-hidden mt-3" *ngIf="printingForm.get('decisionAuthority')?.value">
-  <div class="card-header" style="background-color: #1e1b4b; color: white; padding: 15px;">
-    <h6 class="mb-0 font-weight-bold">
-      <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
-    </h6>
-  </div>
-  <div class="card-body" style="padding: 15px;">
-    <div class="border rounded p-3 shadow-sm"
-      [style.border-left]="'4px solid ' + getDecisionAuthorityColor() + ' !important'">
-      <strong class="d-block mb-2" [ngClass]="getDecisionAuthorityClass()" style="font-size: 1rem;">{{
-        getDecisionAuthorityLabel() }}</strong>
-      <span class="badge mt-1" [ngClass]="getDecisionAuthorityBadgeClass()" style="font-size: 0.75rem;">{{
-        getDecisionAuthorityBadge() }}</span>
-      <small class="text-muted d-block mt-2" style="font-size: 0.8rem;">{{ getDecisionAuthorityDescription() }}</small>
-      <div *ngIf="printingForm.get('decisionAuthorityRemarks')?.value" class="mt-3 p-2"
-        style="background-color: #f8fafc; border-radius: 6px;">
-        <div class="d-flex align-items-start">
-          <i class="fas fa-comment-dots text-muted me-2" style="margin-top: 2px;"></i>
-          <div>
-            <small class="text-muted d-block" style="font-size: 0.7rem; font-weight: 600;">หมายเหตุ:</small>
-            <small class="d-block" style="font-size: 0.8rem;">{{ printingForm.get('decisionAuthorityRemarks')?.value
-              }}</small>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
 <!-- Modal กรอกจำนวนที่พิมพ์ได้ -->

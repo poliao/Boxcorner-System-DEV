@@ -83,7 +83,7 @@ public class QcService {
     }
 
     @Transactional
-    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle, java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList) {
+    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle, Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction, java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
@@ -91,6 +91,9 @@ public class QcService {
         qcJob.setPassedQty(passedQty);
         qcJob.setBundlesPerPack(bundlesPerPack);
         qcJob.setBoxesPerBundle(boxesPerBundle);
+        qcJob.setPassedQtyFraction(passedQtyFraction);
+        qcJob.setBundlesPerPackFraction(bundlesPerPackFraction);
+        qcJob.setPiecesFraction(piecesFraction);
         
         QcJob savedJob = qcJobRepository.save(qcJob);
 
@@ -102,6 +105,9 @@ public class QcService {
         logQc.setPassedQty(passedQty);
         logQc.setBundlesPerPack(bundlesPerPack);
         logQc.setBoxesPerBundle(boxesPerBundle);
+        logQc.setPassedQtyFraction(passedQtyFraction);
+        logQc.setBundlesPerPackFraction(bundlesPerPackFraction);
+        logQc.setPiecesFraction(piecesFraction);
         logQcRepository.save(logQc);
 
         // บันทึกข้อมูลพนักงาน QC

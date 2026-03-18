@@ -31,6 +31,13 @@ export class Dcsm26DetailComponent implements OnInit {
   currentPrintStatus: string = '';
   isSample = false;
 
+  // Extra Print
+  extraPrints: any[] = [];
+  selectedExtraPrint: any = null;
+  showExtraPrintChecklistModal = false;
+  showExtraPrintQtyModal = false;
+  extraPrintedQuantity: number = 0;
+
   constructor(
     private fb: FormBuilder,
     private dcsm26Service: Dcsm26Service,
@@ -58,6 +65,9 @@ export class Dcsm26DetailComponent implements OnInit {
       this.isSample = false
     }
     this.checkbntPrint();
+    if (this.id) {
+      this.loadExtraPrints();
+    }
   }
 
   createForm() {
@@ -558,5 +568,144 @@ export class Dcsm26DetailComponent implements OnInit {
     } else {
       this.qcForm.markAllAsTouched();
     }
+  }
+
+  // ─── Extra Print Methods ───────────────────────────────────────────────────
+
+  loadExtraPrints() {
+    if (this.id) {
+      this.dcsm26Service.getExtraPrintsByJobId(+this.id).subscribe({
+        next: (data: any[]) => {
+          this.extraPrints = data;
+        },
+        error: (err) => console.error('Error loading extra prints:', err)
+      });
+    }
+  }
+
+  selectExtraPrint(print: any) {
+    this.selectedExtraPrint = print;
+  }
+
+  startExtraPrint(print: any) {
+    this.selectedExtraPrint = print;
+    this.checklistForm.reset({
+      machineType: null, waterTemp: null, ipaValue: null, conductivity: null,
+      airPressure: null, paperBrightness: null, hasCMYK: false, hasSpecial: false,
+      isNewInk: false, isOldInk: false, cLotNo: null, cBrand: null,
+      mLotNo: null, mBrand: null, yLotNo: null, yBrand: null, kLotNo: null, kBrand: null,
+      plateCondition: false, rubberCondition: false, cleanedBed: false,
+      colorMatchProof: false, colorMatchDigital: false, colorMatchPrevious: false,
+      colorNotSerious: false, printSide: null, status: null, totalProduct: null
+    });
+    this.showExtraPrintChecklistModal = true;
+  }
+
+  closeExtraPrintChecklistModal() {
+    this.showExtraPrintChecklistModal = false;
+    this.selectedExtraPrint = null;
+  }
+
+  submitExtraPrintChecklist() {
+    if (!this.checklistForm.valid || !this.selectedExtraPrint) {
+      Object.keys(this.checklistForm.controls).forEach(key =>
+        this.checklistForm.get(key)?.markAsTouched()
+      );
+      this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
+    this.loadingService.show();
+    this.checklistForm.get('printSide')?.setValue('FRONT');
+    this.checklistForm.get('status')?.setValue('RUNNING');
+
+    this.saveRecordOs().subscribe({
+      next: (response) => {
+        const updateData = {
+          id: this.selectedExtraPrint.id,
+          printJobId: this.selectedExtraPrint.printJobId,
+          additionalQty: this.selectedExtraPrint.additionalQty,
+          reason: this.selectedExtraPrint.reason,
+          status: 'IN_PROGRESS',
+          requestedBy: this.selectedExtraPrint.requestedBy,
+          printingRecordId: response.id
+        };
+        this.dcsm26Service.updateExtraPrint(updateData).subscribe({
+          next: () => {
+            this.loadingService.hide();
+            this.showExtraPrintChecklistModal = false;
+            this.loadExtraPrints();
+            this.sweetAlert.success('Success', 'เริ่มพิมพ์เพิ่มเรียบร้อย');
+          },
+          error: () => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'ไม่สามารถอัปเดตสถานะพิมพ์เพิ่มได้');
+          }
+        });
+      },
+      error: () => {
+        this.loadingService.hide();
+        this.sweetAlert.error('Error', 'เกิดข้อผิดพลาดในการบันทึก Checklist');
+      }
+    });
+  }
+
+  openStopExtraPrintModal(print: any) {
+    this.selectedExtraPrint = print;
+    this.extraPrintedQuantity = 0;
+    this.showExtraPrintQtyModal = true;
+  }
+
+  closeExtraPrintQtyModal() {
+    this.showExtraPrintQtyModal = false;
+    this.selectedExtraPrint = null;
+    this.extraPrintedQuantity = 0;
+  }
+
+  confirmExtraPrintAction(action: 'PAUSE' | 'FINISH') {
+    if (action === 'FINISH' && (!this.extraPrintedQuantity || this.extraPrintedQuantity <= 0)) {
+      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่พิมพ์ได้');
+      return;
+    }
+    this.loadingService.show();
+    this.showExtraPrintQtyModal = false;
+
+    // Update log status
+    const logId = this.selectedExtraPrint?.printingRecordId;
+    if (logId) {
+      this.dcsm26Service.getLogById(logId).subscribe({
+        next: (log) => {
+          const now = new Date();
+          const offset = 7 * 60 * 60 * 1000;
+          log.status = 'COMPLETED';
+          log.endTime = new Date(now.getTime() + offset);
+          log.totalProduct = this.extraPrintedQuantity;
+          this.dcsm26Service.savePrintLogOs(log).subscribe();
+        }
+      });
+    }
+
+    const newStatus = action === 'FINISH' ? 'COMPLETED' : 'PAUSED';
+    const updateData = {
+      id: this.selectedExtraPrint.id,
+      printJobId: this.selectedExtraPrint.printJobId,
+      additionalQty: this.selectedExtraPrint.additionalQty,
+      reason: this.selectedExtraPrint.reason,
+      status: newStatus,
+      requestedBy: this.selectedExtraPrint.requestedBy,
+      printingRecordId: action === 'PAUSE' ? this.selectedExtraPrint.printingRecordId : null
+    };
+    this.dcsm26Service.updateExtraPrint(updateData).subscribe({
+      next: () => {
+        this.loadingService.hide();
+        this.selectedExtraPrint = null;
+        this.loadExtraPrints();
+        this.sweetAlert.success('Success', action === 'FINISH' ? 'พิมพ์เพิ่มเสร็จสิ้น' : 'หยุดชั่วคราว');
+      },
+      error: () => {
+        this.loadingService.hide();
+        this.sweetAlert.error('Error', 'ไม่สามารถอัปเดตสถานะได้');
+      }
+    });
   }
 }

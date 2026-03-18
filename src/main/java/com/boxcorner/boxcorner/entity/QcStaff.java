@@ -48,6 +48,15 @@ public class QcStaff extends BaseEntity {
     @Column(name = "bundles")
     private Integer bundles;
 
+    @Column(name = "packs_fraction")
+    private Integer packsFraction;
+
+    @Column(name = "bundles_fraction")
+    private Integer bundlesFraction;
+
+    @Column(name = "pieces_fraction")
+    private Integer piecesFraction;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

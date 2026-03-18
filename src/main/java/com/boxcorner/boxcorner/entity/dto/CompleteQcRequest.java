@@ -10,5 +10,8 @@ public class CompleteQcRequest {
     private Integer passedQty;
     private Integer bundlesPerPack;
     private Integer boxesPerBundle;
+    private Integer passedQtyFraction;
+    private Integer bundlesPerPackFraction;
+    private Integer piecesFraction;
     private List<QcStaff> staffList;
 }

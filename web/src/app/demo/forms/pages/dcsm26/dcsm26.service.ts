@@ -83,4 +83,13 @@ export class Dcsm26Service {
   getQaByJobId(jobId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/print-log-qa/job/${jobId}`);
   }
+
+  // Extra Print APIs (shared with OD flow)
+  getExtraPrintsByJobId(printJobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
+  }
+
+  updateExtraPrint(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/extra-prints/save`, data);
+  }
 }

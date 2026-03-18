@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-
 @Entity
 @Table(name = "design_orders")
 @Data
@@ -81,6 +80,9 @@ public class DesignOrders extends BaseEntity {
 
     @Column(name = "remark_add")
     private String remarkAdd;
+
+    @Column(name = "assignee_first")
+    private String assigneeFirst;
 
     @Column(name = "start_datetime")
     private LocalDateTime startDatetime;

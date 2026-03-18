@@ -57,6 +57,7 @@ public class DesignOrdersService {
             existing.setJoId(designOrder.getJoId());
             existing.setQtId(designOrder.getQtId());
             existing.setQpId(designOrder.getQpId());
+            existing.setAssigneeFirst(designOrder.getAssigneeFirst());
             existing.setRemarkAdd(designOrder.getRemarkAdd());
             if ("กำลังดำเนินการ".equals(designOrder.getProcessStatus())) {
                 if (existing.getStartDatetime() == null) {
