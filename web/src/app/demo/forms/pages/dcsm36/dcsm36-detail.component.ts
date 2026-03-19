@@ -202,8 +202,8 @@ export class Dcsm36DetailComponent implements OnInit {
   completeQc() {
     this.isCompleteModalOpen = true;
     this.activeTab = 'staff';
-    this.qcStaffList = [{ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
-    this.qcWasteList = [{ processName: '', technicianName: '', wasteQty: null, remarks: '' }];
+    this.qcStaffList = [{ userId: null, userName: null, packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
+    this.qcWasteList = [{ processName: null, wasteQty: null, remarks: null }];
   }
 
   closeCompleteModal() {
@@ -211,7 +211,7 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   addStaffRow() {
-    this.qcStaffList.push({ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null });
+    this.qcStaffList.push({ userId: null, userName: null, packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null });
   }
 
   removeStaffRow(index: number) {
@@ -221,7 +221,7 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   addWasteRow() {
-    this.qcWasteList.push({ processName: '', technicianName: '', wasteQty: null, remarks: '' });
+    this.qcWasteList.push({ processName: null, wasteQty: null, remarks: null });
   }
 
   removeWasteRow(index: number) {
@@ -270,6 +270,14 @@ export class Dcsm36DetailComponent implements OnInit {
     }
 
     // Validate staff list
+    for (let i = 0; i < this.qcStaffList.length; i++) {
+      if (!this.qcStaffList[i].userId) {
+        this.sweetAlert.error('Error', `กรุณาเลือกผู้ QC ในแถวที่ ${i + 1}`);
+        return;
+      }
+    }
+
+    // Process staff list and waste list
     for (const staff of this.qcStaffList) {
       staff.packsFraction = parseInt(staff.packsFraction, 10) || null;
       staff.bundlesFraction = parseInt(staff.bundlesFraction, 10) || null;

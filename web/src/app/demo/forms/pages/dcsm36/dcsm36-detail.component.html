@@ -213,10 +213,12 @@
       <hr>
       <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-          <a class="nav-link cursor-pointer" [class.active]="activeTab === 'staff'" (click)="activeTab = 'staff'">พนักงาน QC</a>
+          <a class="nav-link cursor-pointer" [class.active]="activeTab === 'staff'"
+            (click)="activeTab = 'staff'">พนักงาน QC</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link cursor-pointer" [class.active]="activeTab === 'waste'" (click)="activeTab = 'waste'">รายงานความผิดพลาด</a>
+          <a class="nav-link cursor-pointer" [class.active]="activeTab === 'waste'"
+            (click)="activeTab = 'waste'">รายงานความผิดพลาด</a>
         </li>
       </ul>
 
@@ -225,7 +227,7 @@
         <div class="staff-row mb-3 pb-3 border-bottom" *ngFor="let staff of qcStaffList; let i = index">
           <div class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
-              <label class="form-label small fw-bold">ผู้ QC</label>
+              <label class="form-label small fw-bold">ผู้ QC <span class="text-danger">*</span></label>
               <select class="form-select" [(ngModel)]="staff.userId" (change)="onStaffUserChange(i, $event)">
                 <option value="">เลือกพนักงาน</option>
                 <option *ngFor="let user of usersList" [value]="user.value">{{user.text}}</option>
@@ -240,7 +242,8 @@
               <input type="number" class="form-control" [(ngModel)]="staff.packsFraction" placeholder="ห่อ(เศษ)">
             </div>
             <div class="col-5 col-md-2">
-              <label class="form-label small fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่น(เศษ)' :
+              <label class="form-label small fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่น(เศษ)'
+                :
                 'จำนวนแพค(เศษ)' }}</label>
               <input type="number" class="form-control" [(ngModel)]="staff.bundlesFraction" placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'แผ่น(เศษ)' :
                 'แพค(เศษ)' }}">
@@ -276,15 +279,11 @@
                 <option value="งานปะ">งานปะ</option>
               </select>
             </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label small fw-bold">ช่างยอดที่เสีย</label>
-              <input type="text" class="form-control" [(ngModel)]="waste.technicianName" placeholder="ชื่อช่าง">
-            </div>
             <div class="col-4 col-md-2">
               <label class="form-label small fw-bold">จำนวนเสีย</label>
               <input type="number" class="form-control" [(ngModel)]="waste.wasteQty" placeholder="จำนวน">
             </div>
-            <div class="col-10 col-md-3">
+            <div class="col-10 col-md-6">
               <label class="form-label small fw-bold">หมายเหตุ</label>
               <input type="text" class="form-control" [(ngModel)]="waste.remarks" placeholder="ระบุเหตุผล">
             </div>

@@ -49,8 +49,7 @@ public interface ProductionJobRepository extends JpaRepository<ProductionJob, Lo
             (CAST(:endDate AS DATE) IS NULL OR p.due_date <= :endDate)
             ORDER BY
                 (CASE WHEN p.delivery_status = 'จัดส่งเรียบร้อย' THEN 1 ELSE 0 END) ASC,
-                p.due_date ASC,
-                p.id DESC
+                p.job_code DESC
             """, countQuery = "SELECT count(*) FROM production_jobs p WHERE "
             +
             "(CAST(:id AS BIGINT) IS NULL OR p.id = :id) AND " +
