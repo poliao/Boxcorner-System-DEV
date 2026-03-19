@@ -63,9 +63,9 @@ export class Dcsm36DetailComponent implements OnInit {
       passedQty: [null],
       bundlesPerPack: [null],
       boxesPerBundle: [null],
-      passedQtyFraction:[null],
-      bundlesPerPackFraction:[null],
-      piecesFraction:[null],
+      passedQtyFraction: [null],
+      bundlesPerPackFraction: [null],
+      piecesFraction: [null],
       createdAt: [null],
       updatedAt: [null]
     });
@@ -329,6 +329,7 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   dowloadReportQc() {
+    this.loadingService.show();
     const data = {
       "reportName": "QcReport",
       "jobId": this.qcJobForm.get('joId')?.value,
@@ -342,23 +343,28 @@ export class Dcsm36DetailComponent implements OnInit {
         a.download = 'QcReport.pdf';
         a.click();
         window.URL.revokeObjectURL(url);
+        this.loadingService.hide();
       },
       error: (err) => {
         console.error('Error printing report:', err);
+        this.loadingService.hide();
       }
     });
   }
 
   printReportQc() {
+    this.loadingService.show();
     const data = {
       "reportName": "QcReport",
       "jobId": this.qcJobForm.get('joId')?.value,
     }
+
     this.dcsm36Service.printReport(data).subscribe({
       next: (response) => {
+        this.loadingService.hide();
+
         const blob = new Blob([response], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
-
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = url;
@@ -368,11 +374,11 @@ export class Dcsm36DetailComponent implements OnInit {
             iframe.contentWindow?.print();
           }, 100);
         };
-
         document.body.appendChild(iframe);
       },
       error: (err) => {
         console.error('Error printing report:', err);
+        this.loadingService.hide
       }
     });
   }
