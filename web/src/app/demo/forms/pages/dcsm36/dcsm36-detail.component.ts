@@ -24,7 +24,12 @@ export class Dcsm36DetailComponent implements OnInit {
   jobId: number | null = null;
   isLoading = false;
   isCompleteModalOpen = false;
+  isStartModalOpen = false;
+  selectedQcType = 'ปะ+QC';
+  modalReceivedQty: number | null = null;
   usersList: any[] = [];
+  activeTab: 'staff' | 'waste' = 'staff';
+  qcWasteList: any[] = [];
   qcStaffList: any[] = [{ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
 
   constructor(
@@ -66,6 +71,7 @@ export class Dcsm36DetailComponent implements OnInit {
       passedQtyFraction: [null],
       bundlesPerPackFraction: [null],
       piecesFraction: [null],
+      qcType: [null],
       createdAt: [null],
       updatedAt: [null]
     });
@@ -159,52 +165,45 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   startQc() {
-    const receivedQty = this.qcJobForm.get('receivedQty')?.value;
-    const operatorName = this.authService.getFullName();
+    this.modalReceivedQty = this.qcJobForm.get('receivedQty')?.value;
+    this.isStartModalOpen = true;
+  }
 
-    if (receivedQty) {
-      this.loadingService.show();
+  closeStartModal() {
+    this.isStartModalOpen = false;
+    this.selectedQcType = null;
+    this.modalReceivedQty = null;
+  }
 
-      this.dcsm36Service.startQc(this.jobId!, receivedQty, operatorName).subscribe({
-        next: () => {
-          this.updateQcStatusProductionJob();
-          this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
-          this.loadJobDetails(this.jobId!);
-        },
-        error: (err) => {
-          this.sweetAlert.error('Error', 'ไม่สามารถเริ่มงาน QC ได้');
-          this.loadingService.hide();
-        }
-      });
-    } else {
-      this.sweetAlert.input('เริ่ม QC', 'กรุณากรอกจำนวนที่รับมา', 'number').then((res) => {
-        if (res.isConfirmed && res.value) {
-          const qty = parseInt(res.value, 10);
-          if (isNaN(qty) || qty <= 0) {
-            this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่ถูกต้อง');
-            return;
-          }
-
-          this.loadingService.show();
-          this.dcsm36Service.startQc(this.jobId!, qty, operatorName).subscribe({
-            next: () => {
-              this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
-              this.loadJobDetails(this.jobId!);
-            },
-            error: (err) => {
-              console.error('Error starting QC', err);
-              this.sweetAlert.error('Error', 'ไม่สามารถเริ่มงาน QC ได้');
-              this.loadingService.hide();
-            }
-          });
-        }
-      });
+  onSubmitStart() {
+    if (!this.modalReceivedQty || this.modalReceivedQty <= 0) {
+      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนที่ถูกต้อง');
+      return;
     }
+
+    const operatorName = this.authService.getFullName();
+    this.loadingService.show();
+
+    this.dcsm36Service.startQc(this.jobId!, this.modalReceivedQty, operatorName, this.selectedQcType).subscribe({
+      next: () => {
+        this.updateQcStatusProductionJob(this.selectedQcType);
+        this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
+        this.closeStartModal();
+        this.loadJobDetails(this.jobId!);
+      },
+      error: (err) => {
+        console.error('Error starting QC', err);
+        this.sweetAlert.error('Error', 'ไม่สามารถเริ่มงาน QC ได้');
+        this.loadingService.hide();
+      }
+    });
   }
 
   completeQc() {
     this.isCompleteModalOpen = true;
+    this.activeTab = 'staff';
     this.qcStaffList = [{ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
+    this.qcWasteList = [{ processName: '', technicianName: '', wasteQty: null, remarks: '' }];
   }
 
   closeCompleteModal() {
@@ -218,6 +217,16 @@ export class Dcsm36DetailComponent implements OnInit {
   removeStaffRow(index: number) {
     if (this.qcStaffList.length > 1) {
       this.qcStaffList.splice(index, 1);
+    }
+  }
+
+  addWasteRow() {
+    this.qcWasteList.push({ processName: '', technicianName: '', wasteQty: null, remarks: '' });
+  }
+
+  removeWasteRow(index: number) {
+    if (this.qcWasteList.length > 1) {
+      this.qcWasteList.splice(index, 1);
     }
   }
 
@@ -275,7 +284,8 @@ export class Dcsm36DetailComponent implements OnInit {
       passedQtyFraction,
       bundlesPerPackFraction,
       piecesFraction,
-      staffList: this.qcStaffList
+      staffList: this.qcStaffList.filter(s => s.userId),
+      wasteReportList: this.qcWasteList.filter(w => w.processName)
     };
 
     this.loadingService.show();
@@ -298,10 +308,10 @@ export class Dcsm36DetailComponent implements OnInit {
     this.router.navigate(['/Dcsm36']);
   }
 
-  updateQcStatusProductionJob() {
+  updateQcStatusProductionJob(qcType: string) {
     this.dcsm36Service.getByIdProductionJob(this.qcJobForm.getRawValue().productJobId).subscribe({
       next: (data) => {
-        data.printStatus = 'เริ่มQc'
+        data.printStatus = 'เริ่มQc (' + qcType + ')';
         this.dcsm36Service.updateProductionJob(data).subscribe({
           next: (updateResponse) => {
           },
@@ -354,21 +364,27 @@ export class Dcsm36DetailComponent implements OnInit {
 
   printReportQc() {
     this.loadingService.show();
-    const data = {
-      "reportName": "QcReport",
-      "jobId": this.qcJobForm.get('joId')?.value,
+    let data;
+    if (this.qcJobForm.get('qcType')?.value == 'QC STK') {
+      data = {
+        "reportName": "QcSTKReport",
+        "jobId": this.qcJobForm.get('joId')?.value,
+      }
+    } else {
+      data = {
+        "reportName": "QcReport",
+        "jobId": this.qcJobForm.get('joId')?.value,
+      }
     }
 
     this.dcsm36Service.printReport(data).subscribe({
       next: (response) => {
         this.loadingService.hide();
-
         const blob = new Blob([response], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = url;
-
         iframe.onload = () => {
           setTimeout(() => {
             iframe.contentWindow?.print();

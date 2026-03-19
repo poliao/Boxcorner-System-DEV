@@ -19,6 +19,7 @@ public class QcService {
     private final QcJobRepository qcJobRepository;
     private final LogQcRepository logQcRepository;
     private final com.boxcorner.boxcorner.repository.QcStaffRepository qcStaffRepository;
+    private final com.boxcorner.boxcorner.repository.QcWasteReportRepository qcWasteReportRepository;
 
     @Transactional
     public QcJob saveQcJob(QcJob qcJob) {
@@ -52,12 +53,13 @@ public class QcService {
     }
 
     @Transactional
-    public QcJob startQc(Integer id, Integer receivedQty, String operatorName) {
+    public QcJob startQc(Integer id, Integer receivedQty, String operatorName, String qcType) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
         qcJob.setStatus(QcJob.JobStatus.IN_PROGRESS);
         qcJob.setReceivedQty(receivedQty);
+        qcJob.setQcType(qcType);
 
         QcJob savedJob = qcJobRepository.save(qcJob);
 
@@ -68,6 +70,7 @@ public class QcService {
                 .reportDate(LocalDate.now())
                 .startTime(LocalTime.now())
                 .receivedQty(receivedQty)
+                .qcType(qcType)
                 .build();
         logQcRepository.save(logQc);
 
@@ -83,7 +86,7 @@ public class QcService {
     }
 
     @Transactional
-    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle, Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction, java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList) {
+    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle, Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction, java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList, java.util.List<com.boxcorner.boxcorner.entity.QcWasteReport> wasteReportList) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
@@ -115,6 +118,14 @@ public class QcService {
             for (com.boxcorner.boxcorner.entity.QcStaff staff : staffList) {
                 staff.setQcJobId(id);
                 qcStaffRepository.save(staff);
+            }
+        }
+
+        // บันทึกรายการของเสีย
+        if (wasteReportList != null && !wasteReportList.isEmpty()) {
+            for (com.boxcorner.boxcorner.entity.QcWasteReport waste : wasteReportList) {
+                waste.setQcJobId(id);
+                qcWasteReportRepository.save(waste);
             }
         }
 

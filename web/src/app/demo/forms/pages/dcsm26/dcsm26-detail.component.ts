@@ -37,6 +37,7 @@ export class Dcsm26DetailComponent implements OnInit {
   showExtraPrintChecklistModal = false;
   showExtraPrintQtyModal = false;
   extraPrintedQuantity: number = 0;
+  usersList: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -68,6 +69,18 @@ export class Dcsm26DetailComponent implements OnInit {
     if (this.id) {
       this.loadExtraPrints();
     }
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.dcsm26Service.getAllUsers().subscribe({
+      next: (users) => {
+        this.usersList = users;
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+      }
+    });
   }
 
   createForm() {
@@ -160,6 +173,7 @@ export class Dcsm26DetailComponent implements OnInit {
       conductivity: [null, Validators.required],
       airPressure: [null, Validators.required],
       paperBrightness: [null, Validators.required],
+      operatorName: [null, Validators.required],
       hasCMYK: [false],
       hasSpecial: [false],
       isNewInk: [false],
@@ -217,13 +231,6 @@ export class Dcsm26DetailComponent implements OnInit {
     if (status === 'inPrint') {
       this.showChecklistModal = true;
     }
-  }
-
-  private markFormGroupTouched(): void {
-    Object.keys(this.printingForm.controls).forEach(key => {
-      const control = this.printingForm.get(key);
-      control?.markAsTouched();
-    });
   }
 
   checkbntPrint() {
@@ -366,7 +373,7 @@ export class Dcsm26DetailComponent implements OnInit {
       refNotSerious: checklist.colorNotSerious,
       status: checklist.status,
       printSide: checklist.printSide,
-      operatorName: this.authService.getUserFromToken().sub,
+      operatorName: checklist.operatorName,
       totalProduct: checklist.totalProduct
     };
     console.log(data);

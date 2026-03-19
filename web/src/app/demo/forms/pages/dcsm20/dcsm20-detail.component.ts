@@ -338,7 +338,9 @@ export class Dcsm20DetailComponent implements OnInit {
               if (res.isConfirmed && res.value) {
                 const qty = parseInt(res.value, 10);
                 this.productionForm.get('printStatus')?.setValue('กำลังQc');
-                this.saveQcJob(qty);
+                if ((this.productionForm.getRawValue().printingResponsible == 'SM' || this.productionForm.getRawValue().printingResponsible == 'CD') || ((this.productionForm.getRawValue().printingResponsible == 'Canon' || this.productionForm.getRawValue().printingResponsible == 'Ricoh') && (this.productionForm.getRawValue().coatingResponsible != 'BCA' || this.productionForm.getRawValue().stampingResponsible != 'BCA' || this.productionForm.getRawValue().gluingResponsible != 'BCA'))) {
+                  this.saveQcJob(qty);
+                }
                 this.performStatusUpdate();
               }
             });

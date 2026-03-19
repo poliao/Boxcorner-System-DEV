@@ -92,4 +92,8 @@ export class Dcsm26Service {
   updateExtraPrint(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/extra-prints/save`, data);
   }
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/all`);
+  }
 }

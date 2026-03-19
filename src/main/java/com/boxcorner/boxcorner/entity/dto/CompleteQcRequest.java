@@ -14,4 +14,5 @@ public class CompleteQcRequest {
     private Integer bundlesPerPackFraction;
     private Integer piecesFraction;
     private List<QcStaff> staffList;
+    private List<com.boxcorner.boxcorner.entity.QcWasteReport> wasteReportList;
 }

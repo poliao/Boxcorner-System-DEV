@@ -55,9 +55,10 @@ public class QcController {
     public ResponseEntity<?> startQc(
             @RequestParam(value = "id") Integer id,
             @RequestParam(value = "receivedQty") Integer receivedQty,
-            @RequestParam(value = "operatorName") String operatorName) {
+            @RequestParam(value = "operatorName") String operatorName,
+            @RequestParam(value = "qcType", required = false) String qcType) {
         try {
-            return ResponseEntity.ok(qcService.startQc(id, receivedQty, operatorName));
+            return ResponseEntity.ok(qcService.startQc(id, receivedQty, operatorName, qcType));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }
@@ -74,7 +75,8 @@ public class QcController {
                 request.getPassedQtyFraction(),
                 request.getBundlesPerPackFraction(),
                 request.getPiecesFraction(),
-                request.getStaffList()
+                request.getStaffList(),
+                request.getWasteReportList()
             ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());

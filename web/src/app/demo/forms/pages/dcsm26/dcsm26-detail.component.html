@@ -309,12 +309,21 @@
                 <i class="fas fa-print text-primary me-2"></i>เลือกเครื่อง
               </h6>
               <div class="row g-2">
-                <div class="col-md-12">
-                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🖨️ เครื่องพิมพ์</label>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🖨️
+                    เครื่องพิมพ์</label>
                   <select formControlName="machineType" class="form-select form-select-sm" style="border-radius: 6px;">
                     <option value="">-- เลือกเครื่อง --</option>
                     <option value="SM">SM</option>
                     <option value="CD">CD</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">👤 ช่างพิมพ์
+                    Os</label>
+                  <select formControlName="operatorName" class="form-select form-select-sm" style="border-radius: 6px;">
+                    <option [value]="null">-- เลือกช่างพิมพ์ --</option>
+                    <option *ngFor="let user of usersList" [value]="user.text">{{ user.text }}</option>
                   </select>
                 </div>
               </div>
@@ -328,24 +337,33 @@
               </h6>
               <div class="row g-2">
                 <div class="col-md-6 col-lg-3">
-                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🌡️ อุณหภูมิน้ำยา (°C)</label>
-                  <input type="number" formControlName="waterTemp" class="form-control form-control-sm" placeholder="ระบุ" style="border-radius: 6px;">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🌡️ อุณหภูมิน้ำยา
+                    (°C)</label>
+                  <input type="number" formControlName="waterTemp" class="form-control form-control-sm"
+                    placeholder="ระบุ" style="border-radius: 6px;">
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💧 IPA (≤10%)</label>
-                  <input type="number" formControlName="ipaValue" class="form-control form-control-sm" placeholder="ระบุ" max="10" style="border-radius: 6px;">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💧 IPA (%)</label>
+                  <input type="number" formControlName="ipaValue" class="form-control form-control-sm"
+                    placeholder="ระบุ" style="border-radius: 6px;">
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">⚡ Conductivity</label>
-                  <input type="number" formControlName="conductivity" class="form-control form-control-sm" placeholder="8000-12000" style="border-radius: 6px;">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">⚡
+                    Conductivity</label>
+                  <input type="number" formControlName="conductivity" class="form-control form-control-sm"
+                    placeholder="8000-12000" style="border-radius: 6px;">
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💨 แรงดันลม (bar)</label>
-                  <input type="number" formControlName="airPressure" class="form-control form-control-sm" placeholder="8-10" style="border-radius: 6px;">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💨 แรงดันลม
+                    (bar)</label>
+                  <input type="number" formControlName="airPressure" class="form-control form-control-sm"
+                    placeholder="8-10" style="border-radius: 6px;">
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💡 ความสว่างกระดาษ</label>
-                  <input type="number" formControlName="paperBrightness" class="form-control form-control-sm" placeholder="ระบุ" style="border-radius: 6px;">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💡
+                    ความสว่างกระดาษ</label>
+                  <input type="number" formControlName="paperBrightness" class="form-control form-control-sm"
+                    placeholder="ระบุ" style="border-radius: 6px;">
                 </div>
               </div>
             </div>
@@ -357,57 +375,85 @@
                 <i class="fas fa-fill-drip text-primary me-2"></i>ข้อมูลหมึก
               </h6>
               <div class="d-flex flex-wrap gap-2 mb-3 p-2" style="background-color: #f1f5f9; border-radius: 8px;">
-                <label class="btn btn-sm btn-outline-primary" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
-                  <input class="form-check-input me-1" type="checkbox" formControlName="hasCMYK" (change)="onInkTypeChange('CMYK')" style="margin-top: 0;">
+                <label class="btn btn-sm btn-outline-primary"
+                  style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="hasCMYK"
+                    (change)="onInkTypeChange('CMYK')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">มี CMYK</span>
                 </label>
-                <label class="btn btn-sm btn-outline-secondary" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
-                  <input class="form-check-input me-1" type="checkbox" formControlName="hasSpecial" (change)="onInkTypeChange('SPECIAL')" style="margin-top: 0;">
+                <label class="btn btn-sm btn-outline-secondary"
+                  style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="hasSpecial"
+                    (change)="onInkTypeChange('SPECIAL')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">พิเศษ</span>
                 </label>
-                <label class="btn btn-sm btn-outline-success" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
-                  <input class="form-check-input me-1" type="checkbox" formControlName="isNewInk" (change)="onInkTypeChange('NEW')" style="margin-top: 0;">
+                <label class="btn btn-sm btn-outline-success"
+                  style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="isNewInk"
+                    (change)="onInkTypeChange('NEW')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">หมึกใหม่</span>
                 </label>
-                <label class="btn btn-sm btn-outline-warning" style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
-                  <input class="form-check-input me-1" type="checkbox" formControlName="isOldInk" (change)="onInkTypeChange('OLD')" style="margin-top: 0;">
+                <label class="btn btn-sm btn-outline-warning"
+                  style="border-radius: 20px; padding: 6px 16px; cursor: pointer;">
+                  <input class="form-check-input me-1" type="checkbox" formControlName="isOldInk"
+                    (change)="onInkTypeChange('OLD')" style="margin-top: 0;">
                   <span style="font-size: 0.8rem;">หมึกเก่า</span>
                 </label>
               </div>
               <div class="row g-2" *ngIf="checklistForm.get('hasCMYK')?.value">
                 <div class="col-md-6 col-lg-3">
-                  <div class="p-2" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border-radius: 8px;">
+                  <div class="p-2"
+                    style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border-radius: 8px;">
                     <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">🔵 C</div>
                     <div class="row g-1">
-                      <div class="col-6"><input type="text" formControlName="cLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
-                      <div class="col-6"><input type="text" formControlName="cBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="cLotNo"
+                          class="form-control form-control-sm" placeholder="Lot"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="cBrand"
+                          class="form-control form-control-sm" placeholder="Brand"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <div class="p-2" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-radius: 8px;">
+                  <div class="p-2"
+                    style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); border-radius: 8px;">
                     <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">🔴 M</div>
                     <div class="row g-1">
-                      <div class="col-6"><input type="text" formControlName="mLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
-                      <div class="col-6"><input type="text" formControlName="mBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="mLotNo"
+                          class="form-control form-control-sm" placeholder="Lot"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="mBrand"
+                          class="form-control form-control-sm" placeholder="Brand"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <div class="p-2" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 8px;">
+                  <div class="p-2"
+                    style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 8px;">
                     <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">🟡 Y</div>
                     <div class="row g-1">
-                      <div class="col-6"><input type="text" formControlName="yLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
-                      <div class="col-6"><input type="text" formControlName="yBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="yLotNo"
+                          class="form-control form-control-sm" placeholder="Lot"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="yBrand"
+                          class="form-control form-control-sm" placeholder="Brand"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <div class="p-2" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); border-radius: 8px;">
+                  <div class="p-2"
+                    style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); border-radius: 8px;">
                     <div class="text-white fw-bold mb-1" style="font-size: 0.8rem;">⚫ K</div>
                     <div class="row g-1">
-                      <div class="col-6"><input type="text" formControlName="kLotNo" class="form-control form-control-sm" placeholder="Lot" style="border-radius: 4px; font-size: 0.75rem;"></div>
-                      <div class="col-6"><input type="text" formControlName="kBrand" class="form-control form-control-sm" placeholder="Brand" style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="kLotNo"
+                          class="form-control form-control-sm" placeholder="Lot"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
+                      <div class="col-6"><input type="text" formControlName="kBrand"
+                          class="form-control form-control-sm" placeholder="Brand"
+                          style="border-radius: 4px; font-size: 0.75rem;"></div>
                     </div>
                   </div>
                 </div>
@@ -423,16 +469,22 @@
                     <i class="fas fa-check-circle text-success me-2"></i>การตรวจสอบอุปกรณ์
                   </h6>
                   <div class="d-flex flex-column gap-2">
-                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
-                      <input class="form-check-input me-2" type="checkbox" formControlName="plateCondition" style="width: 18px; height: 18px;">
+                    <label class="d-flex align-items-center p-2 rounded"
+                      style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="plateCondition"
+                        style="width: 18px; height: 18px;">
                       <span style="font-size: 0.85rem;">เพลทสภาพสมบูรณ์</span>
                     </label>
-                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
-                      <input class="form-check-input me-2" type="checkbox" formControlName="rubberCondition" style="width: 18px; height: 18px;">
+                    <label class="d-flex align-items-center p-2 rounded"
+                      style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="rubberCondition"
+                        style="width: 18px; height: 18px;">
                       <span style="font-size: 0.85rem;">ยางไม่แข็ง / ไม่ลื่น</span>
                     </label>
-                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
-                      <input class="form-check-input me-2" type="checkbox" formControlName="cleanedBed" style="width: 18px; height: 18px;">
+                    <label class="d-flex align-items-center p-2 rounded"
+                      style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="cleanedBed"
+                        style="width: 18px; height: 18px;">
                       <span style="font-size: 0.85rem;">ล้างแท่นก่อนรันแล้ว</span>
                     </label>
                   </div>
@@ -447,20 +499,28 @@
                     <i class="fas fa-palette text-info me-2"></i>เทียบสีจาก
                   </h6>
                   <div class="d-flex flex-column gap-2">
-                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
-                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchProof" style="width: 18px; height: 18px;">
+                    <label class="d-flex align-items-center p-2 rounded"
+                      style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchProof"
+                        style="width: 18px; height: 18px;">
                       <span style="font-size: 0.85rem;">ใบปรู๊ฟ</span>
                     </label>
-                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
-                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchDigital" style="width: 18px; height: 18px;">
+                    <label class="d-flex align-items-center p-2 rounded"
+                      style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchDigital"
+                        style="width: 18px; height: 18px;">
                       <span style="font-size: 0.85rem;">ไฟล์ดิจิทัล</span>
                     </label>
-                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
-                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchPrevious" style="width: 18px; height: 18px;">
+                    <label class="d-flex align-items-center p-2 rounded"
+                      style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorMatchPrevious"
+                        style="width: 18px; height: 18px;">
                       <span style="font-size: 0.85rem;">งานเดิม</span>
                     </label>
-                    <label class="d-flex align-items-center p-2 rounded" style="background-color: #f1f5f9; cursor: pointer;">
-                      <input class="form-check-input me-2" type="checkbox" formControlName="colorNotSerious" style="width: 18px; height: 18px;">
+                    <label class="d-flex align-items-center p-2 rounded"
+                      style="background-color: #f1f5f9; cursor: pointer;">
+                      <input class="form-check-input me-2" type="checkbox" formControlName="colorNotSerious"
+                        style="width: 18px; height: 18px;">
                       <span style="font-size: 0.85rem;">ลูกค้าไม่ซีเรียสสี</span>
                     </label>
                   </div>
@@ -533,13 +593,21 @@
                 <i class="fas fa-print text-primary me-2"></i>เลือกเครื่อง
               </h6>
               <div class="row g-2">
-                <div class="col-md-12">
+                <div class="col-md-6">
                   <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🖨️
                     เครื่องพิมพ์</label>
                   <select formControlName="machineType" class="form-select form-select-sm" style="border-radius: 6px;">
                     <option value="">-- เลือกเครื่อง --</option>
                     <option value="SM">SM</option>
                     <option value="CD">CD</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">👤 ช่างพิมพ์
+                    Os</label>
+                  <select formControlName="operatorName" class="form-select form-select-sm" style="border-radius: 6px;">
+                    <option [value]="null">-- เลือกช่างพิมพ์ --</option>
+                    <option *ngFor="let user of usersList" [value]="user.text">{{ user.text }}</option>
                   </select>
                 </div>
               </div>
@@ -560,9 +628,9 @@
                     placeholder="ระบุ" style="border-radius: 6px;">
                 </div>
                 <div class="col-md-6 col-lg-3">
-                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💧 IPA (≤10%)</label>
+                  <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">💧 IPA (%)</label>
                   <input type="number" formControlName="ipaValue" class="form-control form-control-sm"
-                    placeholder="ระบุ" max="10" style="border-radius: 6px;">
+                    placeholder="ระบุ" style="border-radius: 6px;">
                 </div>
                 <div class="col-md-6 col-lg-3">
                   <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">⚡
@@ -776,9 +844,8 @@
           <i class="fas fa-check me-2"></i>เริ่มพิมพ์ส่งลูกค้า
         </button>
         <!-- PROOFCOMPLETED → ลูกค้าอนุมัติแล้ว พิมพ์จริง -->
-        <button
-          *ngIf="printingForm.get('jobStatus')?.value === 'PROOFCOMPLETED'"
-          type="button" class="btn" (click)="submitChecklist('inPrint')"
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'PROOFCOMPLETED'" type="button" class="btn"
+          (click)="submitChecklist('inPrint')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-print me-2"></i>ยืนยันเริ่มพิมพ์จริง
         </button>

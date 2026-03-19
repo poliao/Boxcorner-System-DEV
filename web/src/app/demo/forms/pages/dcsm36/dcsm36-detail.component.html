@@ -50,7 +50,7 @@
               <input type="text" class="form-control bg-light text-primary fw-bold" formControlName="status" readonly>
             </div>
             <div class="col-12 col-md-4 col-lg-2">
-              <label class="form-label fw-bold">เลขที่ใบส่งของ (Product Job Id)</label>
+              <label class="form-label fw-bold">เลขที่ใบส่งของ</label>
               <input type="text" class="form-control bg-light" formControlName="productJobId" readonly>
             </div>
             <div class="col-12 col-md-4 col-lg-2">
@@ -87,7 +87,7 @@
               <label class="form-label fw-bold">จำนวนชิ้น(เศษ)</label>
               <input type="text" class="form-control bg-light" formControlName="piecesFraction" readonly>
             </div>
-            
+
             <div class="col-12 col-lg-6">
               <label class="form-label fw-bold">ชื่องาน</label>
               <input type="text" class="form-control bg-light" formControlName="jobName" readonly>
@@ -100,6 +100,10 @@
             <div class="col-12 col-md-6 col-lg-2">
               <label class="form-label fw-bold text-muted small">อัพเดตล่าสุด</label>
               <input type="text" class="form-control bg-light text-muted small" formControlName="updatedAt" readonly>
+            </div>
+            <div class="col-12 col-lg-2">
+              <label class="form-label fw-bold">ประเภทQC</label>
+              <input type="text" class="form-control bg-light" formControlName="qcType" readonly>
             </div>
           </div>
         </form>
@@ -179,70 +183,156 @@
           <input type="number" id="modalPassedQty" class="form-control" placeholder="จำนวนห่อเต็ม">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">จำนวนชิ้นต่อแพค</label>
-          <input type="number" id="modalBoxesPerBundle" class="form-control" placeholder="จำนวนชิ้นต่อแพค">
+          <label class="form-label fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนดวงต่อแผ่น' :
+            'จำนวนชิ้นต่อแพค' }}</label>
+          <input type="number" id="modalBoxesPerBundle" class="form-control"
+            placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนดวงต่อแผ่น' : 'จำนวนชิ้นต่อแพค' }}">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">จำนวนแพคต่อห่อ</label>
-          <input type="number" id="modalBundlesPerPack" class="form-control" placeholder="จำนวนแพคต่อห่อ">
+          <label class="form-label fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ' :
+            'จำนวนแพคต่อห่อ' }}</label>
+          <input type="number" id="modalBundlesPerPack" class="form-control"
+            placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ' : 'จำนวนแพคต่อห่อ' }}">
         </div>
         <div class="col-12 col-md-4">
           <label class="form-label fw-bold">จำนวนห่อ(เศษ)</label>
           <input type="number" id="modalPassedQtyFraction" class="form-control" placeholder="จำนวนห่อเศษ">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">จำนวนแพคต่อห่อ(เศษ)</label>
-          <input type="number" id="modalBundlesPerPackFraction" class="form-control" placeholder="จำนวนแพคต่อห่อเศษ">
+          <label class="form-label fw-bold"> {{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ(เศษ)' :
+            'จำนวนแพคต่อห่อ(เศษ)' }}</label>
+          <input type="number" id="modalBundlesPerPackFraction" class="form-control"
+            placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ(เศษ)' : 'จำนวนแพคต่อห่อ(เศษ)' }}">
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" *ngIf="qcJobForm.get('qcType')?.value != 'QC STK'">
           <label class="form-label fw-bold">จำนวนชิ้น(เศษ)</label>
-          <input type="number" id="modalPiecesFraction" class="form-control" placeholder="จำนวนชิ้นเศษ">
+          <input type="number" id="modalPiecesFraction" class="form-control" placeholder="จำนวนชิ้น(เศษ)">
         </div>
       </div>
 
       <hr>
-      <h6 class="fw-bold mb-3">พนักงานQC/กรอกจำนวนห่อที่QC</h6>
-      <div class="staff-row mb-3 pb-3 border-bottom" *ngFor="let staff of qcStaffList; let i = index">
-        <div class="row g-2 align-items-end">
-          <div class="col-12 col-md-3">
-            <label class="form-label small fw-bold">ผู้ QC</label>
-            <select class="form-select" [(ngModel)]="staff.userId" (change)="onStaffUserChange(i, $event)">
-              <option value="">เลือกพนักงาน</option>
-              <option *ngFor="let user of usersList" [value]="user.value">{{user.text}}</option>
-            </select>
-          </div>
-          <div class="col-5 col-md-2">
-            <label class="form-label small fw-bold">จำนวนห่อ</label>
-            <input type="number" class="form-control" [(ngModel)]="staff.packs" placeholder="ห่อ">
-          </div>
-          <div class="col-5 col-md-2">
-            <label class="form-label small fw-bold">จำนวนห่อ(เศษ)</label>
-            <input type="number" class="form-control" [(ngModel)]="staff.packsFraction" placeholder="ห่อ">
-          </div>
-          <div class="col-5 col-md-2">
-            <label class="form-label small fw-bold">จำนวนแพค(เศษ)</label>
-            <input type="number" class="form-control" [(ngModel)]="staff.bundlesFraction" placeholder="แพค">
-          </div>
-          <div class="col-5 col-md-2">
-            <label class="form-label small fw-bold">จำนวนชิ้น(เศษ)</label>
-            <input type="number" class="form-control" [(ngModel)]="staff.piecesFraction" placeholder="ชิ้น">
-          </div>
-          <div class="col-2 col-md-1 text-end">
-            <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeStaffRow(i)"
-              [disabled]="qcStaffList.length === 1">
-              <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
-            </button>
+      <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+          <a class="nav-link cursor-pointer" [class.active]="activeTab === 'staff'" (click)="activeTab = 'staff'">พนักงาน QC</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link cursor-pointer" [class.active]="activeTab === 'waste'" (click)="activeTab = 'waste'">รายงานความผิดพลาด</a>
+        </li>
+      </ul>
+
+      <div *ngIf="activeTab === 'staff'">
+        <h6 class="fw-bold mb-3">พนักงานQC/กรอกจำนวนห่อที่QC</h6>
+        <div class="staff-row mb-3 pb-3 border-bottom" *ngFor="let staff of qcStaffList; let i = index">
+          <div class="row g-2 align-items-end">
+            <div class="col-12 col-md-3">
+              <label class="form-label small fw-bold">ผู้ QC</label>
+              <select class="form-select" [(ngModel)]="staff.userId" (change)="onStaffUserChange(i, $event)">
+                <option value="">เลือกพนักงาน</option>
+                <option *ngFor="let user of usersList" [value]="user.value">{{user.text}}</option>
+              </select>
+            </div>
+            <div class="col-5 col-md-2">
+              <label class="form-label small fw-bold">จำนวนห่อ </label>
+              <input type="number" class="form-control" [(ngModel)]="staff.packs" placeholder="ห่อ">
+            </div>
+            <div class="col-5 col-md-2">
+              <label class="form-label small fw-bold">จำนวนห่อ(เศษ)</label>
+              <input type="number" class="form-control" [(ngModel)]="staff.packsFraction" placeholder="ห่อ(เศษ)">
+            </div>
+            <div class="col-5 col-md-2">
+              <label class="form-label small fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่น(เศษ)' :
+                'จำนวนแพค(เศษ)' }}</label>
+              <input type="number" class="form-control" [(ngModel)]="staff.bundlesFraction" placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'แผ่น(เศษ)' :
+                'แพค(เศษ)' }}">
+            </div>
+            <div class="col-5 col-md-2" *ngIf="qcJobForm.get('qcType')?.value != 'QC STK'">
+              <label class="form-label small fw-bold">จำนวนชิ้น(เศษ)</label>
+              <input type="number" class="form-control" [(ngModel)]="staff.piecesFraction" placeholder="ดวง/ชิ้น">
+            </div>
+            <div class="col-2 col-md-1 text-end">
+              <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeStaffRow(i)"
+                [disabled]="qcStaffList.length === 1">
+                <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
+              </button>
+            </div>
           </div>
         </div>
+        <button mat-stroked-button color="primary" class="w-100 mt-2" (click)="addStaffRow()">
+          <mat-icon>add</mat-icon> เพิ่มคน
+        </button>
       </div>
 
-      <button mat-stroked-button color="primary" class="w-100 mt-2" (click)="addStaffRow()">
-        <mat-icon>add</mat-icon> เพิ่มคน
-      </button>
+      <div *ngIf="activeTab === 'waste'">
+        <h6 class="fw-bold mb-3">รายงานของเสียรายแผนก</h6>
+        <div class="waste-row mb-3 pb-3 border-bottom" *ngFor="let waste of qcWasteList; let i = index">
+          <div class="row g-2 align-items-end">
+            <div class="col-12 col-md-3">
+              <label class="form-label small fw-bold">แผนก/งาน</label>
+              <select class="form-select" [(ngModel)]="waste.processName">
+                <option value="">เลือกงาน</option>
+                <option value="งานพิมพ์">งานพิมพ์</option>
+                <option value="งานเคลือบ">งานเคลือบ</option>
+                <option value="งานปั้ม">งานปั้ม</option>
+                <option value="งานปะ">งานปะ</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label small fw-bold">ช่างยอดที่เสีย</label>
+              <input type="text" class="form-control" [(ngModel)]="waste.technicianName" placeholder="ชื่อช่าง">
+            </div>
+            <div class="col-4 col-md-2">
+              <label class="form-label small fw-bold">จำนวนเสีย</label>
+              <input type="number" class="form-control" [(ngModel)]="waste.wasteQty" placeholder="จำนวน">
+            </div>
+            <div class="col-10 col-md-3">
+              <label class="form-label small fw-bold">หมายเหตุ</label>
+              <input type="text" class="form-control" [(ngModel)]="waste.remarks" placeholder="ระบุเหตุผล">
+            </div>
+            <div class="col-2 col-md-1 text-end">
+              <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeWasteRow(i)"
+                [disabled]="qcWasteList.length === 1">
+                <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button mat-stroked-button color="accent" class="w-100 mt-2" (click)="addWasteRow()">
+          <mat-icon>add_circle</mat-icon> เพิ่มรายการของเสีย
+        </button>
+      </div>
     </div>
     <div class="modal-footer">
       <button mat-button class="me-2" (click)="closeCompleteModal()">ยกเลิก</button>
       <button mat-flat-button color="primary" (click)="onSubmitComplete()">บันทึกข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="isStartModalOpen">
+  <div class="modal-container" style="max-width: 500px;">
+    <div class="modal-header">
+      <h5 class="mb-0">เริ่ม QC</h5>
+      <button type="button" class="btn-close" (click)="closeStartModal()"></button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-4">
+        <label class="form-label fw-bold">ประเภท QC</label>
+        <select class="form-select" [(ngModel)]="selectedQcType">
+          <option value="ปะ+QC">ปะ+QC</option>
+          <option value="QC BOX">QC BOX</option>
+          <option value="QC STK">QC STK</option>
+          <option value="ปะมือ">ปะมือ</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">จำนวนที่รับมา</label>
+        <input type="number" class="form-control" [(ngModel)]="modalReceivedQty"
+          [disabled]="qcJobForm.get('receivedQty')?.value > 0" placeholder="กรอกจำนวนที่รับมา">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button mat-button class="me-2" (click)="closeStartModal()">ยกเลิก</button>
+      <button mat-flat-button color="primary" (click)="onSubmitStart()">เริ่ม QC</button>
     </div>
   </div>
 </div>
