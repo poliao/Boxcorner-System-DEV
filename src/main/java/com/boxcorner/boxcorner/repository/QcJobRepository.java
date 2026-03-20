@@ -18,10 +18,10 @@ public interface QcJobRepository extends JpaRepository<QcJob, Integer> {
            "(:jobName IS NULL OR q.jobName LIKE %:jobName%) AND " +
            "(:status IS NULL OR q.status = :status) AND " +
            "(:qcType IS NULL OR q.qcType = :qcType) AND " +
-           "(:startFrom IS NULL OR q.startQcDatetime >= :startFrom) AND " +
-           "(:startTo IS NULL OR q.startQcDatetime <= :startTo) AND " +
-           "(:deliveryFrom IS NULL OR q.deliveryDatetime >= :deliveryFrom) AND " +
-           "(:deliveryTo IS NULL OR q.deliveryDatetime <= :deliveryTo)")
+           "(CAST(:startFrom AS DATE) IS NULL OR q.startQcDatetime >= :startFrom) AND " +
+           "(CAST(:startTo AS DATE) IS NULL OR q.startQcDatetime <= :startTo) AND " +
+           "(CAST(:deliveryFrom AS DATE) IS NULL OR q.deliveryDatetime >= :deliveryFrom) AND " +
+           "(CAST(:deliveryTo AS DATE) IS NULL OR q.deliveryDatetime <= :deliveryTo)")
     Page<QcJob> findByFilters(
         @Param("joId") String joId,
         @Param("jobName") String jobName,
