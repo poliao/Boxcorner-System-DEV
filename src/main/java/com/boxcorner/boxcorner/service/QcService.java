@@ -62,7 +62,7 @@ public class QcService {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
-        qcJob.setStatus("กำลังQC");
+        qcJob.setStatus("กำลังตรวจ");
         qcJob.setReceivedQty(receivedQty);
         qcJob.setQcType(qcType);
 
@@ -87,7 +87,8 @@ public class QcService {
             LocalDate startFrom, LocalDate startTo,
             LocalDate deliveryFrom, LocalDate deliveryTo,
             org.springframework.data.domain.Pageable pageable) {
-        return qcJobRepository.findByFilters(joId, jobName, status, qcType, startFrom, startTo, deliveryFrom, deliveryTo, pageable);
+        return qcJobRepository.findByFilters(joId, jobName, status, qcType, startFrom, startTo, deliveryFrom,
+                deliveryTo, pageable);
     }
 
     public QcJob getQcJobById(Integer id) {

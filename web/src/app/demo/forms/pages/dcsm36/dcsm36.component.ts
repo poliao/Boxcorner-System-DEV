@@ -25,11 +25,12 @@ export class Dcsm36Component implements OnInit {
     { key: 'id', label: 'ลำดับ' },
     { key: 'joId', label: 'JOB ID' },
     { key: 'jobName', label: 'ชื่องาน' },
-    { key: 'status', label: 'สถานะ QC', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
     { key: 'qcDetail', label: 'ความละเอียด QC' },
     { key: 'qcType', label: 'ประเภท QC' },
     { key: 'startQcDatetime', label: 'วันที่งานเข้า' },
-    { key: 'deliveryDatetime', label: 'กำหนดส่ง' }
+    { key: 'deliveryDatetime', label: 'กำหนดส่ง' },
+    { key: 'status', label: 'สถานะ QC', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+
   ];
 
   tableData: any[] = [];

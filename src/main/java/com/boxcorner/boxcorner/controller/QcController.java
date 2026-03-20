@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.controller;
 
 import com.boxcorner.boxcorner.entity.QcJob;
+import com.boxcorner.boxcorner.entity.dto.CompleteQcRequest;
 import com.boxcorner.boxcorner.service.QcService;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +43,8 @@ public class QcController {
             @RequestParam(value = "deliveryTo", required = false) java.time.LocalDate deliveryTo) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-            return ResponseEntity.ok(qcService.getAllQcJobs(joId, jobName, status, qcType, startFrom, startTo, deliveryFrom, deliveryTo, pageable));
+            return ResponseEntity.ok(qcService.getAllQcJobs(joId, jobName, status, qcType, startFrom, startTo,
+                    deliveryFrom, deliveryTo, pageable));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }
@@ -73,19 +75,18 @@ public class QcController {
     }
 
     @PostMapping("/complete")
-    public ResponseEntity<?> completeQc(@RequestBody com.boxcorner.boxcorner.entity.dto.CompleteQcRequest request) {
+    public ResponseEntity<?> completeQc(@RequestBody CompleteQcRequest request) {
         try {
             return ResponseEntity.ok(qcService.completeQc(
-                request.getId(), 
-                request.getPassedQty(), 
-                request.getBundlesPerPack(), 
-                request.getBoxesPerBundle(),
-                request.getPassedQtyFraction(),
-                request.getBundlesPerPackFraction(),
-                request.getPiecesFraction(),
-                request.getStaffList(),
-                request.getWasteReportList()
-            ));
+                    request.getId(),
+                    request.getPassedQty(),
+                    request.getBundlesPerPack(),
+                    request.getBoxesPerBundle(),
+                    request.getPassedQtyFraction(),
+                    request.getBundlesPerPackFraction(),
+                    request.getPiecesFraction(),
+                    request.getStaffList(),
+                    request.getWasteReportList()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }

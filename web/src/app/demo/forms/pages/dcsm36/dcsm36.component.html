@@ -7,20 +7,20 @@
           <div class="col-md-3">
             <label class="form-label small fw-bold">JOB ID</label>
             <input type="text" class="form-control" [(ngModel)]="searchParams.joId" name="joId"
-                   placeholder="ค้นหา Job ID" (keyup.enter)="onSearchChange()">
+              placeholder="ค้นหา Job ID" (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold">ชื่องาน</label>
             <input type="text" class="form-control" [(ngModel)]="searchParams.jobName" name="jobName"
-                   placeholder="ค้นหา ชื่องาน" (keyup.enter)="onSearchChange()">
+              placeholder="ค้นหา ชื่องาน" (keyup.enter)="onSearchChange()">
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold">สถานะ QC</label>
             <select class="form-select" [(ngModel)]="searchParams.status" name="status" (change)="onSearchChange()">
               <option value="">ทั้งหมด</option>
-              <option value="รอQC">รอQC</option>
-              <option value="ส่งQC">ส่งQC</option>
-              <option value="กำลังQC">กำลังQC</option>
+              <option value="รอส่งตรวจ">รอส่งตรวจ</option>
+              <option value="รอตรวจ">รอตรวจ</option>
+              <option value="กำลังตรวจ">กำลังตรวจ</option>
               <option value="เสร็จสิ้น">เสร็จสิ้น</option>
             </select>
           </div>
@@ -28,45 +28,45 @@
             <label class="form-label small fw-bold">ประเภท QC</label>
             <select class="form-select" [(ngModel)]="searchParams.qcType" name="qcType" (change)="onSearchChange()">
               <option value="">ทั้งหมด</option>
-              <option value="ปะ+QC">ปะ+QC</option>
-              <option value="QC BOX">QC BOX</option>
-              <option value="QC STK">QC STK</option>
-              <option value="ปะมือ">ปะมือ</option>
+              <option value="ปะเครื่อง+Qc">ปะเครื่อง+Qc</option>
+              <option value="ปะมือ+Qc">ปะมือ+Qc</option>
+              <option value="Qc Box">Qc Box</option>
+              <option value="Qc STK">Qc STK</option>
             </select>
           </div>
 
           <div class="col-md-3">
             <label class="form-label small fw-bold">วันที่งานเข้า (จาก)</label>
             <input type="date" class="form-control" [(ngModel)]="searchParams.startFrom" name="startFrom"
-                   (change)="onSearchChange()">
+              (change)="onSearchChange()">
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold">วันที่งานเข้า (ถึง)</label>
             <input type="date" class="form-control" [(ngModel)]="searchParams.startTo" name="startTo"
-                   (change)="onSearchChange()">
+              (change)="onSearchChange()">
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold">กำหนดส่ง (จาก)</label>
             <input type="date" class="form-control" [(ngModel)]="searchParams.deliveryFrom" name="deliveryFrom"
-                   (change)="onSearchChange()">
+              (change)="onSearchChange()">
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-bold">กำหนดส่ง (ถึง)</label>
             <input type="date" class="form-control" [(ngModel)]="searchParams.deliveryTo" name="deliveryTo"
-                   (change)="onSearchChange()">
+              (change)="onSearchChange()">
           </div>
 
           <div class="col-12 mt-2">
             <div class="row g-2 justify-content-end">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <button mat-flat-button type="button" class="w-100 px-4" style="background-color: #003747;"
-                        (click)="onSearchChange()">
+                  (click)="onSearchChange()">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <button mat-stroked-button type="button" class="w-100 px-4" (click)="clearAllFilters()"
-                        style="color: #003747;">
+                  style="color: #003747;">
                   <mat-icon>refresh</mat-icon> ล้างค่า
                 </button>
               </div>
@@ -77,15 +77,8 @@
     </div>
   </div>
 
-  <app-data-table 
-    [headerStyle]="'background: #003747; color: #ffffff;'" 
-    [columns]="tableColumns" 
-    [data]="tableData"
-    [totalElements]="totalElements" 
-    [pageSize]="pageSize" 
-    [pageIndex]="pageIndex" 
-    [clickableColumn]="'id'"
-    (pageChange)="onPageChange($event)" 
-    (rowClick)="onRowClick($event)">
+  <app-data-table [headerStyle]="'background: #003747; color: #ffffff;'" [columns]="tableColumns" [data]="tableData"
+    [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" [clickableColumn]="'id'"
+    (pageChange)="onPageChange($event)" (rowClick)="onRowClick($event)">
   </app-data-table>
 </div>

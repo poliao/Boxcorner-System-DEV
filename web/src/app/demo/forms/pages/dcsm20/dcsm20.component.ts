@@ -64,6 +64,7 @@ export class Dcsm20Component implements OnInit {
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
     { key: 'jobId', label: 'JOB ID' },
+    { key: 'customerJobName', label: 'ชื่อลูกค้า' },
     { key: 'printingDate', label: 'วันที่ส่งพิมพ์', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },
     { key: 'printingResponsible', label: 'พิมพ์ที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },
     { key: 'coatingDate', label: 'วันที่ส่งเคลือบ', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #ffc107; color: black;' },
@@ -240,7 +241,7 @@ export class Dcsm20Component implements OnInit {
     if (status === 'กำลังเคลือบ') highlightUntil = 1;
     else if (status === 'กำลังปั้ม') highlightUntil = 3;
     else if (status === 'กำลังปะ') highlightUntil = 5;
-    else if (status === 'เริ่มQc') highlightUntil = 7;
+    else if (status === 'ส่งQc') highlightUntil = 7;
     else if (status === 'กำลังQc') highlightUntil = 7;
     else if (status === 'เสร็จสิ้น') highlightUntil = 8;
 

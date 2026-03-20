@@ -77,6 +77,8 @@ export class StatusColorService {
       case 'เริ่มQc': return 'rgb(83, 0, 56)'; // สีเทา
       case 'กำลังส่ง': return '#ff05acff'; // สีเทา
       case 'จัดส่งเรียบร้อย': return '#00af0fff';
+      case 'ส่งQc': return 'rgb(83, 0, 56)';
+
 
       case 'PENDING': return '#ff9800'; // สีส้ม
       case 'IN_PROGRESS': return '#cddb00ff';
@@ -88,9 +90,9 @@ export class StatusColorService {
       case 'PROOF': return '#449490ff';
       case 'PROOFCOMPLETED': return '#00312fff';
 
-      case 'รอQC': return '#3f3f3fff';
-      case 'ส่งQC': return '#c76a00ff';
-      case 'กำลังQC': return '#b6a024ff';
+      case 'รอส่งตรวจ': return '#3f3f3fff';
+      case 'รอตรวจ': return '#c76a00ff';
+      case 'กำลังตรวจ': return '#b6a024ff';
       case 'เสร็จสิ้น': return '#0fb900ff';
 
       default: return '#9e9e9e'; // สีเทาเป็นค่าเริ่มต้น

@@ -25,7 +25,7 @@ export class Dcsm36DetailComponent implements OnInit {
   isLoading = false;
   isCompleteModalOpen = false;
   isStartModalOpen = false;
-  selectedQcType = 'ปะ+QC';
+  selectedQcType = null;
   modalReceivedQty: number | null = null;
   usersList: any[] = [
     {
@@ -194,7 +194,6 @@ export class Dcsm36DetailComponent implements OnInit {
 
   closeStartModal() {
     this.isStartModalOpen = false;
-    this.selectedQcType = null;
     this.modalReceivedQty = null;
   }
 
@@ -207,9 +206,8 @@ export class Dcsm36DetailComponent implements OnInit {
     const operatorName = this.authService.getFullName();
     this.loadingService.show();
 
-    this.dcsm36Service.startQc(this.jobId!, this.modalReceivedQty, operatorName, this.selectedQcType).subscribe({
+    this.dcsm36Service.startQc(this.jobId!, this.modalReceivedQty, operatorName, this.qcJobForm.getRawValue().qcType).subscribe({
       next: () => {
-        this.updateQcStatusProductionJob(this.selectedQcType);
         this.sweetAlert.success('สำเร็จ', 'เริ่มงาน QC เรียบร้อยแล้ว');
         this.closeStartModal();
         this.loadJobDetails(this.jobId!);
@@ -264,14 +262,9 @@ export class Dcsm36DetailComponent implements OnInit {
     const passedQtyInput = document.getElementById('modalPassedQty') as HTMLInputElement;
     const bundlesInput = document.getElementById('modalBundlesPerPack') as HTMLInputElement;
     const boxesInput = document.getElementById('modalBoxesPerBundle') as HTMLInputElement;
-
     const passedQtyFractionInput = document.getElementById('modalPassedQtyFraction') as HTMLInputElement;
     const bundlesPerPackFractionInput = document.getElementById('modalBundlesPerPackFraction') as HTMLInputElement;
     const piecesFractionInput = document.getElementById('modalPiecesFraction') as HTMLInputElement;
-
-
-
-
 
     for (let i = 0; i < this.qcStaffList.length; i++) {
       if (!this.qcStaffList[i].userName) {

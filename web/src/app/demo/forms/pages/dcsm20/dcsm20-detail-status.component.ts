@@ -490,10 +490,10 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   saveQcJob() {
     this.papOrder
     const data = {
-      status: 'รอQC',
+      status: 'รอส่งตรวจ',
       joId: this.productionForm.getRawValue().jobId,
       jobName: this.productionForm.getRawValue().customerJobName,
-      responsibleName: 'รอส่งQC',
+      responsibleName: 'รอส่งตรวจ',
       deliveryDatetime: this.productionForm.getRawValue().qcDate,
       productJobId: this.productionForm.getRawValue().id,
       papOrderId: this.productionForm.getRawValue().papOrderId,
