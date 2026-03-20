@@ -543,6 +543,7 @@ export class Dcsm02DetailComponent implements OnInit {
       print2Page: this.print2Page.value,
       qtId: this.designForm.getRawValue().qtId,
       qpId: this.designForm.getRawValue().qpId,
+      qcType: null,
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',

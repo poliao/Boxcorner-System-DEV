@@ -31,7 +31,15 @@ export class Dcsm36Service {
       page: page.toString(),
       size: size.toString(),
       startDate: filters.startDate || null,
-      endDate: filters.endDate || null
+      endDate: filters.endDate || null,
+      joId: filters.joId || null,
+      jobName: filters.jobName || null,
+      status: filters.status || null,
+      qcType: filters.qcType || null,
+      startFrom: filters.startFrom || null,
+      startTo: filters.startTo || null,
+      deliveryFrom: filters.deliveryFrom || null,
+      deliveryTo: filters.deliveryTo || null
     };
     Object.keys(params).forEach(key => {
       if (params[key] === null || params[key] === '') {

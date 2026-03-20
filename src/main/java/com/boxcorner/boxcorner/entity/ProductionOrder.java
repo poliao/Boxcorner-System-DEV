@@ -111,6 +111,9 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "print2_page")
     private Boolean print2Page;
 
+    @Column(name = "qc_type", length = 100)
+    private String qcType;
+
     @Column(name = "created_time", updatable = false)
     private LocalTime createdTime;
 }

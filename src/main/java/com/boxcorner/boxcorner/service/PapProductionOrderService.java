@@ -21,6 +21,11 @@ public class PapProductionOrderService {
     }
 
     @Transactional
+    public PapProductionOrder getByJobCode(String jobCode) {
+        return repository.findByJobCode(jobCode).orElseThrow(() -> new IllegalArgumentException("PapProductionOrder not found with Job Code: " + jobCode));
+    }
+
+    @Transactional
     public PapProductionOrder getByJobId(String jobId) {
         return repository.findByJobCode(jobId).orElseThrow(() -> new IllegalArgumentException("PapProductionOrder not found with Job ID: " + jobId));
     }

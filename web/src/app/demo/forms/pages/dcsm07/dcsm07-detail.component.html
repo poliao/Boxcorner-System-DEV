@@ -113,6 +113,17 @@
             <option value="Supplier">Supplier</option>
           </select>
         </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ประเภทQC<span style="color: red;">*</span></label>
+          <select formControlName="qcType" class="form-control form-select">
+            <option value="" disabled selected>-- เลือกประเภทQC --</option>
+            <option value="ปะเครื่อง+Qc">ปะเครื่อง+Qc</option>
+            <option value="ปะมือ+Qc">ปะมือ+Qc</option>
+            <option value="Qc Box">Qc Box</option>
+            <option value="Qc STK">Qc STK</option>
+          </select>
+        </div>
+
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
           <input type="text" formControlName="customerName" class="form-control">

@@ -27,10 +27,44 @@ export class Dcsm36DetailComponent implements OnInit {
   isStartModalOpen = false;
   selectedQcType = 'ปะ+QC';
   modalReceivedQty: number | null = null;
-  usersList: any[] = [];
+  usersList: any[] = [
+    {
+      text: 'ต้อย',
+    },
+    {
+      text: 'ชื่นกมล',
+    },
+    {
+      text: 'รัตนา',
+    },
+    {
+      text: 'กาหลง',
+    },
+    {
+      text: 'รุ่งทิวา',
+    },
+    {
+      text: 'Ma Pwar',
+    },
+    {
+      text: 'Tham Htay Myint',
+    },
+    {
+      text: 'Lumba',
+    },
+    {
+      text: 'โอเมี๊ยะทุน',
+    },
+    {
+      text: 'มุกดา',
+    },
+    {
+      text: 'ศศิธร'
+    }
+  ];
   activeTab: 'staff' | 'waste' = 'staff';
   qcWasteList: any[] = [];
-  qcStaffList: any[] = [{ userId: '', userName: '', packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
+  qcStaffList: any[] = [{ userName: '', packs: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
 
   constructor(
     private fb: FormBuilder,
@@ -49,7 +83,6 @@ export class Dcsm36DetailComponent implements OnInit {
       if (idStr) {
         this.jobId = +idStr;
         this.loadJobDetails(this.jobId);
-        this.loadUsers();
       }
     });
   }
@@ -72,8 +105,10 @@ export class Dcsm36DetailComponent implements OnInit {
       bundlesPerPackFraction: [null],
       piecesFraction: [null],
       qcType: [null],
+      startQcDatetime: [null],
       createdAt: [null],
-      updatedAt: [null]
+      updatedAt: [null],
+      qcDetail: [null]
     });
 
     this.papOrderForm = this.fb.group({
@@ -134,18 +169,6 @@ export class Dcsm36DetailComponent implements OnInit {
       return dateStr;
     }
   }
-
-  loadUsers() {
-    this.dcsm36Service.getAllUsers().subscribe({
-      next: (users) => {
-        this.usersList = users;
-      },
-      error: (err) => {
-        console.error('Error loading users', err);
-      }
-    });
-  }
-
   loadPapOrderDetails(papOrderId: string) {
     const numericId = parseInt(papOrderId, 10);
     if (isNaN(numericId)) {
@@ -202,7 +225,7 @@ export class Dcsm36DetailComponent implements OnInit {
   completeQc() {
     this.isCompleteModalOpen = true;
     this.activeTab = 'staff';
-    this.qcStaffList = [{ userId: null, userName: null, packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
+    this.qcStaffList = [{ userName: null, packs: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
     this.qcWasteList = [{ processName: null, wasteQty: null, remarks: null }];
   }
 
@@ -211,7 +234,7 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   addStaffRow() {
-    this.qcStaffList.push({ userId: null, userName: null, packs: null, bundles: null, packsFraction: null, bundlesFraction: null, piecesFraction: null });
+    this.qcStaffList.push({ userName: null, packs: null, packsFraction: null, bundlesFraction: null, piecesFraction: null });
   }
 
   removeStaffRow(index: number) {
@@ -230,13 +253,11 @@ export class Dcsm36DetailComponent implements OnInit {
     }
   }
 
-  onStaffUserChange(index: number, event: any) {
-    const userId = event.target.value;
-    const user = this.usersList.find(u => u.value === userId);
-    if (user) {
-      this.qcStaffList[index].userId = parseInt(userId, 10);
-      this.qcStaffList[index].userName = user.text;
-    }
+
+  private parseNumber(value: any): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const num = parseInt(value, 10);
+    return isNaN(num) ? null : num;
   }
 
   onSubmitComplete() {
@@ -248,51 +269,45 @@ export class Dcsm36DetailComponent implements OnInit {
     const bundlesPerPackFractionInput = document.getElementById('modalBundlesPerPackFraction') as HTMLInputElement;
     const piecesFractionInput = document.getElementById('modalPiecesFraction') as HTMLInputElement;
 
-    const passedQty = parseInt(passedQtyInput.value, 10);
-    const bundlesPerPack = parseInt(bundlesInput.value, 10);
-    const boxesPerBundle = parseInt(boxesInput.value, 10);
 
-    const passedQtyFraction = parseInt(passedQtyFractionInput?.value, 10) || 0;
-    const bundlesPerPackFraction = parseInt(bundlesPerPackFractionInput?.value, 10) || 0;
-    const piecesFraction = parseInt(piecesFractionInput?.value, 10) || 0;
 
-    if (isNaN(passedQty) || passedQty < 0) {
-      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนห่อเต็มที่ถูกต้อง');
-      return;
-    }
-    if (isNaN(bundlesPerPack) || bundlesPerPack <= 0) {
-      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนแพคต่อห่อที่ถูกต้อง');
-      return;
-    }
-    if (isNaN(boxesPerBundle) || boxesPerBundle <= 0) {
-      this.sweetAlert.error('Error', 'กรุณากรอกจำนวนชิ้นต่อแพคที่ถูกต้อง');
-      return;
-    }
 
-    // Validate staff list
+
     for (let i = 0; i < this.qcStaffList.length; i++) {
-      if (!this.qcStaffList[i].userId) {
+      if (!this.qcStaffList[i].userName) {
         this.sweetAlert.error('Error', `กรุณาเลือกผู้ QC ในแถวที่ ${i + 1}`);
         return;
       }
     }
 
-    // Process staff list and waste list
     for (const staff of this.qcStaffList) {
-      staff.packsFraction = parseInt(staff.packsFraction, 10) || null;
-      staff.bundlesFraction = parseInt(staff.bundlesFraction, 10) || null;
-      staff.piecesFraction = parseInt(staff.piecesFraction, 10) || null;
+      staff.packs = this.parseNumber(staff.packs);
+      staff.packsFraction = this.parseNumber(staff.packsFraction);
+      staff.bundlesFraction = this.parseNumber(staff.bundlesFraction);
+      staff.piecesFraction = this.parseNumber(staff.piecesFraction);
+    }
+
+    for (const waste of this.qcWasteList) {
+      waste.wasteQty = this.parseNumber(waste.wasteQty);
     }
 
     const data = {
       id: this.jobId,
-      passedQty,
-      bundlesPerPack,
-      boxesPerBundle,
-      passedQtyFraction,
-      bundlesPerPackFraction,
-      piecesFraction,
-      staffList: this.qcStaffList.filter(s => s.userId),
+      passedQty: this.parseNumber(passedQtyInput.value),
+      bundlesPerPack: this.parseNumber(bundlesInput.value),
+      boxesPerBundle: this.parseNumber(boxesInput.value),
+      passedQtyFraction: this.parseNumber(passedQtyFractionInput?.value),
+      bundlesPerPackFraction: this.parseNumber(bundlesPerPackFractionInput?.value),
+      piecesFraction: this.parseNumber(piecesFractionInput?.value),
+      staffList: this.qcStaffList.filter(s => s.userName).map(s => {
+        return {
+          userName: s.userName,
+          packs: s.packs,
+          packsFraction: s.packsFraction,
+          bundlesFraction: s.bundlesFraction,
+          piecesFraction: s.piecesFraction
+        };
+      }),
       wasteReportList: this.qcWasteList.filter(w => w.processName)
     };
 

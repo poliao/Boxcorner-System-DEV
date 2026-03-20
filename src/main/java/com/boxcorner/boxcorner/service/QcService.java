@@ -42,6 +42,11 @@ public class QcService {
                 existingJob.setPassedQty(qcJob.getPassedQty());
                 existingJob.setBundlesPerPack(qcJob.getBundlesPerPack());
                 existingJob.setBoxesPerBundle(qcJob.getBoxesPerBundle());
+                existingJob.setPassedQtyFraction(qcJob.getPassedQtyFraction());
+                existingJob.setBundlesPerPackFraction(qcJob.getBundlesPerPackFraction());
+                existingJob.setQcDetail(qcJob.getQcDetail());
+                existingJob.setPiecesFraction(qcJob.getPiecesFraction());
+                existingJob.setStartQcDatetime(qcJob.getStartQcDatetime());
 
                 return qcJobRepository.save(existingJob);
             } else {
@@ -57,7 +62,7 @@ public class QcService {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
-        qcJob.setStatus(QcJob.JobStatus.IN_PROGRESS);
+        qcJob.setStatus("กำลังQC");
         qcJob.setReceivedQty(receivedQty);
         qcJob.setQcType(qcType);
 
@@ -77,33 +82,41 @@ public class QcService {
         return savedJob;
     }
 
-    public org.springframework.data.domain.Page<QcJob> getAllQcJobs(org.springframework.data.domain.Pageable pageable) {
-        return qcJobRepository.findAll(pageable);
+    public org.springframework.data.domain.Page<QcJob> getAllQcJobs(
+            String joId, String jobName, String status, String qcType,
+            LocalDate startFrom, LocalDate startTo,
+            LocalDate deliveryFrom, LocalDate deliveryTo,
+            org.springframework.data.domain.Pageable pageable) {
+        return qcJobRepository.findByFilters(joId, jobName, status, qcType, startFrom, startTo, deliveryFrom, deliveryTo, pageable);
     }
 
     public QcJob getQcJobById(Integer id) {
-        return qcJobRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
+        return qcJobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
     }
 
     @Transactional
-    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle, Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction, java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList, java.util.List<com.boxcorner.boxcorner.entity.QcWasteReport> wasteReportList) {
+    public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle,
+            Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction,
+            java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList,
+            java.util.List<com.boxcorner.boxcorner.entity.QcWasteReport> wasteReportList) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
-        qcJob.setStatus(QcJob.JobStatus.COMPLETED);
+        qcJob.setStatus("เสร็จสิ้น");
         qcJob.setPassedQty(passedQty);
         qcJob.setBundlesPerPack(bundlesPerPack);
         qcJob.setBoxesPerBundle(boxesPerBundle);
         qcJob.setPassedQtyFraction(passedQtyFraction);
         qcJob.setBundlesPerPackFraction(bundlesPerPackFraction);
         qcJob.setPiecesFraction(piecesFraction);
-        
+
         QcJob savedJob = qcJobRepository.save(qcJob);
 
         // อัพเดต LogQc ล่าสุด
         LogQc logQc = logQcRepository.findTopByQcJobIdOrderByIdDesc(id)
                 .orElseThrow(() -> new IllegalArgumentException("LogQc not found for qcJobId: " + id));
-        
+
         logQc.setEndTime(LocalTime.now());
         logQc.setPassedQty(passedQty);
         logQc.setBundlesPerPack(bundlesPerPack);

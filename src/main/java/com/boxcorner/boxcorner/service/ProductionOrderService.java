@@ -58,6 +58,7 @@ public class ProductionOrderService {
             existingOrder.setDecisionAuthorityRemarks(productionOrder.getDecisionAuthorityRemarks());
             existingOrder.setPrint2Page(productionOrder.getPrint2Page());
             existingOrder.setQpId(productionOrder.getQpId());
+            existingOrder.setQcType(productionOrder.getQcType());
 
             return productionOrderRepository.save(existingOrder);
         } else {

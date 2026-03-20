@@ -10,8 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,9 +34,8 @@ public class QcJob extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private JobStatus status;
+    private String status;
 
     @Column(name = "jo_id", length = 50, nullable = false)
     private String joId;
@@ -51,6 +48,9 @@ public class QcJob extends BaseEntity {
 
     @Column(name = "delivery_datetime")
     private LocalDate deliveryDatetime;
+
+    @Column(name = "start_qc_datetime")
+    private LocalDate startQcDatetime;
 
     @Column(name = "product_job_id", length = 50)
     private String productJobId;
@@ -81,6 +81,9 @@ public class QcJob extends BaseEntity {
 
     @Column(name = "qc_type", length = 50)
     private String qcType;
+
+    @Column(name = "qc_detail", length = 50)
+    private String qcDetail;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

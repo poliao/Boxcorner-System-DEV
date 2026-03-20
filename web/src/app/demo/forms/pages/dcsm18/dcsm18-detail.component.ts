@@ -102,6 +102,7 @@ export class Dcsm18DetailComponent implements OnInit {
       jobId: [null],
       qtId: [null],
       qpId: [null],
+      qcType: [null],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -127,6 +128,7 @@ export class Dcsm18DetailComponent implements OnInit {
     this.mainForm.get('jobId')?.disable();
     this.mainForm.get('qtId')?.disable();
     this.mainForm.get('qpId')?.disable();
+    this.mainForm.get('qcType')?.disable();
   }
 
   patchFormData(data: any): void {

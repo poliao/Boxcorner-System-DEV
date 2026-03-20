@@ -58,6 +58,7 @@ public class ProductionJobService {
                 existing.setImageUrl(productionJob.getImageUrl());
                 existing.setMachineSetupCount(productionJob.getMachineSetupCount());
                 existing.setPrintingRecordId(productionJob.getPrintingRecordId());
+                existing.setQcJobId(productionJob.getQcJobId());
                 return productionJobRepository.save(existing);
             }
         }
@@ -73,12 +74,12 @@ public class ProductionJobService {
     }
 
     public Page<ProductionJob> findByFilters(Long id, String jobId, String customerJobName,
-            String printStatus, String deliveryStatus, String coatingLocation, 
+            String printStatus, String deliveryStatus, String coatingLocation,
             String stampingLocation, String gluingLocation, LocalDate startDate, LocalDate endDate,
             int page, int size) {
         Pageable paging = PageRequest.of(page, size, Sort.unsorted());
         return productionJobRepository.findByFilters(id, jobId, customerJobName, printStatus,
-                deliveryStatus, coatingLocation, stampingLocation, gluingLocation, 
+                deliveryStatus, coatingLocation, stampingLocation, gluingLocation,
                 startDate, endDate, paging);
     }
 

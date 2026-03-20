@@ -481,6 +481,7 @@ export class Dcsm04DetailComponent implements OnInit {
       decisionAuthorityRemarks: this.decisionAuthorityRemarks.value,
       print2Page: this.mainForm.getRawValue().print2Page,
       qpId: this.mainForm.getRawValue().qpId,
+      qcType: null,
     };
     Swal.fire({
       title: 'อนุมัติส่งไปตารางคอนเฟิร์มรอผลิต',

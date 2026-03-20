@@ -41,7 +41,10 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   decisionAuthorityRemarks: string = null;
   print2Page = false
   showJobModal = false;
+  qcJobId: any;
+  qcType: any;
   availableJobs: any[] = [];
+  startQcDatetime: any;
 
   constructor(
     private fb: FormBuilder,
@@ -71,7 +74,9 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       this.decisionAuthority = state.decisionAuthority;
       this.decisionAuthorityRemarks = state.decisionAuthorityRemarks;
       this.print2Page = state.print2Page;
+      this.qcType = state.qcType;
     }
+
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
     this.initForm();
@@ -89,7 +94,6 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     const printStatus = rawValue.printStatus;
     const deliveryStatus = rawValue.deliveryStatus;
 
-    // Condition helpers
     const notPrinted = !['พิมพ์แล้ว', 'เคลือบแล้ว', 'ปั้มแล้ว', 'ปะแล้ว', 'Qcแล้ว'].includes(printStatus);
     const notCoated = !['เคลือบแล้ว', 'ปั้มแล้ว', 'ปะแล้ว', 'Qcแล้ว'].includes(printStatus);
     const notStamped = !['ปั้มแล้ว', 'ปะแล้ว', 'Qcแล้ว'].includes(printStatus);
@@ -101,7 +105,6 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     const notDelivery = !['กำลังส่ง', 'จัดส่งเรียบร้อย'].includes(deliveryStatus);
     const notDeliveryComplete = deliveryStatus !== 'จัดส่งเรียบร้อย';
 
-    // Reset flags
     this.isPrint = false;
     this.isCoating = false;
     this.isStamping = false;
@@ -161,7 +164,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       dataDalivery: [false],
       machineSetupCount: [''],
       rowVersion: [null],
-      papOrderId: [null]
+      papOrderId: [null],
+      qcJobId: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -242,6 +246,10 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
               this.checkJob(response.id, responsePap)
               this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
                 this.patchFormData(response);
+                this.checkDateEndProcess();
+                if (this.productionForm.getRawValue().qcDate != null) {
+                  this.saveQcJob();
+                }
                 this.loadingService.hide();
                 this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
                 this.router.navigate(['/Dcsm09Detail', this.referenceId]);
@@ -477,5 +485,40 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   }
 
   setQcJob(id) {
+  }
+
+  saveQcJob() {
+    this.papOrder
+    const data = {
+      status: 'รอQC',
+      joId: this.productionForm.getRawValue().jobId,
+      jobName: this.productionForm.getRawValue().customerJobName,
+      responsibleName: 'รอส่งQC',
+      deliveryDatetime: this.productionForm.getRawValue().qcDate,
+      productJobId: this.productionForm.getRawValue().id,
+      papOrderId: this.productionForm.getRawValue().papOrderId,
+      receivedQty: null,
+      qcType: this.qcType,
+      startQcDatetime: this.startQcDatetime,
+      qcDetail: this.papOrder.qcAndDelivery.detail
+    }
+
+    this.dcsm20Service.saveQcJob(data).subscribe((response) => {
+      this.productionForm.get('qcJobId')?.setValue(response.id);
+      this.dcsm20Service.save(this.productionForm.getRawValue()).subscribe((response) => {
+      })
+    })
+  }
+
+  checkDateEndProcess() {
+    if (this.productionForm.getRawValue().gluingDate != null) {
+      this.startQcDatetime = this.productionForm.getRawValue().gluingDate;
+    } else if (this.productionForm.getRawValue().stampingDate != null) {
+      this.startQcDatetime = this.productionForm.getRawValue().stampingDate;
+    } else if (this.productionForm.getRawValue().coatingDate != null) {
+      this.startQcDatetime = this.productionForm.getRawValue().coatingDate;
+    } else if (this.productionForm.getRawValue().printingDate != null) {
+      this.startQcDatetime = this.productionForm.getRawValue().printingDate;
+    }
   }
 }

@@ -17,17 +17,17 @@
   </div>
   <div class="col-12 col-md-6 text-md-end">
     <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="startQc()"
-      *ngIf="qcJobForm.get('status')?.value === 'PENDING'">
+      *ngIf="qcJobForm.get('status')?.value === 'ส่งQC'">
       <mat-icon class="me-2">play_arrow</mat-icon> เริ่ม QC
     </button>
     <button mat-flat-button color="accent" class="rounded-pill px-4" (click)="completeQc()"
-      *ngIf="qcJobForm.get('status')?.value === 'IN_PROGRESS'">
+      *ngIf="qcJobForm.get('status')?.value === 'กำลังQC'">
       <mat-icon class="me-2">check_circle</mat-icon> QC แล้ว
     </button>
     <mat-icon class="me-2" (click)="dowloadReportQc()" style="cursor: pointer;"
-      *ngIf="qcJobForm.get('status')?.value === 'COMPLETED'">get_app</mat-icon>
+      *ngIf="qcJobForm.get('status')?.value === 'เสร็จสิ้น'">get_app</mat-icon>
     <mat-icon class="me-2" (click)="printReportQc()" style="cursor: pointer;"
-      *ngIf="qcJobForm.get('status')?.value === 'COMPLETED'">printer</mat-icon>
+      *ngIf="qcJobForm.get('status')?.value === 'เสร็จสิ้น'">printer</mat-icon>
   </div>
 </div>
 
@@ -228,9 +228,9 @@
           <div class="row g-2 align-items-end">
             <div class="col-12 col-md-3">
               <label class="form-label small fw-bold">ผู้ QC <span class="text-danger">*</span></label>
-              <select class="form-select" [(ngModel)]="staff.userId" (change)="onStaffUserChange(i, $event)">
+              <select class="form-select" [(ngModel)]="staff.userName">
                 <option value="">เลือกพนักงาน</option>
-                <option *ngFor="let user of usersList" [value]="user.value">{{user.text}}</option>
+                <option *ngFor="let user of usersList" [value]="user.text">{{user.text}}</option>
               </select>
             </div>
             <div class="col-5 col-md-2">
@@ -250,7 +250,7 @@
             </div>
             <div class="col-5 col-md-2" *ngIf="qcJobForm.get('qcType')?.value != 'QC STK'">
               <label class="form-label small fw-bold">จำนวนชิ้น(เศษ)</label>
-              <input type="number" class="form-control" [(ngModel)]="staff.piecesFraction" placeholder="ดวง/ชิ้น">
+              <input type="number" class="form-control" [(ngModel)]="staff.piecesFraction" placeholder="จำนวนชิ้น(เศษ)">
             </div>
             <div class="col-2 col-md-1 text-end">
               <button class="btn btn-outline-danger btn-sm rounded-circle" (click)="removeStaffRow(i)"
@@ -314,15 +314,6 @@
       <button type="button" class="btn-close" (click)="closeStartModal()"></button>
     </div>
     <div class="modal-body">
-      <div class="mb-4">
-        <label class="form-label fw-bold">ประเภท QC</label>
-        <select class="form-select" [(ngModel)]="selectedQcType">
-          <option value="ปะ+QC">ปะ+QC</option>
-          <option value="QC BOX">QC BOX</option>
-          <option value="QC STK">QC STK</option>
-          <option value="ปะมือ">ปะมือ</option>
-        </select>
-      </div>
       <div class="mb-3">
         <label class="form-label fw-bold">จำนวนที่รับมา</label>
         <input type="number" class="form-control" [(ngModel)]="modalReceivedQty"

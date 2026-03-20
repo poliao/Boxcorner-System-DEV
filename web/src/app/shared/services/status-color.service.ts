@@ -88,6 +88,11 @@ export class StatusColorService {
       case 'PROOF': return '#449490ff';
       case 'PROOFCOMPLETED': return '#00312fff';
 
+      case 'รอQC': return '#3f3f3fff';
+      case 'ส่งQC': return '#c76a00ff';
+      case 'กำลังQC': return '#b6a024ff';
+      case 'เสร็จสิ้น': return '#0fb900ff';
+
       default: return '#9e9e9e'; // สีเทาเป็นค่าเริ่มต้น
     }
   }

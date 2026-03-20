@@ -84,6 +84,7 @@ export class Dcsm09DetailComponent implements OnInit {
       jobId: [null],
       qtId: [null],
       qpId: [null],
+      qcType: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -111,6 +112,7 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.get('jobId')?.disable();
     this.mainForm.get('qtId')?.disable();
     this.mainForm.get('qpId')?.disable();
+    this.mainForm.get('qcType')?.disable();
   }
 
   patchFormData(data: any): void {
@@ -124,7 +126,8 @@ export class Dcsm09DetailComponent implements OnInit {
         referenceId: this.mainForm.getRawValue().id,
         decisionAuthority: this.mainForm.getRawValue().decisionAuthority,
         decisionAuthorityRemarks: this.mainForm.getRawValue().decisionAuthorityRemarks,
-        print2Page: this.mainForm.getRawValue().print2Page
+        print2Page: this.mainForm.getRawValue().print2Page,
+        qcType: this.mainForm.getRawValue().qcType
       }
     });
   }

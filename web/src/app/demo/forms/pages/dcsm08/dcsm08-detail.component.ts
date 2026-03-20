@@ -85,6 +85,7 @@ export class Dcsm08DetailComponent implements OnInit {
       qtId: [null],
       createdTime: [null],
       qpId: [null],
+      qcType: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -113,6 +114,7 @@ export class Dcsm08DetailComponent implements OnInit {
     this.mainForm.get('inspector')?.disable();
     this.mainForm.get('createdTime')?.disable({ emitEvent: false });
     this.mainForm.get('qpId')?.disable();
+    this.mainForm.get('qcType')?.disable();
   }
 
   patchFormData(data: any): void {

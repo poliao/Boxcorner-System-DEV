@@ -31,10 +31,18 @@ public class QcController {
     @GetMapping("/jobs")
     public ResponseEntity<?> getAllQcJobs(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "joId", required = false) String joId,
+            @RequestParam(value = "jobName", required = false) String jobName,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "qcType", required = false) String qcType,
+            @RequestParam(value = "startFrom", required = false) java.time.LocalDate startFrom,
+            @RequestParam(value = "startTo", required = false) java.time.LocalDate startTo,
+            @RequestParam(value = "deliveryFrom", required = false) java.time.LocalDate deliveryFrom,
+            @RequestParam(value = "deliveryTo", required = false) java.time.LocalDate deliveryTo) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-            return ResponseEntity.ok(qcService.getAllQcJobs(pageable));
+            return ResponseEntity.ok(qcService.getAllQcJobs(joId, jobName, status, qcType, startFrom, startTo, deliveryFrom, deliveryTo, pageable));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }

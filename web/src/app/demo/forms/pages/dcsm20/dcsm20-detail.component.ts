@@ -180,7 +180,8 @@ export class Dcsm20DetailComponent implements OnInit {
       machineSetupCount: [''],
       imageUrl: [null],
       papOrderId: [null],
-      rowVersion: [null]
+      rowVersion: [null],
+      qcJobId: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -190,6 +191,7 @@ export class Dcsm20DetailComponent implements OnInit {
     this.productionForm.get('stampingResponsible')?.disable();
     this.productionForm.get('gluingResponsible')?.disable();
     this.productionForm.get('machineSetupCount')?.disable();
+    this.productionForm.get('qcJobId')?.disable();
 
     // เพิ่ม listener สำหรับ printingDate
     this.productionForm.get('printingDate')?.valueChanges.subscribe(value => {
@@ -339,15 +341,7 @@ export class Dcsm20DetailComponent implements OnInit {
               if (res.isConfirmed && res.value) {
                 const qty = parseInt(res.value, 10);
                 this.productionForm.get('printStatus')?.setValue('กำลังQc');
-                this.dcsm20Service.getJobPAPByJobId(this.productionForm.getRawValue().jobId).subscribe((response) => {
-                  if (response.qcDetail == 'QC 0%' || response.qcDetail == 'QC 5%' || response.qcDetail == 'QC 25%') {
-                    if ((this.productionForm.getRawValue().printingResponsible == 'SM' || this.productionForm.getRawValue().printingResponsible == 'CD') ||
-                      ((this.productionForm.getRawValue().printingResponsible == 'Canon' || this.productionForm.getRawValue().printingResponsible == 'Ricoh') && (this.productionForm.getRawValue().coatingResponsible != 'BCA' || this.productionForm.getRawValue().stampingResponsible != 'BCA' || this.productionForm.getRawValue().gluingResponsible != 'BCA'))
-                    ) {
-                      this.saveQcJob(qty);
-                    }
-                  }
-                })
+                this.saveQcJob(qty);
                 this.performStatusUpdate();
               }
             });
@@ -526,20 +520,12 @@ export class Dcsm20DetailComponent implements OnInit {
 
   saveQcJob(receivedQty: number) {
     this.loadingService.show();
-    const data = {
-      status: 'PENDING',
-      joId: this.productionForm.getRawValue().jobId,
-      jobName: this.productionForm.getRawValue().customerJobName,
-      responsibleName: 'PENDING',
-      deliveryDatetime: this.productionForm.getRawValue().qcDate,
-      productJobId: this.productionForm.getRawValue().id,
-      papOrderId: this.productionForm.getRawValue().papOrderId,
-      receivedQty: receivedQty
-    }
-    this.dcsm20Service.saveQcJob(data).subscribe((response) => {
-      this.loadingService.hide();
+    this.dcsm20Service.getQcJobId(this.productionForm.getRawValue().qcJobId).subscribe((response) => {
+      response.status = 'ส่งQC';
+      response.receivedQty = receivedQty;
+      this.dcsm20Service.saveQcJob(response).subscribe((response) => {
+        this.loadingService.hide();
+      })
     })
   }
-
-
 }

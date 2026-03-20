@@ -9,6 +9,7 @@ import { DataTableComponent } from '../../../../shared/components/data-table/dat
 import { Dcsm36Service } from './dcsm36.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { StatusColorService } from 'src/app/shared/services/status-color.service';
 
 @Component({
   selector: 'app-dcsm36',
@@ -24,15 +25,25 @@ export class Dcsm36Component implements OnInit {
     { key: 'id', label: 'ลำดับ' },
     { key: 'joId', label: 'JOB ID' },
     { key: 'jobName', label: 'ชื่องาน' },
-    { key: 'status', label: 'สถานะ QC' },
-    { key: 'responsibleName', label: 'ผู้รับผิดชอบ' },
-    { key: 'deliveryDatetime', label: 'วันที่ส่งมอบ' }
+    { key: 'status', label: 'สถานะ QC', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
+    { key: 'qcDetail', label: 'ความละเอียด QC' },
+    { key: 'qcType', label: 'ประเภท QC' },
+    { key: 'startQcDatetime', label: 'วันที่งานเข้า' },
+    { key: 'deliveryDatetime', label: 'กำหนดส่ง' }
   ];
 
   tableData: any[] = [];
   searchParams = {
-    startDate: '',
-    endDate: ''
+    startDate: '', // For summary report
+    endDate: '',   // For summary report
+    joId: '',
+    jobName: '',
+    status: '',
+    qcType: '',
+    startFrom: '',
+    startTo: '',
+    deliveryFrom: '',
+    deliveryTo: ''
   };
 
   totalElements = 0;
@@ -45,8 +56,9 @@ export class Dcsm36Component implements OnInit {
     private dcsm36Service: Dcsm36Service,
     private router: Router,
     private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService
-  ) {}
+    private sweetAlert: SweetAlertService,
+    private statusColorService: StatusColorService
+  ) { }
 
   ngOnInit() {
     this.loadData();
@@ -58,6 +70,7 @@ export class Dcsm36Component implements OnInit {
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => {
           if (item.deliveryDatetime) {
+            item.startQcDatetime = this.formatDate(item.startQcDatetime);
             item.deliveryDatetime = this.formatDate(item.deliveryDatetime);
           }
           return item;
@@ -106,8 +119,18 @@ export class Dcsm36Component implements OnInit {
   }
 
   clearAllFilters() {
-    this.searchParams.startDate = '';
-    this.searchParams.endDate = '';
+    this.searchParams = {
+      startDate: '',
+      endDate: '',
+      joId: '',
+      jobName: '',
+      status: '',
+      qcType: '',
+      startFrom: '',
+      startTo: '',
+      deliveryFrom: '',
+      deliveryTo: ''
+    };
     this.onSearchChange();
   }
 
