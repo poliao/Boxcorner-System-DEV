@@ -70,4 +70,15 @@ public class PapController {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }
     }
+
+    @GetMapping("/getByJobId")
+    public ResponseEntity<?> getPapOrderByJobId(@RequestParam(value = "jobId") String jobId) {
+        try {
+            return ResponseEntity.ok(papProductionOrderService.getByJobId(jobId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
+    }
 }

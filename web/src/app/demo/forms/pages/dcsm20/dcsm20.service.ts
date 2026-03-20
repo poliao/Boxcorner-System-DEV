@@ -124,4 +124,8 @@ export class Dcsm20Service {
     return this.http.put(`${this.apiUrl}/production/updateDataDalivery?id=${data.id}&dataDalivery=true`, {});
   }
 
+  getJobPAPByJobId(jobId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/pap/getByJobId?jobId=${jobId}`);
+  }
+
 }

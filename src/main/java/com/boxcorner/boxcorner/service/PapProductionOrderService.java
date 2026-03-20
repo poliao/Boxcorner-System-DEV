@@ -21,6 +21,11 @@ public class PapProductionOrderService {
     }
 
     @Transactional
+    public PapProductionOrder getByJobId(String jobId) {
+        return repository.findByJobCode(jobId).orElseThrow(() -> new IllegalArgumentException("PapProductionOrder not found with Job ID: " + jobId));
+    }
+
+    @Transactional
     @SuppressWarnings("unchecked")
     public PapProductionOrder saveFromMap(Map<String, Object> data) {
         if (data == null || data.isEmpty())

@@ -35,6 +35,7 @@ export class Dcsm20DetailComponent implements OnInit {
   referenceId: any
   showJobModal = false;
   availableJobs: any[] = [];
+  QcDetail: any;
 
   constructor(
     private fb: FormBuilder,
@@ -338,9 +339,15 @@ export class Dcsm20DetailComponent implements OnInit {
               if (res.isConfirmed && res.value) {
                 const qty = parseInt(res.value, 10);
                 this.productionForm.get('printStatus')?.setValue('กำลังQc');
-                if ((this.productionForm.getRawValue().printingResponsible == 'SM' || this.productionForm.getRawValue().printingResponsible == 'CD') || ((this.productionForm.getRawValue().printingResponsible == 'Canon' || this.productionForm.getRawValue().printingResponsible == 'Ricoh') && (this.productionForm.getRawValue().coatingResponsible != 'BCA' || this.productionForm.getRawValue().stampingResponsible != 'BCA' || this.productionForm.getRawValue().gluingResponsible != 'BCA'))) {
-                  this.saveQcJob(qty);
-                }
+                this.dcsm20Service.getJobPAPByJobId(this.productionForm.getRawValue().jobId).subscribe((response) => {
+                  if (response.qcDetail == 'QC 0%' || response.qcDetail == 'QC 5%' || response.qcDetail == 'QC 25%') {
+                    if ((this.productionForm.getRawValue().printingResponsible == 'SM' || this.productionForm.getRawValue().printingResponsible == 'CD') ||
+                      ((this.productionForm.getRawValue().printingResponsible == 'Canon' || this.productionForm.getRawValue().printingResponsible == 'Ricoh') && (this.productionForm.getRawValue().coatingResponsible != 'BCA' || this.productionForm.getRawValue().stampingResponsible != 'BCA' || this.productionForm.getRawValue().gluingResponsible != 'BCA'))
+                    ) {
+                      this.saveQcJob(qty);
+                    }
+                  }
+                })
                 this.performStatusUpdate();
               }
             });
