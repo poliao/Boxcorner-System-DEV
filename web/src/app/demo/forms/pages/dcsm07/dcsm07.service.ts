@@ -102,4 +102,12 @@ export class Dcsm07Service {
   updatePostPoneDeadline(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updatePostPoneDeadline`, data);
   }
+
+  getPartsByOrderId(orderId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/production-parts/getByOrderId?orderId=${orderId}`);
+  }
+
+  saveParts(orderId: number, parts: any[]): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/production-parts/saveAll?orderId=${orderId}`, parts);
+  }
 }

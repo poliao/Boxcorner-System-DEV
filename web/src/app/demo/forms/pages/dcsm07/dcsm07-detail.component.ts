@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -33,6 +33,8 @@ export class Dcsm07DetailComponent implements OnInit {
   // ตัวแปรสำหรับ modal ยกเลิกงาน
   showCancelModal: boolean = false;
   cancelReason: string = '';
+
+  activeTab: string = 'authority';
 
   constructor(
     private fb: FormBuilder,
@@ -72,7 +74,46 @@ export class Dcsm07DetailComponent implements OnInit {
         }
         this.mainForm.get('jobId')?.updateValueAndValidity();
       });
+
+      // Load parts
+      if (resolvedData.id) {
+        this.loadParts(resolvedData.id);
+      }
     }
+  }
+
+  get parts(): FormArray {
+    return this.mainForm.get('parts') as FormArray;
+  }
+
+  initPartRow(data?: any): FormGroup {
+    return this.fb.group({
+      id: [data?.id || null],
+      partName: [data?.partName || '', Validators.required]
+    });
+  }
+
+  addPart(): void {
+    this.parts.push(this.initPartRow());
+  }
+
+  removePart(index: number): void {
+    this.parts.removeAt(index);
+  }
+
+  loadParts(orderId: number): void {
+    this.dcsm07Service.getPartsByOrderId(orderId).subscribe({
+      next: (parts) => {
+        const partsFormArray = this.mainForm.get('parts') as FormArray;
+        partsFormArray.clear();
+        parts.forEach(part => {
+          partsFormArray.push(this.initPartRow(part));
+        });
+      },
+      error: (err) => {
+        console.error('Error loading parts', err);
+      }
+    });
   }
 
   initForm(): void {
@@ -109,6 +150,7 @@ export class Dcsm07DetailComponent implements OnInit {
       qtId: [null],
       qpId: [null],
       qcType: [null],
+      parts: this.fb.array([])
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -182,11 +224,24 @@ export class Dcsm07DetailComponent implements OnInit {
 
         this.dcsm07Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
-            this.loadingService.hide();
-            this.patchFormData(response);
-            this.checkBtn();
-            this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
-            this.router.navigate(['/Dcsm07']);
+            const orderId = response.id;
+            const partsData = this.mainForm.getRawValue().parts;
+
+            this.dcsm07Service.saveParts(orderId, partsData).subscribe({
+              next: () => {
+                this.loadingService.hide();
+                this.patchFormData(response);
+                this.checkBtn();
+                this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
+                this.router.navigate(['/Dcsm07']);
+              },
+              error: (err) => {
+                this.loadingService.hide();
+                console.error('Error saving parts', err);
+                this.sweetAlert.warning('บันทึกข้อมูลหลักสำเร็จ แต่ไม่สามารถบันทึกข้อมูลชิ้นส่วนได้');
+                this.router.navigate(['/Dcsm07']);
+              }
+            });
           },
           error: (error) => {
             this.loadingService.hide();
