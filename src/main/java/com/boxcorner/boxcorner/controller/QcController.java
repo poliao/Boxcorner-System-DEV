@@ -5,6 +5,8 @@ import com.boxcorner.boxcorner.entity.dto.CompleteQcRequest;
 import com.boxcorner.boxcorner.service.QcService;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,10 +39,10 @@ public class QcController {
             @RequestParam(value = "jobName", required = false) String jobName,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "qcType", required = false) String qcType,
-            @RequestParam(value = "startFrom", required = false) java.time.LocalDate startFrom,
-            @RequestParam(value = "startTo", required = false) java.time.LocalDate startTo,
-            @RequestParam(value = "deliveryFrom", required = false) java.time.LocalDate deliveryFrom,
-            @RequestParam(value = "deliveryTo", required = false) java.time.LocalDate deliveryTo) {
+            @RequestParam(value = "startFrom", required = false) LocalDate startFrom,
+            @RequestParam(value = "startTo", required = false) LocalDate startTo,
+            @RequestParam(value = "deliveryFrom", required = false) LocalDate deliveryFrom,
+            @RequestParam(value = "deliveryTo", required = false) LocalDate deliveryTo) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
             return ResponseEntity.ok(qcService.getAllQcJobs(joId, jobName, status, qcType, startFrom, startTo,
