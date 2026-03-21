@@ -521,7 +521,7 @@ export class Dcsm20DetailComponent implements OnInit {
   saveQcJob(receivedQty: number) {
     this.loadingService.show();
     this.dcsm20Service.getQcJobId(this.productionForm.getRawValue().qcJobId).subscribe((response) => {
-      response.status = 'รอตรวจ';
+      response.status = 'เข้าตรวจแล้ว';
       response.receivedQty = receivedQty;
       this.dcsm20Service.saveQcJob(response).subscribe((response) => {
         this.loadingService.hide();

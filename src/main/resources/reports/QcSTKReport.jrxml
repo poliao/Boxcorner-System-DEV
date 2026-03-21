@@ -44,8 +44,8 @@ FROM get_qc_labels($P{jobId});]]></query>
 		<property name="com.jaspersoft.studio.field.label" value="jobname"/>
 	</field>
 	<detail>
-		<band height="141" splitType="Stretch">
-			<element kind="frame" uuid="bcb33ad8-42f1-4f31-b835-3af1d96a8f34" x="0" y="0" width="180" height="140">
+		<band height="180" splitType="Stretch">
+			<element kind="frame" uuid="bcb33ad8-42f1-4f31-b835-3af1d96a8f34" x="0" y="0" width="180" height="160">
 				<element kind="textField" uuid="d5b8114d-1bb5-4958-874a-100a1cad49f3" x="100" y="60" width="30" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{bundlesperpack}]]></expression>
 				</element>
@@ -60,7 +60,7 @@ FROM get_qc_labels($P{jobId});]]></query>
 					<expression><![CDATA["จำนวนดวง/แผ่น :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="a5e25583-995e-4bf1-85ad-c4a501c882b7" x="71" y="120" width="109" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" strikeThrough="false" bold="true">
+				<element kind="textField" uuid="a5e25583-995e-4bf1-85ad-c4a501c882b7" x="71" y="120" width="109" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="true" strikeThrough="false">
 					<expression><![CDATA[$F{qcname}]]></expression>
 				</element>
 				<element kind="textField" uuid="9cb6c8be-20c6-4d9d-8bf7-3d95c0ef0cfb" x="9" y="120" width="62" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0">
@@ -105,6 +105,15 @@ FROM get_qc_labels($P{jobId});]]></query>
 				<element kind="textField" uuid="2ce075eb-4d19-4df6-b069-1f6360a3f19a" x="80" y="100" width="100" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{dateend} != null ? new java.text.SimpleDateFormat("dd/MM/yyyy", new java.util.Locale("th", "TH")).format($F{dateend}) : ""]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+				<element kind="textField" uuid="a54d549c-7cc5-4876-96b5-db09ec00252b" x="9" y="140" width="51" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="false" strikeThrough="false">
+					<expression><![CDATA["ห่อที่ : "+$V{REPORT_COUNT}]]></expression>
+				</element>
+				<element kind="textField" uuid="0bf9fcdd-c6ce-41c9-b688-4f1ae48a2935" x="60" y="140" width="50" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" evaluationTime="Report" bold="false" strikeThrough="false">
+					<expression><![CDATA["จาก : "+$V{REPORT_COUNT}]]></expression>
+				</element>
+				<element kind="textField" uuid="489f6589-da18-4b15-95b3-57db44ef8fb2" x="110" y="140" width="20" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="false" strikeThrough="false">
+					<expression><![CDATA["ห่อ"]]></expression>
 				</element>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>

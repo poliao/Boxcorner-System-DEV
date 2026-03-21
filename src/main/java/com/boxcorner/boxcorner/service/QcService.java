@@ -1,7 +1,6 @@
 package com.boxcorner.boxcorner.service;
 
-import com.boxcorner.boxcorner.entity.LogQc;
-import com.boxcorner.boxcorner.entity.QcJob;
+import com.boxcorner.boxcorner.entity.*;
 import com.boxcorner.boxcorner.repository.LogQcRepository;
 import com.boxcorner.boxcorner.repository.QcJobRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,13 +61,11 @@ public class QcService {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
-        qcJob.setStatus("กำลังตรวจ");
+        qcJob.setStatus("อยู่ระหว่างตรวจ");
         qcJob.setReceivedQty(receivedQty);
         qcJob.setQcType(qcType);
 
         QcJob savedJob = qcJobRepository.save(qcJob);
-
-        // บันทึก LogQc
         LogQc logQc = LogQc.builder()
                 .qcJobId(id)
                 .operatorName(operatorName)
@@ -99,8 +96,8 @@ public class QcService {
     @Transactional
     public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle,
             Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction,
-            java.util.List<com.boxcorner.boxcorner.entity.QcStaff> staffList,
-            java.util.List<com.boxcorner.boxcorner.entity.QcWasteReport> wasteReportList) {
+            java.util.List<QcStaff> staffList,
+            java.util.List<QcWasteReport> wasteReportList) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
@@ -114,7 +111,6 @@ public class QcService {
 
         QcJob savedJob = qcJobRepository.save(qcJob);
 
-        // อัพเดต LogQc ล่าสุด
         LogQc logQc = logQcRepository.findTopByQcJobIdOrderByIdDesc(id)
                 .orElseThrow(() -> new IllegalArgumentException("LogQc not found for qcJobId: " + id));
 
@@ -127,7 +123,6 @@ public class QcService {
         logQc.setPiecesFraction(piecesFraction);
         logQcRepository.save(logQc);
 
-        // บันทึกข้อมูลพนักงาน QC
         if (staffList != null && !staffList.isEmpty()) {
             for (com.boxcorner.boxcorner.entity.QcStaff staff : staffList) {
                 staff.setQcJobId(id);
@@ -135,7 +130,6 @@ public class QcService {
             }
         }
 
-        // บันทึกรายการของเสีย
         if (wasteReportList != null && !wasteReportList.isEmpty()) {
             for (com.boxcorner.boxcorner.entity.QcWasteReport waste : wasteReportList) {
                 waste.setQcJobId(id);

@@ -17,11 +17,11 @@
   </div>
   <div class="col-12 col-md-6 text-md-end">
     <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="startQc()"
-      *ngIf="qcJobForm.get('status')?.value === 'รอตรวจ'">
+      *ngIf="qcJobForm.get('status')?.value === 'เข้าตรวจแล้ว'">
       <mat-icon class="me-2">play_arrow</mat-icon> เริ่ม QC
     </button>
     <button mat-flat-button color="accent" class="rounded-pill px-4" (click)="completeQc()"
-      *ngIf="qcJobForm.get('status')?.value === 'กำลังตรวจ'">
+      *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
       <mat-icon class="me-2">check_circle</mat-icon> QC แล้ว
     </button>
     <mat-icon class="me-2" (click)="dowloadReportQc()" style="cursor: pointer;"

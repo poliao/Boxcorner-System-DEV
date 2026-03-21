@@ -91,7 +91,7 @@ export class StatusColorService {
       case 'PROOFCOMPLETED': return '#00312fff';
 
       case 'รอส่งตรวจ': return '#3f3f3fff';
-      case 'รอตรวจ': return '#c76a00ff';
+      case 'เข้าตรวจแล้ว': return '#c76a00ff';
       case 'กำลังตรวจ': return '#b6a024ff';
       case 'เสร็จสิ้น': return '#0fb900ff';
 

@@ -157,7 +157,10 @@ export class Dcsm20Component implements OnInit {
 
   onRowClick(row: any) {
     if (row && row.id) {
-      this.router.navigate(['/Dcsm20Detail', row.id]);
+      const url = this.router.serializeUrl(
+        this.router.createUrlTree(['/Dcsm20Detail', row.id])
+      );
+      window.open(url, '_blank');
     }
   }
 
