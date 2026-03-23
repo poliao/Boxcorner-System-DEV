@@ -97,4 +97,12 @@ export class Dcsm09Service {
   countDelivery(): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countBacklogDelivery`);
   }
+
+  getPartsByOrderId(orderId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/production-parts/getByOrderId?orderId=${orderId}`);
+  }
+
+  saveParts(orderId: number, parts: any[]): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrl}/production-parts/saveAll?orderId=${orderId}`, parts);
+  }
 }

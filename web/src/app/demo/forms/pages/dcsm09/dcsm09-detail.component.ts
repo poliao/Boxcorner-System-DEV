@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Dcsm09Service } from './dcsm09.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-dcsm09-detail.component',
-  imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
+  imports: [ReactiveFormsModule, CommonModule, MatIconModule, FormsModule],
   templateUrl: './dcsm09-detail.component.html',
   styleUrl: './dcsm09-detail.component.scss'
 })
@@ -24,6 +24,7 @@ export class Dcsm09DetailComponent implements OnInit {
   isSendOrder = false;
   isSendFile = false;
   isDelivery = false;
+  activeTab: string = 'authority';
 
   constructor(
     private fb: FormBuilder,
@@ -49,7 +50,46 @@ export class Dcsm09DetailComponent implements OnInit {
         }
         this.mainForm.get('jobId')?.updateValueAndValidity();
       });
+
+      // Load parts
+      if (resolvedData.id) {
+        this.loadParts(resolvedData.id);
+      }
     }
+  }
+
+  get parts(): FormArray {
+    return this.mainForm.get('parts') as FormArray;
+  }
+
+  initPartRow(data?: any): FormGroup {
+    return this.fb.group({
+      id: [data?.id || null],
+      partName: [data?.partName || '', Validators.required]
+    });
+  }
+
+  addPart(): void {
+    this.parts.push(this.initPartRow());
+  }
+
+  removePart(index: number): void {
+    this.parts.removeAt(index);
+  }
+
+  loadParts(orderId: number): void {
+    this.dcsm09Service.getPartsByOrderId(orderId).subscribe({
+      next: (parts) => {
+        const partsFormArray = this.mainForm.get('parts') as FormArray;
+        partsFormArray.clear();
+        parts.forEach(part => {
+          partsFormArray.push(this.initPartRow(part));
+        });
+      },
+      error: (err) => {
+        console.error('Error loading parts', err);
+      }
+    });
   }
 
   initForm(): void {
@@ -85,6 +125,7 @@ export class Dcsm09DetailComponent implements OnInit {
       qtId: [null],
       qpId: [null],
       qcType: [null],
+      parts: this.fb.array([])
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -190,10 +231,22 @@ export class Dcsm09DetailComponent implements OnInit {
 
         this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+            const orderId = response.id;
+            const partsData = this.mainForm.getRawValue().parts;
+
+            this.dcsm09Service.saveParts(orderId, partsData).subscribe({
+              next: () => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+              },
+              error: (err) => {
+                this.loadingService.hide();
+                console.error('Error saving parts', err);
+                this.sweetAlert.warning('ยืนยันสำเร็จ แต่ไม่สามารถบันทึกข้อมูลชิ้นส่วนได้');
+              }
+            });
           },
           error: (error) => {
             this.loadingService.hide();
@@ -222,10 +275,22 @@ export class Dcsm09DetailComponent implements OnInit {
         this.mainForm.get('processStatus')?.setValue('ตรวจใบสั่งผลิตแล้ว');
         this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+            const orderId = response.id;
+            const partsData = this.mainForm.getRawValue().parts;
+
+            this.dcsm09Service.saveParts(orderId, partsData).subscribe({
+              next: () => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+              },
+              error: (err) => {
+                this.loadingService.hide();
+                console.error('Error saving parts', err);
+                this.sweetAlert.warning('ยืนยันสำเร็จ แต่ไม่สามารถบันทึกข้อมูลชิ้นส่วนได้');
+              }
+            });
           },
           error: (error) => {
             this.loadingService.hide();
@@ -253,10 +318,22 @@ export class Dcsm09DetailComponent implements OnInit {
         this.mainForm.get('processStatus')?.setValue('ส่งใบสั่งผลิตแล้ว');
         this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+            const orderId = response.id;
+            const partsData = this.mainForm.getRawValue().parts;
+
+            this.dcsm09Service.saveParts(orderId, partsData).subscribe({
+              next: () => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+              },
+              error: (err) => {
+                this.loadingService.hide();
+                console.error('Error saving parts', err);
+                this.sweetAlert.warning('ยืนยันสำเร็จ แต่ไม่สามารถบันทึกข้อมูลชิ้นส่วนได้');
+              }
+            });
           },
           error: (error) => {
             this.loadingService.hide();
@@ -296,10 +373,22 @@ export class Dcsm09DetailComponent implements OnInit {
 
         this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
-            this.patchFormData(response);
-            this.checkBtn();
-            this.loadingService.hide();
-            this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+            const orderId = response.id;
+            const partsData = this.mainForm.getRawValue().parts;
+
+            this.dcsm09Service.saveParts(orderId, partsData).subscribe({
+              next: () => {
+                this.patchFormData(response);
+                this.checkBtn();
+                this.loadingService.hide();
+                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+              },
+              error: (err) => {
+                this.loadingService.hide();
+                console.error('Error saving parts', err);
+                this.sweetAlert.warning('ยืนยันสำเร็จ แต่ไม่สามารถบันทึกข้อมูลชิ้นส่วนได้');
+              }
+            });
           },
           error: (error) => {
             this.loadingService.hide();
