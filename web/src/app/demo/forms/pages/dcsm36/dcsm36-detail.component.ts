@@ -367,7 +367,7 @@ export class Dcsm36DetailComponent implements OnInit {
   printReportQc() {
     this.loadingService.show();
     let data;
-    if (this.qcJobForm.get('qcType')?.value == 'QC STK') {
+    if (this.qcJobForm.get('qcType')?.value == 'Qc STK') {
       data = {
         "reportName": "QcSTKReport",
         "jobId": this.qcJobForm.get('joId')?.value,

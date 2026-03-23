@@ -187,28 +187,28 @@
           <input type="number" id="modalPassedQty" class="form-control" placeholder="จำนวนห่อเต็ม">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนดวงต่อแผ่น' :
+          <label class="form-label fw-bold">{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'จำนวนดวงต่อแผ่น' :
             'จำนวนชิ้นต่อแพค' }}</label>
           <input type="number" id="modalBoxesPerBundle" class="form-control"
-            placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนดวงต่อแผ่น' : 'จำนวนชิ้นต่อแพค' }}">
+            placeholder="{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'จำนวนดวงต่อแผ่น' : 'จำนวนชิ้นต่อแพค' }}">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ' :
+          <label class="form-label fw-bold">{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'จำนวนแผ่นต่อห่อ' :
             'จำนวนแพคต่อห่อ' }}</label>
           <input type="number" id="modalBundlesPerPack" class="form-control"
-            placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ' : 'จำนวนแพคต่อห่อ' }}">
+            placeholder="{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'จำนวนแผ่นต่อห่อ' : 'จำนวนแพคต่อห่อ' }}">
         </div>
         <div class="col-12 col-md-4">
           <label class="form-label fw-bold">จำนวนห่อ(เศษ)</label>
           <input type="number" id="modalPassedQtyFraction" class="form-control" placeholder="จำนวนห่อเศษ">
         </div>
         <div class="col-12 col-md-4">
-          <label class="form-label fw-bold"> {{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ(เศษ)' :
+          <label class="form-label fw-bold"> {{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'จำนวนแผ่นต่อห่อ(เศษ)' :
             'จำนวนแพคต่อห่อ(เศษ)' }}</label>
           <input type="number" id="modalBundlesPerPackFraction" class="form-control"
-            placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่นต่อห่อ(เศษ)' : 'จำนวนแพคต่อห่อ(เศษ)' }}">
+            placeholder="{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'จำนวนแผ่นต่อห่อ(เศษ)' : 'จำนวนแพคต่อห่อ(เศษ)' }}">
         </div>
-        <div class="col-12 col-md-4" *ngIf="qcJobForm.get('qcType')?.value != 'QC STK'">
+        <div class="col-12 col-md-4" *ngIf="qcJobForm.get('qcType')?.value != 'Qc STK'">
           <label class="form-label fw-bold">จำนวนชิ้น(เศษ)</label>
           <input type="number" id="modalPiecesFraction" class="form-control" placeholder="จำนวนชิ้น(เศษ)">
         </div>
@@ -246,13 +246,13 @@
               <input type="number" class="form-control" [(ngModel)]="staff.packsFraction" placeholder="ห่อ(เศษ)">
             </div>
             <div class="col-5 col-md-2">
-              <label class="form-label small fw-bold">{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'จำนวนแผ่น(เศษ)'
+              <label class="form-label small fw-bold">{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'จำนวนแผ่น(เศษ)'
                 :
                 'จำนวนแพค(เศษ)' }}</label>
-              <input type="number" class="form-control" [(ngModel)]="staff.bundlesFraction" placeholder="{{ qcJobForm.get('qcType')?.value === 'QC STK' ? 'แผ่น(เศษ)' :
+              <input type="number" class="form-control" [(ngModel)]="staff.bundlesFraction" placeholder="{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'แผ่น(เศษ)' :
                 'แพค(เศษ)' }}">
             </div>
-            <div class="col-5 col-md-2" *ngIf="qcJobForm.get('qcType')?.value != 'QC STK'">
+            <div class="col-5 col-md-2" *ngIf="qcJobForm.get('qcType')?.value != 'Qc STK'">
               <label class="form-label small fw-bold">จำนวนชิ้น(เศษ)</label>
               <input type="number" class="form-control" [(ngModel)]="staff.piecesFraction" placeholder="จำนวนชิ้น(เศษ)">
             </div>
