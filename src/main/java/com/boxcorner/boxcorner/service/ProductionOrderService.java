@@ -59,6 +59,7 @@ public class ProductionOrderService {
             existingOrder.setPrint2Page(productionOrder.getPrint2Page());
             existingOrder.setQpId(productionOrder.getQpId());
             existingOrder.setQcType(productionOrder.getQcType());
+            existingOrder.setQcLocation(productionOrder.getQcLocation());
 
             return productionOrderRepository.save(existingOrder);
         } else {
@@ -121,7 +122,7 @@ public class ProductionOrderService {
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }
 
-    public Page<ProductionOrder> findByProductionCheck(Integer id,String jobId, String folderName, String jobOwner,
+    public Page<ProductionOrder> findByProductionCheck(Integer id, String jobId, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
             String moldStatus, String jobType, String inspector, Boolean dataDelivery, Pageable pageable) {

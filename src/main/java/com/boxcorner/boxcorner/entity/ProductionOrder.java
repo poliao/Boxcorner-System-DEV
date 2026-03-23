@@ -114,6 +114,9 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "qc_type", length = 100)
     private String qcType;
 
+    @Column(name = "qc_location")
+    private String qcLocation;
+
     @Column(name = "created_time", updatable = false)
     private LocalTime createdTime;
 }

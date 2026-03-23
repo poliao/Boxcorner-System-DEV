@@ -128,6 +128,9 @@ public class ProductionJob extends BaseEntity {
     @Column(name = "part_name")
     private String partName;
 
+    @Column(name = "qc_location")
+    private String qcLocation;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

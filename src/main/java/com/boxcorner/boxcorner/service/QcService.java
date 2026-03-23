@@ -46,6 +46,8 @@ public class QcService {
                 existingJob.setQcDetail(qcJob.getQcDetail());
                 existingJob.setPiecesFraction(qcJob.getPiecesFraction());
                 existingJob.setStartQcDatetime(qcJob.getStartQcDatetime());
+                existingJob.setQcLocation(qcJob.getQcLocation());
+                existingJob.setQcType(qcJob.getQcType());
 
                 return qcJobRepository.save(existingJob);
             } else {
@@ -80,11 +82,19 @@ public class QcService {
     }
 
     public org.springframework.data.domain.Page<QcJob> getAllQcJobs(
-            String joId, String jobName, String status, String qcType,
+            String joId, String jobName, String status, String qcType, String qcLocation, String role,
             LocalDate startFrom, LocalDate startTo,
             LocalDate deliveryFrom, LocalDate deliveryTo,
             org.springframework.data.domain.Pageable pageable) {
-        return qcJobRepository.findByFilters(joId, jobName, status, qcType, startFrom, startTo, deliveryFrom,
+
+        String effectiveQcLocation = qcLocation;
+        if ("stam".equals(role)) {
+            effectiveQcLocation = "ส่งOD";
+        } else if ("qc".equals(role)) {
+            effectiveQcLocation = "ส่งQC";
+        }
+
+        return qcJobRepository.findByFilters(joId, jobName, status, qcType, effectiveQcLocation, startFrom, startTo, deliveryFrom,
                 deliveryTo, pageable);
     }
 

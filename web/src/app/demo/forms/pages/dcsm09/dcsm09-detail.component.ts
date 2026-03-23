@@ -125,6 +125,7 @@ export class Dcsm09DetailComponent implements OnInit {
       qtId: [null],
       qpId: [null],
       qcType: [null],
+      qcLocation: [null],
       parts: this.fb.array([])
     });
     this.mainForm.get('id')?.disable();
@@ -154,6 +155,7 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.get('qtId')?.disable();
     this.mainForm.get('qpId')?.disable();
     this.mainForm.get('qcType')?.disable();
+    this.mainForm.get('qcLocation')?.disable();
   }
 
   patchFormData(data: any): void {
@@ -168,7 +170,8 @@ export class Dcsm09DetailComponent implements OnInit {
         decisionAuthority: this.mainForm.getRawValue().decisionAuthority,
         decisionAuthorityRemarks: this.mainForm.getRawValue().decisionAuthorityRemarks,
         print2Page: this.mainForm.getRawValue().print2Page,
-        qcType: this.mainForm.getRawValue().qcType
+        qcType: this.mainForm.getRawValue().qcType,
+        qcLocation: this.mainForm.getRawValue().qcLocation
       }
     });
   }

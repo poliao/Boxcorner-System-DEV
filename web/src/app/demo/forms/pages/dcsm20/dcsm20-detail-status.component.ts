@@ -43,6 +43,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   showJobModal = false;
   qcJobId: any;
   qcType: any;
+  qcLocation: any;
   availableJobs: any[] = [];
   startQcDatetime: any;
   partsList: any[] = [];
@@ -76,6 +77,11 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       this.decisionAuthorityRemarks = state.decisionAuthorityRemarks;
       this.print2Page = state.print2Page;
       this.qcType = state.qcType;
+      this.qcLocation = state.qcLocation;
+    } else {
+      // Fallback if state is lost but we have it in form or data somehow
+      this.qcType = this.productionForm?.getRawValue()?.qcType || null;
+      this.qcLocation = this.productionForm?.getRawValue()?.qcLocation || null;
     }
 
     this.id = this.route.snapshot.paramMap.get('id');
@@ -180,7 +186,9 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       machineSetupCount: [''],
       rowVersion: [null],
       papOrderId: [null],
-      qcJobId: [null]
+      qcJobId: [null],
+      qcLocation: [this.qcLocation],
+      partName: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -256,15 +264,11 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
           this.papOrder.dieCutting.location = this.productionForm.getRawValue().stampingResponsible
           this.papOrder.gluing.location = this.productionForm.getRawValue().gluingResponsible
 
-          // 1. Save PAP Order first (once)
           this.dcsm20Service.savePapOrder(this.papOrder).subscribe((responsePap) => {
             this.productionForm.get('papOrderId')?.setValue(responsePap.id);
 
-            // 2. Prepare parts to save
             const partsToSave = this.partsList.length > 0 ? this.partsList : [{ partName: null }];
-            let savedCount = 0;
 
-            // 3. Recursive save function to handle multiple parts sequentially
             const savePart = (index: number) => {
               if (index >= partsToSave.length) {
                 // All parts saved, now update data delivery status (once)
@@ -277,15 +281,36 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
               }
 
               const part = partsToSave[index];
-              const formData = { ...this.productionForm.getRawValue(), partName: part.partName };
+              this.productionForm.get('partName')?.setValue(part.partName);
+              const formData = { ...this.productionForm.getRawValue() };
+              this.checkDateEndProcess();
 
-              this.dcsm20Service.save(formData).subscribe((response) => {
-                this.checkJob(response.id, responsePap);
-                if (formData.qcDate != null) {
-                  this.saveQcJob(part.partName);
-                }
-                savePart(index + 1);
-              });
+              if (formData.qcDate != null) {
+                // Save ProductionJob first to generate an ID
+                this.dcsm20Service.save(formData).subscribe((prodResponse) => {
+                  formData.id = prodResponse.id;
+
+                  // Then save QcJob with the new productJobId
+                  this.saveQcJob(part.partName, prodResponse.id).subscribe((qcResponse) => {
+                    formData.qcJobId = qcResponse.id;
+                    
+                    // Update ProductionJob with the new qcJobId
+                    this.dcsm20Service.save(formData).subscribe((updateResponse) => {
+                      if (index === 0) {
+                        this.checkJob(updateResponse.id, responsePap);
+                      }
+                      savePart(index + 1);
+                    });
+                  });
+                });
+              } else {
+                this.dcsm20Service.save(formData).subscribe((response) => {
+                  if (index === 0) {
+                    this.checkJob(response.id, responsePap);
+                  }
+                  savePart(index + 1);
+                });
+              }
             };
 
             savePart(0);
@@ -521,28 +546,25 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   setQcJob(id) {
   }
 
-  saveQcJob(partName?: string) {
-    this.papOrder
+  saveQcJob(partName: string | undefined | null, productJobId: any): any {
+    this.checkDateEndProcess();
     const data = {
       status: 'รอส่งตรวจ',
       joId: this.productionForm.getRawValue().jobId,
       jobName: this.productionForm.getRawValue().customerJobName,
       responsibleName: 'รอส่งตรวจ',
       deliveryDatetime: this.productionForm.getRawValue().qcDate,
-      productJobId: this.productionForm.getRawValue().id,
+      productJobId: productJobId,
       papOrderId: this.productionForm.getRawValue().papOrderId,
       receivedQty: null,
-      qcType: this.qcType,
+      qcType: this.qcType || this.productionForm.getRawValue().qcType,
+      qcLocation: this.productionForm.getRawValue().qcLocation || this.qcLocation,
       partName: partName,
       startQcDatetime: this.startQcDatetime,
       qcDetail: this.papOrder.qcAndDelivery.detail
     }
 
-    this.dcsm20Service.saveQcJob(data).subscribe((response) => {
-      this.productionForm.get('qcJobId')?.setValue(response.id);
-      this.dcsm20Service.save(this.productionForm.getRawValue()).subscribe((response) => {
-      })
-    })
+    return this.dcsm20Service.saveQcJob(data);
   }
 
   checkDateEndProcess() {

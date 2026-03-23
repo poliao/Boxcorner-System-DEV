@@ -123,6 +123,19 @@
             <option value="Qc STK">Qc STK</option>
           </select>
         </div>
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">ส่วนงานส่งQC <span style="color: red;">*</span></label>
+          <div class="d-flex gap-3 mt-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" formControlName="qcLocation" value="ส่งQC" id="sendQC">
+              <label class="form-check-label" for="sendQC">ส่งQC</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" formControlName="qcLocation" value="ส่งOD" id="sendOD">
+              <label class="form-check-label" for="sendOD">ส่งOD</label>
+            </div>
+          </div>
+        </div>
 
         <div class="col-md-6">
           <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
@@ -255,7 +268,6 @@
   </div>
 </div>
 
-<!-- Modal สำหรับเปลี่ยนวันที่และเวลาส่งงานลูกค้า -->
 <div class="modal" [class.show]="showDeadlineModal" [style.display]="showDeadlineModal ? 'block' : 'none'"
   style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
@@ -290,7 +302,6 @@
   </div>
 </div>
 
-<!-- Modal สำหรับยกเลิกงาน -->
 <div class="modal" [class.show]="showCancelModal" [style.display]="showCancelModal ? 'block' : 'none'"
   style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">

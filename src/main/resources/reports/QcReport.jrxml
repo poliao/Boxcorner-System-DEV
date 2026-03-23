@@ -13,7 +13,8 @@ bundles_per_pack as bundlesPerPack,
 boxes_per_bundle as boxesPerPundle,
 total_boxes_per_pack as totalBoxesPerPack,
 qc_finish_date as dateEnd,
-job_name as jobName
+job_name as jobName,
+part_name as partName
 FROM get_qc_labels($P{jobId});]]></query>
 	<field name="joid" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="joid"/>
@@ -23,7 +24,7 @@ FROM get_qc_labels($P{jobId});]]></query>
 		<property name="com.jaspersoft.studio.field.name" value="qcname"/>
 		<property name="com.jaspersoft.studio.field.label" value="qcname"/>
 	</field>
-	<field name="bundlesperpack" class="java.lang.Float">
+	<field name="bundlesperpack" class="java.lang.Integer">
 		<property name="com.jaspersoft.studio.field.name" value="bundlesperpack"/>
 		<property name="com.jaspersoft.studio.field.label" value="bundlesperpack"/>
 	</field>
@@ -43,27 +44,31 @@ FROM get_qc_labels($P{jobId});]]></query>
 		<property name="com.jaspersoft.studio.field.name" value="jobname"/>
 		<property name="com.jaspersoft.studio.field.label" value="jobname"/>
 	</field>
+	<field name="partname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="partname"/>
+		<property name="com.jaspersoft.studio.field.label" value="partname"/>
+	</field>
 	<detail>
-		<band height="180" splitType="Stretch">
-			<element kind="frame" uuid="bcb33ad8-42f1-4f31-b835-3af1d96a8f34" x="0" y="0" width="180" height="160">
-				<element kind="textField" uuid="d5b8114d-1bb5-4958-874a-100a1cad49f3" x="100" y="60" width="30" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
+		<band height="190" splitType="Stretch">
+			<element kind="frame" uuid="bcb33ad8-42f1-4f31-b835-3af1d96a8f34" x="0" y="0" width="170" height="180">
+				<element kind="textField" uuid="d5b8114d-1bb5-4958-874a-100a1cad49f3" x="100" y="79" width="30" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{bundlesperpack}]]></expression>
 				</element>
-				<element kind="textField" uuid="2ad794ba-9f17-4a8e-96d5-cfcbb0a7bd7b" x="9" y="60" width="91" height="20" fontName="THSarabun" fontSize="16.0" hTextAlign="Left">
+				<element kind="textField" uuid="2ad794ba-9f17-4a8e-96d5-cfcbb0a7bd7b" x="9" y="79" width="91" height="20" fontName="THSarabun" fontSize="16.0" hTextAlign="Left">
 					<expression><![CDATA["จำนวนแพค/ห่อ : "]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="ab68cc97-7e95-41e4-8b75-e4df978eafa9" x="100" y="40" width="30" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
+				<element kind="textField" uuid="ab68cc97-7e95-41e4-8b75-e4df978eafa9" x="100" y="59" width="30" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{boxesperpundle}]]></expression>
 				</element>
-				<element kind="textField" uuid="3b5347bf-77f1-4e65-ad7c-4c4e657ec820" x="9" y="40" width="91" height="20" fontName="THSarabun" fontSize="16.0">
+				<element kind="textField" uuid="3b5347bf-77f1-4e65-ad7c-4c4e657ec820" x="9" y="59" width="91" height="20" fontName="THSarabun" fontSize="16.0">
 					<expression><![CDATA["จำนวนชิ้น/แพค :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="a5e25583-995e-4bf1-85ad-c4a501c882b7" x="71" y="120" width="109" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="true" strikeThrough="false">
+				<element kind="textField" uuid="a5e25583-995e-4bf1-85ad-c4a501c882b7" x="71" y="139" width="99" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="true" strikeThrough="false">
 					<expression><![CDATA[$F{qcname}]]></expression>
 				</element>
-				<element kind="textField" uuid="9cb6c8be-20c6-4d9d-8bf7-3d95c0ef0cfb" x="9" y="120" width="62" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0">
+				<element kind="textField" uuid="9cb6c8be-20c6-4d9d-8bf7-3d95c0ef0cfb" x="9" y="139" width="62" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0">
 					<expression><![CDATA["ผู้ตรวจสอบ :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
@@ -71,26 +76,26 @@ FROM get_qc_labels($P{jobId});]]></query>
 					<expression><![CDATA["รหัสงาน :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="a35b78e1-5090-4b4f-ab58-863e605435eb" x="60" y="1" width="120" height="20" forecolor="#030303" backcolor="#030100" fontName="THSarabun" fontSize="16.0" bold="true">
+				<element kind="textField" uuid="a35b78e1-5090-4b4f-ab58-863e605435eb" x="60" y="1" width="110" height="20" forecolor="#030303" backcolor="#030100" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{joid}]]></expression>
 				</element>
-				<element kind="textField" uuid="b53cb48c-6b78-4413-8757-869963b8c588" x="9" y="80" width="41" height="20" fontName="THSarabun" fontSize="16.0">
+				<element kind="textField" uuid="b53cb48c-6b78-4413-8757-869963b8c588" x="9" y="99" width="41" height="20" fontName="THSarabun" fontSize="16.0">
 					<expression><![CDATA["จำนวน :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="300d9a9a-23e7-4191-b7a9-bcb108053d0a" x="50" y="80" width="30" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
+				<element kind="textField" uuid="300d9a9a-23e7-4191-b7a9-bcb108053d0a" x="50" y="99" width="30" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{totalboxesperpack}]]></expression>
 				</element>
-				<element kind="textField" uuid="c165e9f8-532c-4ade-82de-69470eeec57b" x="130" y="60" width="50" height="20" fontName="THSarabun" fontSize="16.0">
+				<element kind="textField" uuid="c165e9f8-532c-4ade-82de-69470eeec57b" x="130" y="79" width="40" height="20" fontName="THSarabun" fontSize="16.0">
 					<expression><![CDATA["แพค"]]></expression>
 				</element>
-				<element kind="textField" uuid="46c18f7a-d6bd-43a0-b78b-79b8f9e07d79" x="130" y="40" width="50" height="20" fontName="THSarabun" fontSize="16.0">
+				<element kind="textField" uuid="46c18f7a-d6bd-43a0-b78b-79b8f9e07d79" x="130" y="59" width="40" height="20" fontName="THSarabun" fontSize="16.0">
 					<expression><![CDATA["ชิ้น"]]></expression>
 				</element>
-				<element kind="textField" uuid="2b0d7920-56c9-4a7b-9ad7-96e88ba403b1" x="80" y="80" width="100" height="20" fontName="THSarabun" fontSize="16.0">
+				<element kind="textField" uuid="2b0d7920-56c9-4a7b-9ad7-96e88ba403b1" x="80" y="99" width="90" height="20" fontName="THSarabun" fontSize="16.0">
 					<expression><![CDATA["ชิ้น/ห่อ"]]></expression>
 				</element>
-				<element kind="textField" uuid="2679b3a9-7147-468e-ae8f-1292c547633f" x="50" y="21" width="130" height="19" forecolor="#030303" backcolor="#030100" fontName="THSarabun" fontSize="16.0" bold="true">
+				<element kind="textField" uuid="2679b3a9-7147-468e-ae8f-1292c547633f" x="50" y="21" width="120" height="19" forecolor="#030303" backcolor="#030100" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{jobname}]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
@@ -98,22 +103,30 @@ FROM get_qc_labels($P{jobId});]]></query>
 					<expression><![CDATA["ชื่องาน :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="2b643175-b100-477a-9fbb-f42412d894ad" x="9" y="100" width="71" height="20" fontName="THSarabun" fontSize="16.0">
+				<element kind="textField" uuid="2b643175-b100-477a-9fbb-f42412d894ad" x="9" y="119" width="71" height="20" fontName="THSarabun" fontSize="16.0">
 					<expression><![CDATA["วันที่ตรวจสอบ :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="2ce075eb-4d19-4df6-b069-1f6360a3f19a" x="80" y="100" width="100" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
+				<element kind="textField" uuid="2ce075eb-4d19-4df6-b069-1f6360a3f19a" x="80" y="119" width="90" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{dateend} != null ? new java.text.SimpleDateFormat("dd/MM/yyyy", new java.util.Locale("th", "TH")).format($F{dateend}) : ""]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="00522c44-e573-45e5-bd3f-3384f6648a21" x="60" y="140" width="50" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" evaluationTime="Report" bold="false" strikeThrough="false">
+				<element kind="textField" uuid="00522c44-e573-45e5-bd3f-3384f6648a21" x="60" y="159" width="50" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" evaluationTime="Report" bold="false" strikeThrough="false">
 					<expression><![CDATA["จาก : "+$V{REPORT_COUNT}]]></expression>
 				</element>
-				<element kind="textField" uuid="c6cc37c8-0e21-400a-9095-88b421dd414e" x="110" y="140" width="20" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="false" strikeThrough="false">
+				<element kind="textField" uuid="c6cc37c8-0e21-400a-9095-88b421dd414e" x="110" y="159" width="20" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="false" strikeThrough="false">
 					<expression><![CDATA["ห่อ"]]></expression>
 				</element>
-				<element kind="textField" uuid="fbc3bc7b-ad78-40ac-980a-0a4e2544d6bb" x="9" y="140" width="51" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="false" strikeThrough="false">
+				<element kind="textField" uuid="fbc3bc7b-ad78-40ac-980a-0a4e2544d6bb" x="9" y="159" width="51" height="20" forecolor="#030303" fontName="THSarabun" fontSize="16.0" bold="false" strikeThrough="false">
 					<expression><![CDATA["ห่อที่ : "+$V{REPORT_COUNT}]]></expression>
+				</element>
+				<element kind="textField" uuid="0c4b1036-1f6f-4bba-8571-ebc663c344fc" x="9" y="40" width="51" height="19" forecolor="#030303" backcolor="#FF7D03" fontName="THSarabun" fontSize="16.0">
+					<expression><![CDATA["ชื่อชิ้นส่วน : "]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+				<element kind="textField" uuid="34fccb31-a5fa-4a69-9162-28c30b569b26" x="60" y="40" width="110" height="19" forecolor="#030303" backcolor="#030100" fontName="THSarabun" fontSize="16.0" bold="true">
+					<expression><![CDATA[" "+$F{partname}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>

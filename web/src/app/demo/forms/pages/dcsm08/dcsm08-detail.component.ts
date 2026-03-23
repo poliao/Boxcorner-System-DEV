@@ -86,6 +86,7 @@ export class Dcsm08DetailComponent implements OnInit {
       createdTime: [null],
       qpId: [null],
       qcType: [null],
+      qcLocation: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

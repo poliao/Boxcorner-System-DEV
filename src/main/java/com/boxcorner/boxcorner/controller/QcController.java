@@ -39,13 +39,15 @@ public class QcController {
             @RequestParam(value = "jobName", required = false) String jobName,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "qcType", required = false) String qcType,
+            @RequestParam(value = "qcLocation", required = false) String qcLocation,
+            @RequestParam(value = "role", required = false) String role,
             @RequestParam(value = "startFrom", required = false) LocalDate startFrom,
             @RequestParam(value = "startTo", required = false) LocalDate startTo,
             @RequestParam(value = "deliveryFrom", required = false) LocalDate deliveryFrom,
             @RequestParam(value = "deliveryTo", required = false) LocalDate deliveryTo) {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-            return ResponseEntity.ok(qcService.getAllQcJobs(joId, jobName, status, qcType, startFrom, startTo,
+            return ResponseEntity.ok(qcService.getAllQcJobs(joId, jobName, status, qcType, qcLocation, role, startFrom, startTo,
                     deliveryFrom, deliveryTo, pageable));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());

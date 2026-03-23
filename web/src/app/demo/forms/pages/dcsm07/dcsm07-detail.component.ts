@@ -59,6 +59,7 @@ export class Dcsm07DetailComponent implements OnInit {
         this.mainForm.get('deliveryDate')?.enable({ emitEvent: false });
         this.mainForm.get('remarks')?.enable({ emitEvent: false });
         this.mainForm.get('qcType')?.enable({ emitEvent: false });
+        this.mainForm.get('qcLocation')?.enable({ emitEvent: false });
       }
       if (this.mainForm.getRawValue().sampleOrderId == '' || this.mainForm.getRawValue().sampleOrderId == null) {
         this.isSampleOrderId = false
@@ -150,6 +151,7 @@ export class Dcsm07DetailComponent implements OnInit {
       qtId: [null],
       qpId: [null],
       qcType: [null],
+      qcLocation: [null, Validators.required],
       parts: this.fb.array([])
     });
     this.mainForm.get('id')?.disable();
@@ -178,6 +180,7 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('qtId')?.disable();
     this.mainForm.get('qpId')?.disable();
     this.mainForm.get('qcType')?.disable();
+    this.mainForm.get('qcLocation')?.disable();
   }
 
   patchFormData(data: any): void {

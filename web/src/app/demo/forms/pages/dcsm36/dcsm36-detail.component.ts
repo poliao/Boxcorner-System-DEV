@@ -108,7 +108,8 @@ export class Dcsm36DetailComponent implements OnInit {
       startQcDatetime: [null],
       createdAt: [null],
       updatedAt: [null],
-      qcDetail: [null]
+      qcDetail: [null],
+      partName: [null]
     });
 
     this.papOrderForm = this.fb.group({
@@ -322,21 +323,6 @@ export class Dcsm36DetailComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/Dcsm36']);
-  }
-
-  updateQcStatusProductionJob(qcType: string) {
-    this.dcsm36Service.getByIdProductionJob(this.qcJobForm.getRawValue().productJobId).subscribe({
-      next: (data) => {
-        data.printStatus = 'เริ่มQc (' + qcType + ')';
-        this.dcsm36Service.updateProductionJob(data).subscribe({
-          next: (updateResponse) => {
-          },
-        })
-      },
-      error: (err) => {
-        console.error('Error fetching production job:', err);
-      }
-    });
   }
 
   updateCompletedStatusProductionJob() {

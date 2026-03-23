@@ -53,7 +53,6 @@ export class Dcsm25Component implements OnInit {
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
     { key: 'jobId', label: 'JOB ID' },
-    { key: 'partName', label: 'ชิ้นส่วน' },
     { key: 'customerJobName', label: 'ชื่อลูกค้า/ชื่องาน' },
     { key: 'deliveryDate', label: 'วันที่ส่งพิมพ์', },
     { key: 'printerName', label: 'พิมพ์ที่', },

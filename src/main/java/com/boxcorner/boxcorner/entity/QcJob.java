@@ -88,6 +88,9 @@ public class QcJob extends BaseEntity {
     @Column(name = "part_name")
     private String partName;
 
+    @Column(name = "qc_location")
+    private String qcLocation;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

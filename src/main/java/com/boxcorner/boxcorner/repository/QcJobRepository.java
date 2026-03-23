@@ -14,22 +14,24 @@ import java.time.LocalDate;
 public interface QcJobRepository extends JpaRepository<QcJob, Integer> {
 
     @Query("SELECT q FROM QcJob q WHERE " +
-           "(:joId IS NULL OR q.joId LIKE %:joId%) AND " +
-           "(:jobName IS NULL OR q.jobName LIKE %:jobName%) AND " +
-           "(:status IS NULL OR q.status = :status) AND " +
-           "(:qcType IS NULL OR q.qcType = :qcType) AND " +
-           "(CAST(:startFrom AS DATE) IS NULL OR q.startQcDatetime >= :startFrom) AND " +
-           "(CAST(:startTo AS DATE) IS NULL OR q.startQcDatetime <= :startTo) AND " +
-           "(CAST(:deliveryFrom AS DATE) IS NULL OR q.deliveryDatetime >= :deliveryFrom) AND " +
-           "(CAST(:deliveryTo AS DATE) IS NULL OR q.deliveryDatetime <= :deliveryTo)")
+            "(:joId IS NULL OR q.joId LIKE %:joId%) AND " +
+            "(:jobName IS NULL OR q.jobName LIKE %:jobName%) AND " +
+            "(:status IS NULL OR q.status = :status) AND " +
+            "(:qcType IS NULL OR q.qcType = :qcType) AND " +
+            "(:qcLocation IS NULL OR q.qcLocation = :qcLocation) AND " +
+            "(CAST(:startFrom AS DATE) IS NULL OR q.startQcDatetime >= :startFrom) AND " +
+            "(CAST(:startTo AS DATE) IS NULL OR q.startQcDatetime <= :startTo) AND " +
+            "(CAST(:deliveryFrom AS DATE) IS NULL OR q.deliveryDatetime >= :deliveryFrom) AND " +
+            "(CAST(:deliveryTo AS DATE) IS NULL OR q.deliveryDatetime <= :deliveryTo)")
     Page<QcJob> findByFilters(
-        @Param("joId") String joId,
-        @Param("jobName") String jobName,
-        @Param("status") String status,
-        @Param("qcType") String qcType,
-        @Param("startFrom") LocalDate startFrom,
-        @Param("startTo") LocalDate startTo,
-        @Param("deliveryFrom") LocalDate deliveryFrom,
-        @Param("deliveryTo") LocalDate deliveryTo,
-        Pageable pageable);
+            @Param("joId") String joId,
+            @Param("jobName") String jobName,
+            @Param("status") String status,
+            @Param("qcType") String qcType,
+            @Param("qcLocation") String qcLocation,
+            @Param("startFrom") LocalDate startFrom,
+            @Param("startTo") LocalDate startTo,
+            @Param("deliveryFrom") LocalDate deliveryFrom,
+            @Param("deliveryTo") LocalDate deliveryTo,
+            Pageable pageable);
 }

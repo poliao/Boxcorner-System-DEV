@@ -12,20 +12,6 @@ export class Dcsm36Service {
 
   constructor(private http: HttpClient) { }
 
-
-  getSummaryReport(filters: any): Observable<any[]> {
-    let params: any = {
-      startDate: filters.startDate || null,
-      endDate: filters.endDate || null
-    };
-    Object.keys(params).forEach(key => {
-      if (params[key] === null || params[key] === '') {
-        delete params[key];
-      }
-    });
-    return this.http.get<any[]>(`${this.apiUrl}/salesActivities/summaryReport`, { params });
-  }
-
   getQcJobs(page: number, size: number, filters: any): Observable<any> {
     let params: any = {
       page: page.toString(),
@@ -34,8 +20,9 @@ export class Dcsm36Service {
       endDate: filters.endDate || null,
       joId: filters.joId || null,
       jobName: filters.jobName || null,
-      status: filters.status || null,
       qcType: filters.qcType || null,
+      qcLocation: filters.qcLocation || null,
+      role: filters.role || null,
       startFrom: filters.startFrom || null,
       startTo: filters.startTo || null,
       deliveryFrom: filters.deliveryFrom || null,

@@ -10,6 +10,7 @@ import { Dcsm36Service } from './dcsm36.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-dcsm36',
@@ -25,6 +26,7 @@ export class Dcsm36Component implements OnInit {
     { key: 'id', label: 'ลำดับ' },
     { key: 'joId', label: 'JOB ID' },
     { key: 'jobName', label: 'ชื่องาน' },
+    { key: 'partName', label: 'ชิ้นส่วน' },
     { key: 'qcDetail', label: 'ความละเอียด QC' },
     { key: 'qcType', label: 'ประเภท QC' },
     { key: 'startQcDatetime', label: 'วันที่งานเข้า' },
@@ -41,6 +43,8 @@ export class Dcsm36Component implements OnInit {
     jobName: '',
     status: '',
     qcType: '',
+    qcLocation: '',
+    role: '',
     startFrom: '',
     startTo: '',
     deliveryFrom: '',
@@ -58,11 +62,22 @@ export class Dcsm36Component implements OnInit {
     private router: Router,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
-    private statusColorService: StatusColorService
+    private statusColorService: StatusColorService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
+    this.applyRoleFilters();
     this.loadData();
+  }
+
+  applyRoleFilters() {
+    const user = this.authService.getUserFromToken();
+    if (user && user.role) {
+      this.searchParams.role = user.role;
+      console.log(user.role);
+
+    }
   }
 
   loadData() {
@@ -120,6 +135,7 @@ export class Dcsm36Component implements OnInit {
   }
 
   clearAllFilters() {
+    const defaultRole = this.searchParams.role; // Preserve role
     this.searchParams = {
       startDate: '',
       endDate: '',
@@ -127,6 +143,8 @@ export class Dcsm36Component implements OnInit {
       jobName: '',
       status: '',
       qcType: '',
+      qcLocation: '',
+      role: defaultRole,
       startFrom: '',
       startTo: '',
       deliveryFrom: '',
