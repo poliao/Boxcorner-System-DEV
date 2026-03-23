@@ -85,6 +85,9 @@ public class QcJob extends BaseEntity {
     @Column(name = "qc_detail", length = 50)
     private String qcDetail;
 
+    @Column(name = "part_name")
+    private String partName;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

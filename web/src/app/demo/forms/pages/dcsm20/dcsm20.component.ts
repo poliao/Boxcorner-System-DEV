@@ -64,6 +64,7 @@ export class Dcsm20Component implements OnInit {
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
     { key: 'jobId', label: 'JOB ID' },
+    { key: 'partName', label: 'ชิ้นส่วน' },
     { key: 'customerJobName', label: 'ชื่อลูกค้า' },
     { key: 'printingDate', label: 'วันที่ส่งพิมพ์', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },
     { key: 'printingResponsible', label: 'พิมพ์ที่', styleFunction: this.getColumnStyle.bind(this), headerStyle: 'background: #dc3545; color: white;' },

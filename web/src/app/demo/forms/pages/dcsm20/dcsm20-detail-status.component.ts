@@ -45,6 +45,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   qcType: any;
   availableJobs: any[] = [];
   startQcDatetime: any;
+  partsList: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -82,6 +83,20 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     this.initForm();
     this.disableForm();
     this.checkButton();
+    if (this.referenceId) {
+      this.loadParts();
+    }
+  }
+
+  loadParts(): void {
+    this.dcsm09Service.getPartsByOrderId(this.referenceId).subscribe({
+      next: (parts) => {
+        this.partsList = parts;
+      },
+      error: (err) => {
+        console.error('Error loading parts', err);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -240,22 +255,41 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
           this.papOrder.coating.location = this.productionForm.getRawValue().coatingResponsible
           this.papOrder.dieCutting.location = this.productionForm.getRawValue().stampingResponsible
           this.papOrder.gluing.location = this.productionForm.getRawValue().gluingResponsible
+
+          // 1. Save PAP Order first (once)
           this.dcsm20Service.savePapOrder(this.papOrder).subscribe((responsePap) => {
             this.productionForm.get('papOrderId')?.setValue(responsePap.id);
-            this.dcsm20Service.save(this.productionForm.getRawValue()).subscribe((response) => {
-              this.checkJob(response.id, responsePap)
-              this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
-                this.patchFormData(response);
-                this.checkDateEndProcess();
-                if (this.productionForm.getRawValue().qcDate != null) {
-                  this.saveQcJob();
+
+            // 2. Prepare parts to save
+            const partsToSave = this.partsList.length > 0 ? this.partsList : [{ partName: null }];
+            let savedCount = 0;
+
+            // 3. Recursive save function to handle multiple parts sequentially
+            const savePart = (index: number) => {
+              if (index >= partsToSave.length) {
+                // All parts saved, now update data delivery status (once)
+                this.dcsm20Service.updateDataDalivery(apiFilters).subscribe(() => {
+                  this.loadingService.hide();
+                  this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
+                  this.router.navigate(['/Dcsm09Detail', this.referenceId]);
+                });
+                return;
+              }
+
+              const part = partsToSave[index];
+              const formData = { ...this.productionForm.getRawValue(), partName: part.partName };
+
+              this.dcsm20Service.save(formData).subscribe((response) => {
+                this.checkJob(response.id, responsePap);
+                if (formData.qcDate != null) {
+                  this.saveQcJob(part.partName);
                 }
-                this.loadingService.hide();
-                this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ!');
-                this.router.navigate(['/Dcsm09Detail', this.referenceId]);
+                savePart(index + 1);
               });
-            })
-          })
+            };
+
+            savePart(0);
+          });
         }
       });
     } else {
@@ -487,7 +521,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   setQcJob(id) {
   }
 
-  saveQcJob() {
+  saveQcJob(partName?: string) {
     this.papOrder
     const data = {
       status: 'รอส่งตรวจ',
@@ -499,6 +533,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       papOrderId: this.productionForm.getRawValue().papOrderId,
       receivedQty: null,
       qcType: this.qcType,
+      partName: partName,
       startQcDatetime: this.startQcDatetime,
       qcDetail: this.papOrder.qcAndDelivery.detail
     }
