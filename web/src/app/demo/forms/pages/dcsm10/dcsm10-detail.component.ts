@@ -90,6 +90,8 @@ export class Dcsm10DetailComponent implements OnInit {
       jobId: [null],
       qtId: [null],
       qpId: [null],
+      qcType: [null],
+      qcLocation: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

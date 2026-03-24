@@ -1,0 +1,101 @@
+<div class="row align-items-center mb-4 g-3">
+  <div class="col-12 col-md-6">
+    <div class="d-flex align-items-center">
+      <button mat-icon-button (click)="goBack()" class="me-2">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h4 class="mb-0 fw-bold" style="color: #003747;">DCSM41 - รายละเอียด Lot และประวัติ ({{material?.name}})</h4>
+    </div>
+  </div>
+</div>
+
+<!-- Material Info -->
+<div class="card border-0 shadow-sm mb-4" *ngIf="material">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-3">
+        <small class="text-muted d-block">รหัสวัสดุ</small>
+        <strong>{{material.code}}</strong>
+      </div>
+      <div class="col-md-5">
+        <small class="text-muted d-block">ชื่อวัสดุ</small>
+        <strong>{{material.name}}</strong>
+      </div>
+      <div class="col-md-4">
+        <small class="text-muted d-block">หน่วยพื้นฐาน</small>
+        <strong>{{material.baseUom?.name}}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lot List -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-transparent border-0 pt-4 px-4">
+    <h5 class="mb-0 fw-bold">รายการ Lot ทั้งหมด</h5>
+  </div>
+  <div class="card-body">
+    <app-data-table 
+      [columns]="lotColumns" 
+      [data]="lots"
+      (rowClick)="onRowClick($event)">
+    </app-data-table>
+  </div>
+</div>
+
+<!-- Lot Transaction History -->
+<div class="card border-0 shadow-sm" *ngIf="selectedLot">
+  <div class="card-header bg-transparent border-0 pt-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0 fw-bold">ข้อมูล Lot: {{selectedLot.lotNumber}}</h5>
+      <span class="badge" [ngClass]="selectedLot.baseQty > 0 ? 'bg-success' : 'bg-secondary'">
+        {{selectedLot.baseQty > 0 ? 'In Stock' : 'Out of Stock'}}
+      </span>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="p-3 bg-light rounded shadow-sm">
+          <small class="text-muted d-block mb-1">จำนวนที่รับเข้าทั้งหมด</small>
+          <span class="h5 mb-0 fw-bold">{{selectedLot.receiveQty}} {{selectedLot.receiveUom?.name || material?.baseUom?.name}}</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="p-3 bg-light rounded shadow-sm">
+          <small class="text-muted d-block mb-1">จำนวนคงเหลือปัจจุบัน</small>
+          <span class="h5 mb-0 fw-bold text-primary">{{selectedLot.baseQty}} {{material?.baseUom?.name}}</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="p-3 bg-light rounded shadow-sm">
+          <small class="text-muted d-block mb-1">วันที่รับเข้าระบบ</small>
+          <span class="h5 mb-0 fw-bold">{{selectedLot.createdAt | date:'dd/MM/yyyy HH:mm'}}</span>
+        </div>
+      </div>
+      <div class="col-md-2" *ngIf="selectedLot.supplier">
+        <div class="p-3 bg-light rounded shadow-sm h-100">
+          <small class="text-muted d-block mb-1">ผู้จำหน่าย</small>
+          <span class="fw-bold text-truncate d-block">{{selectedLot.supplier.name}}</span>
+        </div>
+      </div>
+      <div class="col-md-2" *ngIf="selectedLot.brand">
+        <div class="p-3 bg-light rounded shadow-sm h-100">
+          <small class="text-muted d-block mb-1">ยี่ห้อ</small>
+          <span class="fw-bold text-truncate d-block">{{selectedLot.brand.name}}</span>
+        </div>
+      </div>
+    </div>
+    <hr class="my-4">
+    <h5 class="mb-0 fw-bold">ประวัติความเคลื่อนไหว (Withdrawals / Adjustments)</h5>
+  </div>
+  <div class="card-body">
+    <app-data-table 
+      [columns]="logColumns" 
+      [data]="lotLogs">
+    </app-data-table>
+    
+    <div *ngIf="lotLogs && lotLogs.length === 0" class="text-center py-5 text-muted">
+      <mat-icon style="font-size: 48px; width: 48px; height: 48px;" class="mb-2">history</mat-icon>
+      <p>ไม่มีข้อมูลความเคลื่อนไหวสำหรับ Lot นี้</p>
+    </div>
+  </div>
+</div>

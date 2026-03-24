@@ -39,7 +39,7 @@ public class PrintJobService {
                 throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
             }
 
-            existing.setCreatedAt(printJob.getCreatedAt());
+//            existing.setCreatedAt(printJob.getCreatedAt());
             existing.setJobId(printJob.getJobId());
             existing.setDeliveryDate(printJob.getDeliveryDate());
             existing.setDeliveryTime(printJob.getDeliveryTime());

@@ -17,11 +17,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "sales_activities")
 @Data
-@lombok.EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class SalesActivity extends BaseEntity {
 
     @Id
@@ -50,8 +53,6 @@ public class SalesActivity extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String nextStep;
 
-    @Column(updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(columnDefinition = "TEXT")
     private String contact;

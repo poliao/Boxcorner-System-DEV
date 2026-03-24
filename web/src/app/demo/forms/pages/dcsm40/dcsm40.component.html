@@ -1,0 +1,20 @@
+<div class="row align-items-center mb-4 g-3">
+  <div class="col-12 col-md-6">
+    <h4 class="mb-0 fw-bold" style="color: #003747;">DCSM40 - รับวัตถุดิบ (Material Receipt)</h4>
+  </div>
+  <div class="col-12 col-md-6 text-md-end">
+    <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="openDetail()">
+      <mat-icon class="me-2">add</mat-icon> รับวัตถุดิบใหม่
+    </button>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body">
+    <app-data-table 
+      [columns]="tableColumns" 
+      [data]="tableData" 
+      (rowClick)="onRowClick($event)">
+    </app-data-table>
+  </div>
+</div>

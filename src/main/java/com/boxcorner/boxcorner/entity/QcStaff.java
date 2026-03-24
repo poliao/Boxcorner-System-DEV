@@ -1,10 +1,5 @@
 package com.boxcorner.boxcorner.entity;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -22,10 +17,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "qc_staff")
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class QcStaff extends BaseEntity {
 
@@ -57,11 +52,4 @@ public class QcStaff extends BaseEntity {
     @Column(name = "pieces_fraction")
     private Integer piecesFraction;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

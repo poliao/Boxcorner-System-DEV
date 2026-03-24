@@ -1,0 +1,67 @@
+<div class="row align-items-center mb-4">
+  <div class="col-8">
+    <h4 class="mb-0 fw-bold" style="color: #003747;">
+      {{ id ? 'แก้ไขสูตรการแปลงหน่วย' : 'เพิ่มสูตรการแปลงหน่วยใหม่' }}
+    </h4>
+  </div>
+  <div class="col-4 text-end">
+    <button mat-stroked-button color="primary" class="rounded-pill px-4 me-2" (click)="cancel()">
+      <mat-icon class="me-1">arrow_back</mat-icon> กลับ
+    </button>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm col-md-8 mx-auto">
+  <div class="card-body p-4">
+    <form [formGroup]="mainForm">
+      <div class="mb-4">
+        <label class="form-label fw-bold">เลือกวัสดุ <span class="text-danger">*</span></label>
+        <select class="form-select form-select-lg" formControlName="material">
+          <option [ngValue]="null">--- เลือกวัสดุ ---</option>
+          <option *ngFor="let m of materials" [value]="m.id">{{m.name}} ({{m.code}})</option>
+        </select>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">1 หน่วยใหญ่ <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="largeUom">
+            <option [ngValue]="null">เลือกหน่วย</option>
+            <option *ngFor="let u of uoms" [value]="u.id">{{u.name}}</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">เท่ากับกี่หน่วยเล็ก <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="smallUom">
+            <option [ngValue]="null">เลือกหน่วย</option>
+            <option *ngFor="let u of uoms" [value]="u.id">{{u.name}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-bold">อัตราส่วนคูณ (Multiplier) <span class="text-danger">*</span></label>
+        <input type="number" class="form-control form-control-lg" formControlName="multiplier" placeholder="เช่น 500">
+        <div class="form-text text-muted mt-2">
+          ตัวอย่าง: 1 ม้วน = 500 เมตร (ใส่ 500)
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <div class="d-flex justify-content-between">
+        <div>
+          <button mat-flat-button color="warn" class="rounded-pill px-4" *ngIf="id" (click)="delete()">
+            <mat-icon class="me-1">delete</mat-icon> ลบข้อมูล
+          </button>
+        </div>
+        <div>
+          <button mat-button class="rounded-pill px-4 me-2" (click)="cancel()">ยกเลิก</button>
+          <button mat-flat-button color="primary" class="rounded-pill px-5" (click)="save()">
+            <mat-icon class="me-1">save</mat-icon> บันทึก
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

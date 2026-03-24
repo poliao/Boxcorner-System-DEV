@@ -92,7 +92,7 @@ export class StatusColorService {
 
       case 'รอส่งตรวจ': return '#3f3f3fff';
       case 'เข้าตรวจแล้ว': return '#c76a00ff';
-      case 'กำลังตรวจ': return '#b6a024ff';
+      case 'อยู่ระหว่างตรวจ': return '#b6a024ff';
       case 'เสร็จสิ้น': return '#0fb900ff';
 
       default: return '#9e9e9e'; // สีเทาเป็นค่าเริ่มต้น

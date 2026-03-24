@@ -21,8 +21,14 @@ public class StockLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "unit_stock_id", nullable = false)
+    @Column(name = "unit_stock_id")
     private Long unitStockId;
+
+    @Column(name = "material_id")
+    private Integer materialId;
+
+    @Column(name = "lot_id")
+    private Integer lotId;
 
     public enum TransactionType {
         IN, OUT, RETURN, ADJUST

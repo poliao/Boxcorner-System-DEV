@@ -181,7 +181,8 @@ export class Dcsm20DetailComponent implements OnInit {
       imageUrl: [null],
       papOrderId: [null],
       rowVersion: [null],
-      qcJobId: [null]
+      qcJobId: [null],
+      qcLocation: [null],
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -338,7 +339,7 @@ export class Dcsm20DetailComponent implements OnInit {
         if (result.isConfirmed) {
           if (status === 'Qc') {
             this.sweetAlert.input('ยอดก่อน QC', 'กรุณากรอกจำนวนยอดก่อน QC', 'number').then((res) => {
-              if (res.isConfirmed && res.value) {
+              if (res.isConfirmed && res.value && this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
                 const qty = parseInt(res.value, 10);
                 this.productionForm.get('printStatus')?.setValue('กำลังQc');
                 this.saveQcJob(qty);

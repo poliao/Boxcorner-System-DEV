@@ -51,7 +51,6 @@ public class ProductionOrderService {
             existingOrder.setCustomerName(productionOrder.getCustomerName());
             existingOrder.setDataDalivery(productionOrder.getDataDalivery());
             existingOrder.setCancelRemarks(productionOrder.getCancelRemarks());
-            existingOrder.setUpdatedAt(LocalDate.now());
             existingOrder.setJobId(productionOrder.getJobId());
             existingOrder.setQtId(productionOrder.getQtId());
             existingOrder.setDecisionAuthority(productionOrder.getDecisionAuthority());
@@ -65,8 +64,6 @@ public class ProductionOrderService {
         } else {
             productionOrder.setJobOwner(jobOwner);
             productionOrder.setCreatedTime(LocalTime.now());
-            productionOrder.setCreatedAt(LocalDate.now());
-            productionOrder.setUpdatedAt(LocalDate.now());
             productionOrder.setOperatorName("รอผู้รับผิดชอบยืนยัน");
             productionOrder.setJobStatus("รอผู้รับผิดชอบยืนยัน");
             productionOrder.setProcessStatus("รอผู้รับผิดชอบยืนยัน");

@@ -10,9 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 @Table(name = "production_orders")
 public class ProductionOrder extends BaseEntity {
 
@@ -63,11 +67,6 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "job_type")
     private String jobType;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDate createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDate updatedAt;
 
     @Column(name = "sample_order_id")
     private Integer sampleOrderId;

@@ -10,5 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface StockLogRepository extends JpaRepository<StockLog, Long> {
     Page<StockLog> findByUnitStockIdOrderByTransactionDateDesc(Long unitStockId, Pageable pageable);
 
+    Page<StockLog> findByLotIdOrderByTransactionDateDesc(Integer lotId, Pageable pageable);
+
     Page<StockLog> findAllByOrderByTransactionDateDesc(Pageable pageable);
 }

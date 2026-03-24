@@ -111,6 +111,8 @@ export class Dcsm06DetailComponent implements OnInit {
       qtId: [null],
       qpId: [null],
       createdTime: [null],
+      qcType: [null],
+      qcLocation: [null],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();

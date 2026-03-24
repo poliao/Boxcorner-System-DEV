@@ -14,10 +14,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "print_jobs")
 @Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class PrintJob extends BaseEntity {
 
@@ -25,8 +29,6 @@ public class PrintJob extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDate createdAt;
 
     @Column(name = "job_id", length = 50)
     private String jobId;

@@ -1,0 +1,55 @@
+<div class="row align-items-center mb-4">
+  <div class="col-8">
+    <h4 class="mb-0 fw-bold" style="color: #003747;">
+      {{ id ? 'แก้ไขข้อมูลวัสดุ' : 'เพิ่มข้อมูลวัสดุใหม่' }}
+    </h4>
+  </div>
+  <div class="col-4 text-end">
+    <button mat-stroked-button color="primary" class="rounded-pill px-4 me-2" (click)="cancel()">
+      <mat-icon class="me-1">arrow_back</mat-icon> กลับ
+    </button>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm col-md-8 mx-auto">
+  <div class="card-body p-4">
+    <form [formGroup]="mainForm">
+      <div class="mb-4">
+        <label class="form-label fw-bold">รหัสวัสดุ <span class="text-danger">*</span></label>
+        <input type="text" class="form-control form-control-lg" formControlName="code" placeholder="เช่น P-001">
+      </div>
+      
+      <div class="mb-4">
+        <label class="form-label fw-bold">ชื่อวัสดุ <span class="text-danger">*</span></label>
+        <input type="text" class="form-control form-control-lg" formControlName="name" placeholder="เช่น กระดาษอาร์ตการ์ต">
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-bold">หน่วยนับย่อยที่สุด (Base UOM) <span class="text-danger">*</span></label>
+        <select class="form-select form-select-lg" formControlName="baseUom">
+          <option [ngValue]="null">--- เลือกหน่วยนับ ---</option>
+          <option *ngFor="let u of uoms" [value]="u.id">{{u.name}}</option>
+        </select>
+        <div class="form-text text-muted mt-2">
+          ระบุหน่วยที่เล็กที่สุดที่ใช้ในการตัดสต็อกจริง
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <div class="d-flex justify-content-between">
+        <div>
+          <button mat-flat-button color="warn" class="rounded-pill px-4" *ngIf="id" (click)="delete()">
+            <mat-icon class="me-1">delete</mat-icon> ลบข้อมูล
+          </button>
+        </div>
+        <div>
+          <button mat-button class="rounded-pill px-4 me-2" (click)="cancel()">ยกเลิก</button>
+          <button mat-flat-button color="primary" class="rounded-pill px-5" (click)="save()">
+            <mat-icon class="me-1">save</mat-icon> บันทึก
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

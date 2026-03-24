@@ -285,7 +285,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
               const formData = { ...this.productionForm.getRawValue() };
               this.checkDateEndProcess();
 
-              if (formData.qcDate != null) {
+              if (formData.qcDate != null && formData.qcLocation != 'ไม่ส่งQC') {
                 // Save ProductionJob first to generate an ID
                 this.dcsm20Service.save(formData).subscribe((prodResponse) => {
                   formData.id = prodResponse.id;
@@ -293,7 +293,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
                   // Then save QcJob with the new productJobId
                   this.saveQcJob(part.partName, prodResponse.id).subscribe((qcResponse) => {
                     formData.qcJobId = qcResponse.id;
-                    
+
                     // Update ProductionJob with the new qcJobId
                     this.dcsm20Service.save(formData).subscribe((updateResponse) => {
                       if (index === 0) {

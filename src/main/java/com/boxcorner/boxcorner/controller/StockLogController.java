@@ -17,9 +17,10 @@ public class StockLogController {
     @GetMapping
     public ResponseEntity<Page<StockLog>> getStockLogs(
             @RequestParam(name = "unitStockId", required = false) Long unitStockId,
+            @RequestParam(name = "lotId", required = false) Integer lotId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size) {
             
-        return ResponseEntity.ok(stockLogService.getStockLogs(unitStockId, page, size));
+        return ResponseEntity.ok(stockLogService.getStockLogs(unitStockId, lotId, page, size));
     }
 }

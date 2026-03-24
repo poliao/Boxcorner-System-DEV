@@ -1,0 +1,116 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4 align-items-center">
+    <div class="col-8">
+      <h4 class="mb-0 fw-bold" style="color: #003747;">
+        {{ id ? 'แก้ไขการรับวัตถุดิบ' : 'รับวัตถุดิบใหม่' }}
+      </h4>
+      <p class="text-muted small mb-0">บันทึกข้อมูลการรับวัตถุดิบเข้าคลังสินค้า</p>
+    </div>
+    <div class="col-4 text-end">
+      <button mat-stroked-button color="primary" class="rounded-pill px-4 me-2" (click)="cancel()">
+        ยกเลิก
+      </button>
+      <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="save()">
+        <mat-icon class="me-2">save</mat-icon> บันทึกข้อมูล
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="mainForm">
+    <div class="row g-4">
+      <!-- ข้อมูลทั่วไป -->
+      <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 py-3">
+            <h6 class="mb-0 fw-bold text-primary">ข้อมูลการรับเข้า</h6>
+          </div>
+          <div class="card-body pt-0">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label small fw-bold">วัตถุดิบ <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="material">
+                  <option [ngValue]="null" disabled>เลือกวัตถุดิบ</option>
+                  <option *ngFor="let item of materials" [ngValue]="item.id">{{ item.code }} - {{ item.name }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">ผู้จำหน่าย <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="supplier">
+                  <option [ngValue]="null" disabled>เลือกผู้จำหน่าย</option>
+                  <option *ngFor="let item of suppliers" [ngValue]="item.id">{{ item.name }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">ยี่ห้อ <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="brand">
+                  <option [ngValue]="null" disabled>เลือกยี่ห้อ</option>
+                  <option *ngFor="let item of brands" [ngValue]="item.id">{{ item.name }}</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-bold">เลข Lot <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input type="text" class="form-control" formControlName="lotNumber" placeholder="ระบุเลข Lot">
+                  <button class="btn btn-outline-secondary" type="button" (click)="generateLotNumber()">
+                    <mat-icon style="font-size: 18px; height: 18px; width: 18px;">auto_fix_high</mat-icon> สุ่มเลข
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- จำนวนและหน่วย -->
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100 bg-light">
+          <div class="card-header bg-transparent border-0 py-3">
+            <h6 class="mb-0 fw-bold text-primary">จำนวนและหน่วยนับ</h6>
+          </div>
+          <div class="card-body pt-0">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label small fw-bold">จำนวนรับเข้า <span class="text-danger">*</span></label>
+                <div class="input-group input-group-lg">
+                  <input type="number" class="form-control" formControlName="receiveQty" placeholder="0.00">
+                  <select class="form-select w-auto" formControlName="receiveUom">
+                    <option [ngValue]="null" disabled>หน่วย</option>
+                    <option *ngFor="let uom of availableUoms" [ngValue]="uom.id">{{ uom.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-12 mt-4 pt-4 border-top">
+                <div class="p-3 rounded bg-white border">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small text-muted fw-bold text-uppercase ls-1">จำนวนที่แปลงได้ (หน่วยเล็ก)</span>
+                    <mat-icon class="text-primary">sync</mat-icon>
+                  </div>
+                  <div class="d-flex align-items-baseline">
+                    <h2 class="mb-0 fw-bold text-primary">{{ mainForm.get('baseQty')?.value | number:'1.2-2' }}</h2>
+                    <span class="ms-2 fw-bold text-muted">{{ baseUomName }}</span>
+                  </div>
+                  <p class="small text-muted mt-2 mb-0">
+                    * คำนวณอัตโนมัติตามค่าตัวคูณที่ตั้งไว้ในหน้าตั้งค่าการแปลงหน่วย
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ลบข้อมูล -->
+    <div class="row mt-4 pt-4" *ngIf="id">
+      <div class="col-12 border-top pt-4">
+        <button mat-button color="warn" class="px-4" (click)="delete()">
+          <mat-icon class="me-2">delete</mat-icon> ลบข้อมูลการรับนี้
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

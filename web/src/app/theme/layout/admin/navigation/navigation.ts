@@ -63,6 +63,54 @@ export const NavigationItems: NavigationItem[] = [
       }
     ]
   },
+  {
+    id: 'stock-management',
+    title: 'ระบบสต็อก (Stock)',
+    type: 'group',
+    icon: 'icon-navigation',
+    children: [
+      {
+        id: 'dcsm37',
+        title: 'จัดการวัสดุ (DCSM37)',
+        type: 'item',
+        url: '/Dcsm37',
+        icon: 'ti ti-package',
+        breadcrumbs: false
+      },
+      {
+        id: 'dcsm38',
+        title: 'การแปลงหน่วย (DCSM38)',
+        type: 'item',
+        url: '/Dcsm38',
+        icon: 'ti ti-arrows-exchange',
+        breadcrumbs: false
+      },
+      {
+        id: 'dcsm39',
+        title: 'ผู้จำหน่าย/ยี่ห้อ (DCSM39)',
+        type: 'item',
+        url: '/Dcsm39',
+        icon: 'ti ti-building-store',
+        breadcrumbs: false
+      },
+      {
+        id: 'dcsm40',
+        title: 'รับวัตถุดิบ (DCSM40)',
+        type: 'item',
+        url: '/Dcsm40',
+        icon: 'ti ti-file-import',
+        breadcrumbs: false
+      },
+      {
+        id: 'dcsm41',
+        title: 'รายงานคงคลัง (DCSM41)',
+        type: 'item',
+        url: '/Dcsm41',
+        icon: 'ti ti-clipboard-list',
+        breadcrumbs: false
+      }
+    ]
+  },
   // {
   //   id: 'elements',
   //   title: 'Elements',

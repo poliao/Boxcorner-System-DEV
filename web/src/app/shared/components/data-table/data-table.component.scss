@@ -56,8 +56,16 @@
   }
 }
 
-.clickable {
+.hover-row {
   cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(0, 55, 71, 0.05) !important;
+  }
+}
+
+.clickable {
   color: #171851 !important;
   text-decoration: underline !important;
 }

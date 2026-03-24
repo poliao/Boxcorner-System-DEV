@@ -20,6 +20,7 @@ export class Dcsm36Service {
       endDate: filters.endDate || null,
       joId: filters.joId || null,
       jobName: filters.jobName || null,
+      status: filters.status || null,
       qcType: filters.qcType || null,
       qcLocation: filters.qcLocation || null,
       role: filters.role || null,

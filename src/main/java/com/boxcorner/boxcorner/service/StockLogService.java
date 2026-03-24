@@ -17,9 +17,11 @@ public class StockLogService {
         stockLogRepository.save(log);
     }
 
-    public Page<StockLog> getStockLogs(Long unitStockId, int page, int size) {
+    public Page<StockLog> getStockLogs(Long unitStockId, Integer lotId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        if (unitStockId != null) {
+        if (lotId != null) {
+            return stockLogRepository.findByLotIdOrderByTransactionDateDesc(lotId, pageRequest);
+        } else if (unitStockId != null) {
             return stockLogRepository.findByUnitStockIdOrderByTransactionDateDesc(unitStockId, pageRequest);
         } else {
             return stockLogRepository.findAllByOrderByTransactionDateDesc(pageRequest);

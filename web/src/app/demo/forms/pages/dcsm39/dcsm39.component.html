@@ -1,0 +1,35 @@
+<div class="text-end mb-3">
+  <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="openDetail(activeTab)">
+    <mat-icon class="me-2">add</mat-icon> เพิ่ม{{ activeTab === 'supplier' ? 'ผู้จำหน่าย' : activeTab === 'brand' ?
+    'ยี่ห้อ' : 'หน่วยนับ' }}
+  </button>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white">
+    <ul class="nav nav-tabs card-header-tabs">
+      <li class="nav-item">
+        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'supplier'"
+          (click)="activeTab = 'supplier'">ผู้จำหน่าย</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'brand'"
+          (click)="activeTab = 'brand'">ยี่ห้อ</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'uom'" (click)="activeTab = 'uom'">หน่วยนับ</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body">
+
+    <div *ngIf="activeTab === 'supplier'">
+      <app-data-table [columns]="supplierColumns" [data]="suppliers" (rowClick)="onRowClick($event)"></app-data-table>
+    </div>
+    <div *ngIf="activeTab === 'brand'">
+      <app-data-table [columns]="brandColumns" [data]="brands" (rowClick)="onRowClick($event)"></app-data-table>
+    </div>
+    <div *ngIf="activeTab === 'uom'">
+      <app-data-table [columns]="uomColumns" [data]="uoms" (rowClick)="onRowClick($event)"></app-data-table>
+    </div>
+  </div>
+</div>

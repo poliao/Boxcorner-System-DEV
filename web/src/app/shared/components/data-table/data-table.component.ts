@@ -95,9 +95,12 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnChanges {
     return this.columns.map(col => col.key).filter(key => key);
   }
 
-  onRowClick(row: any, columnKey: string) {
-    if (this.clickableColumn === columnKey) {
-      this.rowClick.emit(row);
-    }
+  getNestedValue(row: any, key: string): any {
+    if (!key || !row) return '-';
+    return key.split('.').reduce((acc, part) => acc && acc[part], row) || '-';
+  }
+
+  onRowClick(row: any) {
+    this.rowClick.emit(row);
   }
 }

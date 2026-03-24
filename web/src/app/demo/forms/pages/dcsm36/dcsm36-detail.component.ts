@@ -27,7 +27,7 @@ export class Dcsm36DetailComponent implements OnInit {
   isStartModalOpen = false;
   selectedQcType = null;
   modalReceivedQty: number | null = null;
-  usersList: any[] = [
+  usersListOS: any[] = [
     {
       text: 'ต้อย',
     },
@@ -62,6 +62,26 @@ export class Dcsm36DetailComponent implements OnInit {
       text: 'ศศิธร'
     }
   ];
+  usersListOD: any[] = [
+    {
+      text: 'ธีมาพร',
+    }, {
+      text: 'วราภรณ์',
+    }, {
+      text: 'นุชนารถ',
+    },
+  ];
+  userRole: string = '';
+
+  get usersList() {
+    if (this.userRole === 'stam') {
+      return this.usersListOD;
+    } else if (this.userRole === 'qc') {
+      return this.usersListOS;
+    }
+    return [...this.usersListOD, ...this.usersListOS];
+  }
+
   activeTab: 'staff' | 'waste' = 'staff';
   qcWasteList: any[] = [];
   qcStaffList: any[] = [{ userName: '', packs: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
@@ -78,6 +98,12 @@ export class Dcsm36DetailComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+
+    const user = this.authService.getUserFromToken();
+    if (user && user.role) {
+      this.userRole = user.role.toLowerCase();
+    }
+
     this.route.paramMap.subscribe(params => {
       const idStr = params.get('id');
       if (idStr) {
