@@ -27,6 +27,7 @@ export class Dcsm37Component implements OnInit {
     { key: 'id', label: 'ลำดับ' },
     { key: 'code', label: 'รหัสวัสดุ' },
     { key: 'name', label: 'ชื่อวัสดุ' },
+    { key: 'materialType.name', label: 'ประเภท' },
     { key: 'baseUom.name', label: 'หน่วยย่อยสุด' },
   ];
 

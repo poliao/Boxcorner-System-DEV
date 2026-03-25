@@ -5,30 +5,19 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "materials")
+@Table(name = "material_types")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-public class Material extends BaseEntity {
+public class MaterialType extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "code", length = 50, unique = true)
-    private String code;
-
     @Column(name = "name", length = 255)
     private String name;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "base_uom_id")
-    private Uom baseUom;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "material_type_id")
-    private MaterialType materialType;
 }

@@ -180,6 +180,43 @@ export class Dcsm06DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
+        if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '') {
+          const currentJobId = this.mainForm.getRawValue().jobId;
+          this.mainForm.get('jobId')?.setValue(this.incrementJobId(currentJobId));
+        }
+        this.dcsm06Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'เรียบร้อย')
+            this.router.navigate(['/Dcsm06']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
+      }
+    });
+  }
+
+  copyToNew() {
+    Swal.fire({
+      title: 'ยืนยันบันทึกข้อมูล',
+      text: "ยืนยันบันทึกข้อมูล ใช่หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '') {
+          this.mainForm.get('jobId')?.setValue(this.mainForm.getRawValue().jobId + '_1');
+        }
         this.dcsm06Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();
@@ -293,5 +330,18 @@ export class Dcsm06DetailComponent implements OnInit {
     if (!createdAt) return '';
     const date = new Date(createdAt);
     return date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  incrementJobId(jobId: string | null | undefined): string {
+    if (!jobId) return '';
+    const lastUnderscoreIndex = jobId.lastIndexOf('_');
+    if (lastUnderscoreIndex !== -1) {
+      const suffix = jobId.substring(lastUnderscoreIndex + 1);
+      const version = parseInt(suffix);
+      if (!isNaN(version)) {
+        return jobId.substring(0, lastUnderscoreIndex + 1) + (version + 1);
+      }
+    }
+    return jobId + '_1';
   }
 }

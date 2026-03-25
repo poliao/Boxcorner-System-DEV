@@ -1,7 +1,7 @@
 <div class="text-end mb-3">
   <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="openDetail(activeTab)">
     <mat-icon class="me-2">add</mat-icon> เพิ่ม{{ activeTab === 'supplier' ? 'ผู้จำหน่าย' : activeTab === 'brand' ?
-    'ยี่ห้อ' : 'หน่วยนับ' }}
+    'ยี่ห้อ' : activeTab === 'uom' ? 'หน่วยนับ' : 'ประเภทวัสดุ' }}
   </button>
 </div>
 <div class="card border-0 shadow-sm">
@@ -18,6 +18,9 @@
       <li class="nav-item">
         <a class="nav-link cursor-pointer" [class.active]="activeTab === 'uom'" (click)="activeTab = 'uom'">หน่วยนับ</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'materialType'" (click)="activeTab = 'materialType'">ประเภทวัสดุ</a>
+      </li>
     </ul>
   </div>
   <div class="card-body">
@@ -30,6 +33,9 @@
     </div>
     <div *ngIf="activeTab === 'uom'">
       <app-data-table [columns]="uomColumns" [data]="uoms" (rowClick)="onRowClick($event)"></app-data-table>
+    </div>
+    <div *ngIf="activeTab === 'materialType'">
+      <app-data-table [columns]="materialTypeColumns" [data]="materialTypes" (rowClick)="onRowClick($event)"></app-data-table>
     </div>
   </div>
 </div>

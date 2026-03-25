@@ -41,4 +41,14 @@ export class Dcsm39Service {
   deleteUom(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/uoms/${id}`);
   }
+
+  getAllMaterialTypes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/material-types`);
+  }
+  saveMaterialType(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/material-types`, data);
+  }
+  deleteMaterialType(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/material-types/${id}`);
+  }
 }

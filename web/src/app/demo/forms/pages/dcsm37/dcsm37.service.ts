@@ -31,4 +31,8 @@ export class Dcsm37Service {
   getAllUoms(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/uoms`);
   }
+
+  getAllMaterialTypes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/material-types`);
+  }
 }

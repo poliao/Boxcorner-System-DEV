@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Dcsm25Service } from './dcsm25.service';
-import { Dcsm30Service } from '../dcsm30/dcsm30.service';
 import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
@@ -35,7 +34,6 @@ export class Dcsm25DetailComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dcsm25Service: Dcsm25Service,
-    private dcsm30Service: Dcsm30Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private route: ActivatedRoute,

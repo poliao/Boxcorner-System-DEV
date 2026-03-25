@@ -25,6 +25,14 @@
       </div>
 
       <div class="mb-4">
+        <label class="form-label fw-bold">ประเภทวัสดุ</label>
+        <select class="form-select form-select-lg" formControlName="materialType">
+          <option [ngValue]="null">--- เลือกประเภทวัสดุ ---</option>
+          <option *ngFor="let mt of materialTypes" [value]="mt.id">{{mt.name}}</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
         <label class="form-label fw-bold">หน่วยนับย่อยที่สุด (Base UOM) <span class="text-danger">*</span></label>
         <select class="form-select form-select-lg" formControlName="baseUom">
           <option [ngValue]="null">--- เลือกหน่วยนับ ---</option>

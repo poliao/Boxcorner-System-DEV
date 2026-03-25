@@ -20,7 +20,7 @@ export class Dcsm39DetailComponent implements OnInit {
 
   mainForm: FormGroup;
   id: number | null = null;
-  type: 'supplier' | 'brand' | 'uom' = 'supplier';
+  type: 'supplier' | 'brand' | 'uom' | 'materialType' = 'supplier';
 
   constructor(
     private fb: FormBuilder,
@@ -49,7 +49,8 @@ export class Dcsm39DetailComponent implements OnInit {
   getTypeLabel() {
     if (this.type === 'supplier') return 'ผู้จำหน่าย';
     if (this.type === 'brand') return 'ยี่ห้อ';
-    return 'หน่วยนับ';
+    if (this.type === 'uom') return 'หน่วยนับ';
+    return 'ประเภทวัสดุ';
   }
 
   loadData() {
@@ -58,8 +59,10 @@ export class Dcsm39DetailComponent implements OnInit {
       this.service.getAllSuppliers().subscribe(list => this.handleList(list));
     } else if (this.type === 'brand') {
       this.service.getAllBrands().subscribe(list => this.handleList(list));
-    } else {
+    } else if (this.type === 'uom') {
       this.service.getAllUoms().subscribe(list => this.handleList(list));
+    } else {
+      this.service.getAllMaterialTypes().subscribe(list => this.handleList(list));
     }
   }
 
@@ -80,7 +83,8 @@ export class Dcsm39DetailComponent implements OnInit {
     let obs;
     if (this.type === 'supplier') obs = this.service.saveSupplier(data);
     else if (this.type === 'brand') obs = this.service.saveBrand(data);
-    else obs = this.service.saveUom(data);
+    else if (this.type === 'uom') obs = this.service.saveUom(data);
+    else obs = this.service.saveMaterialType(data);
 
     obs.subscribe({
       next: () => {
@@ -99,7 +103,8 @@ export class Dcsm39DetailComponent implements OnInit {
         let obs;
         if (this.type === 'supplier') obs = this.service.deleteSupplier(this.id!);
         else if (this.type === 'brand') obs = this.service.deleteBrand(this.id!);
-        else obs = this.service.deleteUom(this.id!);
+        else if (this.type === 'uom') obs = this.service.deleteUom(this.id!);
+        else obs = this.service.deleteMaterialType(this.id!);
 
         obs.subscribe({
           next: () => {

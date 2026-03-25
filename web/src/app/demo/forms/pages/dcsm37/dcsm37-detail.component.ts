@@ -21,6 +21,7 @@ export class Dcsm37DetailComponent implements OnInit {
   mainForm: FormGroup;
   id: number | null = null;
   uoms: any[] = [];
+  materialTypes: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -34,13 +35,16 @@ export class Dcsm37DetailComponent implements OnInit {
       id: [null],
       code: ['', [Validators.required, Validators.maxLength(50)]],
       name: ['', [Validators.required, Validators.maxLength(255)]],
-      baseUom: [null, Validators.required]
+      baseUom: [null, Validators.required],
+      materialType: [null],
+      rowVersion: [null]
     });
   }
 
   ngOnInit() {
     this.id = this.route.snapshot.params['id'] ? Number(this.route.snapshot.params['id']) : null;
     this.loadUoms();
+    this.loadMaterialTypes();
     if (this.id) {
       this.loadData();
     }
@@ -50,13 +54,19 @@ export class Dcsm37DetailComponent implements OnInit {
     this.service.getAllUoms().subscribe(data => this.uoms = data);
   }
 
+  loadMaterialTypes() {
+    this.service.getAllMaterialTypes().subscribe(data => this.materialTypes = data);
+  }
+
   loadData() {
     this.loadingService.show();
     this.service.getMaterialById(this.id!).subscribe({
       next: (data) => {
         this.mainForm.patchValue({
           ...data,
-          baseUom: data.baseUom?.id
+          baseUom: data.baseUom?.id,
+          materialType: data.materialType?.id,
+          rowVersion: data.rowVersion
         });
         this.loadingService.hide();
       },
@@ -74,7 +84,8 @@ export class Dcsm37DetailComponent implements OnInit {
     const formValue = this.mainForm.getRawValue();
     const payload = {
       ...formValue,
-      baseUom: { id: formValue.baseUom }
+      baseUom: formValue.baseUom ? { id: formValue.baseUom } : null,
+      materialType: formValue.materialType ? { id: formValue.materialType } : null
     };
 
     this.service.saveMaterial(payload).subscribe({

@@ -13,6 +13,7 @@ public class InventoryDTO {
     private Integer materialId;
     private String materialCode;
     private String materialName;
+    private String materialTypeName;
     private String baseUomName;
     private Double totalBaseQty;
     private String largeUomName;

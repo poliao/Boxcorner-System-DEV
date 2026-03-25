@@ -20,6 +20,7 @@ export class Dcsm41Component implements OnInit {
   tableColumns = [
     { key: 'materialCode', label: 'รหัสวัสดุ' },
     { key: 'materialName', label: 'ชื่อวัสดุ' },
+    { key: 'materialTypeName', label: 'ประเภท' },
     { key: 'largeQty', label: 'ยอดคงเหลือใหญ่' },
     { key: 'largeUomName', label: 'หน่วยใหญ่' },
     { key: 'smallQty', label: 'ยอดคงเหลือเล็ก' },

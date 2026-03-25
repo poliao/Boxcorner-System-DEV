@@ -19,33 +19,99 @@ public class StockService {
     private final MaterialRepository materialRepository;
     private final MaterialConversionRepository materialConversionRepository;
     private final LotRepository lotRepository;
+    private final MaterialTypeRepository materialTypeRepository;
 
     // --- UOM ---
     public List<Uom> getAllUoms() { return uomRepository.findAll(); }
     public Uom getUomById(Integer id) { return uomRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Uom not found")); }
-    @Transactional public Uom saveUom(Uom uom) { return uomRepository.save(uom); }
+    @Transactional public Uom saveUom(Uom uom) { 
+        Uom existing;
+        if (uom.getId() != null) {
+            existing = uomRepository.findById(uom.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Uom not found"));
+            existing.setName(uom.getName());
+        } else {
+            existing = uom;
+        }
+        return uomRepository.save(existing); 
+    }
     @Transactional public void deleteUom(Integer id) { uomRepository.deleteById(id); }
 
     // --- Supplier ---
     public List<Supplier> getAllSuppliers() { return supplierRepository.findAll(); }
     public Supplier getSupplierById(Integer id) { return supplierRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Supplier not found")); }
-    @Transactional public Supplier saveSupplier(Supplier supplier) { return supplierRepository.save(supplier); }
+    @Transactional public Supplier saveSupplier(Supplier supplier) { 
+        Supplier existing;
+        if (supplier.getId() != null) {
+            existing = supplierRepository.findById(supplier.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Supplier not found"));
+            existing.setName(supplier.getName());
+        } else {
+            existing = supplier;
+        }
+        return supplierRepository.save(existing); 
+    }
     @Transactional public void deleteSupplier(Integer id) { supplierRepository.deleteById(id); }
 
     // --- Brand ---
     public List<Brand> getAllBrands() { return brandRepository.findAll(); }
     public Brand getBrandById(Integer id) { return brandRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Brand not found")); }
-    @Transactional public Brand saveBrand(Brand brand) { return brandRepository.save(brand); }
+    @Transactional public Brand saveBrand(Brand brand) { 
+        Brand existing;
+        if (brand.getId() != null) {
+            existing = brandRepository.findById(brand.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Brand not found"));
+            existing.setName(brand.getName());
+        } else {
+            existing = brand;
+        }
+        return brandRepository.save(existing); 
+    }
     @Transactional public void deleteBrand(Integer id) { brandRepository.deleteById(id); }
+
+    // --- Material Type ---
+    public List<MaterialType> getAllMaterialTypes() { return materialTypeRepository.findAll(); }
+    public MaterialType getMaterialTypeById(Integer id) { return materialTypeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Material Type not found")); }
+    @Transactional public MaterialType saveMaterialType(MaterialType type) { 
+        MaterialType existing;
+        if (type.getId() != null) {
+            existing = materialTypeRepository.findById(type.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Material Type not found"));
+            existing.setName(type.getName());
+        } else {
+            existing = type;
+        }
+        return materialTypeRepository.save(existing); 
+    }
+    @Transactional public void deleteMaterialType(Integer id) { materialTypeRepository.deleteById(id); }
 
     // --- Material ---
     public List<Material> getAllMaterials() { return materialRepository.findAll(); }
     public Material getMaterialById(Integer id) { return materialRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Material not found")); }
     @Transactional public Material saveMaterial(Material material) { 
-        if (material.getBaseUom() != null && material.getBaseUom().getId() != null) {
-            material.setBaseUom(uomRepository.getReferenceById(material.getBaseUom().getId()));
+        Material existing;
+        if (material.getId() != null) {
+            existing = materialRepository.findById(material.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Material not found"));
+            existing.setCode(material.getCode());
+            existing.setName(material.getName());
+        } else {
+            existing = material;
         }
-        return materialRepository.save(material); 
+
+        if (material.getBaseUom() != null && material.getBaseUom().getId() != null) {
+            existing.setBaseUom(uomRepository.getReferenceById(material.getBaseUom().getId()));
+        } else {
+            existing.setBaseUom(null);
+        }
+
+        if (material.getMaterialType() != null && material.getMaterialType().getId() != null) {
+            existing.setMaterialType(materialTypeRepository.getReferenceById(material.getMaterialType().getId()));
+        } else {
+            existing.setMaterialType(null);
+        }
+
+        return materialRepository.save(existing); 
     }
     @Transactional public void deleteMaterial(Integer id) { materialRepository.deleteById(id); }
 
@@ -54,16 +120,25 @@ public class StockService {
     public List<MaterialConversion> getMaterialConversionsByMaterialId(Integer materialId) { return materialConversionRepository.findByMaterialId(materialId); }
     public MaterialConversion getMaterialConversionById(Integer id) { return materialConversionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Conversion not found")); }
     @Transactional public MaterialConversion saveMaterialConversion(MaterialConversion conversion) { 
+        MaterialConversion existing;
+        if (conversion.getId() != null) {
+            existing = materialConversionRepository.findById(conversion.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Conversion not found"));
+            existing.setMultiplier(conversion.getMultiplier());
+        } else {
+            existing = conversion;
+        }
+
         if (conversion.getMaterial() != null && conversion.getMaterial().getId() != null) {
-            conversion.setMaterial(materialRepository.getReferenceById(conversion.getMaterial().getId()));
+            existing.setMaterial(materialRepository.getReferenceById(conversion.getMaterial().getId()));
         }
         if (conversion.getLargeUom() != null && conversion.getLargeUom().getId() != null) {
-            conversion.setLargeUom(uomRepository.getReferenceById(conversion.getLargeUom().getId()));
+            existing.setLargeUom(uomRepository.getReferenceById(conversion.getLargeUom().getId()));
         }
         if (conversion.getSmallUom() != null && conversion.getSmallUom().getId() != null) {
-            conversion.setSmallUom(uomRepository.getReferenceById(conversion.getSmallUom().getId()));
+            existing.setSmallUom(uomRepository.getReferenceById(conversion.getSmallUom().getId()));
         }
-        return materialConversionRepository.save(conversion); 
+        return materialConversionRepository.save(existing); 
     }
     @Transactional public void deleteMaterialConversion(Integer id) { materialConversionRepository.deleteById(id); }
 
@@ -72,19 +147,30 @@ public class StockService {
     public List<Lot> getLotsByMaterialId(Integer materialId) { return lotRepository.findByMaterialId(materialId); }
     public Lot getLotById(Integer id) { return lotRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Lot not found")); }
     @Transactional public Lot saveLot(Lot lot) { 
+        Lot existing;
+        if (lot.getId() != null) {
+            existing = lotRepository.findById(lot.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Lot not found"));
+            existing.setLotNumber(lot.getLotNumber());
+            existing.setReceiveQty(lot.getReceiveQty());
+            existing.setBaseQty(lot.getBaseQty());
+        } else {
+            existing = lot;
+        }
+
         if (lot.getMaterial() != null && lot.getMaterial().getId() != null) {
-            lot.setMaterial(materialRepository.getReferenceById(lot.getMaterial().getId()));
+            existing.setMaterial(materialRepository.getReferenceById(lot.getMaterial().getId()));
         }
         if (lot.getSupplier() != null && lot.getSupplier().getId() != null) {
-            lot.setSupplier(supplierRepository.getReferenceById(lot.getSupplier().getId()));
+            existing.setSupplier(supplierRepository.getReferenceById(lot.getSupplier().getId()));
         }
         if (lot.getBrand() != null && lot.getBrand().getId() != null) {
-            lot.setBrand(brandRepository.getReferenceById(lot.getBrand().getId()));
+            existing.setBrand(brandRepository.getReferenceById(lot.getBrand().getId()));
         }
         if (lot.getReceiveUom() != null && lot.getReceiveUom().getId() != null) {
-            lot.setReceiveUom(uomRepository.getReferenceById(lot.getReceiveUom().getId()));
+            existing.setReceiveUom(uomRepository.getReferenceById(lot.getReceiveUom().getId()));
         }
-        return lotRepository.save(lot); 
+        return lotRepository.save(existing); 
     }
     @Transactional public void deleteLot(Integer id) { lotRepository.deleteById(id); }
 
@@ -111,6 +197,7 @@ public class StockService {
                     .materialId(m.getId())
                     .materialCode(m.getCode())
                     .materialName(m.getName())
+                    .materialTypeName(m.getMaterialType() != null ? m.getMaterialType().getName() : "")
                     .baseUomName(m.getBaseUom() != null ? m.getBaseUom().getName() : "")
                     .totalBaseQty(totalBaseQty)
                     .largeUomName(largeUomName)

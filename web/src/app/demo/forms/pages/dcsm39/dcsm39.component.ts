@@ -35,11 +35,17 @@ export class Dcsm39Component implements OnInit {
     { key: 'id', label: 'ลำดับ' },
     { key: 'name', label: 'ชื่อหน่วย' },
   ];
+  
+  materialTypeColumns = [
+    { key: 'id', label: 'ลำดับ' },
+    { key: 'name', label: 'ชื่อประเภทวัสดุ' },
+  ];
 
   suppliers: any[] = [];
   brands: any[] = [];
   uoms: any[] = [];
-  activeTab: 'supplier' | 'brand' | 'uom' = 'supplier';
+  materialTypes: any[] = [];
+  activeTab: 'supplier' | 'brand' | 'uom' | 'materialType' = 'supplier';
 
   constructor(
     private service: Dcsm39Service,
@@ -51,6 +57,7 @@ export class Dcsm39Component implements OnInit {
     this.loadSuppliers();
     this.loadBrands();
     this.loadUoms();
+    this.loadMaterialTypes();
   }
 
   loadSuppliers() {
@@ -63,6 +70,10 @@ export class Dcsm39Component implements OnInit {
 
   loadUoms() {
     this.service.getAllUoms().subscribe(data => this.uoms = data);
+  }
+
+  loadMaterialTypes() {
+    this.service.getAllMaterialTypes().subscribe(data => this.materialTypes = data);
   }
 
   openDetail(type: string, id?: number) {

@@ -111,6 +111,38 @@ public class StockController {
         }
     }
 
+    // --- Material Type ---
+    @GetMapping("/material-types")
+    public ResponseEntity<?> getAllMaterialTypes() {
+        try {
+            return ResponseEntity.ok(stockService.getAllMaterialTypes());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/material-types")
+    public ResponseEntity<?> saveMaterialType(@RequestBody MaterialType type) {
+        try {
+            return ResponseEntity.ok(stockService.saveMaterialType(type));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/material-types/{id}")
+    public ResponseEntity<?> deleteMaterialType(@PathVariable Integer id) {
+        try {
+            stockService.deleteMaterialType(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
     // --- Material ---
     @GetMapping("/materials")
     public ResponseEntity<?> getAllMaterials() {
