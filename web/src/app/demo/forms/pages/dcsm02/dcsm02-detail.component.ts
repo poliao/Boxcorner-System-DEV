@@ -537,7 +537,7 @@ export class Dcsm02DetailComponent implements OnInit {
       sampleOrderId: null,
       customerName: this.designForm.getRawValue().customerName,
       dataDalivery: false,
-      jobId: this.jobId.value,
+      jobId: this.ensureJobIdSuffix(this.jobId.value),
       decisionAuthority: this.decisionAuthority.value,
       decisionAuthorityRemarks: this.decisionAuthorityRemarks.value,
       print2Page: this.print2Page.value,
@@ -586,5 +586,13 @@ export class Dcsm02DetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  ensureJobIdSuffix(jobId: string | null | undefined): string {
+    if (!jobId) return '';
+    if (/_\d+$/.test(jobId)) {
+      return jobId;
+    }
+    return jobId + '_1';
   }
 }

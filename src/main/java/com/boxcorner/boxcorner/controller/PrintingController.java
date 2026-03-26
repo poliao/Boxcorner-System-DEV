@@ -21,7 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/printing")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // อนุญาตให้ Frontend ยิงเข้ามาได้ทุก Domain (Dev Mode)
 public class PrintingController {
 
     private final PrintingService printingService;

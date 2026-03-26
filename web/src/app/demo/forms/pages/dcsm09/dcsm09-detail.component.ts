@@ -94,26 +94,26 @@ export class Dcsm09DetailComponent implements OnInit {
 
   initForm(): void {
     this.mainForm = this.fb.group({
-      id: [''],
+      id: [null],
       orderDate: [new Date().toISOString().substring(0, 10), Validators.required],
-      folderName: ['', Validators.required],
-      usedFile: [''],
-      colorSample: [''],
-      jobOwner: [''],
-      deadlineDate: [''],
-      deadlineTime: [''],
-      deliveryDate: [''],
-      jobStatus: [''],
-      processStatus: [''],
-      operatorName: [''],
-      inspectionDate: [''],
-      remarks: [''],
-      moldStatus: [''],
-      jobType: [''],
-      inspector: [''],
-      createdAt: [''],
-      updatedAt: [''],
-      customerName: [''],
+      folderName: [null, Validators.required],
+      usedFile: [null],
+      colorSample: [null],
+      jobOwner: [null],
+      deadlineDate: [null],
+      deadlineTime: [null],
+      deliveryDate: [null],
+      jobStatus: [null],
+      processStatus: [null],
+      operatorName: [null],
+      inspectionDate: [null],
+      remarks: [null],
+      moldStatus: [null],
+      jobType: [null],
+      inspector: [null],
+      createdAt: [null],
+      updatedAt: [null],
+      customerName: [null],
       dataDalivery: [false],
       postpone: [null],
       rowVersion: [null],
@@ -126,7 +126,19 @@ export class Dcsm09DetailComponent implements OnInit {
       qpId: [null],
       qcType: [null],
       qcLocation: [null],
-      parts: this.fb.array([])
+      parts: this.fb.array([]),
+      sampleJobType: [null],
+      samplePrintingSystem: [null],
+      samplePrintingStyle: [null],
+      samplePrintingColor: [null],
+      samplePaperSize: [null],
+      samplePaperGrammage: [null],
+      sampleCoatingStyle: [null],
+      sampleDiecutStyle: [null],
+      sampleSpecialInstructions: [null],
+      sampleDeliveryTimestamp: [null],
+      printRound: [null],
+      printRoundPage2: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -156,24 +168,56 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.get('qpId')?.disable();
     this.mainForm.get('qcType')?.disable();
     this.mainForm.get('qcLocation')?.disable();
+
+    this.mainForm.get('sampleJobType')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingSystem')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingColor')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperSize')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperGrammage')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleCoatingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDiecutStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
     const apiData = data as any;
+    if (apiData.sampleDeliveryTimestamp) {
+      apiData.sampleDeliveryTimestamp = apiData.sampleDeliveryTimestamp.substring(0, 16);
+    }
     this.mainForm.patchValue(apiData);
   }
 
+  prepareDataForSave(data: any): any {
+    return { ...data };
+  }
+
   add() {
-    this.router.navigate(['/Dcsm20DetailStatus', this.mainForm.getRawValue().id], {
+    const navigationState = {
       state: {
         referenceId: this.mainForm.getRawValue().id,
         decisionAuthority: this.mainForm.getRawValue().decisionAuthority,
         decisionAuthorityRemarks: this.mainForm.getRawValue().decisionAuthorityRemarks,
         print2Page: this.mainForm.getRawValue().print2Page,
         qcType: this.mainForm.getRawValue().qcType,
-        qcLocation: this.mainForm.getRawValue().qcLocation
+        qcLocation: this.mainForm.getRawValue().qcLocation,
+        sampleJobType: this.mainForm.getRawValue().sampleJobType,
+        samplePrintingSystem: this.mainForm.getRawValue().samplePrintingSystem,
+        samplePrintingStyle: this.mainForm.getRawValue().samplePrintingStyle,
+        samplePrintingColor: this.mainForm.getRawValue().samplePrintingColor,
+        samplePaperSize: this.mainForm.getRawValue().samplePaperSize,
+        samplePaperGrammage: this.mainForm.getRawValue().samplePaperGrammage,
+        sampleCoatingStyle: this.mainForm.getRawValue().sampleCoatingStyle,
+        sampleDiecutStyle: this.mainForm.get('sampleDiecutStyle')?.value,
+        sampleSpecialInstructions: this.mainForm.get('sampleSpecialInstructions')?.value,
+        sampleDeliveryTimestamp: this.mainForm.get('sampleDeliveryTimestamp')?.value,
+        printRound: this.mainForm.get('printRound')?.value,
+        printRoundPage2: this.mainForm.get('printRoundPage2')?.value
       }
-    });
+    };
+    console.log('DCSM09: Navigating to DCSM20 with state:', navigationState.state);
+    this.router.navigate(['/Dcsm20DetailStatus', this.mainForm.getRawValue().id], navigationState);
   }
 
   checkBtn() {
@@ -401,6 +445,24 @@ export class Dcsm09DetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+  }
+
+  getCombinedDateTime(timestampField: string): string {
+    const timestamp = this.mainForm.get(timestampField)?.value;
+    if (!timestamp) return '';
+    const datePart = timestamp.split('T')[0];
+    const timePart = timestamp.split('T')[1]?.substring(0, 5);
+    const dateStr = this.formatDateThai(datePart);
+    return timePart ? `${dateStr} ${timePart}` : dateStr;
   }
 
 }

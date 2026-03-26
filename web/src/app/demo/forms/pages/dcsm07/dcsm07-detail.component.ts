@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Dcsm07Service, DropdownOption } from './dcsm07.service';
+import { Dcsm04Service } from '../dcsm04/dcsm04.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -41,6 +42,7 @@ export class Dcsm07DetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dcsm07Service: Dcsm07Service,
+    private dcsm04Service: Dcsm04Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService
   ) { }
@@ -58,8 +60,10 @@ export class Dcsm07DetailComponent implements OnInit {
         this.mainForm.get('operatorName')?.enable({ emitEvent: false });
         this.mainForm.get('deliveryDate')?.enable({ emitEvent: false });
         this.mainForm.get('remarks')?.enable({ emitEvent: false });
-        this.mainForm.get('qcType')?.enable({ emitEvent: false });
         this.mainForm.get('qcLocation')?.enable({ emitEvent: false });
+        this.mainForm.get('qcType')?.enable({ emitEvent: false });
+        this.mainForm.get('printRound')?.enable({ emitEvent: false });
+        this.mainForm.get('printRoundPage2')?.enable({ emitEvent: false });
       }
       if (this.mainForm.getRawValue().sampleOrderId == '' || this.mainForm.getRawValue().sampleOrderId == null) {
         this.isSampleOrderId = false
@@ -74,6 +78,26 @@ export class Dcsm07DetailComponent implements OnInit {
           this.mainForm.get('jobId')?.setValidators([Validators.required]);
         }
         this.mainForm.get('jobId')?.updateValueAndValidity();
+      });
+
+      this.mainForm.get('decisionAuthority')?.valueChanges.subscribe(value => {
+        const sampleJobTypeControl = this.mainForm.get('sampleJobType');
+        const samplePrintingSystemControl = this.mainForm.get('samplePrintingSystem');
+        const samplePrintingStyleControl = this.mainForm.get('samplePrintingStyle');
+
+        if (value === 'sampleToCustomer') {
+          sampleJobTypeControl?.setValidators([Validators.required]);
+          samplePrintingSystemControl?.setValidators([Validators.required]);
+          samplePrintingStyleControl?.setValidators([Validators.required]);
+        } else {
+          sampleJobTypeControl?.clearValidators();
+          samplePrintingSystemControl?.clearValidators();
+          samplePrintingStyleControl?.clearValidators();
+        }
+
+        sampleJobTypeControl?.updateValueAndValidity({ emitEvent: false });
+        samplePrintingSystemControl?.updateValueAndValidity({ emitEvent: false });
+        samplePrintingStyleControl?.updateValueAndValidity({ emitEvent: false });
       });
 
       // Load parts
@@ -152,7 +176,20 @@ export class Dcsm07DetailComponent implements OnInit {
       qpId: [null],
       qcType: [null],
       qcLocation: [null, Validators.required],
-      parts: this.fb.array([])
+      searchId: [null],
+      parts: this.fb.array([]),
+      sampleJobType: [null],
+      samplePrintingSystem: [null],
+      samplePrintingStyle: [null],
+      samplePrintingColor: [null],
+      samplePaperSize: [null],
+      samplePaperGrammage: [null],
+      sampleCoatingStyle: [null],
+      sampleDiecutStyle: [null],
+      sampleSpecialInstructions: [null],
+      sampleDeliveryTimestamp: [null],
+      printRound: [null],
+      printRoundPage2: [null]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -181,11 +218,32 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('qpId')?.disable();
     this.mainForm.get('qcType')?.disable();
     this.mainForm.get('qcLocation')?.disable();
+    this.mainForm.get('sampleJobType')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingSystem')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingColor')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperSize')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperGrammage')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleCoatingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDiecutStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
+    this.mainForm.get('printRound')?.disable({ emitEvent: false });
+    this.mainForm.get('print2Page')?.disable({ emitEvent: false });
+    this.mainForm.get('printRoundPage2')?.disable({ emitEvent: false });
+    this.mainForm.get('print2Page')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
     const apiData = data as any;
+    if (apiData.sampleDeliveryTimestamp) {
+      apiData.sampleDeliveryTimestamp = apiData.sampleDeliveryTimestamp.substring(0, 16);
+    }
     this.mainForm.patchValue(apiData);
+  }
+
+  prepareDataForSave(data: any): any {
+    return { ...data };
   }
 
   checkBtn() {
@@ -195,6 +253,35 @@ export class Dcsm07DetailComponent implements OnInit {
     if (this.mainForm.getRawValue().processStatus == 'รอผู้รับผิดชอบยืนยัน' || this.mainForm.getRawValue().processStatus == 'รอดำเนินการ') {
       this.isBtnSave = true;
     }
+  }
+
+  fetchData(): void {
+    const searchId = this.mainForm.get('searchId')?.value;
+    if (!searchId) {
+      this.sweetAlert.warning('กรุณากรอก ID');
+      return;
+    }
+
+    this.loadingService.show();
+    this.dcsm04Service.getSobPAP(searchId).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        this.mainForm.get('sampleJobType')?.setValue(response.job_specifications.work_type);
+        this.mainForm.get('samplePrintingSystem')?.setValue(response.job_specifications.print_system);
+        this.mainForm.get('samplePrintingStyle')?.setValue(response.job_specifications.print_style);
+        this.mainForm.get('samplePrintingColor')?.setValue(response.job_specifications.print_colors);
+        this.mainForm.get('samplePaperSize')?.setValue(response.job_specifications.paper_size);
+        this.mainForm.get('samplePaperGrammage')?.setValue(response.job_specifications.paper_weight);
+        this.mainForm.get('sampleCoatingStyle')?.setValue(response.job_specifications.coating_style);
+        this.mainForm.get('sampleDiecutStyle')?.setValue(response.job_specifications.diecut_style);
+        this.sweetAlert.success('ดึงข้อมูลสำเร็จ');
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        const msg = error.error || 'ไม่พบข้อมูล';
+        this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+      }
+    });
   }
 
   onSubmit() {
@@ -303,7 +390,8 @@ export class Dcsm07DetailComponent implements OnInit {
       if (result.isConfirmed) {
         this.loadingService.show();
         this.mainForm.get('postpone')?.setValue('มีการเลื่อนเวลาส่ง');
-        this.dcsm07Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+        this.dcsm07Service.save(formData).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
@@ -346,7 +434,8 @@ export class Dcsm07DetailComponent implements OnInit {
     formData.processStatus = 'ยกเลิก';
     formData.moldStatus = 'ยกเลิก';
 
-    this.dcsm07Service.save(formData).subscribe({
+    const finalData = this.prepareDataForSave(formData);
+    this.dcsm07Service.save(finalData).subscribe({
       next: (response) => {
         this.loadingService.hide();
         this.patchFormData(response);
@@ -359,6 +448,24 @@ export class Dcsm07DetailComponent implements OnInit {
         this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
       }
     })
+  }
+
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+  }
+
+  getCombinedDateTime(timestampField: string): string {
+    const timestamp = this.mainForm.get(timestampField)?.value;
+    if (!timestamp) return '';
+    const datePart = timestamp.split('T')[0];
+    const timePart = timestamp.split('T')[1]?.substring(0, 5);
+    const dateStr = this.formatDateThai(datePart);
+    return timePart ? `${dateStr} ${timePart}` : dateStr;
   }
 
 }

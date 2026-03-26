@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Dcsm06Service } from './dcsm06.service';
+import { Dcsm04Service } from '../dcsm04/dcsm04.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -32,12 +33,14 @@ export class Dcsm06DetailComponent implements OnInit {
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private authService: AuthService,
+    private dcsm04Service: Dcsm04Service,
   ) { }
 
   ngOnInit(): void {
     this.initForm();
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
+      this.isEditMode = true;
       this.patchFormData(resolvedData);
     }
 
@@ -71,6 +74,16 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('jobId')?.enable();
       this.mainForm.get('qtId')?.enable();
       this.mainForm.get('qpId')?.enable();
+      this.mainForm.get('sampleJobType')?.enable();
+      this.mainForm.get('samplePrintingSystem')?.enable();
+      this.mainForm.get('samplePrintingStyle')?.enable();
+      this.mainForm.get('samplePrintingColor')?.enable();
+      this.mainForm.get('samplePaperSize')?.enable();
+      this.mainForm.get('samplePaperGrammage')?.enable();
+      this.mainForm.get('sampleCoatingStyle')?.enable();
+      this.mainForm.get('sampleDiecutStyle')?.enable();
+      this.mainForm.get('sampleSpecialInstructions')?.enable();
+      this.mainForm.get('sampleDeliveryTimestamp')?.enable();
       this.isSave = true
     }
   }
@@ -113,6 +126,19 @@ export class Dcsm06DetailComponent implements OnInit {
       createdTime: [null],
       qcType: [null],
       qcLocation: [null],
+      searchId: [null],
+      sampleJobType: [''],
+      samplePrintingSystem: [''],
+      samplePrintingStyle: [''],
+      samplePrintingColor: [''],
+      samplePaperSize: [''],
+      samplePaperGrammage: [''],
+      sampleCoatingStyle: [''],
+      sampleDiecutStyle: [''],
+      sampleSpecialInstructions: [''],
+      sampleDeliveryTimestamp: [''],
+      printRound: [null],
+      printRoundPage2: [null],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -143,6 +169,16 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('qtId')?.disable({ emitEvent: false });
     this.mainForm.get('createdTime')?.disable({ emitEvent: false });
     this.mainForm.get('qpId')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleJobType')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingSystem')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingColor')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperSize')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperGrammage')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleCoatingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDiecutStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
 
     // Conditional Validation: If QP is filled, JO is not required. If no QP, JO is required.
     this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
@@ -154,10 +190,70 @@ export class Dcsm06DetailComponent implements OnInit {
       }
       jobIdControl?.updateValueAndValidity();
     });
+
+    this.mainForm.get('decisionAuthority')?.valueChanges.subscribe(value => {
+      const sampleJobTypeControl = this.mainForm.get('sampleJobType');
+      const samplePrintingSystemControl = this.mainForm.get('samplePrintingSystem');
+      const samplePrintingStyleControl = this.mainForm.get('samplePrintingStyle');
+      const sampleDeliveryDateControl = this.mainForm.get('sampleDeliveryDate');
+      const sampleDeliveryTimeControl = this.mainForm.get('sampleDeliveryTime');
+
+      if (value === 'sampleToCustomer') {
+        sampleJobTypeControl?.setValidators([Validators.required]);
+        samplePrintingSystemControl?.setValidators([Validators.required]);
+        samplePrintingStyleControl?.setValidators([Validators.required]);
+        sampleDeliveryDateControl?.setValidators([Validators.required]);
+        sampleDeliveryTimeControl?.setValidators([Validators.required]);
+      } else {
+        sampleJobTypeControl?.clearValidators();
+        samplePrintingSystemControl?.clearValidators();
+        samplePrintingStyleControl?.clearValidators();
+        sampleDeliveryDateControl?.clearValidators();
+        sampleDeliveryTimeControl?.clearValidators();
+      }
+      sampleJobTypeControl?.updateValueAndValidity();
+      samplePrintingSystemControl?.updateValueAndValidity();
+      samplePrintingStyleControl?.updateValueAndValidity();
+      sampleDeliveryDateControl?.updateValueAndValidity();
+      sampleDeliveryTimeControl?.updateValueAndValidity();
+    });
+  }
+
+  fetchData(): void {
+    const searchId = this.mainForm.get('searchId')?.value;
+    if (!searchId) {
+      this.sweetAlert.warning('กรุณากรอก ID');
+      return;
+    }
+
+    this.loadingService.show();
+    this.dcsm04Service.getSobPAP(searchId).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        this.mainForm.get('sampleJobType')?.setValue(response.job_specifications.work_type);
+        this.mainForm.get('samplePrintingSystem')?.setValue(response.job_specifications.print_system);
+        this.mainForm.get('samplePrintingStyle')?.setValue(response.job_specifications.print_style);
+        this.mainForm.get('samplePrintingColor')?.setValue(response.job_specifications.print_colors);
+        this.mainForm.get('samplePaperSize')?.setValue(response.job_specifications.paper_size);
+        this.mainForm.get('samplePaperGrammage')?.setValue(response.job_specifications.paper_weight);
+        this.mainForm.get('sampleCoatingStyle')?.setValue(response.job_specifications.coating_style);
+        this.mainForm.get('sampleDiecutStyle')?.setValue(response.job_specifications.diecut_style);
+        this.sweetAlert.success('ดึงข้อมูลสำเร็จ');
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        const msg = error.error || 'ไม่พบข้อมูล';
+        this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+      }
+    });
   }
 
   patchFormData(data: any): void {
     const apiData = data as any;
+    if (apiData.sampleDeliveryTimestamp) {
+      // Ensure format is YYYY-MM-DDTHH:mm for datetime-local input
+      apiData.sampleDeliveryTimestamp = apiData.sampleDeliveryTimestamp.substring(0, 16);
+    }
     this.mainForm.patchValue(apiData);
   }
 
@@ -167,7 +263,7 @@ export class Dcsm06DetailComponent implements OnInit {
       this.sweetAlert.warning('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
       return;
     }
-
+    this.mainForm.get('jobId')?.setValue(this.ensureJobIdSuffix(this.mainForm.getRawValue().jobId));
     Swal.fire({
       title: 'ยืนยันบันทึกข้อมูล',
       text: "ยืนยันบันทึกข้อมูล ใช่หรือไม่?",
@@ -180,11 +276,9 @@ export class Dcsm06DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '') {
-          const currentJobId = this.mainForm.getRawValue().jobId;
-          this.mainForm.get('jobId')?.setValue(this.incrementJobId(currentJobId));
-        }
-        this.dcsm06Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.mainForm.getRawValue();
+
+        this.dcsm06Service.save(formData).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
@@ -214,9 +308,8 @@ export class Dcsm06DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '') {
-          this.mainForm.get('jobId')?.setValue(this.mainForm.getRawValue().jobId + '_1');
-        }
+        this.mainForm.get('id')?.setValue(null);
+        this.mainForm.get('jobId')?.setValue(this.incrementJobId(this.mainForm.getRawValue().jobId));
         this.dcsm06Service.save(this.mainForm.getRawValue()).subscribe({
           next: (response) => {
             this.loadingService.hide();
@@ -239,8 +332,16 @@ export class Dcsm06DetailComponent implements OnInit {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString().slice(-2);
+    const year = date.getFullYear().toString();
     return `${day}/${month}/${year}`;
+  }
+
+  getCombinedDateTime(dateField: string, timeField: string): string {
+    const dateValue = this.mainForm.get(dateField)?.value;
+    const timeValue = this.mainForm.get(timeField)?.value;
+    if (!dateValue) return '';
+    const dateStr = this.formatDateThai(dateValue);
+    return timeValue ? `${dateStr} ${timeValue}` : dateStr;
   }
 
   getThaiDateInput(controlName: string): string {
@@ -341,6 +442,14 @@ export class Dcsm06DetailComponent implements OnInit {
       if (!isNaN(version)) {
         return jobId.substring(0, lastUnderscoreIndex + 1) + (version + 1);
       }
+    }
+    return jobId + '_1';
+  }
+
+  ensureJobIdSuffix(jobId: string | null | undefined): string {
+    if (!jobId) return '';
+    if (/_\d+$/.test(jobId)) {
+      return jobId;
     }
     return jobId + '_1';
   }

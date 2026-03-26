@@ -115,6 +115,42 @@ public class PrintJob extends BaseEntity {
     @Column(name = "pap_order_id")
     private Integer papOrderId;
 
+    @Column(name = "sample_job_type")
+    private String sampleJobType;
+
+    @Column(name = "sample_printing_system")
+    private String samplePrintingSystem;
+
+    @Column(name = "sample_printing_style")
+    private String samplePrintingStyle;
+
+    @Column(name = "sample_printing_color")
+    private String samplePrintingColor;
+
+    @Column(name = "sample_paper_size")
+    private String samplePaperSize;
+
+    @Column(name = "sample_paper_grammage")
+    private String samplePaperGrammage;
+
+    @Column(name = "sample_coating_style")
+    private String sampleCoatingStyle;
+
+    @Column(name = "sample_diecut_style")
+    private String sampleDiecutStyle;
+
+    @Column(name = "sample_special_instructions", columnDefinition = "TEXT")
+    private String sampleSpecialInstructions;
+
+    @Column(name = "sample_delivery_timestamp")
+    private java.time.LocalDateTime sampleDeliveryTimestamp;
+
+    @Column(name = "print_round")
+    private Integer printRound;
+
+    @Column(name = "print_round_page2")
+    private Integer printRoundPage2;
+
     @jakarta.persistence.Transient
     private Boolean hasRealJob = false;
 }

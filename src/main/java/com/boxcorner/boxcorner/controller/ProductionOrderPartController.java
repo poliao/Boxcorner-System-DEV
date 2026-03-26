@@ -21,16 +21,13 @@ public class ProductionOrderPartController {
 
     @PostMapping("/saveAll")
     @Transactional
-    public List<ProductionOrderPart> saveAll(@RequestParam("orderId") Integer orderId, @RequestBody List<ProductionOrderPart> parts) {
-        // First, delete existing parts for this order to perform a full update (simple sync)
+    public List<ProductionOrderPart> saveAll(@RequestParam("orderId") Integer orderId,
+            @RequestBody List<ProductionOrderPart> parts) {
         partRepository.deleteByProductionOrderId(orderId);
-        
-        // Ensure each part has the correct order ID
         for (ProductionOrderPart part : parts) {
             part.setProductionOrderId(orderId);
-            part.setId(null); // Reset ID to ensure they are treated as new entities if they were sent with old IDs
+            part.setId(null);
         }
-        
         return partRepository.saveAll(parts);
     }
 }

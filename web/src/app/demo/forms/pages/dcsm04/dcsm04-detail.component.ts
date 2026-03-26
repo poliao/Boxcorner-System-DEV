@@ -495,6 +495,7 @@ export class Dcsm04DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
+        data.jobId = this.ensureJobIdSuffix(data.jobId);
         this.dcsm04Service.saveProduction(data).subscribe({
           next: (response) => {
             if (response) {
@@ -848,5 +849,13 @@ export class Dcsm04DetailComponent implements OnInit {
         }
       });
     }
+  }
+
+  ensureJobIdSuffix(jobId: string | null | undefined): string {
+    if (!jobId) return '';
+    if (/_\d+$/.test(jobId)) {
+      return jobId;
+    }
+    return jobId + '_1';
   }
 }

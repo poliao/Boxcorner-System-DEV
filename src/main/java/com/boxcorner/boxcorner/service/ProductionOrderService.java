@@ -59,6 +59,18 @@ public class ProductionOrderService {
             existingOrder.setQpId(productionOrder.getQpId());
             existingOrder.setQcType(productionOrder.getQcType());
             existingOrder.setQcLocation(productionOrder.getQcLocation());
+            existingOrder.setSampleJobType(productionOrder.getSampleJobType());
+            existingOrder.setSamplePrintingSystem(productionOrder.getSamplePrintingSystem());
+            existingOrder.setSamplePrintingStyle(productionOrder.getSamplePrintingStyle());
+            existingOrder.setSamplePrintingColor(productionOrder.getSamplePrintingColor());
+            existingOrder.setSamplePaperSize(productionOrder.getSamplePaperSize());
+            existingOrder.setSamplePaperGrammage(productionOrder.getSamplePaperGrammage());
+            existingOrder.setSampleCoatingStyle(productionOrder.getSampleCoatingStyle());
+            existingOrder.setSampleDiecutStyle(productionOrder.getSampleDiecutStyle());
+            existingOrder.setSampleSpecialInstructions(productionOrder.getSampleSpecialInstructions());
+            existingOrder.setSampleDeliveryTimestamp(productionOrder.getSampleDeliveryTimestamp());
+            existingOrder.setPrintRound(productionOrder.getPrintRound());
+            existingOrder.setPrintRoundPage2(productionOrder.getPrintRoundPage2());
 
             return productionOrderRepository.save(existingOrder);
         } else {

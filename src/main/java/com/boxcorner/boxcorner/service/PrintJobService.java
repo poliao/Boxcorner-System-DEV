@@ -32,6 +32,7 @@ public class PrintJobService {
     }
 
     public PrintJob save(PrintJob printJob) {
+        System.out.println("Saving PrintJob: " + printJob);
         if (printJob.getId() != null) {
             PrintJob existing = repository.findById(printJob.getId()).orElse(null);
 
@@ -68,7 +69,19 @@ public class PrintJobService {
             existing.setDecisionAuthority(printJob.getDecisionAuthority());
             existing.setDecisionAuthorityRemarks(printJob.getDecisionAuthorityRemarks());
             existing.setPapOrderId(printJob.getPapOrderId());
-
+            existing.setSampleJobType(printJob.getSampleJobType());
+            existing.setSamplePrintingSystem(printJob.getSamplePrintingSystem());
+            existing.setSamplePrintingStyle(printJob.getSamplePrintingStyle());
+            existing.setSamplePrintingColor(printJob.getSamplePrintingColor());
+            existing.setSamplePaperSize(printJob.getSamplePaperSize());
+            existing.setSamplePaperGrammage(printJob.getSamplePaperGrammage());
+            existing.setSampleCoatingStyle(printJob.getSampleCoatingStyle());
+            existing.setSampleDiecutStyle(printJob.getSampleDiecutStyle());
+            existing.setSampleSpecialInstructions(printJob.getSampleSpecialInstructions());
+            existing.setSampleDeliveryTimestamp(printJob.getSampleDeliveryTimestamp());
+            existing.setPrintRound(printJob.getPrintRound());
+            existing.setPrintRoundPage2(printJob.getPrintRoundPage2());
+ 
             return repository.save(existing);
         }
         printJob.setJobStatus(JobStatus.PENDING);

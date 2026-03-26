@@ -176,3 +176,52 @@
     </form>
   </div>
 </div>
+
+<div class="card shadow-sm mt-3" *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'">
+  <div class="card-header text-white" style="background-color: #198754;">
+    <h5 class="card-title mb-0 text-white"><i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง</h5>
+  </div>
+  <div class="card-body" style="padding: 15px;">
+    <form [formGroup]="mainForm" class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">ประเภทงาน <span
+            *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'" style="color: red;">*</span></label>
+        <input type="text" formControlName="sampleJobType" class="form-control"
+          [class.is-invalid]="mainForm.get('sampleJobType')?.invalid && mainForm.get('sampleJobType')?.touched">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">ระบบพิมพ์ <span
+            *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'" style="color: red;">*</span></label>
+        <input type="text" formControlName="samplePrintingSystem" class="form-control"
+          [class.is-invalid]="mainForm.get('samplePrintingSystem')?.invalid && mainForm.get('samplePrintingSystem')?.touched">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">ลักษณะงานพิมพ์ <span
+            *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'" style="color: red;">*</span></label>
+        <input type="text" formControlName="samplePrintingStyle" class="form-control"
+          [class.is-invalid]="mainForm.get('samplePrintingStyle')?.invalid && mainForm.get('samplePrintingStyle')?.touched">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">สีที่พิมพ์</label>
+        <input type="text" formControlName="samplePrintingColor" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label font-weight-bold">ขนาดกระดาษ</label>
+        <input type="text" formControlName="samplePaperSize" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
+        <input type="text" formControlName="sampleDiecutStyle" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label font-weight-bold">วัน-เวลาส่งงานปรู๊ฟ</label>
+        <input type="text" [value]="getCombinedDateTime('sampleDeliveryTimestamp')" class="form-control"
+          placeholder="รอดำเนินการ" readonly disabled>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label font-weight-bold">คำสั่งพิเศษ</label>
+        <textarea formControlName="sampleSpecialInstructions" class="form-control" rows="1"></textarea>
+      </div>
+    </form>
+  </div>
+</div>

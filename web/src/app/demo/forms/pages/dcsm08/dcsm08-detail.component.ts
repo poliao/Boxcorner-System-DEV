@@ -87,6 +87,18 @@ export class Dcsm08DetailComponent implements OnInit {
       qpId: [null],
       qcType: [null],
       qcLocation: [null],
+      sampleJobType: [null],
+      samplePrintingSystem: [null],
+      samplePrintingStyle: [null],
+      samplePrintingColor: [null],
+      samplePaperSize: [null],
+      samplePaperGrammage: [null],
+      sampleCoatingStyle: [null],
+      sampleDiecutStyle: [null],
+      sampleSpecialInstructions: [null],
+      sampleDeliveryTimestamp: [null],
+      printRound: [null],
+      printRoundPage2: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -116,11 +128,29 @@ export class Dcsm08DetailComponent implements OnInit {
     this.mainForm.get('createdTime')?.disable({ emitEvent: false });
     this.mainForm.get('qpId')?.disable();
     this.mainForm.get('qcType')?.disable();
+
+    this.mainForm.get('sampleJobType')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingSystem')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePrintingColor')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperSize')?.disable({ emitEvent: false });
+    this.mainForm.get('samplePaperGrammage')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleCoatingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDiecutStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
     const apiData = data as any;
+    if (apiData.sampleDeliveryTimestamp) {
+      apiData.sampleDeliveryTimestamp = apiData.sampleDeliveryTimestamp.substring(0, 16);
+    }
     this.mainForm.patchValue(apiData);
+  }
+
+  prepareDataForSave(data: any): any {
+    return { ...data };
   }
 
   checkBtn() {
@@ -193,7 +223,8 @@ export class Dcsm08DetailComponent implements OnInit {
         this.loadingService.show();
         this.mainForm.get('processStatus')?.setValue('เสร็จสิ้น รอตรวจสอบ');
 
-        this.dcsm08Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+        this.dcsm08Service.save(formData).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -228,7 +259,8 @@ export class Dcsm08DetailComponent implements OnInit {
         this.mainForm.get('jobStatus')?.setValue('กำลังดำเนินการ');
         this.mainForm.get('moldStatus')?.setValue('ส่ง Supplier');
 
-        this.dcsm08Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+        this.dcsm08Service.save(formData).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -263,7 +295,8 @@ export class Dcsm08DetailComponent implements OnInit {
         this.mainForm.get('jobStatus')?.setValue('เสร็จสิ้น');
         this.mainForm.get('moldStatus')?.setValue('รับของจากซัพพลายเออร์แล้ว');
 
-        this.dcsm08Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+        this.dcsm08Service.save(formData).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -279,5 +312,23 @@ export class Dcsm08DetailComponent implements OnInit {
         })
       }
     });
+  }
+
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+  }
+
+  getCombinedDateTime(timestampField: string): string {
+    const timestamp = this.mainForm.get(timestampField)?.value;
+    if (!timestamp) return '';
+    const datePart = timestamp.split('T')[0];
+    const timePart = timestamp.split('T')[1]?.substring(0, 5);
+    const dateStr = this.formatDateThai(datePart);
+    return timePart ? `${dateStr} ${timePart}` : dateStr;
   }
 }

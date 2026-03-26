@@ -92,6 +92,18 @@ export class Dcsm10DetailComponent implements OnInit {
       qpId: [null],
       qcType: [null],
       qcLocation: [null],
+      sampleJobType: [''],
+      samplePrintingSystem: [''],
+      samplePrintingStyle: [''],
+      samplePrintingColor: [''],
+      samplePaperSize: [''],
+      samplePaperGrammage: [''],
+      sampleCoatingStyle: [''],
+      sampleDiecutStyle: [''],
+      sampleSpecialInstructions: [''],
+      sampleDeliveryTimestamp: [''],
+      printRound: [null],
+      printRoundPage2: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -116,11 +128,29 @@ export class Dcsm10DetailComponent implements OnInit {
     this.mainForm.get('jobId')?.disable();
     this.mainForm.get('qtId')?.disable();
     this.mainForm.get('qpId')?.disable();
+
+    const sampleFields = [
+      'decisionAuthority', 'sampleJobType', 'samplePrintingSystem', 'samplePrintingStyle',
+      'samplePrintingColor', 'samplePaperSize', 'samplePaperGrammage', 'sampleCoatingStyle',
+      'sampleDiecutStyle', 'sampleSpecialInstructions'
+    ];
+    sampleFields.forEach(field => this.mainForm.get(field)?.disable({ emitEvent: false }));
+    this.mainForm.get('sampleCoatingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDiecutStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
     const apiData = data as any;
+    if (apiData.sampleDeliveryTimestamp) {
+      apiData.sampleDeliveryTimestamp = apiData.sampleDeliveryTimestamp.substring(0, 16);
+    }
     this.mainForm.patchValue(apiData);
+  }
+
+  prepareDataForSave(data: any): any {
+    return { ...data };
   }
 
   checkBtn() {
@@ -153,7 +183,8 @@ export class Dcsm10DetailComponent implements OnInit {
           this.loadingService.show();
           this.mainForm.get('moldStatus')?.setValue('กำลังทำแม่พิมพ์');
           this.mainForm.get('moldMakerName')?.setValue(this.tokenService.getCurrentUserFromToken());
-          this.dcsm10Service.save(this.mainForm.getRawValue()).subscribe({
+          const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+          this.dcsm10Service.save(formData).subscribe({
             next: (response) => {
               this.patchFormData(response);
               this.checkBtn();
@@ -188,7 +219,8 @@ export class Dcsm10DetailComponent implements OnInit {
       if (result.isConfirmed) {
         this.loadingService.show();
         this.mainForm.get('moldStatus')?.setValue('แม่พิมพ์เสร็จแล้ว');
-        this.dcsm10Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+        this.dcsm10Service.save(formData).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -220,7 +252,8 @@ export class Dcsm10DetailComponent implements OnInit {
       if (result.isConfirmed) {
         this.loadingService.show();
         this.mainForm.get('moldStatus')?.setValue('ส่งแม่พิมพ์');
-        this.dcsm10Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+        this.dcsm10Service.save(formData).subscribe({
           next: (response) => {
             this.patchFormData(response);
             this.checkBtn();
@@ -236,6 +269,24 @@ export class Dcsm10DetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+  }
+
+  getCombinedDateTime(timestampField: string): string {
+    const timestamp = this.mainForm.get(timestampField)?.value;
+    if (!timestamp) return '';
+    const datePart = timestamp.split('T')[0];
+    const timePart = timestamp.split('T')[1]?.substring(0, 5);
+    const dateStr = this.formatDateThai(datePart);
+    return timePart ? `${dateStr} ${timePart}` : dateStr;
   }
 
 }

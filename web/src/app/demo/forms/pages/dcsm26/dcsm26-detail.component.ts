@@ -30,6 +30,7 @@ export class Dcsm26DetailComponent implements OnInit {
   printedQuantity: number = 0;
   currentPrintStatus: string = '';
   isSample = false;
+  currentRound: number = 0;
 
   // Extra Print
   extraPrints: any[] = [];
@@ -124,7 +125,19 @@ export class Dcsm26DetailComponent implements OnInit {
       print2Page: [false],
       productionOrderId: [null],
       decisionAuthority: [null],
-      decisionAuthorityRemarks: [null]
+      decisionAuthorityRemarks: [null],
+      sampleJobType: [null],
+      samplePrintingSystem: [null],
+      samplePrintingStyle: [null],
+      samplePrintingColor: [null],
+      samplePaperSize: [null],
+      samplePaperGrammage: [null],
+      sampleCoatingStyle: [null],
+      sampleDiecutStyle: [null],
+      sampleSpecialInstructions: [null],
+      sampleDeliveryTimestamp: [null],
+      printRound: [null],
+      printRoundPage2: [null]
     });
     this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -163,6 +176,16 @@ export class Dcsm26DetailComponent implements OnInit {
     this.printingForm.get('paperGram')?.disable();
     this.printingForm.get('decisionAuthority')?.disable();
     this.printingForm.get('print2Page')?.disable();
+    this.printingForm.get('sampleJobType')?.disable();
+    this.printingForm.get('samplePrintingSystem')?.disable();
+    this.printingForm.get('samplePrintingStyle')?.disable();
+    this.printingForm.get('samplePrintingColor')?.disable();
+    this.printingForm.get('samplePaperSize')?.disable();
+    this.printingForm.get('samplePaperGrammage')?.disable();
+    this.printingForm.get('sampleCoatingStyle')?.disable();
+    this.printingForm.get('sampleDiecutStyle')?.disable();
+    this.printingForm.get('sampleSpecialInstructions')?.disable();
+    this.printingForm.get('sampleDeliveryTimestamp')?.disable();
   }
 
   createChecklistForm() {
@@ -229,6 +252,16 @@ export class Dcsm26DetailComponent implements OnInit {
 
   onUpdatePrint(status: string): void {
     if (status === 'inPrint') {
+      // Reset round counter whenever a completely new print session starts
+      this.currentRound = 0;
+      this.showChecklistModal = true;
+    } else if (status === 'WAITPAGE2') {
+      // Starting page 2 – reset round counter for page 2 side
+      this.currentRound = 0;
+      this.showChecklistModal = true;
+    } else if (status === 'PROOF_PAGE2') {
+      // Starting proof page 2 – reset round counter
+      this.currentRound = 0;
       this.showChecklistModal = true;
     }
   }
@@ -293,6 +326,20 @@ export class Dcsm26DetailComponent implements OnInit {
     this.showChecklistModal = false;
   }
 
+  openNextRoundChecklist() {
+    // Open checklist for the next round without resetting the round counter
+    this.checklistForm.reset({
+      machineType: null, waterTemp: null, ipaValue: null, conductivity: null,
+      airPressure: null, paperBrightness: null, hasCMYK: false, hasSpecial: false,
+      isNewInk: false, isOldInk: false, cLotNo: null, cBrand: null,
+      mLotNo: null, mBrand: null, yLotNo: null, yBrand: null, kLotNo: null, kBrand: null,
+      plateCondition: false, rubberCondition: false, cleanedBed: false,
+      colorMatchProof: false, colorMatchDigital: false, colorMatchPrevious: false,
+      colorNotSerious: false, printSide: null, status: null, totalProduct: null
+    });
+    this.showChecklistModal = true;
+  }
+
   submitChecklist(status) {
     if (this.checklistForm.valid) {
       this.loadingService.show();
@@ -309,6 +356,23 @@ export class Dcsm26DetailComponent implements OnInit {
         this.printingForm.get('jobStatus')?.setValue('PROOF');
         this.checklistForm.get('printSide')?.setValue('PROOF');
         this.checklistForm.get('status')?.setValue('RUNNING');
+      } else if (status === 'PROOF_PAGE2') {
+        this.printingForm.get('jobStatus')?.setValue('PROOF_PAGE2');
+        this.checklistForm.get('printSide')?.setValue('PROOF_BACK');
+        this.checklistForm.get('status')?.setValue('RUNNING');
+      } else if (status === 'nextRound') {
+        // Continue same side for next round – derive side from current jobStatus
+        const currentStatus = this.printingForm.get('jobStatus')?.value;
+        if (currentStatus === 'IN_PROGRESS_PAGE2') {
+          this.checklistForm.get('printSide')?.setValue('BACK');
+        } else if (currentStatus === 'PROOF_PAGE2') {
+          this.checklistForm.get('printSide')?.setValue('PROOF_BACK');
+        } else if (currentStatus === 'PROOF') {
+          this.checklistForm.get('printSide')?.setValue('PROOF');
+        } else {
+          this.checklistForm.get('printSide')?.setValue('FRONT');
+        }
+        this.checklistForm.get('status')?.setValue('RUNNING');
       }
       this.saveRecordOs().subscribe({
         next: (response) => {
@@ -317,8 +381,21 @@ export class Dcsm26DetailComponent implements OnInit {
             next: (response) => {
               this.loadingService.hide();
               this.showChecklistModal = false;
-              this.sweetAlert.success('Success', 'บันทึกข้อมูลสำเร็จ');
-              this.checkbntPrint();
+              // Increment round counter after each successful checklist submit
+              this.currentRound++;
+              const form = this.printingForm.getRawValue();
+              const printRound = form.printRound || 1;
+              const printRoundPage2 = form.printRoundPage2 || 1;
+              const jobStatus = form.jobStatus;
+              const remainingMsg =
+                (jobStatus === 'IN_PROGRESS_PAGE2' || jobStatus === 'PROOF_PAGE2')
+                  ? (this.currentRound < printRoundPage2
+                      ? `เริ่มพิมพ์หน้า 2 รอบที่ ${this.currentRound}/${printRoundPage2} เรียบร้อย`
+                      : 'บันทึกข้อมูลสำเร็จ')
+                  : (this.currentRound < printRound
+                      ? `เริ่มพิมพ์รอบที่ ${this.currentRound}/${printRound} เรียบร้อย`
+                      : 'บันทึกข้อมูลสำเร็จ');
+              this.sweetAlert.success('Success', remainingMsg);
               this.printingForm.patchValue(response);
             },
             error: (error) => {
@@ -405,11 +482,17 @@ export class Dcsm26DetailComponent implements OnInit {
     this.loadingService.show();
 
     const status = this.currentPrintStatus;
-    if (status === 'Print' && this.printingForm.getRawValue().print2Page != true || status === 'IN_PROGRESS_PAGE2') {
+    const is2Page = this.printingForm.getRawValue().print2Page == true;
+
+    if (status === 'Print' && !is2Page || status === 'IN_PROGRESS_PAGE2') {
       this.printingForm.get('jobStatus')?.setValue('COMPLETED');
-    } else if (status === 'Print' && this.printingForm.getRawValue().print2Page == true) {
+    } else if (status === 'Print' && is2Page) {
       this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
-    } else if (status === 'PROOF') {
+    } else if (status === 'PROOF' && !is2Page) {
+      this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
+    } else if (status === 'PROOF' && is2Page) {
+      this.printingForm.get('jobStatus')?.setValue('PROOF_WAITPAGE2');
+    } else if (status === 'PROOF_PAGE2') {
       this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
     }
 
@@ -424,7 +507,7 @@ export class Dcsm26DetailComponent implements OnInit {
     });
 
     this.dcsm26Service.save(data).subscribe((response) => {
-      if (this.printingForm.getRawValue().print2Page != true) {
+      if (!is2Page || status === 'IN_PROGRESS_PAGE2') {
         this.updateProductionJob();
       }
       this.checkbntPrint();
@@ -432,6 +515,7 @@ export class Dcsm26DetailComponent implements OnInit {
       this.loadingService.hide();
       this.sweetAlert.success('Success', 'บันทึกจำนวนที่พิมพ์ได้สำเร็จ!');
       this.printedQuantity = 0;
+      this.currentRound = 0;
     });
   }
 
@@ -505,6 +589,18 @@ export class Dcsm26DetailComponent implements OnInit {
       'operatorQaDecision': 'bg-danger'
     };
     return classes[value] || 'bg-secondary';
+  }
+
+  getCombinedDateTime(field: string): string {
+    const value = this.printingForm.get(field)?.value;
+    if (!value) return '-';
+    const date = new Date(value);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
   updateProductionJob() {

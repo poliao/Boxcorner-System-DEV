@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.entity.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import com.boxcorner.boxcorner.entity.BaseEntity.JobStatus;
@@ -9,7 +10,6 @@ import lombok.Data;
 
 @Data
 public class PrintJobRequest {
-    
     private Long id;
     private LocalDate createdAt;
     private String jobId;
@@ -39,4 +39,16 @@ public class PrintJobRequest {
     private String productionOrderId;
     private String decisionAuthority;
     private String decisionAuthorityRemarks;
+    private String sampleJobType;
+    private String samplePrintingSystem;
+    private String samplePrintingStyle;
+    private String samplePrintingColor;
+    private String samplePaperSize;
+    private String samplePaperGrammage;
+    private String sampleCoatingStyle;
+    private String sampleDiecutStyle;
+    private String sampleSpecialInstructions;
+    private LocalDateTime sampleDeliveryTimestamp;
+    private Integer printRound;
+    private Integer printRoundPage2;
 }

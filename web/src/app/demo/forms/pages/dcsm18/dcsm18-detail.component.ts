@@ -104,6 +104,18 @@ export class Dcsm18DetailComponent implements OnInit {
       qpId: [null],
       qcType: [null],
       qcLocation: [null],
+      sampleJobType: [''],
+      samplePrintingSystem: [''],
+      samplePrintingStyle: [''],
+      samplePrintingColor: [''],
+      samplePaperSize: [''],
+      samplePaperGrammage: [''],
+      sampleCoatingStyle: [''],
+      sampleDiecutStyle: [''],
+      sampleSpecialInstructions: [''],
+      sampleDeliveryTimestamp: [''],
+      printRound: [null],
+      printRoundPage2: [null],
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -130,11 +142,33 @@ export class Dcsm18DetailComponent implements OnInit {
     this.mainForm.get('qtId')?.disable();
     this.mainForm.get('qpId')?.disable();
     this.mainForm.get('qcType')?.disable();
+
+    const sampleFields = [
+      'decisionAuthority',
+      'sampleJobType',
+      'samplePrintingSystem',
+      'samplePrintingStyle',
+      'samplePrintingColor',
+      'samplePaperSize',
+      'samplePaperGrammage',
+    ];
+    sampleFields.forEach(field => this.mainForm.get(field)?.disable({ emitEvent: false }));
+    this.mainForm.get('sampleCoatingStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDiecutStyle')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
+    this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
   }
 
   patchFormData(data: any): void {
     const apiData = data as any;
+    if (apiData.sampleDeliveryTimestamp) {
+      apiData.sampleDeliveryTimestamp = apiData.sampleDeliveryTimestamp.substring(0, 16);
+    }
     this.mainForm.patchValue(apiData);
+  }
+
+  prepareDataForSave(data: any): any {
+    return { ...data };
   }
 
   onSubmit() {
@@ -157,7 +191,8 @@ export class Dcsm18DetailComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loadingService.show();
-        this.dcsm18Service.save(this.mainForm.getRawValue()).subscribe({
+        const formData = this.prepareDataForSave(this.mainForm.getRawValue());
+        this.dcsm18Service.save(formData).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
@@ -179,5 +214,23 @@ export class Dcsm18DetailComponent implements OnInit {
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  }
+
+  formatDateThai(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+  }
+
+  getCombinedDateTime(timestampField: string): string {
+    const timestamp = this.mainForm.get(timestampField)?.value;
+    if (!timestamp) return '';
+    const datePart = timestamp.split('T')[0];
+    const timePart = timestamp.split('T')[1]?.substring(0, 5);
+    const dateStr = this.formatDateThai(datePart);
+    return timePart ? `${dateStr} ${timePart}` : dateStr;
   }
 }

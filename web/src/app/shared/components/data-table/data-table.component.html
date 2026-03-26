@@ -10,6 +10,7 @@
         </th>
 
         <td mat-cell *matCellDef="let row" [class.clickable]="clickableColumn === col.key"
+          (click)="clickableColumn === col.key ? onRowClick(row) : null"
           [style]="' border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 12px 16px; text-align: center;' + (clickableColumn === col.key ? ' cursor: pointer; color: #171851; text-decoration: underline;' : '') + (col.colorFunction ? ' color: ' + col.colorFunction(getNestedValue(row, col.key)) + '; font-weight: bold;' : '')"
           [ngStyle]="col.styleFunction ? col.styleFunction(col.key, row) : {}">
           {{ getNestedValue(row, col.key) }}
@@ -18,7 +19,7 @@
 
       <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
       <tr mat-row *matRowDef="let row; columns: getDisplayedColumns();" [ngStyle]="rowStyles(row)" 
-        (click)="onRowClick(row)" class="hover-row"></tr>
+        class="hover-row"></tr>
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" [attr.colspan]="getDisplayedColumns().length" style="padding: 20px; text-align: center; ">
@@ -29,9 +30,10 @@
   </div>
 
   <div class="mobile-cards" style="">
-    <div class="recipe-card hover-row" *ngFor="let row of dataSource.data" [ngStyle]="rowStyles(row)" (click)="onRowClick(row)">
+    <div class="recipe-card hover-row" *ngFor="let row of dataSource.data" [ngStyle]="rowStyles(row)">
       <div class="card-header">
-        <span class="recipe-id" [class.clickable]="clickableColumn === columns[0]?.key">
+        <span class="recipe-id" [class.clickable]="clickableColumn === columns[0]?.key"
+          (click)="clickableColumn === columns[0]?.key ? onRowClick(row) : null">
           {{ getNestedValue(row, columns[0]?.key) }}
         </span>
       </div>

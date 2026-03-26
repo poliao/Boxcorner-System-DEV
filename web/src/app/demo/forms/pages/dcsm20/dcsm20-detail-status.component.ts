@@ -47,7 +47,19 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   availableJobs: any[] = [];
   startQcDatetime: any;
   partsList: any[] = [];
-
+  sampleJobType: any;
+  samplePrintingSystem: any;
+  samplePrintingStyle: any;
+  samplePrintingColor: any;
+  samplePaperSize: any;
+  samplePaperGrammage: any;
+  sampleCoatingStyle: any;
+  sampleDiecutStyle: any;
+  sampleSpecialInstructions: any;
+  sampleDeliveryTimestamp: any;
+  printRound: any;
+  printRoundPage2: any;
+ 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -70,6 +82,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state || history.state;
+    console.log('DCSM20: Received navigation state:', state);
 
     if (state?.referenceId) {
       this.referenceId = state.referenceId;
@@ -78,6 +91,18 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       this.print2Page = state.print2Page;
       this.qcType = state.qcType;
       this.qcLocation = state.qcLocation;
+      this.sampleJobType = state.sampleJobType;
+      this.samplePrintingSystem = state.samplePrintingSystem;
+      this.samplePrintingStyle = state.samplePrintingStyle;
+      this.samplePrintingColor = state.samplePrintingColor;
+      this.samplePaperSize = state.samplePaperSize;
+      this.samplePaperGrammage = state.samplePaperGrammage;
+      this.sampleCoatingStyle = state.sampleCoatingStyle;
+      this.sampleDiecutStyle = state.sampleDiecutStyle;
+      this.sampleSpecialInstructions = state.sampleSpecialInstructions;
+      this.sampleDeliveryTimestamp = state.sampleDeliveryTimestamp;
+      this.printRound = state.printRound;
+      this.printRoundPage2 = state.printRoundPage2;
     } else {
       // Fallback if state is lost but we have it in form or data somehow
       this.qcType = this.productionForm?.getRawValue()?.qcType || null;
@@ -526,7 +551,20 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       decisionAuthorityRemarks: this.decisionAuthorityRemarks,
       print2Page: this.print2Page,
       papOrderId: response.id,
+      sampleJobType: this.sampleJobType,
+      samplePrintingSystem: this.samplePrintingSystem,
+      samplePrintingStyle: this.samplePrintingStyle,
+      samplePrintingColor: this.samplePrintingColor,
+      samplePaperSize: this.samplePaperSize,
+      samplePaperGrammage: this.samplePaperGrammage,
+      sampleCoatingStyle: this.sampleCoatingStyle,
+      sampleDiecutStyle: this.sampleDiecutStyle,
+      sampleSpecialInstructions: this.sampleSpecialInstructions,
+      sampleDeliveryTimestamp: this.sampleDeliveryTimestamp,
+      printRound: this.printRound,
+      printRoundPage2: this.printRoundPage2
     }
+    console.log('Saving DataJob to print_job:', DataJob);
     this.dcsm20Service.savePrintJob(DataJob).subscribe({
       next: (response) => {
       }
