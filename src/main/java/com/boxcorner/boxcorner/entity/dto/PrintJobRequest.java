@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import com.boxcorner.boxcorner.entity.BaseEntity.JobStatus;
 
 import lombok.Data;
 
@@ -15,7 +14,7 @@ public class PrintJobRequest {
     private String jobId;
     private LocalDate deliveryDate;
     private String customerJobName;
-    private JobStatus jobStatus;
+    private String jobStatus;
     private Integer totalPrintSheets;
     private Integer productionQty;
     private String printerName;

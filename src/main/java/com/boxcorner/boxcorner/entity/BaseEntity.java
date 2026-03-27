@@ -39,7 +39,7 @@ public abstract class BaseEntity {
     public enum JobStatus {
         PENDING, IN_PROGRESS, COMPLETED, PAUSED, WAITPAGE2, IN_PROGRESS_PAGE2, PAUSED_PAGE2, PROOF, PROOFCOMPLETED,
         PROOF_WAITPAGE2, PROOF_PAGE2,
-        CANCEL
+        CANCEL, WAIT_APPROVAL, APPROVED_FOR_PRODUCTION
     }
 
     public enum InkCondition {

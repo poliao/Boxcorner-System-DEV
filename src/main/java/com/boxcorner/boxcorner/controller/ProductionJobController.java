@@ -101,4 +101,12 @@ public class ProductionJobController {
                 id, jobId, customerName, printStatus, startDate, endDate, page, size);
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/findByPapOrderId")
+    public ResponseEntity<ProductionJob> findByPapOrderId(@RequestParam("papOrderId") Integer papOrderId) {
+        ProductionJob job = productionJobService.findByPapOrderId(papOrderId);
+        if (job != null) {
+            return ResponseEntity.ok(job);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

@@ -9,8 +9,9 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 import { Dcsm09Service } from '../dcsm09/dcsm09.service';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Dcsm06Service } from '../dcsm06/dcsm06.service';
 
 @Component({
   selector: 'app-dcsm20-detail-status.component',
@@ -59,7 +60,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   sampleDeliveryTimestamp: any;
   printRound: any;
   printRoundPage2: any;
- 
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -67,7 +68,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     private dcsm20Service: Dcsm20Service,
     private dcsm09Service: Dcsm09Service,
     private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
+    private dcsm06Service: Dcsm06Service
   ) { }
 
   formatDateThai(dateString: string): string {
@@ -213,7 +215,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       papOrderId: [null],
       qcJobId: [null],
       qcLocation: [this.qcLocation],
-      partName: [null]
+      partName: [null],
+      printJobId: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -311,29 +314,92 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
               this.checkDateEndProcess();
 
               if (formData.qcDate != null && formData.qcLocation != 'ไม่ส่งQC') {
-                // Save ProductionJob first to generate an ID
                 this.dcsm20Service.save(formData).subscribe((prodResponse) => {
                   formData.id = prodResponse.id;
 
-                  // Then save QcJob with the new productJobId
                   this.saveQcJob(part.partName, prodResponse.id).subscribe((qcResponse) => {
                     formData.qcJobId = qcResponse.id;
 
-                    // Update ProductionJob with the new qcJobId
                     this.dcsm20Service.save(formData).subscribe((updateResponse) => {
                       if (index === 0) {
-                        this.checkJob(updateResponse.id, responsePap);
+                        const jobObs = this.checkJob(updateResponse.id, responsePap);
+                        if (jobObs) {
+                          jobObs.subscribe((jobResp) => {
+                            const finalData = { ...updateResponse, printJobId: jobResp.id };
+                            this.dcsm20Service.save(finalData).subscribe(() => {
+                              if (this.referenceId) {
+                                this.dcsm06Service.getById(this.referenceId).subscribe((prodOrder) => {
+                                  if (prodOrder) {
+                                    prodOrder.printJobId = jobResp.id;
+                                    console.log('Updating ProductionOrder with printJobId:', prodOrder.id, jobResp.id);
+                                    this.dcsm06Service.save(prodOrder).subscribe({
+                                      next: (res) => {
+                                        console.log('ProductionOrder update success:', res);
+                                        savePart(index + 1);
+                                      },
+                                      error: (err) => {
+                                        console.error('ProductionOrder update error:', err);
+                                        savePart(index + 1);
+                                      }
+                                    });
+                                  } else {
+                                    savePart(index + 1);
+                                  }
+                                });
+                              } else {
+                                savePart(index + 1);
+                              }
+                            });
+                          });
+                        } else {
+                          savePart(index + 1);
+                        }
+                      } else {
+                        savePart(index + 1);
                       }
-                      savePart(index + 1);
                     });
                   });
                 });
               } else {
                 this.dcsm20Service.save(formData).subscribe((response) => {
                   if (index === 0) {
-                    this.checkJob(response.id, responsePap);
+                    const jobObs = this.checkJob(response.id, responsePap);
+                    if (jobObs) {
+                      jobObs.subscribe((jobResp) => {
+                        // Store printJobId back to ProductionJob
+                        const finalData = { ...response, printJobId: jobResp.id };
+                        this.dcsm20Service.save(finalData).subscribe(() => {
+                          // Also store printJobId in ProductionOrder (DCSM06 table)
+                          if (this.referenceId) {
+                            this.dcsm06Service.getById(this.referenceId).subscribe((prodOrder) => {
+                              if (prodOrder) {
+                                prodOrder.printJobId = jobResp.id;
+                                console.log('Updating ProductionOrder (alt branch) with printJobId:', prodOrder.id, jobResp.id);
+                                this.dcsm06Service.save(prodOrder).subscribe({
+                                  next: (res) => {
+                                    console.log('ProductionOrder (alt) update success:', res);
+                                    savePart(index + 1);
+                                  },
+                                  error: (err) => {
+                                    console.error('ProductionOrder (alt) update error:', err);
+                                    savePart(index + 1);
+                                  }
+                                });
+                              } else {
+                                savePart(index + 1);
+                              }
+                            });
+                          } else {
+                            savePart(index + 1);
+                          }
+                        });
+                      });
+                    } else {
+                      savePart(index + 1);
+                    }
+                  } else {
+                    savePart(index + 1);
                   }
-                  savePart(index + 1);
                 });
               }
             };
@@ -482,7 +548,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     return dateStr;
   }
 
-  checkJob(id, response) {
+  checkJob(id, response): Observable<any> | null {
     const printingDate = this.productionForm.getRawValue().printingDate;
     const coatingDate = this.productionForm.getRawValue().coatingDate;
     const stampingDate = this.productionForm.getRawValue().stampingDate;
@@ -490,7 +556,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     const qcDate = this.productionForm.getRawValue().qcDate;
 
     if (printingDate && printingDate !== '' && printingDate !== null) {
-      this.setPrintJob(id, response);
+      return this.setPrintJob(id, response);
     } else if (coatingDate && coatingDate !== '' && coatingDate !== null) {
       this.setCoatJob(id);
     } else if (stampingDate && stampingDate !== '' && stampingDate !== null) {
@@ -500,6 +566,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     } else if (qcDate && qcDate !== '' && qcDate !== null) {
       this.setQcJob(id);
     }
+    return null;
   }
 
   setFrom(response) {
@@ -523,7 +590,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     this.loadingService.hide();
   }
 
-  setPrintJob(id: any, response: any) {
+  setPrintJob(id: any, response: any): Observable<any> {
     const DataJob = {
       id: null,
       createdAt: new Date(),
@@ -564,11 +631,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       printRound: this.printRound,
       printRoundPage2: this.printRoundPage2
     }
-    console.log('Saving DataJob to print_job:', DataJob);
-    this.dcsm20Service.savePrintJob(DataJob).subscribe({
-      next: (response) => {
-      }
-    })
+    return this.dcsm20Service.savePrintJob(DataJob);
   }
 
 

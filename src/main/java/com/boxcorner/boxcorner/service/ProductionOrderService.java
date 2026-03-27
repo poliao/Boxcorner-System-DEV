@@ -71,6 +71,8 @@ public class ProductionOrderService {
             existingOrder.setSampleDeliveryTimestamp(productionOrder.getSampleDeliveryTimestamp());
             existingOrder.setPrintRound(productionOrder.getPrintRound());
             existingOrder.setPrintRoundPage2(productionOrder.getPrintRoundPage2());
+            existingOrder.setPrintJobId(productionOrder.getPrintJobId());
+            existingOrder.setIsNewProof(productionOrder.getIsNewProof());
 
             return productionOrderRepository.save(existingOrder);
         } else {
@@ -80,6 +82,9 @@ public class ProductionOrderService {
             productionOrder.setJobStatus("รอผู้รับผิดชอบยืนยัน");
             productionOrder.setProcessStatus("รอผู้รับผิดชอบยืนยัน");
             productionOrder.setMoldStatus("รอผู้รับผิดชอบยืนยัน");
+            if (productionOrder.getIsNewProof() == null) {
+                productionOrder.setIsNewProof(false);
+            }
             return productionOrderRepository.save(productionOrder);
         }
     }

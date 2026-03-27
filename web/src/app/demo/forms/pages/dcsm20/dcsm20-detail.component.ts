@@ -183,6 +183,7 @@ export class Dcsm20DetailComponent implements OnInit {
       rowVersion: [null],
       qcJobId: [null],
       qcLocation: [null],
+      printJobId: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();

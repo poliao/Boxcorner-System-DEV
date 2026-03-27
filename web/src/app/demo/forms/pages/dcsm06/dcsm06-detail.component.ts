@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Dcsm06Service } from './dcsm06.service';
 import { Dcsm04Service } from '../dcsm04/dcsm04.service';
+import { Dcsm26Service } from '../dcsm26/dcsm26.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -24,6 +25,7 @@ export class Dcsm06DetailComponent implements OnInit {
   isSave = false
   isPostPone = false
   isCancelRemarks = false
+  isApprove = false
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +36,7 @@ export class Dcsm06DetailComponent implements OnInit {
     private sweetAlert: SweetAlertService,
     private authService: AuthService,
     private dcsm04Service: Dcsm04Service,
+    private dcsm26Service: Dcsm26Service,
   ) { }
 
   ngOnInit(): void {
@@ -58,6 +61,11 @@ export class Dcsm06DetailComponent implements OnInit {
 
     if (this.mainForm.getRawValue().cancelRemarks != null && this.mainForm.getRawValue().cancelRemarks != '') {
       this.isCancelRemarks = true
+    }
+
+    if (this.mainForm.getRawValue().processStatus === 'รอการอนุมัติผลิต' &&
+      this.authService.getUserFromToken().sub === this.mainForm.getRawValue().jobOwner) {
+      this.isApprove = true;
     }
 
     if (this.mainForm.getRawValue().id == null || this.mainForm.getRawValue().id == '' || (this.mainForm.getRawValue().jobStatus == 'รอผู้รับผิดชอบยืนยัน' && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().jobOwner)) {
@@ -139,6 +147,8 @@ export class Dcsm06DetailComponent implements OnInit {
       sampleDeliveryTimestamp: [''],
       printRound: [null],
       printRoundPage2: [null],
+      printJobId: [null],
+      isNewProof: [false]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -425,6 +435,126 @@ export class Dcsm06DetailComponent implements OnInit {
       decisionAuthorityRemarks: null
     });
   }
+
+  onApproveProduction() {
+    Swal.fire({
+      title: 'อนุมัติผลิต',
+      text: 'ยืนยันอนุมัติให้เริ่มพิมพ์จริง ใช่หรือไม่?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยันอนุมัติ',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        const formData = this.mainForm.getRawValue();
+        formData.processStatus = 'อนุมัติผลิตแล้ว';
+        this.dcsm06Service.save(formData).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.patchFormData(response);
+            this.isApprove = false;
+
+            // Sync with ProductionJob (Post-printing stages)
+            if (response.id) {
+              this.dcsm26Service.findByPapOrderId(response.id).subscribe((prodJob) => {
+                if (prodJob) {
+                  prodJob.printStatus = 'อนุมัติผลิตแล้ว'; 
+                  this.dcsm26Service.saveProductionJob(prodJob).subscribe();
+                }
+              });
+
+              // Sync with PrintJob (DCSM26 Printing stage)
+              this.dcsm26Service.findByProductionOrderId(response.id).subscribe((printJob) => {
+                if (printJob) {
+                  printJob.jobStatus = 'อนุมัติผลิตแล้ว';
+                  this.dcsm26Service.save(printJob).subscribe();
+                }
+              });
+            }
+
+            this.sweetAlert.success('อนุมัติสำเร็จ', 'อนุมัติผลิตเรียบร้อยแล้ว');
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
+            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+          }
+        });
+      }
+    });
+  }
+
+  onProofNotPassed() {
+    Swal.fire({
+      title: 'ปรู๊ฟไม่ผ่าน',
+      text: 'ยืนยันสถานะปรู๊ฟไม่ผ่าน ใช่หรือไม่? ระบบจะทำการ Copy ข้อมูลเดิมเพื่อเริ่มกระบวนการใหม่',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        const currentOrder = this.mainForm.getRawValue();
+
+        // 1. Update current order status
+        currentOrder.jobStatus = 'ปรู๊ฟไม่ผ่าน';
+        currentOrder.processStatus = 'ปรู๊ฟไม่ผ่าน';
+
+        this.dcsm06Service.save(currentOrder).subscribe({
+          next: () => {
+            // 2. Update linked PrintJob status
+            if (currentOrder.id) {
+              this.dcsm26Service.findByProductionOrderId(currentOrder.id).subscribe((printJob) => {
+                if (printJob) {
+                  printJob.jobStatus = 'ปรู๊ฟไม่ผ่าน';
+                  this.dcsm26Service.save(printJob).subscribe();
+                }
+              });
+            }
+
+            // 3. Create a new copy
+            const newOrder = { ...currentOrder };
+            delete newOrder.id;
+            delete newOrder.rowVersion;
+            delete newOrder.createdAt;
+            delete newOrder.updatedAt;
+            delete newOrder.printJobId; 
+
+            newOrder.jobId = currentOrder.jobId;
+            newOrder.jobStatus = 'รอผู้รับผิดชอบยืนยัน';
+            newOrder.processStatus = 'รอผู้รับผิดชอบยืนยัน';
+            newOrder.moldStatus = 'รอผู้รับผิดชอบยืนยัน';
+            newOrder.isNewProof = true;
+
+            this.dcsm06Service.save(newOrder).subscribe({
+              next: (response) => {
+                this.loadingService.hide();
+                this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'ระบบได้ทำการสร้างใบงานใหม่เรียบร้อยแล้ว');
+                this.router.navigate(['/Dcsm06Detail', response.id]).then(() => {
+                  window.location.reload();
+                });
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.sweetAlert.error('Error', 'ไม่สามารถสร้างใบงานใหม่ได้: ' + (error.error || error.message));
+              }
+            });
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('Error', 'ไม่สามารถอัปเดตสถานะใบงานเดิมได้: ' + (error.error || error.message));
+          }
+        });
+      }
+    });
+  }
+
 
   getCreatedTime(): string {
     const createdAt = this.mainForm.get('createdAt')?.value;

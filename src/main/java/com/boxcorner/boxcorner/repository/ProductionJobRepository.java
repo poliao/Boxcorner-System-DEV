@@ -124,4 +124,6 @@ public interface ProductionJobRepository extends JpaRepository<ProductionJob, Lo
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             Pageable pageable);
+    @Query(value = "SELECT * FROM production_jobs p WHERE p.pap_order_id = :papOrderId LIMIT 1", nativeQuery = true)
+    ProductionJob findByPapOrderId(@Param("papOrderId") Integer papOrderId);
 }

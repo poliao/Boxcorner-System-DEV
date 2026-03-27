@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.boxcorner.boxcorner.entity.BaseEntity.JobStatus;
+
 import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.repository.PrintJobRepository;
 
@@ -84,7 +84,7 @@ public class PrintJobService {
  
             return repository.save(existing);
         }
-        printJob.setJobStatus(JobStatus.PENDING);
+        printJob.setJobStatus("รอพิมพ์");
         return repository.save(printJob);
     }
 
@@ -134,4 +134,7 @@ public class PrintJobService {
                 jobStatus, paging);
     }
 
+    public PrintJob findByProductionOrderId(Integer productionOrderId) {
+        return repository.findByProductionOrderId(productionOrderId);
+    }
 }

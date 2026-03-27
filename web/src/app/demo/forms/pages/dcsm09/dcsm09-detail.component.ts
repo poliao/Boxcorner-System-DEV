@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Dcsm09Service } from './dcsm09.service';
+import { Dcsm26Service } from '../dcsm26/dcsm26.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -33,7 +34,8 @@ export class Dcsm09DetailComponent implements OnInit {
     private dcsm09Service: Dcsm09Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
-    private authService: AuthService
+    private authService: AuthService,
+    private dcsm26Service: Dcsm26Service
   ) { }
 
   ngOnInit(): void {
@@ -139,6 +141,8 @@ export class Dcsm09DetailComponent implements OnInit {
       sampleDeliveryTimestamp: [null],
       printRound: [null],
       printRoundPage2: [null],
+      printJobId: [null],
+      isNewProof: [false]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -425,6 +429,20 @@ export class Dcsm09DetailComponent implements OnInit {
 
             this.dcsm09Service.saveParts(orderId, partsData).subscribe({
               next: () => {
+                const formData = this.mainForm.getRawValue();
+                if (formData.isNewProof && formData.printJobId) {
+                  this.dcsm26Service.getById(formData.printJobId).subscribe((originalJob) => {
+                    if (originalJob) {
+                      const newJob = { ...originalJob };
+                      delete newJob.id;
+                      delete newJob.rowVersion;
+                      delete newJob.createdAt;
+                      delete newJob.updatedAt;
+                      newJob.jobStatus = 'รอพิมพ์';
+                      this.dcsm26Service.save(newJob).subscribe();
+                    }
+                  });
+                }
                 this.patchFormData(response);
                 this.checkBtn();
                 this.loadingService.hide();

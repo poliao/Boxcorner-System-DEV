@@ -3,6 +3,14 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button *ngIf="isApprove" (click)="onProofNotPassed()" type="button" class="btn text-white px-5 shadow-sm"
+            style="background-color: #dc3545;">
+            ❌ ปรู๊ฟไม่ผ่าน
+          </button>
+          <button *ngIf="isApprove" (click)="onApproveProduction()" type="button" class="btn text-white px-5 shadow-sm"
+            style="background-color: #198754;">
+            ✅ อนุมัติผลิต
+          </button>
           <button *ngIf="isSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
             บันทึกข้อมูล
@@ -137,6 +145,18 @@
           <input type="text" formControlName="updatedAt" class="form-control" >
         </div> -->
       </form>
+    </div>
+  </div>
+
+  <div class="alert mt-3 d-flex align-items-center gap-3"
+    *ngIf="mainForm.get('processStatus')?.value === 'รอการอนุมัติผลิต'"
+    style="background-color: #fff3cd; border: 1px solid #ffc107; border-left: 5px solid #ffc107; border-radius: 8px;">
+    <span style="font-size: 1.8rem;">⏳</span>
+    <div>
+      <strong style="color: #856404; font-size: 1rem;">รอการอนุมัติจากเจ้าของงาน</strong>
+      <div style="color: #856404; font-size: 0.85rem; margin-top: 2px;">
+        ตัวอย่าง (Proof) พิมพ์เสร็จแล้ว — เจ้าของงานกรุณากด <strong>"อนุมัติผลิต"</strong> เพื่ออนุญาตให้เริ่มพิมพ์จริง
+      </div>
     </div>
   </div>
 

@@ -85,4 +85,6 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
                         @Param("jobStatus") String jobStatus,
                         Pageable pageable);
 
+    @Query(value = "SELECT * FROM print_jobs pj WHERE pj.production_order_id = CAST(:productionOrderId AS text) LIMIT 1", nativeQuery = true)
+    PrintJob findByProductionOrderId(@Param("productionOrderId") Integer productionOrderId);
 }

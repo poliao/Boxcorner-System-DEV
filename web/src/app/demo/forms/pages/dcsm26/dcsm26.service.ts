@@ -96,4 +96,10 @@ export class Dcsm26Service {
   getAllUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/user/all`);
   }
+  findByPapOrderId(papOrderId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production-job/findByPapOrderId?papOrderId=${papOrderId}`);
+  }
+  findByProductionOrderId(productionOrderId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/print-job/findByProductionOrderId?productionOrderId=${productionOrderId}`);
+  }
 }

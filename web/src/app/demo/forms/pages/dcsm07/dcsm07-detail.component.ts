@@ -189,7 +189,8 @@ export class Dcsm07DetailComponent implements OnInit {
       sampleSpecialInstructions: [null],
       sampleDeliveryTimestamp: [null],
       printRound: [null],
-      printRoundPage2: [null]
+      printRoundPage2: [null],
+      printJobId: [null]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -467,5 +468,4 @@ export class Dcsm07DetailComponent implements OnInit {
     const dateStr = this.formatDateThai(datePart);
     return timePart ? `${dateStr} ${timePart}` : dateStr;
   }
-
 }

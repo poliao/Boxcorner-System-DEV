@@ -368,9 +368,17 @@ export class Dcsm36DetailComponent implements OnInit {
 
   dowloadReportQc() {
     this.loadingService.show();
-    const data = {
-      "reportName": "QcReport",
-      "jobId": this.qcJobForm.get('joId')?.value,
+    let data;
+    if (this.qcJobForm.get('qcType')?.value == 'Qc STK') {
+      data = {
+        "reportName": "QcSTKReport",
+        "jobId": this.qcJobForm.get('joId')?.value,
+      }
+    } else {
+      data = {
+        "reportName": "QcReport",
+        "jobId": this.qcJobForm.get('joId')?.value,
+      }
     }
     this.dcsm36Service.printReport(data).subscribe({
       next: (response) => {

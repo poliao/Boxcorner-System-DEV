@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.boxcorner.boxcorner.entity.BaseEntity.JobStatus;
+
 import com.boxcorner.boxcorner.entity.BaseEntity.LogType;
 import com.boxcorner.boxcorner.entity.BaseEntity.PrintSide;
 import com.boxcorner.boxcorner.entity.PaperInventory;
@@ -81,12 +81,12 @@ public class PrintingService {
 
         // 4. Update Job Status -> IN_PROGRESS
         if (job != null) {
-            if (JobStatus.PENDING.equals(job.getJobStatus()) || JobStatus.PAUSED.equals(job.getJobStatus())) {
-                job.setJobStatus(JobStatus.IN_PROGRESS);
+            if ("รอพิมพ์".equals(job.getJobStatus()) || "หยุดชั่วคราว".equals(job.getJobStatus())) {
+                job.setJobStatus("กำลังพิมพ์ด้านหน้า");
                 jobRepository.save(job);
-            } else if (JobStatus.WAITPAGE2.equals(job.getJobStatus())
-                    || JobStatus.PAUSED_PAGE2.equals(job.getJobStatus())) {
-                job.setJobStatus(JobStatus.IN_PROGRESS_PAGE2);
+            } else if ("รอพิมพ์หน้า 2".equals(job.getJobStatus())
+                    || "หยุดชั่วคราว (หน้า 2)".equals(job.getJobStatus())) {
+                job.setJobStatus("กำลังพิมพ์ด้านหลัง");
                 jobRepository.save(job);
             }
         }
@@ -177,15 +177,15 @@ public class PrintingService {
 
         if (job != null) {
             if ("FINISH".equalsIgnoreCase(req.getAction())) {
-                job.setJobStatus(JobStatus.COMPLETED);
+                job.setJobStatus("พิมพ์เสร็จแล้ว");
             } else if ("PAUSE".equalsIgnoreCase(req.getAction())) {
-                job.setJobStatus(JobStatus.PAUSED);
+                job.setJobStatus("หยุดชั่วคราว");
             } else if ("WAITPAGE2".equalsIgnoreCase(req.getAction())) {
-                job.setJobStatus(JobStatus.WAITPAGE2);
+                job.setJobStatus("รอพิมพ์หน้า 2");
             } else if ("PAUSED_PAGE2".equalsIgnoreCase(req.getAction())) {
-                job.setJobStatus(JobStatus.PAUSED_PAGE2);
+                job.setJobStatus("หยุดชั่วคราว (หน้า 2)");
             } else if ("FINISH_PAGE2".equalsIgnoreCase(req.getAction())) {
-                job.setJobStatus(JobStatus.COMPLETED);
+                job.setJobStatus("พิมพ์เสร็จแล้ว");
             }
 
             jobRepository.save(job);

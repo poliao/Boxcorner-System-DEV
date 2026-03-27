@@ -2,67 +2,69 @@
   <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
     <h1 class="mb-0 text-center text-md-start">งานรอพิมพ์ OS</h1>
     <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
-      <!-- QC button for IN_PROGRESS, IN_PROGRESS_PAGE2, PROOF, PROOF_PAGE2 -->
+      <!-- QC button -->
       <button
-        *ngIf="['IN_PROGRESS','IN_PROGRESS_PAGE2','PROOF','PROOF_PAGE2'].includes(printingForm.get('jobStatus')?.value)"
+        *ngIf="['กำลังพิมพ์ด้านหน้า','กำลังพิมพ์ด้านหลัง','กำลังพิมพ์ส่งลูกค้า','กำลังพิมพ์ส่งลูกค้าหน้า 2'].includes(printingForm.get('jobStatus')?.value)"
         (click)="openQcModal()" class="btn text-white px-4 shadow-sm"
         style="background-color: #0dcaf0;">เช็คคุณภาพ</button>
 
-      <!-- IN_PROGRESS rounds -->
+      <!-- กำลังพิมพ์ด้านหน้า rounds -->
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS' && currentRound < (printingForm.getRawValue().printRound || 1)"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหน้า' && currentRound < (printingForm.getRawValue().printRound || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
         เริ่มรอบที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRound || 1 }}
       </button>
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS' && currentRound >= (printingForm.getRawValue().printRound || 1)"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหน้า' && currentRound >= (printingForm.getRawValue().printRound || 1)"
         (click)="updatePrintStatus('Print')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
 
-      <!-- IN_PROGRESS_PAGE2 rounds -->
+      <!-- กำลังพิมพ์ด้านหลัง rounds -->
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2' && currentRound < (printingForm.getRawValue().printRoundPage2 || 1)"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหลัง' && currentRound < (printingForm.getRawValue().printRoundPage2 || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
         เริ่มรอบหน้า2 ที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRoundPage2 || 1 }}
       </button>
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2' && currentRound >= (printingForm.getRawValue().printRoundPage2 || 1)"
-        (click)="updatePrintStatus('IN_PROGRESS_PAGE2')" class="btn text-white px-4 shadow-sm"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหลัง' && currentRound >= (printingForm.getRawValue().printRoundPage2 || 1)"
+        (click)="updatePrintStatus('กำลังพิมพ์ด้านหลัง')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">พิมพ์เสร็จหน้า2</button>
 
-      <!-- PROOF rounds (front side) -->
+      <!-- กำลังพิมพ์ส่งลูกค้า rounds -->
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'PROOF' && currentRound < (printingForm.getRawValue().printRound || 1)"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า' && currentRound < (printingForm.getRawValue().printRound || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
         เริ่มพรู๊ฟ์รอบที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRound || 1 }}
       </button>
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'PROOF' && currentRound >= (printingForm.getRawValue().printRound || 1)"
-        (click)="updatePrintStatus('PROOF')" class="btn text-white px-4 shadow-sm"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า' && currentRound >= (printingForm.getRawValue().printRound || 1)"
+        (click)="updatePrintStatus('กำลังพิมพ์ส่งลูกค้า')" class="btn text-white px-4 shadow-sm"
         style="background-color: #0f766e;">พิมพ์ส่งลูกค้าเสร็จ</button>
 
-      <!-- PROOF_WAITPAGE2: waiting to start proof page 2 -->
-      <button *ngIf="printingForm.get('jobStatus')?.value === 'PROOF_WAITPAGE2'" (click)="onUpdatePrint('PROOF_PAGE2')"
+      <!-- รอพิมพ์ส่งลูกค้าหน้า 2 -->
+      <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์ส่งลูกค้าหน้า 2'" (click)="onUpdatePrint('PROOF_PAGE2')"
         class="btn text-white px-4 shadow-sm" style="background-color: #1e1b4b;">เริ่มพรู๊ฟ์หน้า2</button>
 
-      <!-- PROOF_PAGE2 rounds (back side) -->
+      <!-- กำลังพิมพ์ส่งลูกค้าหน้า 2 rounds -->
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'PROOF_PAGE2' && currentRound < (printingForm.getRawValue().printRoundPage2 || 1)"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้าหน้า 2' && currentRound < (printingForm.getRawValue().printRoundPage2 || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
         เริ่มพรู๊ฟ์หน้า2 รอบที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRoundPage2 || 1 }}
       </button>
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'PROOF_PAGE2' && currentRound >= (printingForm.getRawValue().printRoundPage2 || 1)"
-        (click)="updatePrintStatus('PROOF_PAGE2')" class="btn text-white px-4 shadow-sm"
+        *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้าหน้า 2' && currentRound >= (printingForm.getRawValue().printRoundPage2 || 1)"
+        (click)="updatePrintStatus('กำลังพิมพ์ส่งลูกค้าหน้า 2')" class="btn text-white px-4 shadow-sm"
         style="background-color: #0f766e;">พรู๊ฟ์หน้า2เสร็จ</button>
+
+      <!-- เริ่มพิมพ์จริง -->
       <button
-        *ngIf="(printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer') || (printingForm.get('jobStatus')?.value === 'PROOFCOMPLETED')"
+        *ngIf="(printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer') || printingForm.get('jobStatus')?.value === 'พิมพ์ส่งลูกค้าเสร็จแล้ว' || printingForm.get('jobStatus')?.value === 'อนุมัติผลิตแล้ว'"
         (click)="onUpdatePrint('inPrint')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
-      <button *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2'" (click)="onUpdatePrint('WAITPAGE2')"
+      <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์หน้า 2'" (click)="onUpdatePrint('WAITPAGE2')"
         class="btn text-white px-4 shadow-sm" style="background-color: #1e1b4b;">เริ่มพิมพ์หน้า2</button>
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+        *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
         (click)="onUpdatePrint('inPrint')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">เริ่มพิมพ์ส่งลูกค้า</button>
     </div>
@@ -86,7 +88,9 @@
         </div>
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label">สถานะงาน</label>
-          <input type="text" formControlName="jobStatus" class="form-control">
+          <div class="form-control d-flex align-items-center fw-semibold" style="background-color: #f8fafc; min-height: 38px;">
+            {{ getJobStatusLabel() }}
+          </div>
         </div>
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label">ตั้งเครื่อง</label>
@@ -124,6 +128,19 @@
         </div>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Banner: รอเจ้าของงานอนุมัติผลิต -->
+<div class="alert mt-3 d-flex align-items-center gap-3"
+  *ngIf="printingForm.get('jobStatus')?.value === 'WAIT_APPROVAL'"
+  style="background-color: #fff3cd; border: 1px solid #ffc107; border-left: 5px solid #ffc107; border-radius: 8px;">
+  <span style="font-size: 1.8rem;">⏳</span>
+  <div>
+    <strong style="color: #856404; font-size: 1rem;">รอเจ้าของงานอนุมัติผลิต</strong>
+    <div style="color: #856404; font-size: 0.85rem; margin-top: 2px;">
+      Proof เสร็จแล้ว — กรุณาแจ้งเจ้าของงานให้เข้า <strong>DCSM06</strong> เพื่ออนุมัติให้เริ่มพิมพ์จริง
+    </div>
   </div>
 </div>
 
@@ -879,58 +896,64 @@
       <div class="modal-footer border-0" style="padding: 12px 24px; background-color: #f8fafc; flex-shrink: 0;">
         <button type="button" class="btn btn-light" (click)="closeChecklistModal()"
           style="border-radius: 8px; padding: 8px 20px; font-weight: 500;">ยกเลิก</button>
-        <!-- PENDING + ไม่ใช่ sampleToCustomer → พิมพ์ปกติ -->
+        <!-- รอพิมพ์ + ไม่ใช่ sampleToCustomer → พิมพ์ปกติ -->
         <button
-          *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer'"
+          *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer'"
           type="button" class="btn" (click)="submitChecklist('inPrint')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์
         </button>
-        <!-- PENDING + sampleToCustomer → พิมพ์ตัวอย่างก่อน -->
+        <!-- รอพิมพ์ + sampleToCustomer → พิมพ์ตัวอย่างก่อน -->
         <button
-          *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+          *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
           type="button" class="btn" (click)="submitChecklist('PROOF')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);">
           <i class="fas fa-check me-2"></i>เริ่มพิมพ์ส่งลูกค้า
         </button>
-        <!-- PROOFCOMPLETED → ลูกค้าอนุมัติแล้ว พิมพ์จริง -->
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'PROOFCOMPLETED'" type="button" class="btn"
+        <!-- พิมพ์ส่งลูกค้าเสร็จแล้ว → พิมพ์จริง -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'พิมพ์ส่งลูกค้าเสร็จแล้ว'" type="button" class="btn"
           (click)="submitChecklist('inPrint')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-print me-2"></i>ยืนยันเริ่มพิมพ์จริง
         </button>
-        <!-- WAITPAGE2 → พิมพ์หน้า 2 -->
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2'" type="button" class="btn"
+        <!-- อนุมัติผลิตแล้ว → พิมพ์จริง -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'อนุมัติผลิตแล้ว'" type="button" class="btn"
+          (click)="submitChecklist('inPrint')"
+          style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
+          <i class="fas fa-print me-2"></i>ยืนยันเริ่มพิมพ์จริง
+        </button>
+        <!-- รอพิมพ์หน้า 2 → พิมพ์หน้า 2 -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์หน้า 2'" type="button" class="btn"
           (click)="submitChecklist('WAITPAGE2')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์หน้า2
         </button>
-        <!-- IN_PROGRESS round ถัดไป (หน้าแรก) -->
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS'" type="button" class="btn"
+        <!-- กำลังพิมพ์ด้านหน้า round ถัดไป -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหน้า'" type="button" class="btn"
           (click)="submitChecklist('nextRound')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-redo me-2"></i>ยืนยันเริ่มพิมพ์รอบถัดไป
         </button>
-        <!-- IN_PROGRESS_PAGE2 round ถัดไป (หน้า 2) -->
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2'" type="button" class="btn"
+        <!-- กำลังพิมพ์ด้านหลัง round ถัดไป -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหลัง'" type="button" class="btn"
           (click)="submitChecklist('nextRound')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-redo me-2"></i>ยืนยันเริ่มพิมพ์หน้า2 รอบถัดไป
         </button>
-        <!-- PROOF round ถัดไป (หน้าแรก) -->
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'PROOF'" type="button" class="btn"
+        <!-- กำลังพิมพ์ส่งลูกค้า round ถัดไป -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า'" type="button" class="btn"
           (click)="submitChecklist('nextRound')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500;">
           <i class="fas fa-redo me-2"></i>ยืนยันเริ่มพรู๊ฟ์ตัวอย่างรอบถัดไป
         </button>
-        <!-- PROOF_PAGE2 เริ่ม -->
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'PROOF_WAITPAGE2'" type="button" class="btn"
+        <!-- รอพิมพ์ส่งลูกค้าหน้า 2 → เริ่มพรู๊ฟ์หน้า2 -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์ส่งลูกค้าหน้า 2'" type="button" class="btn"
           (click)="submitChecklist('PROOF_PAGE2')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500;">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพรู๊ฟ์หน้า2
         </button>
-        <!-- PROOF_PAGE2 round ถัดไป -->
-        <button *ngIf="printingForm.get('jobStatus')?.value === 'PROOF_PAGE2'" type="button" class="btn"
+        <!-- กำลังพิมพ์ส่งลูกค้าหน้า 2 round ถัดไป -->
+        <button *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้าหน้า 2'" type="button" class="btn"
           (click)="submitChecklist('nextRound')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500;">
           <i class="fas fa-redo me-2"></i>ยืนยันเริ่มพรู๊ฟ์หน้า2 รอบถัดไป

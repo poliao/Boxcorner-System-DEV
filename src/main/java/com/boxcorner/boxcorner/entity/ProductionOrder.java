@@ -155,4 +155,10 @@ public class ProductionOrder extends BaseEntity {
 
     @Column(name = "print_round_page2")
     private Integer printRoundPage2;
+
+    @Column(name = "print_job_id")
+    private Long printJobId;
+
+    @Column(name = "is_new_proof")
+    private Boolean isNewProof = false;
 }

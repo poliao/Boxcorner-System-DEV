@@ -60,6 +60,7 @@ public class ProductionJobService {
                 existing.setPrintingRecordId(productionJob.getPrintingRecordId());
                 existing.setQcJobId(productionJob.getQcJobId());
                 existing.setQcLocation(productionJob.getQcLocation());
+                existing.setPrintJobId(productionJob.getPrintJobId());
                 return productionJobRepository.save(existing);
             }
         }
@@ -103,5 +104,8 @@ public class ProductionJobService {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return productionJobRepository.findByFiltersPrintingOS(id, jobId, customerJobName, printStatus,
                 startDate, endDate, paging);
+    }
+    public ProductionJob findByPapOrderId(Integer papOrderId) {
+        return productionJobRepository.findByPapOrderId(papOrderId);
     }
 }

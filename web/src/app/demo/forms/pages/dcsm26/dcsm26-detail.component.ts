@@ -8,6 +8,7 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
+import { Dcsm06Service } from '../dcsm06/dcsm06.service';
 
 @Component({
   selector: 'app-dcsm26-detail',
@@ -47,7 +48,8 @@ export class Dcsm26DetailComponent implements OnInit {
     private sweetAlert: SweetAlertService,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private dcsm06Service: Dcsm06Service
   ) { }
 
   ngOnInit() {
@@ -268,10 +270,10 @@ export class Dcsm26DetailComponent implements OnInit {
 
   checkbntPrint() {
     const status = this.printingForm.get('jobStatus')?.value;
-    if (status === '' || status === null || status === 'PENDING') {
+    if (status === '' || status === null || status === 'รอพิมพ์') {
       this.isInPrint = true;
       this.isPrint = false;
-    } else if (status === 'IN_PROGRESS') {
+    } else if (status === 'กำลังพิมพ์ด้านหน้า') {
       this.isPrint = true;
       this.isInPrint = false;
     } else {
@@ -345,29 +347,29 @@ export class Dcsm26DetailComponent implements OnInit {
       this.loadingService.show();
 
       if (status === 'inPrint') {
-        this.printingForm.get('jobStatus')?.setValue('IN_PROGRESS');
+        this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์ด้านหน้า');
         this.checklistForm.get('printSide')?.setValue('FRONT');
         this.checklistForm.get('status')?.setValue('RUNNING');
       } else if (status === 'WAITPAGE2') {
-        this.printingForm.get('jobStatus')?.setValue('IN_PROGRESS_PAGE2');
+        this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์ด้านหลัง');
         this.checklistForm.get('printSide')?.setValue('BACK');
         this.checklistForm.get('status')?.setValue('RUNNING');
       } else if (status === 'PROOF') {
-        this.printingForm.get('jobStatus')?.setValue('PROOF');
+        this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์ส่งลูกค้า');
         this.checklistForm.get('printSide')?.setValue('PROOF');
         this.checklistForm.get('status')?.setValue('RUNNING');
       } else if (status === 'PROOF_PAGE2') {
-        this.printingForm.get('jobStatus')?.setValue('PROOF_PAGE2');
+        this.printingForm.get('jobStatus')?.setValue('กำลังพิมพ์ส่งลูกค้าหน้า 2');
         this.checklistForm.get('printSide')?.setValue('PROOF_BACK');
         this.checklistForm.get('status')?.setValue('RUNNING');
       } else if (status === 'nextRound') {
         // Continue same side for next round – derive side from current jobStatus
         const currentStatus = this.printingForm.get('jobStatus')?.value;
-        if (currentStatus === 'IN_PROGRESS_PAGE2') {
+        if (currentStatus === 'กำลังพิมพ์ด้านหลัง') {
           this.checklistForm.get('printSide')?.setValue('BACK');
-        } else if (currentStatus === 'PROOF_PAGE2') {
+        } else if (currentStatus === 'กำลังพิมพ์ส่งลูกค้าหน้า 2') {
           this.checklistForm.get('printSide')?.setValue('PROOF_BACK');
-        } else if (currentStatus === 'PROOF') {
+        } else if (currentStatus === 'กำลังพิมพ์ส่งลูกค้า') {
           this.checklistForm.get('printSide')?.setValue('PROOF');
         } else {
           this.checklistForm.get('printSide')?.setValue('FRONT');
@@ -388,13 +390,13 @@ export class Dcsm26DetailComponent implements OnInit {
               const printRoundPage2 = form.printRoundPage2 || 1;
               const jobStatus = form.jobStatus;
               const remainingMsg =
-                (jobStatus === 'IN_PROGRESS_PAGE2' || jobStatus === 'PROOF_PAGE2')
+                (jobStatus === 'กำลังพิมพ์ด้านหลัง' || jobStatus === 'กำลังพิมพ์ส่งลูกค้าหน้า 2')
                   ? (this.currentRound < printRoundPage2
-                      ? `เริ่มพิมพ์หน้า 2 รอบที่ ${this.currentRound}/${printRoundPage2} เรียบร้อย`
-                      : 'บันทึกข้อมูลสำเร็จ')
+                    ? `เริ่มพิมพ์หน้า 2 รอบที่ ${this.currentRound}/${printRoundPage2} เรียบร้อย`
+                    : 'บันทึกข้อมูลสำเร็จ')
                   : (this.currentRound < printRound
-                      ? `เริ่มพิมพ์รอบที่ ${this.currentRound}/${printRound} เรียบร้อย`
-                      : 'บันทึกข้อมูลสำเร็จ');
+                    ? `เริ่มพิมพ์รอบที่ ${this.currentRound}/${printRound} เรียบร้อย`
+                    : 'บันทึกข้อมูลสำเร็จ');
               this.sweetAlert.success('Success', remainingMsg);
               this.printingForm.patchValue(response);
             },
@@ -420,7 +422,6 @@ export class Dcsm26DetailComponent implements OnInit {
   saveRecordOs(): Observable<any> {
     const checklist = this.checklistForm.value;
     const form = this.printingForm.getRawValue();
-
     const data = {
       jobId: form.id,
       machineName: checklist.machineType,
@@ -453,8 +454,7 @@ export class Dcsm26DetailComponent implements OnInit {
       operatorName: checklist.operatorName,
       totalProduct: checklist.totalProduct
     };
-    console.log(data);
-    console.log(this.authService.getUserFromToken().sub);
+
     return this.dcsm26Service.savePrintLogOs(data);
   }
 
@@ -484,16 +484,21 @@ export class Dcsm26DetailComponent implements OnInit {
     const status = this.currentPrintStatus;
     const is2Page = this.printingForm.getRawValue().print2Page == true;
 
-    if (status === 'Print' && !is2Page || status === 'IN_PROGRESS_PAGE2') {
-      this.printingForm.get('jobStatus')?.setValue('COMPLETED');
+    const decisionAuthority = this.printingForm.getRawValue().decisionAuthority;
+    const isSampleToCustomer = decisionAuthority === 'sampleToCustomer';
+
+    if (status === 'Print' && !is2Page || status === 'กำลังพิมพ์ด้านหลัง') {
+      this.printingForm.get('jobStatus')?.setValue('พิมพ์เสร็จแล้ว');
     } else if (status === 'Print' && is2Page) {
-      this.printingForm.get('jobStatus')?.setValue('WAITPAGE2');
-    } else if (status === 'PROOF' && !is2Page) {
-      this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
-    } else if (status === 'PROOF' && is2Page) {
-      this.printingForm.get('jobStatus')?.setValue('PROOF_WAITPAGE2');
-    } else if (status === 'PROOF_PAGE2') {
-      this.printingForm.get('jobStatus')?.setValue('PROOFCOMPLETED');
+      this.printingForm.get('jobStatus')?.setValue('รอพิมพ์หน้า 2');
+    } else if (status === 'กำลังพิมพ์ส่งลูกค้า' && !is2Page) {
+      // sampleToCustomer: ต้องให้เจ้าของงานอนุมัติก่อนพิมพ์จริง
+      this.printingForm.get('jobStatus')?.setValue(isSampleToCustomer ? 'รอการอนุมัติผลิต' : 'พิมพ์ส่งลูกค้าเสร็จแล้ว');
+    } else if (status === 'กำลังพิมพ์ส่งลูกค้า' && is2Page) {
+      this.printingForm.get('jobStatus')?.setValue('รอพิมพ์ส่งลูกค้าหน้า 2');
+    } else if (status === 'กำลังพิมพ์ส่งลูกค้าหน้า 2') {
+      // sampleToCustomer: ต้องให้เจ้าของงานอนุมัติหลังพิมพ์ proof ครบทั้ง 2 หน้า
+      this.printingForm.get('jobStatus')?.setValue(isSampleToCustomer ? 'รอการอนุมัติผลิต' : 'พิมพ์ส่งลูกค้าเสร็จแล้ว');
     }
 
     const data = this.printingForm.getRawValue();
@@ -507,8 +512,21 @@ export class Dcsm26DetailComponent implements OnInit {
     });
 
     this.dcsm26Service.save(data).subscribe((response) => {
-      if (!is2Page || status === 'IN_PROGRESS_PAGE2') {
+      const savedStatus = this.printingForm.getRawValue().jobStatus;
+      if (!is2Page || status === 'กำลังพิมพ์ด้านหลัง') {
         this.updateProductionJob();
+      }
+      // ถ้าเป็น sampleToCustomer และ proof เสร็จ → อัปเดต ProductionOrder ด้วย
+      if (savedStatus === 'รอการอนุมัติผลิต') {
+        const productionOrderId = this.printingForm.getRawValue().productionOrderId;
+        if (productionOrderId) {
+          this.dcsm06Service.getById(productionOrderId).subscribe((prodOrder) => {
+            if (prodOrder) {
+              prodOrder.processStatus = 'รอการอนุมัติผลิต';
+              this.dcsm06Service.save(prodOrder).subscribe();
+            }
+          });
+        }
       }
       this.checkbntPrint();
       this.printingForm.patchValue(response);
@@ -517,6 +535,27 @@ export class Dcsm26DetailComponent implements OnInit {
       this.printedQuantity = 0;
       this.currentRound = 0;
     });
+  }
+
+  getJobStatusLabel(): string {
+    const value = this.printingForm.get('jobStatus')?.value;
+    const labels: Record<string, string> = {
+      'PENDING': 'รอพิมพ์',
+      'IN_PROGRESS': 'กำลังพิมพ์ด้านหน้า',
+      'COMPLETED': 'พิมพ์เสร็จแล้ว',
+      'PAUSED': 'หยุดชั่วคราว',
+      'WAITPAGE2': 'รอพิมพ์หน้า 2',
+      'IN_PROGRESS_PAGE2': 'กำลังพิมพ์ด้านหลัง',
+      'PAUSED_PAGE2': 'หยุดชั่วคราว (หน้า 2)',
+      'PROOF': 'กำลังพิมพ์ส่งลูกค้า',
+      'PROOFCOMPLETED': 'พิมพ์ส่งลูกค้าเสร็จแล้ว',
+      'PROOF_WAITPAGE2': 'รอพิมพ์ส่งลูกค้าหน้า 2',
+      'PROOF_PAGE2': 'กำลังพิมพ์ส่งลูกค้าหน้า 2',
+      'CANCEL': 'ยกเลิก',
+      'WAIT_APPROVAL': 'รอการอนุมัติผลิต',
+      'APPROVED_FOR_PRODUCTION': 'อนุมัติผลิตแล้ว',
+    };
+    return labels[value] || value || '';
   }
 
   getDecisionAuthorityLabel(): string {
