@@ -39,7 +39,14 @@ export class Dcsm26DetailComponent implements OnInit {
   showExtraPrintChecklistModal = false;
   showExtraPrintQtyModal = false;
   extraPrintedQuantity: number = 0;
-  usersList: any[] = [];
+  usersList: any[] = [
+    {
+      "text": "บัญชา"
+    },
+    {
+      "text": "วันชัย"
+    }
+  ]
 
   constructor(
     private fb: FormBuilder,
@@ -71,20 +78,10 @@ export class Dcsm26DetailComponent implements OnInit {
     this.checkbntPrint();
     if (this.id) {
       this.loadExtraPrints();
+      this.calculateCurrentRound();
     }
-    this.loadUsers();
   }
 
-  loadUsers() {
-    this.dcsm26Service.getAllUsers().subscribe({
-      next: (users) => {
-        this.usersList = users;
-      },
-      error: (err) => {
-        console.error('Error loading users:', err);
-      }
-    });
-  }
 
   createForm() {
     this.printingForm = this.fb.group({
@@ -256,14 +253,17 @@ export class Dcsm26DetailComponent implements OnInit {
     if (status === 'inPrint') {
       // Reset round counter whenever a completely new print session starts
       this.currentRound = 0;
+      this.checklistForm.patchValue({ machineType: this.printingForm.get('printerName')?.value });
       this.showChecklistModal = true;
     } else if (status === 'WAITPAGE2') {
       // Starting page 2 – reset round counter for page 2 side
       this.currentRound = 0;
+      this.checklistForm.patchValue({ machineType: this.printingForm.get('printerName')?.value });
       this.showChecklistModal = true;
     } else if (status === 'PROOF_PAGE2') {
       // Starting proof page 2 – reset round counter
       this.currentRound = 0;
+      this.checklistForm.patchValue({ machineType: this.printingForm.get('printerName')?.value });
       this.showChecklistModal = true;
     }
   }
@@ -274,6 +274,9 @@ export class Dcsm26DetailComponent implements OnInit {
       this.isInPrint = true;
       this.isPrint = false;
     } else if (status === 'กำลังพิมพ์ด้านหน้า') {
+      this.isPrint = true;
+      this.isInPrint = false;
+    } else if (status === 'กำลังพิมพ์ด้านหลัง' || status === 'กำลังพิมพ์ส่งลูกค้า' || status === 'กำลังพิมพ์ส่งลูกค้าหน้า 2') {
       this.isPrint = true;
       this.isInPrint = false;
     } else {
@@ -328,10 +331,38 @@ export class Dcsm26DetailComponent implements OnInit {
     this.showChecklistModal = false;
   }
 
+  calculateCurrentRound() {
+    if (!this.id) return;
+
+    const status = this.printingForm.get('jobStatus')?.value;
+    let side = '';
+
+    if (status === 'กำลังพิมพ์ด้านหน้า') side = 'FRONT';
+    else if (status === 'กำลังพิมพ์ด้านหลัง') side = 'BACK';
+    else if (status === 'กำลังพิมพ์ส่งลูกค้า') side = 'PROOF';
+    else if (status === 'กำลังพิมพ์ส่งลูกค้าหน้า 2') side = 'PROOF_BACK';
+
+    if (!side) {
+      this.currentRound = 0;
+      return;
+    }
+
+    this.dcsm26Service.getLogsByJobId(Number(this.id)).subscribe({
+      next: (logs) => {
+        const matchingLogs = logs.filter(log => log.printSide === side);
+        this.currentRound = matchingLogs.length;
+      },
+      error: (err) => {
+        console.error('Error fetching logs for round calculation', err);
+        this.currentRound = 0;
+      }
+    });
+  }
+
   openNextRoundChecklist() {
     // Open checklist for the next round without resetting the round counter
     this.checklistForm.reset({
-      machineType: null, waterTemp: null, ipaValue: null, conductivity: null,
+      machineType: this.printingForm.get('printerName')?.value, waterTemp: null, ipaValue: null, conductivity: null,
       airPressure: null, paperBrightness: null, hasCMYK: false, hasSpecial: false,
       isNewInk: false, isOldInk: false, cLotNo: null, cBrand: null,
       mLotNo: null, mBrand: null, yLotNo: null, yBrand: null, kLotNo: null, kBrand: null,
@@ -424,7 +455,7 @@ export class Dcsm26DetailComponent implements OnInit {
     const form = this.printingForm.getRawValue();
     const data = {
       jobId: form.id,
-      machineName: checklist.machineType,
+      machineName: form.printerName,
       tempFountain: checklist.waterTemp,
       ipaPercent: checklist.ipaValue,
       conductivity: checklist.conductivity,
@@ -485,20 +516,20 @@ export class Dcsm26DetailComponent implements OnInit {
     const is2Page = this.printingForm.getRawValue().print2Page == true;
 
     const decisionAuthority = this.printingForm.getRawValue().decisionAuthority;
-    const isSampleToCustomer = decisionAuthority === 'sampleToCustomer';
+    const requiresApproval = ['sampleToCustomer', 'customerOnSite'].includes(decisionAuthority);
 
     if (status === 'Print' && !is2Page || status === 'กำลังพิมพ์ด้านหลัง') {
       this.printingForm.get('jobStatus')?.setValue('พิมพ์เสร็จแล้ว');
     } else if (status === 'Print' && is2Page) {
       this.printingForm.get('jobStatus')?.setValue('รอพิมพ์หน้า 2');
     } else if (status === 'กำลังพิมพ์ส่งลูกค้า' && !is2Page) {
-      // sampleToCustomer: ต้องให้เจ้าของงานอนุมัติก่อนพิมพ์จริง
-      this.printingForm.get('jobStatus')?.setValue(isSampleToCustomer ? 'รอการอนุมัติผลิต' : 'พิมพ์ส่งลูกค้าเสร็จแล้ว');
+      // sampleToCustomer/customerOnSite: ต้องให้เจ้าของงานอนุมัติก่อนพิมพ์จริง
+      this.printingForm.get('jobStatus')?.setValue(requiresApproval ? 'รอการอนุมัติผลิต' : 'พิมพ์ส่งลูกค้าเสร็จแล้ว');
     } else if (status === 'กำลังพิมพ์ส่งลูกค้า' && is2Page) {
       this.printingForm.get('jobStatus')?.setValue('รอพิมพ์ส่งลูกค้าหน้า 2');
     } else if (status === 'กำลังพิมพ์ส่งลูกค้าหน้า 2') {
-      // sampleToCustomer: ต้องให้เจ้าของงานอนุมัติหลังพิมพ์ proof ครบทั้ง 2 หน้า
-      this.printingForm.get('jobStatus')?.setValue(isSampleToCustomer ? 'รอการอนุมัติผลิต' : 'พิมพ์ส่งลูกค้าเสร็จแล้ว');
+      // sampleToCustomer/customerOnSite: ต้องให้เจ้าของงานอนุมัติหลังพิมพ์ proof ครบทั้ง 2 หน้า
+      this.printingForm.get('jobStatus')?.setValue(requiresApproval ? 'รอการอนุมัติผลิต' : 'พิมพ์ส่งลูกค้าเสร็จแล้ว');
     }
 
     const data = this.printingForm.getRawValue();
@@ -516,7 +547,7 @@ export class Dcsm26DetailComponent implements OnInit {
       if (!is2Page || status === 'กำลังพิมพ์ด้านหลัง') {
         this.updateProductionJob();
       }
-      // ถ้าเป็น sampleToCustomer และ proof เสร็จ → อัปเดต ProductionOrder ด้วย
+      // ถ้าเป็น sampleToCustomer/customerOnSite และ proof เสร็จ → อัปเดต ProductionOrder ด้วย
       if (savedStatus === 'รอการอนุมัติผลิต') {
         const productionOrderId = this.printingForm.getRawValue().productionOrderId;
         if (productionOrderId) {
@@ -732,7 +763,7 @@ export class Dcsm26DetailComponent implements OnInit {
   startExtraPrint(print: any) {
     this.selectedExtraPrint = print;
     this.checklistForm.reset({
-      machineType: null, waterTemp: null, ipaValue: null, conductivity: null,
+      machineType: this.printingForm.get('printerName')?.value, waterTemp: null, ipaValue: null, conductivity: null,
       airPressure: null, paperBrightness: null, hasCMYK: false, hasSpecial: false,
       isNewInk: false, isOldInk: false, cLotNo: null, cBrand: null,
       mLotNo: null, mBrand: null, yLotNo: null, yBrand: null, kLotNo: null, kBrand: null,

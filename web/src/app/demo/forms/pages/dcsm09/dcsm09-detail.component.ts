@@ -439,7 +439,13 @@ export class Dcsm09DetailComponent implements OnInit {
                       delete newJob.createdAt;
                       delete newJob.updatedAt;
                       newJob.jobStatus = 'รอพิมพ์';
-                      this.dcsm26Service.save(newJob).subscribe();
+                      newJob.productionOrderId = response.id;
+                      this.dcsm26Service.save(newJob).subscribe({
+                        next: (res) => {
+                          this.mainForm.get('printJobId')?.setValue(res.id);
+                          this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe()
+                        },
+                      });
                     }
                   });
                 }

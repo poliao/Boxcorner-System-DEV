@@ -205,27 +205,23 @@ export class Dcsm06DetailComponent implements OnInit {
       const sampleJobTypeControl = this.mainForm.get('sampleJobType');
       const samplePrintingSystemControl = this.mainForm.get('samplePrintingSystem');
       const samplePrintingStyleControl = this.mainForm.get('samplePrintingStyle');
-      const sampleDeliveryDateControl = this.mainForm.get('sampleDeliveryDate');
-      const sampleDeliveryTimeControl = this.mainForm.get('sampleDeliveryTime');
+      const sampleDeliveryTimestampControl = this.mainForm.get('sampleDeliveryTimestamp');
 
-      if (value === 'sampleToCustomer') {
+      if (value === 'sampleToCustomer' || value === 'customerOnSite') {
         sampleJobTypeControl?.setValidators([Validators.required]);
         samplePrintingSystemControl?.setValidators([Validators.required]);
         samplePrintingStyleControl?.setValidators([Validators.required]);
-        sampleDeliveryDateControl?.setValidators([Validators.required]);
-        sampleDeliveryTimeControl?.setValidators([Validators.required]);
+        sampleDeliveryTimestampControl?.setValidators([Validators.required]);
       } else {
         sampleJobTypeControl?.clearValidators();
         samplePrintingSystemControl?.clearValidators();
         samplePrintingStyleControl?.clearValidators();
-        sampleDeliveryDateControl?.clearValidators();
-        sampleDeliveryTimeControl?.clearValidators();
+        sampleDeliveryTimestampControl?.clearValidators();
       }
       sampleJobTypeControl?.updateValueAndValidity();
       samplePrintingSystemControl?.updateValueAndValidity();
       samplePrintingStyleControl?.updateValueAndValidity();
-      sampleDeliveryDateControl?.updateValueAndValidity();
-      sampleDeliveryTimeControl?.updateValueAndValidity();
+      sampleDeliveryTimestampControl?.updateValueAndValidity();
     });
   }
 
@@ -461,7 +457,7 @@ export class Dcsm06DetailComponent implements OnInit {
             if (response.id) {
               this.dcsm26Service.findByPapOrderId(response.id).subscribe((prodJob) => {
                 if (prodJob) {
-                  prodJob.printStatus = 'อนุมัติผลิตแล้ว'; 
+                  prodJob.printStatus = 'อนุมัติผลิตแล้ว';
                   this.dcsm26Service.saveProductionJob(prodJob).subscribe();
                 }
               });
@@ -508,7 +504,6 @@ export class Dcsm06DetailComponent implements OnInit {
 
         this.dcsm06Service.save(currentOrder).subscribe({
           next: () => {
-            // 2. Update linked PrintJob status
             if (currentOrder.id) {
               this.dcsm26Service.findByProductionOrderId(currentOrder.id).subscribe((printJob) => {
                 if (printJob) {
@@ -524,7 +519,7 @@ export class Dcsm06DetailComponent implements OnInit {
             delete newOrder.rowVersion;
             delete newOrder.createdAt;
             delete newOrder.updatedAt;
-            delete newOrder.printJobId; 
+            delete newOrder.inspector;
 
             newOrder.jobId = currentOrder.jobId;
             newOrder.jobStatus = 'รอผู้รับผิดชอบยืนยัน';
@@ -536,9 +531,7 @@ export class Dcsm06DetailComponent implements OnInit {
               next: (response) => {
                 this.loadingService.hide();
                 this.sweetAlert.success('บันทึกข้อมูลสำเร็จ', 'ระบบได้ทำการสร้างใบงานใหม่เรียบร้อยแล้ว');
-                this.router.navigate(['/Dcsm06Detail', response.id]).then(() => {
-                  window.location.reload();
-                });
+                this.router.navigate(['/Dcsm06'])
               },
               error: (error) => {
                 this.loadingService.hide();

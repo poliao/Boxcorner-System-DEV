@@ -229,7 +229,7 @@
 
   <!-- Sample Physical Details Card -->
   <div class="card total-income-card warning overflow-hidden mt-3"
-    *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'">
+    *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)">
     <div class="card-header" style="background-color: #198754; color: white; padding: 15px;">
       <h6 class="mb-0 font-weight-bold">
         <i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง
@@ -250,21 +250,21 @@
 
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ประเภทงาน <span
-              *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+              *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
               style="color: red;">*</span></label>
           <input type="text" formControlName="sampleJobType" class="form-control"
             [class.is-invalid]="mainForm.get('sampleJobType')?.invalid && mainForm.get('sampleJobType')?.touched">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ระบบพิมพ์ <span
-              *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+              *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
               style="color: red;">*</span></label>
           <input type="text" formControlName="samplePrintingSystem" class="form-control"
             [class.is-invalid]="mainForm.get('samplePrintingSystem')?.invalid && mainForm.get('samplePrintingSystem')?.touched">
         </div>
         <div class="col-md-3">
           <label class="form-label font-weight-bold">ลักษณะงานพิมพ์ <span
-              *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+              *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
               style="color: red;">*</span></label>
           <input type="text" formControlName="samplePrintingStyle" class="form-control"
             [class.is-invalid]="mainForm.get('samplePrintingStyle')?.invalid && mainForm.get('samplePrintingStyle')?.touched">
@@ -291,7 +291,7 @@
         </div>
         <div class="col-md-6">
           <label class="form-label font-weight-bold">วัน-เวลาส่งงานปรู๊ฟ <span
-              *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+              *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
               style="color: red;">*</span></label>
           <input type="datetime-local" formControlName="sampleDeliveryTimestamp" class="form-control"
             [class.is-invalid]="mainForm.get('sampleDeliveryTimestamp')?.invalid && mainForm.get('sampleDeliveryTimestamp')?.touched">

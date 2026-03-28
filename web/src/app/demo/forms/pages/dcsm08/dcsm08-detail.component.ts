@@ -99,7 +99,8 @@ export class Dcsm08DetailComponent implements OnInit {
       sampleDeliveryTimestamp: [null],
       printRound: [null],
       printRoundPage2: [null],
-      printJobId: [null]
+      printJobId: [null],
+      isNewProof: [false]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

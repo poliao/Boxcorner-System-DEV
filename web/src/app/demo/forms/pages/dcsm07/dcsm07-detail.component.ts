@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Dcsm07Service, DropdownOption } from './dcsm07.service';
 import { Dcsm04Service } from '../dcsm04/dcsm04.service';
+import { Dcsm26Service } from '../dcsm26/dcsm26.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
@@ -35,6 +36,11 @@ export class Dcsm07DetailComponent implements OnInit {
   showCancelModal: boolean = false;
   cancelReason: string = '';
 
+  // ตัวแปรสำหรับ modal เปลี่ยนเครื่องพิมพ์
+  showPrinterModal: boolean = false;
+  printerForm!: FormGroup;
+  printerOptions: string[] = ['SM', 'CD'];
+
   activeTab: string = 'authority';
 
   constructor(
@@ -43,6 +49,7 @@ export class Dcsm07DetailComponent implements OnInit {
     private router: Router,
     private dcsm07Service: Dcsm07Service,
     private dcsm04Service: Dcsm04Service,
+    private dcsm26Service: Dcsm26Service,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService
   ) { }
@@ -85,7 +92,7 @@ export class Dcsm07DetailComponent implements OnInit {
         const samplePrintingSystemControl = this.mainForm.get('samplePrintingSystem');
         const samplePrintingStyleControl = this.mainForm.get('samplePrintingStyle');
 
-        if (value === 'sampleToCustomer') {
+        if (value === 'sampleToCustomer' || value === 'customerOnSite') {
           sampleJobTypeControl?.setValidators([Validators.required]);
           samplePrintingSystemControl?.setValidators([Validators.required]);
           samplePrintingStyleControl?.setValidators([Validators.required]);
@@ -190,7 +197,9 @@ export class Dcsm07DetailComponent implements OnInit {
       sampleDeliveryTimestamp: [null],
       printRound: [null],
       printRoundPage2: [null],
-      printJobId: [null]
+      printerName: [null],
+      printJobId: [null],
+      isNewProof: [false]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -233,6 +242,113 @@ export class Dcsm07DetailComponent implements OnInit {
     this.mainForm.get('print2Page')?.disable({ emitEvent: false });
     this.mainForm.get('printRoundPage2')?.disable({ emitEvent: false });
     this.mainForm.get('print2Page')?.disable({ emitEvent: false });
+    this.initPrinterForm();
+  }
+
+  initPrinterForm(): void {
+    this.printerForm = this.fb.group({
+      printerName: [null, Validators.required],
+      printRound: [1, [Validators.required, Validators.min(1)]],
+      printRoundPage2: [1, [Validators.required, Validators.min(1)]]
+    });
+  }
+
+  openPrinterModal(): void {
+    const raw = this.mainForm.getRawValue();
+    this.printerForm.patchValue({
+      printerName: raw.printerName,
+      printRound: raw.printRound || 1,
+      printRoundPage2: raw.printRoundPage2 || 1
+    });
+    this.showPrinterModal = true;
+  }
+
+  closePrinterModal(): void {
+    this.showPrinterModal = false;
+  }
+
+  updatePrinter(): void {
+    if (this.printerForm.invalid) {
+      this.printerForm.markAllAsTouched();
+      return;
+    }
+
+    const { printerName, printRound, printRoundPage2 } = this.printerForm.getRawValue();
+
+    Swal.fire({
+      title: 'ยืนยันการเปลี่ยนเครื่องพิมพ์',
+      text: `คุณต้องการเปลี่ยนเครื่องพิมพ์เป็น ${printerName} และรอบพิมพ์เป็น ${printRound}${this.mainForm.get('print2Page')?.value ? '/' + printRoundPage2 : ''} ใช่หรือไม่?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+
+        // 1. Update Production Order (DCSM07)
+        this.mainForm.patchValue({
+          printerName: printerName,
+          printRound: printRound,
+          printRoundPage2: printRoundPage2
+        });
+
+        const prodOrderData = this.mainForm.getRawValue();
+
+        this.dcsm07Service.save(prodOrderData).subscribe({
+          next: (response) => {
+            this.patchFormData(response);
+
+            // 2. Update Print Job (DCSM26) if exists
+            if (response.id) {
+              this.dcsm26Service.findByProductionOrderId(response.id).subscribe({
+                next: (printJob) => {
+                  if (printJob) {
+                    printJob.printerName = printerName;
+                    printJob.printRound = printRound;
+                    printJob.printRoundPage2 = printRoundPage2;
+
+                    this.dcsm26Service.save(printJob).subscribe({
+                      next: () => {
+                        this.loadingService.hide();
+                        this.closePrinterModal();
+                        this.sweetAlert.success('สำเร็จ', 'อัปเดตเครื่องพิมพ์และรอบพิมพ์เรียบร้อยแล้ว');
+                      },
+                      error: (err) => {
+                        console.error('Error updating print job', err);
+                        this.loadingService.hide();
+                        this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถอัปเดตในตารางพิมพ์ได้');
+                      }
+                    });
+                  } else {
+                    this.loadingService.hide();
+                    this.closePrinterModal();
+                    this.sweetAlert.success('สำเร็จ', 'อัปเดตเครื่องพิมพ์และรอบพิมพ์เรียบร้อยแล้ว (ไม่พบรายการในตารางพิมพ์)');
+                  }
+                },
+                error: (err) => {
+                  console.error('Error finding print job', err);
+                  this.loadingService.hide();
+                  this.closePrinterModal();
+                  this.sweetAlert.success('สำเร็จ', 'อัปเดตเครื่องพิมพ์และรอบพิมพ์เรียบร้อยแล้ว (ไม่พบรายการในตารางพิมพ์)');
+                }
+              });
+            } else {
+              this.loadingService.hide();
+              this.closePrinterModal();
+              this.sweetAlert.success('สำเร็จ', 'อัปเดตเครื่องพิมพ์และรอบพิมพ์เรียบร้อยแล้ว');
+            }
+          },
+          error: (err) => {
+            console.error('Error saving production order', err);
+            this.loadingService.hide();
+            this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้');
+          }
+        });
+      }
+    });
   }
 
   patchFormData(data: any): void {

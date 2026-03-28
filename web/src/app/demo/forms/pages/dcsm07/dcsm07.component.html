@@ -23,7 +23,8 @@
           </div>
 
           <div class="col-md-3">
-            <input type="text" class="form-control" formControlName="responsiblePerson" placeholder="ค้นหา ผู้รับผิดชอบ">
+            <input type="text" class="form-control" formControlName="responsiblePerson"
+              placeholder="ค้นหา ผู้รับผิดชอบ">
           </div>
 
           <div class="col-md-3">
@@ -32,6 +33,7 @@
               <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+              <option value="ปรู๊ฟไม่ผ่าน">ปรู๊ฟไม่ผ่าน</option>
               <option value="เสร็จสิ้น">เสร็จสิ้น</option>
               <option value="ยกเลิก">ยกเลิก</option>
             </select>
@@ -55,7 +57,7 @@
           <div class="col-md-3">
             <select class="form-select" formControlName="moldStatus">
               <option value="">สถานะแม่พิมพ์ ทั้งหมด</option>
-              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน	</option>
+              <option value="รอผู้รับผิดชอบยืนยัน	">รอผู้รับผิดชอบยืนยัน </option>
               <option value="รอดำเนินการ">รอดำเนินการ</option>
               <option value="กำลังทำแม่พิมพ์">กำลังทำแม่พิมพ์</option>
               <option value="แม่พิมพ์เสร็จแล้ว">แม่พิมพ์เสร็จแล้ว</option>
@@ -67,31 +69,36 @@
           <div class="col-12">
             <div class="row g-2">
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button type="button" class="btn text-white px-4 w-100" (click)="onClear()" style="background-color: #350142;">
+                <button mat-flat-button type="button" class="btn text-white px-4 w-100" (click)="onClear()"
+                  style="background-color: #350142;">
                   <mat-icon>clear_all</mat-icon> ล้างค่า
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <button mat-flat-button type="submit" class="btn text-white px-4 w-100" style="background-color: #350142;">
+                <button mat-flat-button type="submit" class="btn text-white px-4 w-100"
+                  style="background-color: #350142;">
                   <mat-icon>search</mat-icon> ค้นหา
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <button type="button" mat-flat-button class="btn text-white px-4 w-100" (click)="onSearchSort()"
                   style="background-color: #350142;">
-                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่งลูกค้า</span><span class="d-lg-none">เรียงตาม</span>
+                  <mat-icon>sort</mat-icon> <span class="d-none d-lg-inline">เรียงตามวันส่งลูกค้า</span><span
+                    class="d-lg-none">เรียงตาม</span>
                 </button>
               </div>
               <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
                 <div class="position-relative">
-                  <button mat-flat-button class="btn text-white px-4 w-100" (click)="onFilterUnassigned()" style="background-color: #350142;">
+                  <button mat-flat-button class="btn text-white px-4 w-100" (click)="onFilterUnassigned()"
+                    style="background-color: #350142;">
                     <span *ngIf="countBacklog > 0"
                       class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                       style="font-size: 0.75rem; border: 2px solid #fff;">
                       {{ countBacklog }}
                       <span class="visually-hidden">unread messages</span>
                     </span>
-                    <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่มีผู้รับผิดชอบ</span><span class="d-lg-none">ไม่มีผู้รับผิดชอบ</span>
+                    <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่ยังไม่มีผู้รับผิดชอบ</span><span
+                      class="d-lg-none">ไม่มีผู้รับผิดชอบ</span>
                   </button>
                 </div>
               </div>

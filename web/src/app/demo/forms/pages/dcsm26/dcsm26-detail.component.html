@@ -34,7 +34,7 @@
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า' && currentRound < (printingForm.getRawValue().printRound || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
-        เริ่มพรู๊ฟ์รอบที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRound || 1 }}
+        เริ่มปรู๊ฟรอบที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRound || 1 }}
       </button>
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า' && currentRound >= (printingForm.getRawValue().printRound || 1)"
@@ -42,29 +42,30 @@
         style="background-color: #0f766e;">พิมพ์ส่งลูกค้าเสร็จ</button>
 
       <!-- รอพิมพ์ส่งลูกค้าหน้า 2 -->
-      <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์ส่งลูกค้าหน้า 2'" (click)="onUpdatePrint('PROOF_PAGE2')"
-        class="btn text-white px-4 shadow-sm" style="background-color: #1e1b4b;">เริ่มพรู๊ฟ์หน้า2</button>
+      <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์ส่งลูกค้าหน้า 2'"
+        (click)="onUpdatePrint('PROOF_PAGE2')" class="btn text-white px-4 shadow-sm"
+        style="background-color: #1e1b4b;">เริ่มปรู๊ฟหน้า2</button>
 
       <!-- กำลังพิมพ์ส่งลูกค้าหน้า 2 rounds -->
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้าหน้า 2' && currentRound < (printingForm.getRawValue().printRoundPage2 || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
-        เริ่มพรู๊ฟ์หน้า2 รอบที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRoundPage2 || 1 }}
+        เริ่มปรู๊ฟหน้า2 รอบที่ {{ currentRound + 1 }}/{{ printingForm.getRawValue().printRoundPage2 || 1 }}
       </button>
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้าหน้า 2' && currentRound >= (printingForm.getRawValue().printRoundPage2 || 1)"
         (click)="updatePrintStatus('กำลังพิมพ์ส่งลูกค้าหน้า 2')" class="btn text-white px-4 shadow-sm"
-        style="background-color: #0f766e;">พรู๊ฟ์หน้า2เสร็จ</button>
+        style="background-color: #0f766e;">ปรู๊ฟหน้า2เสร็จ</button>
 
       <!-- เริ่มพิมพ์จริง -->
       <button
-        *ngIf="(printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer') || printingForm.get('jobStatus')?.value === 'พิมพ์ส่งลูกค้าเสร็จแล้ว' || printingForm.get('jobStatus')?.value === 'อนุมัติผลิตแล้ว'"
+        *ngIf="(printingForm.get('jobStatus')?.value === 'รอพิมพ์' && !['sampleToCustomer', 'customerOnSite'].includes(printingForm.get('decisionAuthority')?.value)) || printingForm.get('jobStatus')?.value === 'พิมพ์ส่งลูกค้าเสร็จแล้ว' || printingForm.get('jobStatus')?.value === 'อนุมัติผลิตแล้ว'"
         (click)="onUpdatePrint('inPrint')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">เริ่มพิมพ์</button>
       <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์หน้า 2'" (click)="onUpdatePrint('WAITPAGE2')"
         class="btn text-white px-4 shadow-sm" style="background-color: #1e1b4b;">เริ่มพิมพ์หน้า2</button>
       <button
-        *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+        *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && ['sampleToCustomer', 'customerOnSite'].includes(printingForm.get('decisionAuthority')?.value)"
         (click)="onUpdatePrint('inPrint')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">เริ่มพิมพ์ส่งลูกค้า</button>
     </div>
@@ -88,7 +89,8 @@
         </div>
         <div class="col-12 col-sm-6 col-md-4 col-lg-2">
           <label class="form-label">สถานะงาน</label>
-          <div class="form-control d-flex align-items-center fw-semibold" style="background-color: #f8fafc; min-height: 38px;">
+          <div class="form-control d-flex align-items-center fw-semibold"
+            style="background-color: #f8fafc; min-height: 38px;">
             {{ getJobStatusLabel() }}
           </div>
         </div>
@@ -132,8 +134,7 @@
 </div>
 
 <!-- Banner: รอเจ้าของงานอนุมัติผลิต -->
-<div class="alert mt-3 d-flex align-items-center gap-3"
-  *ngIf="printingForm.get('jobStatus')?.value === 'WAIT_APPROVAL'"
+<div class="alert mt-3 d-flex align-items-center gap-3" *ngIf="printingForm.get('jobStatus')?.value === 'WAIT_APPROVAL'"
   style="background-color: #fff3cd; border: 1px solid #ffc107; border-left: 5px solid #ffc107; border-radius: 8px;">
   <span style="font-size: 1.8rem;">⏳</span>
   <div>
@@ -210,7 +211,7 @@
   </div>
 </div>
 
-<div class="card shadow-sm mt-3" *ngIf="printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'">
+<div class="card shadow-sm mt-3" *ngIf="['sampleToCustomer', 'customerOnSite'].includes(printingForm.get('decisionAuthority')?.value)">
   <div class="card-header text-white" style="background-color: #198754;">
     <h5 class="card-title mb-0 text-white"><i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง</h5>
   </div>
@@ -379,11 +380,8 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🖨️
                     เครื่องพิมพ์</label>
-                  <select formControlName="machineType" class="form-select form-select-sm" style="border-radius: 6px;">
-                    <option value="">-- เลือกเครื่อง --</option>
-                    <option value="SM">SM</option>
-                    <option value="CD">CD</option>
-                  </select>
+                  <input type="text" formControlName="machineType" class="form-control form-control-sm"
+                    style="border-radius: 6px; background-color: #f1f5f9;" readonly>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">👤 ช่างพิมพ์
@@ -663,11 +661,8 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">🖨️
                     เครื่องพิมพ์</label>
-                  <select formControlName="machineType" class="form-select form-select-sm" style="border-radius: 6px;">
-                    <option value="">-- เลือกเครื่อง --</option>
-                    <option value="SM">SM</option>
-                    <option value="CD">CD</option>
-                  </select>
+                  <input type="text" formControlName="machineType" class="form-control form-control-sm"
+                    style="border-radius: 6px; background-color: #f1f5f9;" readonly>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-semibold" style="font-size: 0.8rem; color: #475569;">👤 ช่างพิมพ์
@@ -898,14 +893,14 @@
           style="border-radius: 8px; padding: 8px 20px; font-weight: 500;">ยกเลิก</button>
         <!-- รอพิมพ์ + ไม่ใช่ sampleToCustomer → พิมพ์ปกติ -->
         <button
-          *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value != 'sampleToCustomer'"
+          *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && !['sampleToCustomer', 'customerOnSite'].includes(printingForm.get('decisionAuthority')?.value)"
           type="button" class="btn" (click)="submitChecklist('inPrint')"
           style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);">
           <i class="fas fa-check me-2"></i>ยืนยันเริ่มพิมพ์
         </button>
         <!-- รอพิมพ์ + sampleToCustomer → พิมพ์ตัวอย่างก่อน -->
         <button
-          *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && printingForm.get('decisionAuthority')?.value === 'sampleToCustomer'"
+          *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์' && ['sampleToCustomer', 'customerOnSite'].includes(printingForm.get('decisionAuthority')?.value)"
           type="button" class="btn" (click)="submitChecklist('PROOF')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);">
           <i class="fas fa-check me-2"></i>เริ่มพิมพ์ส่งลูกค้า
@@ -944,19 +939,19 @@
         <button *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า'" type="button" class="btn"
           (click)="submitChecklist('nextRound')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500;">
-          <i class="fas fa-redo me-2"></i>ยืนยันเริ่มพรู๊ฟ์ตัวอย่างรอบถัดไป
+          <i class="fas fa-redo me-2"></i>ยืนยันเริ่มปรู๊ฟตัวอย่างรอบถัดไป
         </button>
-        <!-- รอพิมพ์ส่งลูกค้าหน้า 2 → เริ่มพรู๊ฟ์หน้า2 -->
+        <!-- รอพิมพ์ส่งลูกค้าหน้า 2 → เริ่มปรู๊ฟหน้า2 -->
         <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์ส่งลูกค้าหน้า 2'" type="button" class="btn"
           (click)="submitChecklist('PROOF_PAGE2')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500;">
-          <i class="fas fa-check me-2"></i>ยืนยันเริ่มพรู๊ฟ์หน้า2
+          <i class="fas fa-check me-2"></i>ยืนยันเริ่มปรู๊ฟหน้า2
         </button>
         <!-- กำลังพิมพ์ส่งลูกค้าหน้า 2 round ถัดไป -->
         <button *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้าหน้า 2'" type="button" class="btn"
           (click)="submitChecklist('nextRound')"
           style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); color: white; border-radius: 8px; padding: 8px 28px; font-weight: 500;">
-          <i class="fas fa-redo me-2"></i>ยืนยันเริ่มพรู๊ฟ์หน้า2 รอบถัดไป
+          <i class="fas fa-redo me-2"></i>ยืนยันเริ่มปรู๊ฟหน้า2 รอบถัดไป
         </button>
       </div>
     </div>

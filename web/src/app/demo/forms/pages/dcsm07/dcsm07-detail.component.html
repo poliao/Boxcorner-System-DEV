@@ -283,28 +283,31 @@
   </div>
 </div>
 
-<div class="card shadow-sm mt-3" *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'">
-  <div class="card-header text-white" style="background-color: #198754;">
+<div class="card shadow-sm mt-3" *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)">
+  <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #198754;">
     <h5 class="card-title mb-0 text-white"><i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง</h5>
+    <button type="button" class="btn btn-sm btn-light" (click)="openPrinterModal()">
+      <i class="fas fa-print me-1"></i>เปลี่ยนเครื่องพิมพ์ / รอบพิมพ์
+    </button>
   </div>
   <div class="card-body" style="padding: 15px;">
     <form [formGroup]="mainForm" class="row g-3">
       <!-- Fetch Data Row -->
       <div class="col-md-3">
         <label class="form-label font-weight-bold">ประเภทงาน <span
-            *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'" style="color: red;">*</span></label>
+            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
         <input type="text" formControlName="sampleJobType" class="form-control"
           [class.is-invalid]="mainForm.get('sampleJobType')?.invalid && mainForm.get('sampleJobType')?.touched">
       </div>
       <div class="col-md-3">
         <label class="form-label font-weight-bold">ระบบพิมพ์ <span
-            *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'" style="color: red;">*</span></label>
+            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
         <input type="text" formControlName="samplePrintingSystem" class="form-control"
           [class.is-invalid]="mainForm.get('samplePrintingSystem')?.invalid && mainForm.get('samplePrintingSystem')?.touched">
       </div>
       <div class="col-md-3">
         <label class="form-label font-weight-bold">ลักษณะงานพิมพ์ <span
-            *ngIf="mainForm.get('decisionAuthority')?.value === 'sampleToCustomer'" style="color: red;">*</span></label>
+            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
         <input type="text" formControlName="samplePrintingStyle" class="form-control"
           [class.is-invalid]="mainForm.get('samplePrintingStyle')?.invalid && mainForm.get('samplePrintingStyle')?.touched">
       </div>
@@ -320,20 +323,20 @@
         <label class="form-label font-weight-bold">แกรมกระดาษ</label>
         <input type="text" formControlName="samplePaperGrammage" class="form-control">
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
         <input type="text" formControlName="sampleDiecutStyle" class="form-control">
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label font-weight-bold">ลักษณะงานเคลือบ</label>
         <input type="text" formControlName="sampleCoatingStyle" class="form-control">
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label font-weight-bold">วัน-เวลาส่งงานปรู๊ฟ</label>
         <input type="text" [value]="getCombinedDateTime('sampleDeliveryTimestamp')" class="form-control"
           placeholder="รอดำเนินการ" readonly disabled>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <label class="form-label font-weight-bold">คำสั่งพิเศษ</label>
         <textarea formControlName="sampleSpecialInstructions" class="form-control" rows="1"></textarea>
       </div>
@@ -394,6 +397,55 @@
         <button type="button" class="btn btn-secondary" (click)="closeCancelModal()">ยกเลิก</button>
         <button type="button" class="btn btn-danger" (click)="confirmCancel()"
           [disabled]="!cancelReason?.trim()">ยืนยันการยกเลิก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal เปลี่ยนเครื่องพิมพ์ -->
+<div class="modal-backdrop fade show" *ngIf="showPrinterModal"></div>
+<div class="modal fade show" [style.display]="showPrinterModal ? 'block' : 'none'" tabindex="-1" role="dialog"
+  aria-labelledby="printerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header text-white" style="background-color: #1e1b4b;">
+        <h5 class="modal-title text-white" id="printerModalLabel">
+          <i class="fas fa-print me-2"></i>เปลี่ยนเครื่องพิมพ์และรอบพิมพ์
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closePrinterModal()"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form [formGroup]="printerForm">
+          <div class="mb-3">
+            <label class="form-label font-weight-bold">ชื่อเครื่องพิมพ์</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-print"></i></span>
+              <select formControlName="printerName" class="form-select border-2">
+                <option [ngValue]="null" disabled>-- เลือกเครื่องพิมพ์ --</option>
+                <option *ngFor="let opt of printerOptions" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label font-weight-bold">รอบพิมพ์หน้า 1</label>
+              <input type="number" formControlName="printRound" class="form-control border-2" min="1">
+            </div>
+            <div class="col-md-6" *ngIf="mainForm.get('print2Page')?.value">
+              <label class="form-label font-weight-bold">รอบพิมพ์หน้า 2</label>
+              <input type="number" formControlName="printRoundPage2" class="form-control border-2" min="1">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-light p-3">
+        <button type="button" class="btn btn-outline-secondary px-4" (click)="closePrinterModal()">
+          <i class="fas fa-times me-1"></i>ยกเลิก
+        </button>
+        <button type="button" class="btn text-white px-4" style="background-color: #1e1b4b;" (click)="updatePrinter()">
+          <i class="fas fa-save me-1"></i>บันทึกการเปลี่ยนแปลง
+        </button>
       </div>
     </div>
   </div>

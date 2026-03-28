@@ -78,16 +78,20 @@ export class StatusColorService {
       case 'กำลังส่ง': return '#ff05acff'; // สีเทา
       case 'จัดส่งเรียบร้อย': return '#00af0fff';
       case 'ส่งQc': return 'rgb(83, 0, 56)';
+      case 'อนุมัติผลิตแล้ว': return '#00af0fff';
 
 
       case 'PENDING': return '#ff9800'; // สีส้ม
+      case 'รอพิมพ์': return '#ff9800'; // สีส้ม
       case 'IN_PROGRESS': return '#cddb00ff';
+
       case 'COMPLETED': return '#2bff00ff';
       case 'PAUSED': return '#ff2600ff';
       case 'WAITPAGE2': return '#ff9800';
       case 'PAUSED_PAGE2': return '#ff2600ff';
       case 'IN_PROGRESS_PAGE2': return '#cddb00ff';
       case 'PROOF': return '#449490ff';
+      case 'กำลังพิมพ์ส่งลูกค้า': return '#449490ff';
       case 'PROOFCOMPLETED': return '#00312fff';
 
       case 'รอส่งตรวจ': return '#3f3f3fff';
