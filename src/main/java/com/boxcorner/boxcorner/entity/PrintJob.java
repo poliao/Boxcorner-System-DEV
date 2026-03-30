@@ -148,6 +148,15 @@ public class PrintJob extends BaseEntity {
     @Column(name = "print_round_page2")
     private Integer printRoundPage2;
 
+    @Column(name = "good_qty")
+    private Integer goodQty = 0;
+
+    @Column(name = "waste_qty")
+    private Integer wasteQty = 0;
+
+    @Column(name = "unit_stock_id")
+    private Long unitStockId;
+
     @jakarta.persistence.Transient
     private Boolean hasRealJob = false;
 }

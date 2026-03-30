@@ -149,4 +149,22 @@ public class PaperInventoryService {
 
         return totalAvailableSheets.compareTo(requiredSheets) >= 0;
     }
+
+    public List<com.boxcorner.boxcorner.entity.dto.UnitStockDTO> getAvailableUnitStockDTOs() {
+        List<Object[]> rows = paperInventoryRepository.findAllAvailableWithStockData();
+        List<com.boxcorner.boxcorner.entity.dto.UnitStockDTO> dtos = new ArrayList<>();
+        for (Object[] row : rows) {
+            dtos.add(com.boxcorner.boxcorner.entity.dto.UnitStockDTO.builder()
+                    .id(row[0] != null ? ((Number) row[0]).longValue() : null)
+                    .itemName(row[1] != null ? row[1].toString() : null)
+                    .category(row[2] != null ? row[2].toString() : null)
+                    .paperSize(row[3] != null ? row[3].toString() : null)
+                    .currentMajorQty(row[4] != null ? (BigDecimal) row[4] : BigDecimal.ZERO)
+                    .currentMinorQty(row[5] != null ? (BigDecimal) row[5] : BigDecimal.ZERO)
+                    .majorUnit(row[6] != null ? row[6].toString() : null)
+                    .minorUnit(row[7] != null ? row[7].toString() : null)
+                    .build());
+        }
+        return dtos;
+    }
 }

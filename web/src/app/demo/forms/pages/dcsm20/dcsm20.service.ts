@@ -132,4 +132,8 @@ export class Dcsm20Service {
     return this.http.get(`${this.apiUrl}/pap/getByJobId?jobId=${jobId}`);
   }
 
+  updateQcDate(id: number, newDate: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/production-job/update-qc-date?id=${id}&newDate=${newDate}`, {}, { responseType: 'text' });
+  }
+
 }

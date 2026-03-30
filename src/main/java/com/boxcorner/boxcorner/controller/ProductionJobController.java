@@ -101,6 +101,20 @@ public class ProductionJobController {
                 id, jobId, customerName, printStatus, startDate, endDate, page, size);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/update-qc-date")
+    public ResponseEntity<?> updateQcDate(
+            @RequestParam("id") Long id,
+            @RequestParam("newDate") LocalDate newDate) {
+        try {
+            productionJobService.updateQcDate(id, newDate);
+            return ResponseEntity.ok("อัปเดตวันที่ส่ง QC สำเร็จ");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("เกิดข้อผิดพลาดในการอัปเดตวันที่: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/findByPapOrderId")
     public ResponseEntity<ProductionJob> findByPapOrderId(@RequestParam("papOrderId") Integer papOrderId) {
         ProductionJob job = productionJobService.findByPapOrderId(papOrderId);

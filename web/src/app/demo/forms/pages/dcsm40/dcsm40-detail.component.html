@@ -10,7 +10,8 @@
       <button mat-stroked-button color="primary" class="rounded-pill px-4 me-2" (click)="cancel()">
         ยกเลิก
       </button>
-      <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="save()">
+      <button *ngIf="mainForm.getRawValue().id == null" mat-flat-button color="primary" class="rounded-pill px-4"
+        (click)="save()">
         <mat-icon class="me-2">save</mat-icon> บันทึกข้อมูล
       </button>
     </div>
@@ -54,9 +55,6 @@
                 <label class="form-label small fw-bold">เลข Lot <span class="text-danger">*</span></label>
                 <div class="input-group">
                   <input type="text" class="form-control" formControlName="lotNumber" placeholder="ระบุเลข Lot">
-                  <button class="btn btn-outline-secondary" type="button" (click)="generateLotNumber()">
-                    <mat-icon style="font-size: 18px; height: 18px; width: 18px;">auto_fix_high</mat-icon> สุ่มเลข
-                  </button>
                 </div>
               </div>
             </div>
@@ -101,15 +99,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- ลบข้อมูล -->
-    <div class="row mt-4 pt-4" *ngIf="id">
-      <div class="col-12 border-top pt-4">
-        <button mat-button color="warn" class="px-4" (click)="delete()">
-          <mat-icon class="me-2">delete</mat-icon> ลบข้อมูลการรับนี้
-        </button>
       </div>
     </div>
   </form>

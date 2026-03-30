@@ -18,6 +18,7 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
 export class Dcsm41Component implements OnInit {
 
   tableColumns = [
+    { key: 'materialId', label: 'ลำดับ' },
     { key: 'materialCode', label: 'รหัสวัสดุ' },
     { key: 'materialName', label: 'ชื่อวัสดุ' },
     { key: 'materialTypeName', label: 'ประเภท' },

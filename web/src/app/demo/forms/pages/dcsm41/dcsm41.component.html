@@ -9,6 +9,7 @@
     <app-data-table 
       [columns]="tableColumns" 
       [data]="tableData"
+      [clickableColumn]="'materialId'"
       (rowClick)="onRowClick($event)">
     </app-data-table>
   </div>

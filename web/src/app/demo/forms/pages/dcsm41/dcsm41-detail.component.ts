@@ -122,4 +122,7 @@ export class Dcsm41DetailComponent implements OnInit {
     this.router.navigate(['/Dcsm41']);
   }
 
+  goToReceiptDetail(lotId: number) {
+    this.router.navigate(['/Dcsm40Detail', lotId]);
+  }
 }

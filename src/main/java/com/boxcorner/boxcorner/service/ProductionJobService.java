@@ -8,16 +8,27 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.boxcorner.boxcorner.entity.ProductionJob;
+import com.boxcorner.boxcorner.entity.PapProductionOrder;
+import com.boxcorner.boxcorner.entity.QcJob;
+import com.boxcorner.boxcorner.repository.PapProductionOrderRepository;
 import com.boxcorner.boxcorner.repository.ProductionJobRepository;
+import com.boxcorner.boxcorner.repository.QcJobRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class ProductionJobService {
 
     @Autowired
     private ProductionJobRepository productionJobRepository;
+
+    @Autowired
+    private QcJobRepository qcJobRepository;
+
+    @Autowired
+    private PapProductionOrderRepository papProductionOrderRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -107,5 +118,36 @@ public class ProductionJobService {
     }
     public ProductionJob findByPapOrderId(Integer papOrderId) {
         return productionJobRepository.findByPapOrderId(papOrderId);
+    }
+
+    @Transactional
+    public void updateQcDate(Long productionJobId, LocalDate newDate) {
+        ProductionJob job = productionJobRepository.findById(productionJobId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลใบงานผลิต (ID: " + productionJobId + ")"));
+
+        // 1. อัปเดตตาราง production_jobs
+        job.setQcDate(newDate);
+        productionJobRepository.save(job);
+
+        // 2. อัปเดตตาราง qc_jobs ถ้ามี qcJobId
+        if (job.getQcJobId() != null) {
+            Optional<QcJob> qcJobOpt = qcJobRepository.findById(job.getQcJobId());
+            if (qcJobOpt.isPresent()) {
+                QcJob qcJob = qcJobOpt.get();
+                qcJob.setDeliveryDatetime(newDate);
+                qcJobRepository.save(qcJob);
+            }
+        }
+
+        // 3. อัปเดตตาราง pap_production_orders ถ้ามี papOrderId
+        if (job.getPapOrderId() != null) {
+            Optional<PapProductionOrder> papOrderOpt = papProductionOrderRepository.findById(Long.valueOf(job.getPapOrderId()));
+            if (papOrderOpt.isPresent()) {
+                PapProductionOrder papOrder = papOrderOpt.get();
+                // อัปเดตทั้ง qcScheduledDate และ deliveryDateTime (หากจำเป็น แต่ในที่นี้เน้น QC)
+                papOrder.setQcScheduledDate(newDate);
+                papProductionOrderRepository.save(papOrder);
+            }
+        }
     }
 }

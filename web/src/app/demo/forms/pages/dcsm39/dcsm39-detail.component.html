@@ -1,7 +1,7 @@
 <div class="row align-items-center mb-4">
   <div class="col-8">
     <h4 class="mb-0 fw-bold" style="color: #003747;">
-      {{ id ? 'แก้ไข' : 'เพิ่ม' }}{{ getTypeLabel() }}
+      {{ id ? 'แก้ไข' : 'เพิ่ม' }}{{ getTypeLabel() }}{{ type === 'material' ? 'ใหม่' : '' }}
     </h4>
   </div>
   <div class="col-4 text-end">
@@ -11,13 +11,79 @@
   </div>
 </div>
 
-<div class="card border-0 shadow-sm col-md-6 mx-auto">
+<div class="card border-0 shadow-sm col-md-8 mx-auto">
   <div class="card-body p-4">
     <form [formGroup]="mainForm">
-      <div class="mb-4">
-        <label class="form-label fw-bold">ชื่อ{{ getTypeLabel() }} <span class="text-danger">*</span></label>
-        <input type="text" class="form-control form-control-lg" formControlName="name" placeholder="ระบุชื่อ">
-      </div>
+      
+      <!-- Material Specific Fields -->
+      <ng-container *ngIf="type === 'material'">
+        <div class="mb-4">
+          <label class="form-label fw-bold">รหัสวัสดุ <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-lg" formControlName="code" placeholder="เช่น P-001">
+        </div>
+        
+        <div class="mb-4">
+          <label class="form-label fw-bold">ชื่อวัสดุ <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-lg" formControlName="name" placeholder="เช่น กระดาษอาร์ตการ์ต">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-bold">ประเภทวัสดุ</label>
+          <select class="form-select form-select-lg" formControlName="materialType">
+            <option [ngValue]="null">--- เลือกประเภทวัสดุ ---</option>
+            <option *ngFor="let mt of materialTypes" [value]="mt.id">{{mt.name}}</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-bold">หน่วยนับย่อยที่สุด (Base UOM) <span class="text-danger">*</span></label>
+          <select class="form-select form-select-lg" formControlName="baseUom">
+            <option [ngValue]="null">--- เลือกหน่วยนับ ---</option>
+            <option *ngFor="let u of uoms" [value]="u.id">{{u.name}}</option>
+          </select>
+        </div>
+      </ng-container>
+
+      <!-- UOM Conversion Specific Fields -->
+      <ng-container *ngIf="type === 'uomConversion'">
+        <div class="mb-4">
+          <label class="form-label fw-bold">เลือกวัสดุ <span class="text-danger">*</span></label>
+          <select class="form-select form-select-lg" formControlName="material">
+            <option [ngValue]="null">--- เลือกวัสดุ ---</option>
+            <option *ngFor="let m of materials" [value]="m.id">{{m.name}} ({{m.code}})</option>
+          </select>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">1 หน่วยใหญ่ <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="largeUom">
+              <option [ngValue]="null">เลือกหน่วย</option>
+              <option *ngFor="let u of uoms" [value]="u.id">{{u.name}}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">เท่ากับกี่หน่วยเล็ก <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="smallUom">
+              <option [ngValue]="null">เลือกหน่วย</option>
+              <option *ngFor="let u of uoms" [value]="u.id">{{u.name}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-bold">อัตราส่วนคูณ (Multiplier) <span class="text-danger">*</span></label>
+          <input type="number" class="form-control form-control-lg" formControlName="multiplier" placeholder="เช่น 500">
+        </div>
+      </ng-container>
+
+      <!-- Simple Master Data Fields (Supplier, Brand, UOM, MaterialType) -->
+      <ng-container *ngIf="type !== 'material' && type !== 'uomConversion'">
+        <div class="mb-4">
+          <label class="form-label fw-bold">ชื่อ{{ getTypeLabel() }} <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-lg" formControlName="name" placeholder="ระบุชื่อ">
+        </div>
+      </ng-container>
 
       <hr class="my-4">
 

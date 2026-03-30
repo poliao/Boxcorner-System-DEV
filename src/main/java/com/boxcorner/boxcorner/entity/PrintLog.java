@@ -81,6 +81,12 @@ public class PrintLog extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String note;
 
+    @Column(name = "good_qty")
+    private Integer goodQty;
+
+    @Column(name = "waste_qty")
+    private Integer wasteQty;
+
     public long getColorUsage() {
         if (meterColorEnd == null || meterColorStart == null)
             return 0;

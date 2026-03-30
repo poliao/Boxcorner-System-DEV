@@ -111,6 +111,8 @@ public class PrintingService {
         log.setMeterSpecialEnd(req.getMeterSpecialEnd());
         log.setPaperReqEnd(req.getPaperReqEnd());
         log.setNote(req.getNote());
+        log.setGoodQty(req.getGoodQty());
+        log.setWasteQty(req.getWasteQty());
 
         // 3. Obtain Total Impressions (ยอดที่พิมพ์จริงและเผื่อเสีย) from form
         long totalUsed = (req.getPaperUsed() != null) ? req.getPaperUsed() : 0;
@@ -188,6 +190,14 @@ public class PrintingService {
                 job.setJobStatus("พิมพ์เสร็จแล้ว");
             }
 
+            jobRepository.save(job);
+
+            // Update cumulative good/waste quantities
+            List<PrintLog> allLogs = printLogRepository.findByJobIdOrderByStartedAtDesc(job.getId());
+            int totalGood = allLogs.stream().mapToInt(l -> l.getGoodQty() != null ? l.getGoodQty() : 0).sum();
+            int totalWaste = allLogs.stream().mapToInt(l -> l.getWasteQty() != null ? l.getWasteQty() : 0).sum();
+            job.setGoodQty(totalGood);
+            job.setWasteQty(totalWaste);
             jobRepository.save(job);
         }
 

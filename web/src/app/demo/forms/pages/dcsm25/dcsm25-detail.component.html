@@ -338,12 +338,14 @@
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
+
             <div class="col-md-12">
-              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
+              <label class="form-label">กระดาษจากสต็อก <span class="text-danger">*</span></label>
               <select formControlName="unitStockId" class="form-select">
                 <option [ngValue]="null">-- เลือกกระดาษ --</option>
                 <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }}) | คงเหลือ: {{ stock.currentMinorQty |
+                  number }} {{ stock.minorUnit }}
                 </option>
               </select>
             </div>
@@ -385,6 +387,14 @@
             <div class="col-md-6">
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>
+              <input type="number" formControlName="goodQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานเสีย <span class="text-danger">*</span></label>
+              <input type="number" formControlName="wasteQty" class="form-control" placeholder="0">
             </div>
           </div>
         </form>
@@ -504,15 +514,6 @@
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
-            <div class="col-md-12">
-              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
-                </option>
-              </select>
-            </div>
           </div>
         </form>
       </div>
@@ -551,6 +552,14 @@
             <div class="col-md-6">
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>
+              <input type="number" formControlName="goodQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานเสีย <span class="text-danger">*</span></label>
+              <input type="number" formControlName="wasteQty" class="form-control" placeholder="0">
             </div>
           </div>
         </form>
@@ -594,12 +603,14 @@
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
+
             <div class="col-md-12">
-              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
+              <label class="form-label">กระดาษจากสต็อก <span class="text-danger">*</span></label>
               <select formControlName="unitStockId" class="form-select">
                 <option [ngValue]="null">-- เลือกกระดาษ --</option>
                 <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }}) | คงเหลือ: {{ stock.currentMinorQty |
+                  number }} {{ stock.minorUnit }}
                 </option>
               </select>
             </div>
@@ -680,6 +691,14 @@
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
             </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>
+              <input type="number" formControlName="goodQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานเสีย <span class="text-danger">*</span></label>
+              <input type="number" formControlName="wasteQty" class="form-control" placeholder="0">
+            </div>
           </div>
         </form>
       </div>
@@ -722,15 +741,8 @@
                 <option value="Ricoh">Ricoh</option>
               </select>
             </div>
-            <div class="col-md-12">
-              <label class="form-label">กระดาษที่ใช้พิมพ์<span style="color: red;">*</span></label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
-                </option>
-              </select>
-            </div>
+
+
           </div>
         </form>
       </div>
@@ -803,18 +815,18 @@
               <label class="form-label">ค่ามิเตอร์ขาว จบ</label>
               <input type="number" formControlName="meterSpecialEnd" class="form-control">
             </div>
-            <div class="col-md-6">
-              <label class="form-label">กระดาษที่ใช้พิมพ์ (ตัดสต็อค)</label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
-                </option>
-              </select>
-            </div>
+
             <div class="col-md-6">
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>
+              <input type="number" formControlName="goodQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">จำนวนงานเสีย <span class="text-danger">*</span></label>
+              <input type="number" formControlName="wasteQty" class="form-control" placeholder="0">
             </div>
           </div>
         </form>

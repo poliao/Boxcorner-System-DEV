@@ -530,4 +530,48 @@ export class Dcsm20DetailComponent implements OnInit {
       })
     })
   }
+
+  onChangeQcDate() {
+    const currentQcDate = this.productionForm.get('qcDate')?.value || new Date().toISOString().split('T')[0];
+
+    Swal.fire({
+      title: 'เปลี่ยนวันที่ส่ง QC',
+      html: `
+        <div class="mb-3 text-start">
+          <label class="form-label fw-bold small">เลือกวันที่ใหม่</label>
+          <input type="date" id="new-qc-date" class="form-control" value="${currentQcDate}">
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยันการเปลี่ยนวันที่',
+      cancelButtonText: 'ยกเลิก',
+      preConfirm: () => {
+        const newDate = (document.getElementById('new-qc-date') as HTMLInputElement).value;
+        if (!newDate) {
+          Swal.showValidationMessage('กรุณาเลือกวันที่');
+        }
+        return newDate;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.loadingService.show();
+        this.dcsm20Service.updateQcDate(Number(this.id), result.value).subscribe({
+          next: () => {
+            this.loadingService.hide();
+            this.sweetAlert.success('สำเร็จ', 'อัปเดตวันที่ส่ง QC เรียบร้อยแล้ว');
+            // รีโหลดข้อมูลใหม่
+            this.dcsm20Service.getById(Number(this.id)).subscribe(data => {
+              this.patchFormData(data);
+            });
+          },
+          error: (err) => {
+            console.log(err);
+
+            this.loadingService.hide();
+            this.sweetAlert.error('ผิดพลาด', err || 'ไม่สามารถอัปเดตวันที่ได้');
+          }
+        });
+      }
+    });
+  }
 }

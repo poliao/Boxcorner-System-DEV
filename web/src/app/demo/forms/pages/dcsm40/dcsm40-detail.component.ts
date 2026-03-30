@@ -19,7 +19,7 @@ export class Dcsm40DetailComponent implements OnInit {
 
   mainForm: FormGroup;
   id: number | null = null;
-  
+
   materials: any[] = [];
   suppliers: any[] = [];
   brands: any[] = [];
@@ -60,6 +60,15 @@ export class Dcsm40DetailComponent implements OnInit {
 
   ngOnInit() {
     this.id = this.route.snapshot.params['id'] ? Number(this.route.snapshot.params['id']) : null;
+    if (this.id != null) {
+      this.mainForm.get('material').disable();
+      this.mainForm.get('supplier').disable();
+      this.mainForm.get('brand').disable();
+      this.mainForm.get('lotNumber').disable();
+      this.mainForm.get('receiveUom').disable();
+      this.mainForm.get('receiveQty').disable();
+      this.mainForm.get('baseQty').disable();
+    }
     this.loadMasters();
     if (this.id) {
       this.loadData();
@@ -92,7 +101,7 @@ export class Dcsm40DetailComponent implements OnInit {
   onMaterialChange(materialId: number) {
     const material = this.materials.find(m => m.id === materialId);
     this.baseUomName = material?.baseUom?.name || '';
-    
+
     this.service.getConversionsByMaterial(materialId).subscribe(data => {
       this.conversions = data;
       // Filter out UOMs that have conversions for this material

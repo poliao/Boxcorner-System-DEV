@@ -16,4 +16,7 @@ public class StopPrintRequest {
 
     private Long unitStockId; // ไอดีของกระดาษที่ถูกใช้ตัดสต็อค
     private Long paperUsed; // จำนวนแผ่นที่ใช้ไปทั้งหมด
+
+    private Integer goodQty;
+    private Integer wasteQty;
 }

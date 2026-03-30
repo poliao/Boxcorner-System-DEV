@@ -13,7 +13,8 @@
   <div class="card-body">
     <app-data-table 
       [columns]="tableColumns" 
-      [data]="tableData" 
+      [data]="tableData"
+      [clickableColumn]="'id'"
       (rowClick)="onRowClick($event)">
     </app-data-table>
   </div>

@@ -35,5 +35,16 @@ public interface PaperInventoryRepository extends JpaRepository<PaperInventory, 
       @Param("category") String category,
       Pageable pageable);
 
+  @Query(value = """
+      SELECT us.id, us.item_name, us.category, us.paper_size,
+             pi.current_major_qty, pi.current_minor_qty,
+             us.major_unit, us.minor_unit
+      FROM unit_stock us
+      LEFT JOIN paper_inventory pi ON pi.unit_stock_id = us.id
+      WHERE (pi.current_major_qty > 0 OR pi.current_minor_qty > 0)
+      ORDER BY us.item_name ASC
+      """, nativeQuery = true)
+  java.util.List<Object[]> findAllAvailableWithStockData();
+
   Optional<PaperInventory> findByUnitStockId(Long unitStockId);
 }

@@ -372,12 +372,12 @@ export class Dcsm36DetailComponent implements OnInit {
     if (this.qcJobForm.get('qcType')?.value == 'Qc STK') {
       data = {
         "reportName": "QcSTKReport",
-        "jobId": this.qcJobForm.get('joId')?.value,
+        "jobId": this.qcJobForm.get('id')?.value,
       }
     } else {
       data = {
         "reportName": "QcReport",
-        "jobId": this.qcJobForm.get('joId')?.value,
+        "jobId": this.qcJobForm.get('id')?.value,
       }
     }
     this.dcsm36Service.printReport(data).subscribe({
@@ -404,12 +404,12 @@ export class Dcsm36DetailComponent implements OnInit {
     if (this.qcJobForm.get('qcType')?.value == 'Qc STK') {
       data = {
         "reportName": "QcSTKReport",
-        "jobId": this.qcJobForm.get('joId')?.value,
+        "jobId": this.qcJobForm.get('id')?.value,
       }
     } else {
       data = {
         "reportName": "QcReport",
-        "jobId": this.qcJobForm.get('joId')?.value,
+        "jobId": this.qcJobForm.get('id')?.value,
       }
     }
 
