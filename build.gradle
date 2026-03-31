@@ -50,6 +50,8 @@ dependencies {
 
 tasks.withType(JavaCompile) {
 	options.compilerArgs += '-parameters'
+	options.fork = true
+	options.forkOptions.jvmArgs += ['-Djava.compiler.parameters=true']
 }
 
 tasks.named('test') {

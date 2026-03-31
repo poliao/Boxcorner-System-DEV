@@ -6,44 +6,44 @@
       </div>
       <div class="col-12 col-md-12">
         <div class="row g-2">
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PENDING'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PENDING' || printingForm.get('jobStatus')?.value === 'รอพิมพ์'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #1e1b4b;"
               data-bs-toggle="modal" data-bs-target="#printingRecordModal" [disabled]="setupWasteGateBlocked"
               [title]="setupWasteGateBlocked ? 'กรุณาบันทึกยอดใบตั้งเครื่องก่อนเริ่มพิมพ์' : ''">เริ่มพิมพ์
             </button>
           </div>
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED' || printingForm.get('jobStatus')?.value === 'หยุดชั่วคราว'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;"
               data-bs-toggle="modal" data-bs-target="#printingRecordModal"
               [disabled]="setupWasteGateBlocked">เริ่มพิมพ์ต่อ
             </button>
           </div>
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'WAITPAGE2' || printingForm.get('jobStatus')?.value === 'รอพิมพ์หน้า 2'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;"
               data-bs-toggle="modal" data-bs-target="#printingStartPage2">เริ่มพิมพ์หน้าที่ 2
             </button>
           </div>
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED_PAGE2'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'PAUSED_PAGE2' || printingForm.get('jobStatus')?.value === 'หยุดชั่วคราว (หน้า 2)'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;"
               data-bs-toggle="modal" data-bs-target="#printingStartPage2">เริ่มพิมพ์หน้าที่ 2ต่อ
             </button>
           </div>
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS' || printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหน้า'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #ff8800;"
               data-bs-toggle="modal" data-bs-target="#printingLogStop" (click)="checkPrinter()">หยุดชั่วคราว
             </button>
           </div>
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2' || printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหลัง'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #ff8800;"
               data-bs-toggle="modal" data-bs-target="#printingLogStopPage2" (click)="checkPrinter()">หยุดชั่วคราวหน้า2
             </button>
           </div>
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS' || printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหน้า'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #000272;"
               data-bs-toggle="modal" data-bs-target="#printingLogEnd" (click)="checkPrinter()">พิมพ์จบ
             </button>
           </div>
-          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2'">
+          <div class="col-12 col-md-2" *ngIf="printingForm.get('jobStatus')?.value === 'IN_PROGRESS_PAGE2' || printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหลัง'">
             <button class="btn text-white px-5 shadow-sm w-100" style="background-color: #441f99;"
               data-bs-toggle="modal" data-bs-target="#printingLogEndPage2" (click)="checkPrinter()">พิมพ์จบหน้า2
             </button>
@@ -339,13 +339,24 @@
               </select>
             </div>
 
+            <!-- Cascading: เลือกประเภทกระดาษ (material) ก่อน แล้วค่อยเลือก Lot -->
             <div class="col-md-12">
-              <label class="form-label">กระดาษจากสต็อก <span class="text-danger">*</span></label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }}) | คงเหลือ: {{ stock.currentMinorQty |
-                  number }} {{ stock.minorUnit }}
+              <label class="form-label">ประเภทกระดาษ <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="selectedMaterialId" [ngModelOptions]="{standalone: true}"
+                (change)="onMaterialChange(selectedMaterialId, printingFormRecord)">
+                <option [ngValue]="null">-- เลือกประเภทกระดาษ --</option>
+                <option *ngFor="let mat of materials" [ngValue]="mat.materialId">
+                  {{ mat.materialCode }} | {{ mat.materialName }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Lot กระดาษ <span class="text-danger">*</span></label>
+              <select formControlName="unitStockId" class="form-select"
+                [attr.disabled]="!selectedMaterialId ? '' : null">
+                <option [ngValue]="null">{{ selectedMaterialId ? '-- เลือก Lot --' : '-- เลือกประเภทกระดาษก่อน --' }}</option>
+                <option *ngFor="let lot of lots" [value]="lot.id">
+                  {{ lot.lotNumber }} | คงเหลือ: {{ lot.baseQty | number }} {{ lot.material?.baseUom?.name }}
                 </option>
               </select>
             </div>
@@ -401,8 +412,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-        <button type="button" class="btn text-white" style="background-color: #1e1b4b;" (click)="stopPrintLog('FINISH')"
-          data-bs-dismiss="modal">บันทึก</button>
+        <button type="button" class="btn text-white" style="background-color: #1e1b4b;" (click)="stopPrintLog('FINISH')">บันทึก</button>
       </div>
     </div>
   </div>
@@ -604,13 +614,24 @@
               </select>
             </div>
 
+            <!-- Cascading: เลือกประเภทกระดาษ (material) ก่อน แล้วค่อยเลือก Lot -->
             <div class="col-md-12">
-              <label class="form-label">กระดาษจากสต็อก <span class="text-danger">*</span></label>
-              <select formControlName="unitStockId" class="form-select">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }}) | คงเหลือ: {{ stock.currentMinorQty |
-                  number }} {{ stock.minorUnit }}
+              <label class="form-label">ประเภทกระดาษ <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="selectedMaterialId" [ngModelOptions]="{standalone: true}"
+                (change)="onMaterialChange(selectedMaterialId, printingFormRecord)">
+                <option [ngValue]="null">-- เลือกประเภทกระดาษ --</option>
+                <option *ngFor="let mat of materials" [ngValue]="mat.materialId">
+                  {{ mat.materialCode }} | {{ mat.materialName }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Lot กระดาษ <span class="text-danger">*</span></label>
+              <select formControlName="unitStockId" class="form-select"
+                [attr.disabled]="!selectedMaterialId ? '' : null">
+                <option [ngValue]="null">{{ selectedMaterialId ? '-- เลือก Lot --' : '-- เลือกประเภทกระดาษก่อน --' }}</option>
+                <option *ngFor="let lot of lots" [value]="lot.id">
+                  {{ lot.lotNumber }} | คงเหลือ: {{ lot.baseQty | number }} {{ lot.material?.baseUom?.name }}
                 </option>
               </select>
             </div>
@@ -852,11 +873,22 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">กระดาษที่ต้องการคืนสต็อค <span class="text-danger">*</span></label>
+              <!-- Cascading: เลือกประเภทกระดาษ (material) ก่อน แล้วค่อยเลือก Lot -->
+              <label class="form-label">ประเภทกระดาษ <span class="text-danger">*</span></label>
+              <select class="form-select mb-2" [(ngModel)]="selectedMaterialId" [ngModelOptions]="{standalone: true}"
+                (change)="onMaterialChange(selectedMaterialId, returnPaperForm)">
+                <option [ngValue]="null">-- เลือกประเภทกระดาษ --</option>
+                <option *ngFor="let mat of materials" [ngValue]="mat.materialId">
+                  {{ mat.materialCode }} | {{ mat.materialName }}
+                </option>
+              </select>
+              <label class="form-label">Lot กระดาษ <span class="text-danger">*</span></label>
               <select formControlName="unitStockId" class="form-select"
-                [ngClass]="{ 'is-invalid': returnPaperForm.get('unitStockId')?.invalid && returnPaperForm.get('unitStockId')?.touched }">
-                <option [ngValue]="null">-- เลือกกระดาษ --</option>
-                <option *ngFor="let stock of unitStocks" [value]="stock.id">
-                  {{ stock.itemName }} - {{ stock.category }} ({{ stock.paperSize }})
+                [ngClass]="{ 'is-invalid': returnPaperForm.get('unitStockId')?.invalid && returnPaperForm.get('unitStockId')?.touched }"
+                [attr.disabled]="!selectedMaterialId ? '' : null">
+                <option [ngValue]="null">{{ selectedMaterialId ? '-- เลือก Lot --' : '-- เลือกประเภทกระดาษก่อน --' }}</option>
+                <option *ngFor="let lot of lots" [value]="lot.id">
+                  {{ lot.lotNumber }} | คงเหลือ: {{ lot.baseQty | number }} {{ lot.material?.baseUom?.name }}
                 </option>
               </select>
             </div>

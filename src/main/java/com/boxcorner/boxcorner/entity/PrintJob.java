@@ -148,6 +148,9 @@ public class PrintJob extends BaseEntity {
     @Column(name = "print_round_page2")
     private Integer printRoundPage2;
 
+    @Column(name = "current_round")
+    private Integer currentRound = 0;
+
     @Column(name = "good_qty")
     private Integer goodQty = 0;
 

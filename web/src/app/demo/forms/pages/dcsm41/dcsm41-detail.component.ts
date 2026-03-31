@@ -103,9 +103,31 @@ export class Dcsm41DetailComponent implements OnInit {
           transactionType: this.translateTransactionType(log.transactionType)
         }));
         this.loadingService.hide();
+        // Refresh ยอด baseQty ที่ selected lot ให้เป็นปัจจุบัน
+        this.refreshLotData(lot.id);
       },
       error: () => this.loadingService.hide()
     });
+  }
+
+  refreshLotData(lotId: number) {
+    this.service.getLotById(lotId).subscribe({
+      next: (updatedLot) => {
+        this.selectedLot = updatedLot;
+        // อัปเดต list ด้วย
+        const idx = this.lots.findIndex(l => l.id === lotId);
+        if (idx !== -1) {
+          this.lots[idx] = { ...this.lots[idx], baseQty: updatedLot.baseQty };
+          this.lots = [...this.lots]; // trigger change detection
+        }
+      }
+    });
+  }
+
+  refreshLotLogs() {
+    if (this.selectedLot) {
+      this.viewLotLogs(this.selectedLot);
+    }
   }
 
   translateTransactionType(type: string): string {

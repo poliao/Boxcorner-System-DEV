@@ -102,4 +102,62 @@
       </div>
     </div>
   </form>
+
+  <!-- ส่วนเพิ่มจำนวน: แสดงเฉพาะเมื่อดู Lot ที่มีอยู่แล้ว -->
+  <div *ngIf="id != null" class="row mt-4 g-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div
+          class="card-header bg-success bg-opacity-10 border-0 py-3 d-flex align-items-center justify-content-between"
+          style="color: white;">
+          <div>
+            <h6 class="mb-0 fw-bold" style="color: white;">
+              <mat-icon class="me-2 align-middle" style="font-size:20px; vertical-align:middle;">add_circle</mat-icon>
+              เพิ่มจำนวนกระดาษเข้า Lot
+            </h6>
+            <small class="text-muted">เพิ่มสต็อกเข้า Lot นี้โดยตรง</small>
+          </div>
+          <div class="text-end">
+            <div class="text-muted small">คงเหลือปัจจุบัน</div>
+            <span class="fw-bold fs-5 text-success">
+              {{ mainForm.get('baseQty')?.value | number }} {{ baseUomName }}
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="addStockForm">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label class="form-label fw-bold">จำนวนที่เพิ่ม <span class="text-danger">*</span></label>
+                <div class="input-group input-group-lg">
+                  <input type="number" class="form-control" formControlName="qty" placeholder="0"
+                    [ngClass]="{'is-invalid': addStockForm.get('qty')?.invalid && addStockForm.get('qty')?.touched}">
+                  <select class="form-select w-auto" formControlName="uomId"
+                    [ngClass]="{'is-invalid': addStockForm.get('uomId')?.invalid && addStockForm.get('uomId')?.touched}">
+                    <option [ngValue]="null">หน่วย</option>
+                    <option *ngFor="let uom of availableUoms" [ngValue]="uom.id">{{ uom.name }}</option>
+                  </select>
+                </div>
+                <div *ngIf="addStockForm.get('qty')?.invalid && addStockForm.get('qty')?.touched"
+                  class="text-danger small mt-1">กรุณากรอกจำนวนที่ถูกต้อง (ต้องมากกว่า 0)</div>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label fw-bold">หมายเหตุ</label>
+                <input type="text" class="form-control" formControlName="note"
+                  placeholder="เช่น รับเพิ่มจากซัพพลายเออร์">
+              </div>
+              <div class="col-md-3">
+                <button mat-flat-button color="primary" class="w-100 py-2" (click)="addStock()"
+                  [disabled]="addStockForm.invalid">
+                  <mat-icon class="me-1">add</mat-icon>
+                  เพิ่มจำนวน
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

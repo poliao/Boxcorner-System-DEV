@@ -49,6 +49,7 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
                         AND (:jobId IS NULL OR pj.job_id = :jobId)
                         AND (:customerJobName IS NULL OR :customerJobName = '' OR UPPER(pj.customer_job_name) LIKE UPPER(CONCAT('%', :customerJobName, '%')))
                         AND (:printerName IS NULL OR :printerName = '' OR UPPER(pj.printer_name) LIKE UPPER(CONCAT('%', :printerName, '%')))
+                        AND (:jobStatus IS NULL OR :jobStatus = '' OR CAST(pj.job_status AS TEXT) = :jobStatus)
                         ORDER BY pj.id DESC
                         """, nativeQuery = true)
         Page<PrintJob> findByFiltersOS(
@@ -56,6 +57,7 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
                         @Param("jobId") String jobId,
                         @Param("customerJobName") String customerJobName,
                         @Param("printerName") String printerName,
+                        @Param("jobStatus") String jobStatus,
                         Pageable pageable);
 
         @Query("SELECT DISTINCT pj.jobId FROM PrintJob pj WHERE pj.jobId IN :jobIds AND (pj.issample IS NULL OR pj.issample = false)")

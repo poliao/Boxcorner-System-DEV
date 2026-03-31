@@ -72,6 +72,7 @@ public class ProductionJobService {
                 existing.setQcJobId(productionJob.getQcJobId());
                 existing.setQcLocation(productionJob.getQcLocation());
                 existing.setPrintJobId(productionJob.getPrintJobId());
+                existing.setQcType(productionJob.getQcType());
                 return productionJobRepository.save(existing);
             }
         }

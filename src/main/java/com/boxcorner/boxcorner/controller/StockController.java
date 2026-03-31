@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.controller;
 
 import com.boxcorner.boxcorner.entity.*;
+import com.boxcorner.boxcorner.entity.dto.AddStockRequest;
 import com.boxcorner.boxcorner.service.StockLogService;
 import com.boxcorner.boxcorner.service.StockService;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class StockController {
     }
 
     @DeleteMapping("/uoms/{id}")
-    public ResponseEntity<?> deleteUom(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteUom(@PathVariable(value = "id") Integer id) {
         try {
             stockService.deleteUom(id);
             return ResponseEntity.ok().build();
@@ -70,7 +71,7 @@ public class StockController {
     }
 
     @DeleteMapping("/suppliers/{id}")
-    public ResponseEntity<?> deleteSupplier(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteSupplier(@PathVariable(value = "id") Integer id) {
         try {
             stockService.deleteSupplier(id);
             return ResponseEntity.ok().build();
@@ -101,7 +102,7 @@ public class StockController {
     }
 
     @DeleteMapping("/brands/{id}")
-    public ResponseEntity<?> deleteBrand(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteBrand(@PathVariable(value = "id") Integer id) {
         try {
             stockService.deleteBrand(id);
             return ResponseEntity.ok().build();
@@ -133,7 +134,7 @@ public class StockController {
     }
 
     @DeleteMapping("/material-types/{id}")
-    public ResponseEntity<?> deleteMaterialType(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteMaterialType(@PathVariable(value = "id") Integer id) {
         try {
             stockService.deleteMaterialType(id);
             return ResponseEntity.ok().build();
@@ -155,7 +156,7 @@ public class StockController {
     }
 
     @GetMapping("/materials/{id}")
-    public ResponseEntity<?> getMaterialById(@PathVariable Integer id) {
+    public ResponseEntity<?> getMaterialById(@PathVariable(value = "id") Integer id) {
         try {
             return ResponseEntity.ok(stockService.getMaterialById(id));
         } catch (Exception e) {
@@ -175,7 +176,7 @@ public class StockController {
     }
 
     @DeleteMapping("/materials/{id}")
-    public ResponseEntity<?> deleteMaterial(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteMaterial(@PathVariable(value = "id") Integer id) {
         try {
             stockService.deleteMaterial(id);
             return ResponseEntity.ok().build();
@@ -197,7 +198,7 @@ public class StockController {
     }
 
     @GetMapping("/material-conversions/{id}")
-    public ResponseEntity<?> getMaterialConversionById(@PathVariable Integer id) {
+    public ResponseEntity<?> getMaterialConversionById(@PathVariable(value = "id") Integer id) {
         try {
             return ResponseEntity.ok(stockService.getMaterialConversionById(id));
         } catch (Exception e) {
@@ -207,7 +208,8 @@ public class StockController {
     }
 
     @GetMapping("/material-conversions/material/{materialId}")
-    public ResponseEntity<?> getMaterialConversionsByMaterialId(@PathVariable Integer materialId) {
+    public ResponseEntity<?> getMaterialConversionsByMaterialId(
+            @PathVariable(value = "materialId") Integer materialId) {
         try {
             return ResponseEntity.ok(stockService.getMaterialConversionsByMaterialId(materialId));
         } catch (Exception e) {
@@ -227,7 +229,7 @@ public class StockController {
     }
 
     @DeleteMapping("/material-conversions/{id}")
-    public ResponseEntity<?> deleteMaterialConversion(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteMaterialConversion(@PathVariable(value = "id") Integer id) {
         try {
             stockService.deleteMaterialConversion(id);
             return ResponseEntity.ok().build();
@@ -249,7 +251,7 @@ public class StockController {
     }
 
     @GetMapping("/lots/{id}")
-    public ResponseEntity<?> getLotById(@PathVariable Integer id) {
+    public ResponseEntity<?> getLotById(@PathVariable(value = "id") Integer id) {
         try {
             return ResponseEntity.ok(stockService.getLotById(id));
         } catch (Exception e) {
@@ -259,7 +261,7 @@ public class StockController {
     }
 
     @GetMapping("/lots/material/{materialId}")
-    public ResponseEntity<?> getLotsByMaterialId(@PathVariable Integer materialId) {
+    public ResponseEntity<?> getLotsByMaterialId(@PathVariable(value = "materialId") Integer materialId) {
         try {
             return ResponseEntity.ok(stockService.getLotsByMaterialId(materialId));
         } catch (Exception e) {
@@ -279,10 +281,20 @@ public class StockController {
     }
 
     @DeleteMapping("/lots/{id}")
-    public ResponseEntity<?> deleteLot(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteLot(@PathVariable(value = "id") Integer id) {
         try {
             stockService.deleteLot(id);
             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/lots/{lotId}/add-stock")
+    public ResponseEntity<?> addStock(@PathVariable(value = "lotId") Integer lotId, @RequestBody AddStockRequest request) {
+        try {
+            return ResponseEntity.ok(stockService.addStock(lotId, request.getQty(), request.getUomId(), request.getNote(), stockLogService));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(e.getClass().getSimpleName() + ": " + e.getMessage());
@@ -302,7 +314,7 @@ public class StockController {
 
     @GetMapping("/lots/{lotId}/logs")
     public ResponseEntity<Page<StockLog>> getLotLogs(
-            @PathVariable Integer lotId,
+            @PathVariable(value = "lotId") Integer lotId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size) {
         return ResponseEntity.ok(stockLogService.getStockLogs(null, lotId, page, size));

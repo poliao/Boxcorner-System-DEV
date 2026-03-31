@@ -125,6 +125,9 @@ public class ProductionJob extends BaseEntity {
     @Column(name = "qc_location")
     private String qcLocation;
 
+    @Column(name = "qc_type")
+    private String qcType;
+
     @Column(name = "print_job_id")
     private Long printJobId;
-}
+}

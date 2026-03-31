@@ -43,4 +43,8 @@ export class Dcsm40Service {
   getConversionsByMaterial(materialId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/material-conversions/material/${materialId}`);
   }
+
+  addStock(lotId: number, data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/lots/${lotId}/add-stock`, data);
+  }
 }

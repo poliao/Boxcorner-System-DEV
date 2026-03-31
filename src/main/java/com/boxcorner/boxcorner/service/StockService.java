@@ -174,6 +174,54 @@ public class StockService {
     }
     @Transactional public void deleteLot(Integer id) { lotRepository.deleteById(id); }
 
+    @Transactional
+    public Lot addStock(Integer lotId, Double qty, Integer uomId, String note, StockLogService stockLogService) {
+        Lot lot = lotRepository.findById(lotId)
+                .orElseThrow(() -> new IllegalArgumentException("Lot not found: " + lotId));
+
+        // คำนวณ baseQty จาก qty และ uom
+        Double baseQtyToAdd;
+
+        Material material = lot.getMaterial();
+        if (material.getBaseUom() != null && material.getBaseUom().getId().equals(uomId)) {
+            // UOM ที่เลือกคือ base UOM
+            baseQtyToAdd = qty;
+        } else {
+            // ค้นหา conversion
+            List<MaterialConversion> conversions = materialConversionRepository.findByMaterialId(material.getId());
+            MaterialConversion conversion = conversions.stream()
+                    .filter(c -> c.getLargeUom() != null && c.getLargeUom().getId().equals(uomId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("ไม่พบการแปลงหน่วยสำหรับ UOM นี้"));
+            baseQtyToAdd = qty * conversion.getMultiplier();
+        }
+
+        // บวก baseQty เข้า lot
+        double currentBaseQty = lot.getBaseQty() != null ? lot.getBaseQty() : 0.0;
+        lot.setBaseQty(currentBaseQty + baseQtyToAdd);
+        Lot saved = lotRepository.save(lot);
+
+        // บันทึก stock log
+        StockLog log = StockLog.builder()
+                .lotId(lotId)
+                .materialId(material.getId())
+                .transactionType(StockLog.TransactionType.IN)
+                .quantityMajor(java.math.BigDecimal.valueOf(qty))
+                .quantityMinor(java.math.BigDecimal.valueOf(baseQtyToAdd))
+                .note(note != null ? note : "เพิ่มจำนวนเข้า Lot")
+                .build();
+        stockLogService.logTransaction(log);
+
+        return saved;
+    }
+
+    public boolean checkLotStock(Integer lotId, Double requiredSheets) {
+        Lot lot = lotRepository.findById(lotId)
+                .orElseThrow(() -> new IllegalArgumentException("Lot not found: " + lotId));
+        double available = lot.getBaseQty() != null ? lot.getBaseQty() : 0.0;
+        return available >= requiredSheets;
+    }
+
     // --- Inventory ---
     public List<InventoryDTO> getInventory() {
         List<Material> materials = materialRepository.findAll();

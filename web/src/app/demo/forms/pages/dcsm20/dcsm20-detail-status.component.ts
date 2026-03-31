@@ -85,7 +85,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state || history.state;
     console.log('DCSM20: Received navigation state:', state);
-
+    
     if (state?.referenceId) {
       this.referenceId = state.referenceId;
       this.decisionAuthority = state.decisionAuthority;
@@ -106,7 +106,6 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       this.printRound = state.printRound;
       this.printRoundPage2 = state.printRoundPage2;
     } else {
-      // Fallback if state is lost but we have it in form or data somehow
       this.qcType = this.productionForm?.getRawValue()?.qcType || null;
       this.qcLocation = this.productionForm?.getRawValue()?.qcLocation || null;
     }
@@ -216,7 +215,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       qcJobId: [null],
       qcLocation: [this.qcLocation],
       partName: [null],
-      printJobId: [null]
+      printJobId: [null],
+      qcType: [null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -286,6 +286,10 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
         cancelButtonText: 'ยกเลิก',
       }).then((result) => {
         if (result.isConfirmed) {
+          if(this.qcType != null || this.qcType != ''){
+            this.productionForm.get('qcType')?.setValue(this.qcType);
+          }
+          
           this.loadingService.show();
           this.papOrder.printing.machine = this.productionForm.getRawValue().printingResponsible
           this.papOrder.coating.location = this.productionForm.getRawValue().coatingResponsible

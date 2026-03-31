@@ -63,7 +63,7 @@ export class Dcsm26Component implements OnInit {
     const filters = {
       id: this.filterId,
       jobId: this.filterJobId,
-      customerName: this.filterCustomerName,
+      customerJobName: this.filterCustomerName,
       printStatus: this.filterPrintStatus,
       startDate: this.filterStartDate,
       endDate: this.filterEndDate

@@ -116,7 +116,7 @@ public class ProductionJobController {
     }
 
     @GetMapping("/findByPapOrderId")
-    public ResponseEntity<ProductionJob> findByPapOrderId(@RequestParam("papOrderId") Integer papOrderId) {
+    public ResponseEntity<ProductionJob> findByPapOrderId(@RequestParam(value = "papOrderId") Integer papOrderId) {
         ProductionJob job = productionJobService.findByPapOrderId(papOrderId);
         if (job != null) {
             return ResponseEntity.ok(job);

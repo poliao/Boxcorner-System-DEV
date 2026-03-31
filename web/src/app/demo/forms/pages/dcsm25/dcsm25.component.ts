@@ -161,29 +161,33 @@ export class Dcsm25Component implements OnInit {
   }
 
   loadExtraPrints(jobs: any[]) {
-    const extraPrintRequests = jobs
-      .filter(job => typeof job.id === 'number' && !isNaN(job.id))
-      .map(job =>
-        this.dcsm25Service.getExtraPrintsByJobId(job.id)
-      );
+    const validJobs = jobs.filter(job => typeof job.id === 'number' && !isNaN(job.id));
+    if (validJobs.length === 0) {
+      this.tableData = jobs;
+      return;
+    }
 
-    Promise.all(extraPrintRequests.map(req => req.toPromise()))
-      .then(results => {
-        const validJobs = jobs.filter(job => typeof job.id === 'number' && !isNaN(job.id));
+    const jobIds = validJobs.map(job => job.id);
 
-        results.forEach((extraPrints: any[], index) => {
-          const job = validJobs[index];
-          // เพิ่ม extraPrints เป็น property ของงานหลัก
-          job.extraPrints = extraPrints || [];
-          job.extraPrintCount = extraPrints ? extraPrints.length : 0;
+    this.dcsm25Service.getBatchExtraPrints(jobIds).subscribe({
+      next: (batchExtraPrints: any) => {
+        jobs.forEach((job) => {
+          if (typeof job.id === 'number' && !isNaN(job.id)) {
+            const extraPrints = batchExtraPrints[job.id];
+            job.extraPrints = extraPrints || [];
+            job.extraPrintCount = extraPrints ? extraPrints.length : 0;
+          } else {
+            job.extraPrints = [];
+            job.extraPrintCount = 0;
+          }
         });
-
         this.tableData = jobs;
-      })
-      .catch(err => {
-        console.error('Error loading extra prints:', err);
+      },
+      error: (err) => {
+        console.error('Error loading extra prints in batch:', err);
         this.tableData = jobs;
-      });
+      }
+    });
   }
 
   formatDate(dateString: string): string {

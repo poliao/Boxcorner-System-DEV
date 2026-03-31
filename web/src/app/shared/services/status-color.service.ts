@@ -84,6 +84,17 @@ export class StatusColorService {
       case 'PENDING': return '#ff9800'; // สีส้ม
       case 'รอพิมพ์': return '#ff9800'; // สีส้ม
       case 'IN_PROGRESS': return '#cddb00ff';
+      case 'กำลังพิมพ์ด้านหน้า': return '#cddb00ff';
+      case 'กำลังพิมพ์ด้านหลัง': return '#a0b000ff';
+      case 'รอพิมพ์หน้า 2': return '#ff9800';
+      case 'พิมพ์เสร็จแล้ว': return '#2bff00ff';
+      case 'พิมพ์ส่งลูกค้าเสร็จแล้ว': return '#00312fff';
+      case 'รอพิมพ์ส่งลูกค้าหน้า 2': return '#ff9800';
+      case 'กำลังพิมพ์ส่งลูกค้าหน้า 2': return '#449490ff';
+      case 'ปรู๊ฟไม่ผ่าน': return '#f44336';
+      case 'รอการอนุมัติผลิต': return '#ff5722';
+      case 'WAIT_APPROVAL': return '#ff5722';
+      case 'APPROVED_FOR_PRODUCTION': return '#00af0fff';
 
       case 'COMPLETED': return '#2bff00ff';
       case 'PAUSED': return '#ff2600ff';

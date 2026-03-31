@@ -26,6 +26,8 @@ export class Dcsm40DetailComponent implements OnInit {
   conversions: any[] = [];
   availableUoms: any[] = [];
   baseUomName: string = '';
+  lotData: any = null;
+  addStockForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -56,6 +58,13 @@ export class Dcsm40DetailComponent implements OnInit {
     // Watch for qty or UOM changes to calculate base qty
     this.mainForm.get('receiveQty')?.valueChanges.subscribe(() => this.calculateBaseQty());
     this.mainForm.get('receiveUom')?.valueChanges.subscribe(() => this.calculateBaseQty());
+
+    // Add stock form
+    this.addStockForm = this.fb.group({
+      qty: [null, [Validators.required, Validators.min(1)]],
+      uomId: [null, Validators.required],
+      note: ['']
+    });
   }
 
   ngOnInit() {
@@ -85,6 +94,7 @@ export class Dcsm40DetailComponent implements OnInit {
     this.loadingService.show();
     this.service.getLotById(this.id!).subscribe({
       next: (data) => {
+        this.lotData = data;
         this.mainForm.patchValue({
           ...data,
           material: data.material?.id,
@@ -92,6 +102,10 @@ export class Dcsm40DetailComponent implements OnInit {
           brand: data.brand?.id,
           receiveUom: data.receiveUom?.id
         });
+        // โหลด UOM สำหรับ add stock form
+        if (data.material?.id) {
+          this.onMaterialChange(data.material.id);
+        }
         this.loadingService.hide();
       },
       error: () => this.loadingService.hide()
@@ -188,5 +202,37 @@ export class Dcsm40DetailComponent implements OnInit {
 
   cancel() {
     this.router.navigate(['/Dcsm40']);
+  }
+
+  addStock() {
+    if (this.addStockForm.invalid) {
+      this.sweetAlert.error('ผิดพลาด', 'กรุณากรอกจำนวนและหน่วยนับให้ครบถ้วน');
+      return;
+    }
+    const formVal = this.addStockForm.value;
+    const payload = {
+      qty: formVal.qty,
+      uomId: formVal.uomId,
+      note: formVal.note || ''
+    };
+    this.loadingService.show();
+    this.service.addStock(this.id!, payload).subscribe({
+      next: (res) => {
+        const materialId = res.material?.id || this.mainForm.getRawValue().material;
+        this.sweetAlert.success('สำเร็จ', `เพิ่มจำนวน ${formVal.qty} เรียบร้อยแล้ว`).then(() => {
+          if (materialId) {
+          } else {
+            this.addStockForm.reset();
+            this.loadData();
+          }
+        });
+        
+        this.loadingService.hide();
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('ผิดพลาด', err.error?.message || 'ไม่สามารถเพิ่มจำนวนได้');
+      }
+    });
   }
 }

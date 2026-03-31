@@ -37,6 +37,7 @@ export class Dcsm26Service {
       jobId: filters.jobId || null,
       customerJobName: filters.customerJobName || null,
       printerName: filters.printerName || null,
+      jobStatus: filters.printStatus || null,
     };
 
     Object.keys(params).forEach(key => {
@@ -106,4 +107,11 @@ export class Dcsm26Service {
   findByProductionOrderId(productionOrderId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/print-job/findByProductionOrderId?productionOrderId=${productionOrderId}`);
   }
+
+  updatePrintJobStatus(id: number, jobStatus: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/print-job/${id}/status`, null, {
+      params: { jobStatus }
+    });
+  }
+
 }

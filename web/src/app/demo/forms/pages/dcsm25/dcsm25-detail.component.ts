@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Dcsm25Service } from './dcsm25.service';
@@ -7,14 +7,16 @@ import { LoadingService } from '../../../loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
-import { V } from '@angular/cdk/scrolling-module.d-C_w4tIrZ';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 
+declare const bootstrap: any;
+
 @Component({
   selector: 'app-dcsm25-detail',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, MatIconModule, MatButtonModule],
+  imports: [RouterModule, ReactiveFormsModule, FormsModule, CommonModule, MatIconModule, MatButtonModule],
   templateUrl: './dcsm25-detail.component.html',
   styleUrls: ['./dcsm25-detail.component.scss']
 })
@@ -29,7 +31,9 @@ export class Dcsm25DetailComponent implements OnInit {
   isRicoh = false;
   extraPrints: any[] = [];
   selectedExtraPrint: any = null;
-  unitStocks: any[] = [];
+  materials: any[] = [];
+  lots: any[] = [];
+  selectedMaterialId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -48,7 +52,7 @@ export class Dcsm25DetailComponent implements OnInit {
     this.createReturnPaperForm();
 
     this.fromPrintLogEnd();
-    this.loadUnitStocks();
+    this.loadMaterials();
 
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
@@ -90,7 +94,7 @@ export class Dcsm25DetailComponent implements OnInit {
    */
   get setupWasteGateBlocked(): boolean {
     const status = this.printingForm?.getRawValue().jobStatus;
-    return (this.isSampleJob && (status === 'PENDING') && !this.setupWasteSaved);
+    return (this.isSampleJob && (status === 'PENDING' || status === 'รอพิมพ์') && !this.setupWasteSaved);
   }
 
   saveSetupWaste() {
@@ -217,8 +221,8 @@ export class Dcsm25DetailComponent implements OnInit {
       note: [null],
       unitStockId: [null],
       paperUsed: [null],
-      goodQty: [null, [Validators.required, Validators.min(0)]],
-      wasteQty: [null, [Validators.required, Validators.min(0)]],
+      goodQty: [null, [Validators.min(0)]],
+      wasteQty: [null, [Validators.min(0)]],
     });
   }
 
@@ -344,39 +348,49 @@ export class Dcsm25DetailComponent implements OnInit {
   startPrintLog() {
     if (this.printingFormRecord.valid) {
       const formRaw = this.printingForm.getRawValue();
-      const requiredSheets = (formRaw.totalPrintSheets || 0) + (formRaw.setupWaste || 0);
-      const unitStockId = this.printingFormRecord.get('unitStockId')?.value;
+      const lotId = this.printingFormRecord.get('unitStockId')?.value || null;
 
-      this.dcsm25Service.checkStock(unitStockId, requiredSheets).subscribe({
+      // ถ้ามีการเลือก lot ให้ checkStock ก่อน
+      const doCheckAndPrint = () => {
+        this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
+        this.printingFormRecord.get('jobId')?.setValue(formRaw.id);
+        this.printingFormRecord.get('logType')?.setValue('NORMAL');
+        this.printingFormRecord.get('printSide')?.setValue('FRONT');
+        const recordData = { ...this.printingFormRecord.value, lotId };
+        this.dcsm25Service.startPrintLog(recordData).subscribe({
+          next: (responseLog) => {
+            this.dcsm25Service.getById(formRaw.id).subscribe((response) => {
+              response.printingRecordId = responseLog.logId;
+              this.dcsm25Service.save(response).subscribe({
+                next: (response) => {
+                  this.printingForm.patchValue(response);
+                  this.sweetAlert.success('Success', 'เริ่มปริ้น');
+                }
+              });
+            })
+          }, error: (error) => {
+            this.sweetAlert.error('Error', error?.error?.error || 'เกิดข้อผิดพลาดในการเริ่มพิมพ์');
+          }
+        });
+      };
+
+      if (!lotId) {
+        // ไม่ได้เลือก lot: พิมพ์ได้เลยแต่ไม่ตัดสต็อค
+        doCheckAndPrint();
+        return;
+      }
+
+      // มี lot ที่เลือก: ตรวจสต็อคก่อน
+      const requiredSheets = (formRaw.totalPrintSheets || 0) + (formRaw.setupWaste || 0);
+      this.dcsm25Service.checkStock(lotId, requiredSheets).subscribe({
         next: (res: any) => {
           if (!res.isEnough) {
             this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์');
             return;
           }
-
-          // Proceed to print
-          this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
-          this.printingFormRecord.get('jobId')?.setValue(formRaw.id);
-          this.printingFormRecord.get('logType')?.setValue('NORMAL');
-          this.printingFormRecord.get('printSide')?.setValue('FRONT');
-          const recordData = this.printingFormRecord.value;
-          this.dcsm25Service.startPrintLog(recordData).subscribe({
-            next: (responseLog) => {
-              this.dcsm25Service.getById(formRaw.id).subscribe((response) => {
-                response.printingRecordId = responseLog.logId;
-                this.dcsm25Service.save(response).subscribe({
-                  next: (response) => {
-                    this.printingForm.patchValue(response);
-                    this.sweetAlert.success('Success', 'เริ่มปริ้น');
-                  }
-                });
-              })
-            }, error: (error) => {
-              this.sweetAlert.error('Error', error.error.error);
-            }
-          })
+          doCheckAndPrint();
         },
-        error: (err) => {
+        error: () => {
           this.sweetAlert.error('Error', 'ไม่สามารถตรวจสอบสต็อคกระดาษได้');
         }
       });
@@ -416,85 +430,105 @@ export class Dcsm25DetailComponent implements OnInit {
 
 
   stopPrintLog(Status) {
-    if (this.printingEndLog.valid) {
-      this.printingEndLog.get('logId')?.setValue(this.printingForm.getRawValue().printingRecordId);
-      if (Status == 'FINISH' && this.printingForm.getRawValue().print2Page == true) {
-        this.printingEndLog.get('action')?.setValue('WAITPAGE2');
-      } else {
-        this.printingEndLog.get('action')?.setValue(Status);
+    const isFinish = Status === 'FINISH' || (Status === 'FINISH' && this.printingForm.getRawValue().print2Page == true);
+    const formData = this.printingEndLog.value;
+
+    if (isFinish) {
+      if (formData.goodQty === null || formData.goodQty === undefined || formData.goodQty === '') {
+        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานดี');
+        return;
       }
-
-      const actionValue = this.printingEndLog.get('action')?.value;
-      if (actionValue === 'FINISH' || actionValue === 'WAITPAGE2') {
-        let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
-        let sWaste = this.printingForm.getRawValue().setupWaste || 0;
-        this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
+      if (formData.wasteQty === null || formData.wasteQty === undefined || formData.wasteQty === '') {
+        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานเสีย');
+        return;
       }
-
-      const recordData = this.printingEndLog.value;
-      this.dcsm25Service.stopPrintLog(recordData).subscribe({
-        next: (responseLog) => {
-          this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-            response.printingRecordId = null;
-            this.dcsm25Service.save(response).subscribe({
-              next: (response) => {
-                this.printingForm.patchValue(response);
-                if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus == 'COMPLETED') {
-                  this.updateProductionJob();
-                }
-              }
-            });
-          })
-          this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้น');
-        }, error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
-        }
-      })
-
-    } else {
-      this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
     }
+
+    this.printingEndLog.get('logId')?.setValue(this.printingForm.getRawValue().printingRecordId);
+    if (Status == 'FINISH' && this.printingForm.getRawValue().print2Page == true) {
+      this.printingEndLog.get('action')?.setValue('WAITPAGE2');
+    } else {
+      this.printingEndLog.get('action')?.setValue(Status);
+    }
+
+    const actionValue = this.printingEndLog.get('action')?.value;
+    if (actionValue === 'FINISH' || actionValue === 'WAITPAGE2') {
+      let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
+      let sWaste = this.printingForm.getRawValue().setupWaste || 0;
+      this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
+    }
+
+    const recordData = this.printingEndLog.value;
+    this.dcsm25Service.stopPrintLog(recordData).subscribe({
+      next: (responseLog) => {
+        this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
+          response.printingRecordId = null;
+          this.dcsm25Service.save(response).subscribe({
+            next: (response) => {
+              this.printingForm.patchValue(response);
+              if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus == 'COMPLETED') {
+                this.updateProductionJob();
+              }
+            }
+          });
+        })
+        this.sweetAlert.success('Success', isFinish ? 'พิมพ์เสร็จสิ้น' : 'หยุดพิมพ์ชั่วคราว');
+        if (isFinish) this.closeModal('printingLogEnd');
+        this.printingEndLog.reset();
+      }, error: (error) => {
+        this.sweetAlert.error('Error', error.error.error);
+      }
+    });
   }
 
   stopPrintPage2Log(Status) {
-    if (this.printingEndLog.valid) {
-      this.printingEndLog.get('logId')?.setValue(this.printingForm.getRawValue().printingRecordId);
-      if (Status == 'PAUSED_PAGE2' && this.printingForm.getRawValue().print2Page == true) {
-        this.printingEndLog.get('action')?.setValue("PAUSED_PAGE2");
-      } else {
-        this.printingEndLog.get('action')?.setValue(Status);
+    const isFinish = Status === 'FINISH_PAGE2';
+    const formData = this.printingEndLog.value;
+
+    if (isFinish) {
+      if (formData.goodQty === null || formData.goodQty === undefined || formData.goodQty === '') {
+        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานดี');
+        return;
       }
-
-      const actionValue = this.printingEndLog.get('action')?.value;
-      if (actionValue === 'FINISH_PAGE2') {
-        let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
-        let sWaste = this.printingForm.getRawValue().setupWaste || 0;
-        this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
+      if (formData.wasteQty === null || formData.wasteQty === undefined || formData.wasteQty === '') {
+        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานเสีย');
+        return;
       }
-
-      const recordData = this.printingEndLog.value;
-      this.dcsm25Service.stopPrintLog(recordData).subscribe({
-        next: (responseLog) => {
-          this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-            response.printingRecordId = null;
-            this.dcsm25Service.save(response).subscribe({
-              next: (response) => {
-                this.printingForm.patchValue(response);
-                if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus == 'COMPLETED') {
-                  this.updateProductionJob();
-                }
-              }
-            });
-          })
-          this.sweetAlert.success('Success', 'พิมพ์เสร็จสิ้น');
-        }, error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
-        }
-      })
-
-    } else {
-      this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
     }
+
+    this.printingEndLog.get('logId')?.setValue(this.printingForm.getRawValue().printingRecordId);
+    if (Status == 'PAUSED_PAGE2' && this.printingForm.getRawValue().print2Page == true) {
+      this.printingEndLog.get('action')?.setValue("PAUSED_PAGE2");
+    } else {
+      this.printingEndLog.get('action')?.setValue(Status);
+    }
+
+    const actionValue = this.printingEndLog.get('action')?.value;
+    if (actionValue === 'FINISH_PAGE2') {
+      let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
+      let sWaste = this.printingForm.getRawValue().setupWaste || 0;
+      this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
+    }
+
+    const recordData = this.printingEndLog.value;
+    this.dcsm25Service.stopPrintLog(recordData).subscribe({
+      next: (responseLog) => {
+        this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
+          response.printingRecordId = null;
+          this.dcsm25Service.save(response).subscribe({
+            next: (response) => {
+              this.printingForm.patchValue(response);
+              if (this.printingForm.getRawValue().issample != true && this.printingForm.getRawValue().jobStatus == 'COMPLETED') {
+                this.updateProductionJob();
+              }
+            }
+          });
+        })
+        this.sweetAlert.success('Success', isFinish ? 'พิมพ์หน้า 2 เสร็จสิ้น' : 'หยุดพิมพ์หน้า 2 ชั่วคราว');
+      }, error: (error) => {
+        this.sweetAlert.error('Error', error.error.error);
+      }
+    });
   }
 
   checkPrinter() {
@@ -530,52 +564,67 @@ export class Dcsm25DetailComponent implements OnInit {
   startExtraPrint() {
     if (this.printingFormRecord.valid && this.selectedExtraPrint) {
       const requiredSheets = this.selectedExtraPrint.additionalQty || 0;
-      const unitStockId = this.printingFormRecord.get('unitStockId')?.value;
 
-      this.dcsm25Service.checkStock(unitStockId, requiredSheets).subscribe({
+      const doPrint = () => {
+        this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
+        this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
+        this.printingFormRecord.get('logType')?.setValue('EXTRA');
+        this.printingFormRecord.get('printSide')?.setValue('FRONT');
+        const recordData = this.printingFormRecord.value;
+        this.dcsm25Service.startPrintLog(recordData).subscribe({
+          next: (responseLog) => {
+            const updateData = {
+              id: this.selectedExtraPrint.id,
+              printJobId: this.selectedExtraPrint.printJobId,
+              additionalQty: this.selectedExtraPrint.additionalQty,
+              reason: this.selectedExtraPrint.reason,
+              status: 'IN_PROGRESS',
+              requestedBy: this.selectedExtraPrint.requestedBy,
+              printingRecordId: responseLog.logId
+            };
+            this.dcsm25Service.updateExtraPrint(updateData).subscribe({
+              next: () => {
+                this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
+                  response.printingRecordId = responseLog.logId;
+                  this.dcsm25Service.save(response).subscribe({
+                    next: (response) => {
+                      this.printingForm.patchValue(response);
+                      this.loadExtraPrints();
+                      this.sweetAlert.success('Success', 'เริ่มพิมพ์เพิ่ม');
+                    }
+                  });
+                });
+              }
+            });
+          },
+          error: (error) => {
+            this.sweetAlert.error('Error', error?.error?.error || 'เกิดข้อผิดพลาดในการเริ่มพิมพ์เพิ่ม');
+          }
+        });
+      };
+
+      if (!this.isSampleJob) {
+        // งานทั่วไป: ไม่ต้องตรวจ stock
+        doPrint();
+        return;
+      }
+
+      // งาน sample: ตํ่าหนัก lot
+      const lotId = this.printingFormRecord.get('unitStockId')?.value;
+      if (!lotId) {
+        this.sweetAlert.warning('เตือน', 'กรุณาเลือก Lot กระดาษก่อนเริ่มพิมพ์');
+        return;
+      }
+
+      this.dcsm25Service.checkStock(lotId, requiredSheets).subscribe({
         next: (res: any) => {
           if (!res.isEnough) {
-            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์');
+            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์เพิ่ม');
             return;
           }
-
-          this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
-          this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
-          this.printingFormRecord.get('logType')?.setValue('EXTRA');
-          this.printingFormRecord.get('printSide')?.setValue('FRONT');
-          const recordData = this.printingFormRecord.value;
-          this.dcsm25Service.startPrintLog(recordData).subscribe({
-            next: (responseLog) => {
-              const updateData = {
-                id: this.selectedExtraPrint.id,
-                printJobId: this.selectedExtraPrint.printJobId,
-                additionalQty: this.selectedExtraPrint.additionalQty,
-                reason: this.selectedExtraPrint.reason,
-                status: 'IN_PROGRESS',
-                requestedBy: this.selectedExtraPrint.requestedBy,
-                printingRecordId: responseLog.logId
-              };
-              this.dcsm25Service.updateExtraPrint(updateData).subscribe({
-                next: () => {
-                  this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-                    response.printingRecordId = responseLog.logId;
-                    this.dcsm25Service.save(response).subscribe({
-                      next: (response) => {
-                        this.printingForm.patchValue(response);
-                        this.loadExtraPrints();
-                        this.sweetAlert.success('Success', 'เริ่มพิมพ์เพิ่ม');
-                      }
-                    });
-                  });
-                }
-              });
-            },
-            error: (error) => {
-              this.sweetAlert.error('Error', error.error.error);
-            }
-          });
+          doPrint();
         },
-        error: (err) => {
+        error: () => {
           this.sweetAlert.error('Error', 'ไม่สามารถตรวจสอบสต็อคกระดาษได้');
         }
       });
@@ -746,16 +795,38 @@ export class Dcsm25DetailComponent implements OnInit {
     }
   }
 
-  loadUnitStocks() {
-    this.dcsm25Service.getUnitStocks().subscribe({
-      next: (res: any) => {
+  loadMaterials() {
+    this.dcsm25Service.getInventory().subscribe({
+      next: (res: any[]) => {
         if (res) {
-          this.unitStocks = res;
+          this.materials = res;
         }
       },
       error: (err) => {
-        console.error('Failed to load unit stocks', err);
+        console.error('Failed to load materials', err);
       }
     });
+  }
+
+  onMaterialChange(materialId: number, formGroup: FormGroup) {
+    this.lots = [];
+    formGroup.get('unitStockId')?.setValue(null);
+    if (!materialId) return;
+    this.dcsm25Service.getLotsByMaterial(materialId).subscribe({
+      next: (res: any[]) => {
+        this.lots = res || [];
+      },
+      error: (err) => {
+        console.error('Failed to load lots', err);
+      }
+    });
+  }
+
+  closeModal(modalId: string) {
+    const el = document.getElementById(modalId);
+    if (el) {
+      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+      modal.hide();
+    }
   }
 }

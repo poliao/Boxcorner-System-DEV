@@ -25,9 +25,13 @@ export class Dcsm41Service {
   }
 
   getLotLogs(lotId: number, page: number = 0, size: number = 20): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/lots/${lotId}/logs`, {
+    return this.http.get<any>(`${environment.apiUrl}/lots/${lotId}/logs`, {
       params: { page, size }
     });
+  }
+
+  getLotById(lotId: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/lots/${lotId}`);
   }
 
   getMaterialConversions(materialId: number): Observable<any[]> {

@@ -22,7 +22,16 @@ public interface QcJobRepository extends JpaRepository<QcJob, Integer> {
             "(CAST(:startFrom AS DATE) IS NULL OR q.startQcDatetime >= :startFrom) AND " +
             "(CAST(:startTo AS DATE) IS NULL OR q.startQcDatetime <= :startTo) AND " +
             "(CAST(:deliveryFrom AS DATE) IS NULL OR q.deliveryDatetime >= :deliveryFrom) AND " +
-            "(CAST(:deliveryTo AS DATE) IS NULL OR q.deliveryDatetime <= :deliveryTo)")
+            "(CAST(:deliveryTo AS DATE) IS NULL OR q.deliveryDatetime <= :deliveryTo) " +
+            "ORDER BY " +
+            "  CASE q.status " +
+            "    WHEN 'เข้าตรวจแล้ว' THEN 1 " +
+            "    WHEN 'อยู่ระหว่างตรวจ' THEN 2 " +
+            "    WHEN 'รอส่งตรวจ' THEN 3 " +
+            "    WHEN 'เสร็จสิ้น' THEN 4 " +
+            "    ELSE 5 " +
+            "  END ASC, " +
+            "  q.deliveryDatetime ASC")
     Page<QcJob> findByFilters(
             @Param("joId") String joId,
             @Param("jobName") String jobName,

@@ -81,6 +81,7 @@ public class PrintJobService {
             existing.setSampleDeliveryTimestamp(printJob.getSampleDeliveryTimestamp());
             existing.setPrintRound(printJob.getPrintRound());
             existing.setPrintRoundPage2(printJob.getPrintRoundPage2());
+            existing.setCurrentRound(printJob.getCurrentRound());
  
             return repository.save(existing);
         }
@@ -121,10 +122,10 @@ public class PrintJobService {
         return pageResult;
     }
 
-    public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName, int page,
+    public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName, String jobStatus, int page,
             int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        return repository.findByFiltersOS(id, jobId, customerJobName, printerName, paging);
+        return repository.findByFiltersOS(id, jobId, customerJobName, printerName, jobStatus, paging);
     }
 
     public Page<PrintJob> findByFiltersODPrinter(Long id, String jobId, String customerJobName, String printerName,
@@ -136,5 +137,12 @@ public class PrintJobService {
 
     public PrintJob findByProductionOrderId(Integer productionOrderId) {
         return repository.findByProductionOrderId(productionOrderId);
+    }
+
+    public PrintJob updateJobStatusOnly(Long id, String jobStatus) {
+        PrintJob existing = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PrintJob not found: " + id));
+        existing.setJobStatus(jobStatus);
+        return repository.save(existing);
     }
 }

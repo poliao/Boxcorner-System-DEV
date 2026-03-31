@@ -9,11 +9,12 @@ import { environment } from 'src/environments/environment';
 export class Dcsm25Service {
 
   private apiUrl = environment.apiUrl;
+  private odUrl = `${environment.apiUrl}/printing-od`;
 
   constructor(private http: HttpClient) { }
 
   save(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/print-job/save`, data);
+    return this.http.post(`${this.odUrl}/print-job/save`, data);
   }
 
   getOrdersWithSearch(page: number, size: number, filters: any): Observable<any> {
@@ -36,32 +37,50 @@ export class Dcsm25Service {
       }
     });
 
-    return this.http.get(`${this.apiUrl}/print-job/search`, { params: params });
+    return this.http.get(`${this.odUrl}/print-job/search`, { params: params });
   }
 
   getById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/print-job/getById?id=${id}`);
+    return this.http.get(`${this.odUrl}/print-job/getById?id=${id}`);
   }
 
   getByIdProductionJob(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
+    return this.http.get(`${this.odUrl}/production-job/getById?id=${id}`);
   }
 
   saveProductionJob(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/production-job/save`, data);
+    return this.http.post(`${this.odUrl}/production-job/save`, data);
   }
 
   startPrintLog(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/printing/start`, data);
+    return this.http.post(`${this.odUrl}/start`, data);
   }
 
   stopPrintLog(data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/printing/stop`, data);
+    return this.http.put(`${this.odUrl}/stop`, data);
   }
 
   getLogById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/printing/logById?logId=${id}`);
+    return this.http.get(`${this.odUrl}/logById?logId=${id}`);
   }
+
+  getExtraPrintsByJobId(printJobId: number): Observable<any> {
+    return this.http.get(`${this.odUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
+  }
+
+  getBatchExtraPrints(printJobIds: number[]): Observable<any> {
+    return this.http.post(`${this.odUrl}/extra-prints/batchByPrintJobIds`, printJobIds);
+  }
+
+  updateExtraPrint(data: any): Observable<any> {
+    return this.http.post(`${this.odUrl}/extra-prints/save`, data);
+  }
+
+  returnPaper(data: any): Observable<any> {
+    return this.http.post(`${this.odUrl}/return-paper`, data);
+  }
+
+  // ── APIs ที่ไม่มีใน dcsm26 — ยังใช้ path เดิม ──────────────────────────
 
   saveCalibrateLog(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/printing/saveCalibrateLog`, data);
@@ -75,30 +94,18 @@ export class Dcsm25Service {
     return this.http.post(`${this.apiUrl}/printing/saveCalibrate`, data);
   }
 
-  // Extra Print APIs
-  getExtraPrintsByJobId(printJobId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
+  checkStock(lotId: number, requiredSheets: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/lots/${lotId}/check-stock?requiredSheets=${requiredSheets}`);
   }
 
-  updateExtraPrint(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/extra-prints/save`, data);
+  getInventory(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/inventory`);
   }
 
-  // Return Paper API
-  returnPaper(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/printing/return-paper`, data);
+  getLotsByMaterial(materialId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/lots/material/${materialId}`);
   }
 
-  // Check Paper Stock API
-  checkStock(unitStockId: number, requiredSheets: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/paper-inventory/check-stock?unitStockId=${unitStockId}&requiredSheets=${requiredSheets}`);
-  }
-
-  getUnitStocks(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/paper-inventory/unit-stock-list-available`);
-  }
-
-  // Coating Job API
   saveCoatingJob(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/coating-jobs/create`, data);
   }

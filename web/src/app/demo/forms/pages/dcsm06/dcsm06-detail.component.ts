@@ -455,18 +455,20 @@ export class Dcsm06DetailComponent implements OnInit {
 
             // Sync with ProductionJob (Post-printing stages)
             if (response.id) {
-              this.dcsm26Service.findByPapOrderId(response.id).subscribe((prodJob) => {
-                if (prodJob) {
-                  prodJob.printStatus = 'อนุมัติผลิตแล้ว';
-                  this.dcsm26Service.saveProductionJob(prodJob).subscribe();
-                }
-              });
-
-              // Sync with PrintJob (DCSM26 Printing stage)
-              this.dcsm26Service.findByProductionOrderId(response.id).subscribe((printJob) => {
-                if (printJob) {
-                  printJob.jobStatus = 'อนุมัติผลิตแล้ว';
-                  this.dcsm26Service.save(printJob).subscribe();
+              this.dcsm26Service.findByProductionOrderId(response.id).subscribe({
+                next: (printJob) => {
+                  if (printJob) {
+                    this.dcsm26Service.updatePrintJobStatus(printJob.id, 'อนุมัติผลิตแล้ว').subscribe({
+                      next: () => {},
+                      error: (err) => {
+                        console.error('Failed to update PrintJob status:', err);
+                        this.sweetAlert.error('เกิดข้อผิดพลาด', 'อนุมัติสำเร็จ แต่ไม่สามารถอัปเดตสถานะตาราง print_job ได้: ' + (err.error || err.message));
+                      }
+                    });
+                  }
+                },
+                error: (err) => {
+                  console.error('Failed to find PrintJob:', err);
                 }
               });
             }

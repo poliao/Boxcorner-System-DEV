@@ -78,8 +78,8 @@ export class Dcsm26DetailComponent implements OnInit {
     this.checkbntPrint();
     if (this.id) {
       this.loadExtraPrints();
-      this.calculateCurrentRound();
     }
+    this.currentRound = resolvedData?.currentRound || 0;
   }
 
 
@@ -136,7 +136,8 @@ export class Dcsm26DetailComponent implements OnInit {
       sampleSpecialInstructions: [null],
       sampleDeliveryTimestamp: [null],
       printRound: [null],
-      printRoundPage2: [null]
+      printRoundPage2: [null],
+      currentRound: [0]
     });
     this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -185,6 +186,7 @@ export class Dcsm26DetailComponent implements OnInit {
     this.printingForm.get('sampleDiecutStyle')?.disable();
     this.printingForm.get('sampleSpecialInstructions')?.disable();
     this.printingForm.get('sampleDeliveryTimestamp')?.disable();
+    // ไม่ disable currentRound เพื่อให้ส่งค่าได้ตอน save
   }
 
   createChecklistForm() {
@@ -331,34 +333,6 @@ export class Dcsm26DetailComponent implements OnInit {
     this.showChecklistModal = false;
   }
 
-  calculateCurrentRound() {
-    if (!this.id) return;
-
-    const status = this.printingForm.get('jobStatus')?.value;
-    let side = '';
-
-    if (status === 'กำลังพิมพ์ด้านหน้า') side = 'FRONT';
-    else if (status === 'กำลังพิมพ์ด้านหลัง') side = 'BACK';
-    else if (status === 'กำลังพิมพ์ส่งลูกค้า') side = 'PROOF';
-    else if (status === 'กำลังพิมพ์ส่งลูกค้าหน้า 2') side = 'PROOF_BACK';
-
-    if (!side) {
-      this.currentRound = 0;
-      return;
-    }
-
-    this.dcsm26Service.getLogsByJobId(Number(this.id)).subscribe({
-      next: (logs) => {
-        const matchingLogs = logs.filter(log => log.printSide === side);
-        this.currentRound = matchingLogs.length;
-      },
-      error: (err) => {
-        console.error('Error fetching logs for round calculation', err);
-        this.currentRound = 0;
-      }
-    });
-  }
-
   openNextRoundChecklist() {
     // Open checklist for the next round without resetting the round counter
     this.checklistForm.reset({
@@ -410,12 +384,13 @@ export class Dcsm26DetailComponent implements OnInit {
       this.saveRecordOs().subscribe({
         next: (response) => {
           this.printingForm.get('printingRecordId')?.setValue(response.id);
+          this.currentRound++;
+          this.printingForm.get('currentRound')?.setValue(this.currentRound);
           this.dcsm26Service.save(this.printingForm.getRawValue()).subscribe({
             next: (response) => {
               this.loadingService.hide();
               this.showChecklistModal = false;
-              // Increment round counter after each successful checklist submit
-              this.currentRound++;
+              const savedRound = this.currentRound;
               const form = this.printingForm.getRawValue();
               const printRound = form.printRound || 1;
               const printRoundPage2 = form.printRoundPage2 || 1;
@@ -430,6 +405,9 @@ export class Dcsm26DetailComponent implements OnInit {
                     : 'บันทึกข้อมูลสำเร็จ');
               this.sweetAlert.success('Success', remainingMsg);
               this.printingForm.patchValue(response);
+              // restore currentRound หลัง patchValue เพราะ response จาก backend อาจทับค่า
+              this.currentRound = savedRound;
+              this.printingForm.get('currentRound')?.setValue(savedRound);
             },
             error: (error) => {
               this.loadingService.hide();
@@ -565,6 +543,7 @@ export class Dcsm26DetailComponent implements OnInit {
       this.sweetAlert.success('Success', 'บันทึกจำนวนที่พิมพ์ได้สำเร็จ!');
       this.printedQuantity = 0;
       this.currentRound = 0;
+      this.printingForm.get('currentRound')?.setValue(0);
     });
   }
 

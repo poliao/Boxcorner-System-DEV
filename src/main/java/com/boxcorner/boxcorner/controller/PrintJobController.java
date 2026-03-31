@@ -6,12 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.service.PrintJobService;
@@ -68,6 +63,7 @@ public class PrintJobController {
             @RequestParam(value = "jobId", required = false) String jobId,
             @RequestParam(value = "customerJobName", required = false) String customerJobName,
             @RequestParam(value = "printerName", required = false) String printerName,
+            @RequestParam(value = "jobStatus", required = false) String jobStatus,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
@@ -77,6 +73,7 @@ public class PrintJobController {
                 jobId,
                 customerJobName,
                 printerName,
+                jobStatus,
                 page,
                 size);
         return ResponseEntity.ok(result);
@@ -119,5 +116,14 @@ public class PrintJobController {
         return printJobService.findByProductionOrderId(productionOrderId) != null ? 
             ResponseEntity.ok(printJobService.findByProductionOrderId(productionOrderId)) : 
             ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateStatus(@PathVariable(value = "id") Long id, @RequestParam(value = "jobStatus") String jobStatus) {
+        try {
+            return ResponseEntity.ok(printJobService.updateJobStatusOnly(id, jobStatus));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }
