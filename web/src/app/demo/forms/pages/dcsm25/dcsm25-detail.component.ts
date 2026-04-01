@@ -34,6 +34,7 @@ export class Dcsm25DetailComponent implements OnInit {
   materials: any[] = [];
   lots: any[] = [];
   selectedMaterialId: number | null = null;
+  availableCutPapers: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -53,6 +54,7 @@ export class Dcsm25DetailComponent implements OnInit {
 
     this.fromPrintLogEnd();
     this.loadMaterials();
+    this.loadAvailableCutPapers();
 
     this.id = this.route.snapshot.paramMap.get('id');
     this.isEditMode = !!this.id;
@@ -206,7 +208,11 @@ export class Dcsm25DetailComponent implements OnInit {
       meterSpecialStart: [null],
       paperReqStart: [null],
       printerName: [null, Validators.required],
-      unitStockId: [null, Validators.required],
+      paperSourceType: ['NO_PAPER'], // NEW_CUT, EXISTING_CUT, NO_PAPER
+      unitStockId: [null],
+      largeSheetsTaken: [null, Validators.min(0.01)],
+      cutMultiplier: [1, Validators.min(1)],
+      odCutPaperId: [null]
     });
   }
 
@@ -357,14 +363,15 @@ export class Dcsm25DetailComponent implements OnInit {
         this.printingFormRecord.get('logType')?.setValue('NORMAL');
         this.printingFormRecord.get('printSide')?.setValue('FRONT');
         const recordData = { ...this.printingFormRecord.value, lotId };
-        this.dcsm25Service.startPrintLog(recordData).subscribe({
+        this.dcsm25Service.startOdPrintLog(recordData).subscribe({
           next: (responseLog) => {
             this.dcsm25Service.getById(formRaw.id).subscribe((response) => {
-              response.printingRecordId = responseLog.logId;
+              response.printingRecordId = responseLog.logId || responseLog.id;
               this.dcsm25Service.save(response).subscribe({
                 next: (response) => {
                   this.printingForm.patchValue(response);
                   this.sweetAlert.success('Success', 'เริ่มปริ้น');
+                  this.loadAvailableCutPapers();
                 }
               });
             })
@@ -374,18 +381,27 @@ export class Dcsm25DetailComponent implements OnInit {
         });
       };
 
-      if (!lotId) {
-        // ไม่ได้เลือก lot: พิมพ์ได้เลยแต่ไม่ตัดสต็อค
+      const paperSourceType = this.printingFormRecord.get('paperSourceType')?.value;
+      if (paperSourceType === 'NO_PAPER' || paperSourceType === 'EXISTING_CUT') {
         doCheckAndPrint();
         return;
       }
+      if (!lotId) {
+        this.sweetAlert.warning('เตือน', 'กรุณาเลือก Lot กระดาษ');
+        return;
+      }
 
-      // มี lot ที่เลือก: ตรวจสต็อคก่อน
-      const requiredSheets = (formRaw.totalPrintSheets || 0) + (formRaw.setupWaste || 0);
+      let requiredSheets = 0;
+      if (paperSourceType === 'DIRECT_LOT') {
+        requiredSheets = (formRaw.totalPrintSheets || 0) + (formRaw.setupWaste || 0);
+      } else if (paperSourceType === 'NEW_CUT') {
+        requiredSheets = this.printingFormRecord.get('largeSheetsTaken')?.value || 0;
+      }
+
       this.dcsm25Service.checkStock(lotId, requiredSheets).subscribe({
         next: (res: any) => {
           if (!res.isEnough) {
-            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์');
+            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอ');
             return;
           }
           doCheckAndPrint();
@@ -407,11 +423,14 @@ export class Dcsm25DetailComponent implements OnInit {
       this.printingFormRecord2.get('jobId')?.setValue(formRaw.id);
       this.printingFormRecord2.get('logType')?.setValue('NORMAL');
       this.printingFormRecord2.get('printSide')?.setValue('BACK');
-      const recordData = this.printingFormRecord2.value;
-      this.dcsm25Service.startPrintLog(recordData).subscribe({
+      const recordData = {
+          ...this.printingFormRecord2.value,
+          paperSourceType: 'NO_PAPER'
+      };
+      this.dcsm25Service.startOdPrintLog(recordData).subscribe({
         next: (responseLog) => {
           this.dcsm25Service.getById(formRaw.id).subscribe((response) => {
-            response.printingRecordId = responseLog.logId;
+            response.printingRecordId = responseLog.logId || responseLog.id;
             this.dcsm25Service.save(response).subscribe({
               next: (response) => {
                 this.printingForm.patchValue(response);
@@ -420,7 +439,7 @@ export class Dcsm25DetailComponent implements OnInit {
             });
           })
         }, error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
+          this.sweetAlert.error('Error', error?.error?.error || error?.error || 'Error starting print page 2');
         }
       });
     } else {
@@ -459,7 +478,7 @@ export class Dcsm25DetailComponent implements OnInit {
     }
 
     const recordData = this.printingEndLog.value;
-    this.dcsm25Service.stopPrintLog(recordData).subscribe({
+    this.dcsm25Service.stopOdPrintLog(recordData).subscribe({
       next: (responseLog) => {
         this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
           response.printingRecordId = null;
@@ -476,7 +495,7 @@ export class Dcsm25DetailComponent implements OnInit {
         if (isFinish) this.closeModal('printingLogEnd');
         this.printingEndLog.reset();
       }, error: (error) => {
-        this.sweetAlert.error('Error', error.error.error);
+        this.sweetAlert.error('Error', error?.error?.error || 'เกิดข้อผิดพลาดในการหยุดพิมพ์');
       }
     });
   }
@@ -511,7 +530,7 @@ export class Dcsm25DetailComponent implements OnInit {
     }
 
     const recordData = this.printingEndLog.value;
-    this.dcsm25Service.stopPrintLog(recordData).subscribe({
+    this.dcsm25Service.stopOdPrintLog(recordData).subscribe({
       next: (responseLog) => {
         this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
           response.printingRecordId = null;
@@ -526,7 +545,7 @@ export class Dcsm25DetailComponent implements OnInit {
         })
         this.sweetAlert.success('Success', isFinish ? 'พิมพ์หน้า 2 เสร็จสิ้น' : 'หยุดพิมพ์หน้า 2 ชั่วคราว');
       }, error: (error) => {
-        this.sweetAlert.error('Error', error.error.error);
+        this.sweetAlert.error('Error', error?.error?.error || 'เกิดข้อผิดพลาด');
       }
     });
   }
@@ -571,7 +590,7 @@ export class Dcsm25DetailComponent implements OnInit {
         this.printingFormRecord.get('logType')?.setValue('EXTRA');
         this.printingFormRecord.get('printSide')?.setValue('FRONT');
         const recordData = this.printingFormRecord.value;
-        this.dcsm25Service.startPrintLog(recordData).subscribe({
+        this.dcsm25Service.startOdPrintLog(recordData).subscribe({
           next: (responseLog) => {
             const updateData = {
               id: this.selectedExtraPrint.id,
@@ -580,16 +599,17 @@ export class Dcsm25DetailComponent implements OnInit {
               reason: this.selectedExtraPrint.reason,
               status: 'IN_PROGRESS',
               requestedBy: this.selectedExtraPrint.requestedBy,
-              printingRecordId: responseLog.logId
+              printingRecordId: responseLog.logId || responseLog.id
             };
             this.dcsm25Service.updateExtraPrint(updateData).subscribe({
               next: () => {
                 this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-                  response.printingRecordId = responseLog.logId;
+                  response.printingRecordId = responseLog.logId || responseLog.id;
                   this.dcsm25Service.save(response).subscribe({
                     next: (response) => {
                       this.printingForm.patchValue(response);
                       this.loadExtraPrints();
+                      this.loadAvailableCutPapers();
                       this.sweetAlert.success('Success', 'เริ่มพิมพ์เพิ่ม');
                     }
                   });
@@ -603,23 +623,29 @@ export class Dcsm25DetailComponent implements OnInit {
         });
       };
 
-      if (!this.isSampleJob) {
-        // งานทั่วไป: ไม่ต้องตรวจ stock
+      const paperSourceType = this.printingFormRecord.get('paperSourceType')?.value;
+      if (paperSourceType === 'NO_PAPER' || paperSourceType === 'EXISTING_CUT') {
         doPrint();
         return;
       }
 
-      // งาน sample: ตํ่าหนัก lot
       const lotId = this.printingFormRecord.get('unitStockId')?.value;
       if (!lotId) {
-        this.sweetAlert.warning('เตือน', 'กรุณาเลือก Lot กระดาษก่อนเริ่มพิมพ์');
+        this.sweetAlert.warning('เตือน', 'กรุณาเลือก Lot กระดาษ');
         return;
       }
 
-      this.dcsm25Service.checkStock(lotId, requiredSheets).subscribe({
+      let reqSheetsTaken = 0;
+      if (paperSourceType === 'DIRECT_LOT') {
+        reqSheetsTaken = requiredSheets; // additionalQty from selectedExtraPrint, assigned around start of function
+      } else if (paperSourceType === 'NEW_CUT') {
+        reqSheetsTaken = this.printingFormRecord.get('largeSheetsTaken')?.value || 0;
+      }
+
+      this.dcsm25Service.checkStock(lotId, reqSheetsTaken).subscribe({
         next: (res: any) => {
           if (!res.isEnough) {
-            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอสำหรับยอดที่ต้องพิมพ์เพิ่ม');
+            this.sweetAlert.warning('เตือน', 'กระดาษในสต็อคไม่เพียงพอ');
             return;
           }
           doPrint();
@@ -629,7 +655,7 @@ export class Dcsm25DetailComponent implements OnInit {
         }
       });
     } else {
-      this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
+      this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบเถ้วน');
     }
   }
 
@@ -659,7 +685,7 @@ export class Dcsm25DetailComponent implements OnInit {
       }
 
       const recordData = this.printingEndLog.value;
-      this.dcsm25Service.stopPrintLog(recordData).subscribe({
+      this.dcsm25Service.stopOdPrintLog(recordData).subscribe({
         next: () => {
           const newStatus = action === 'FINISH' && this.printingForm.getRawValue().print2Page === true
             ? 'WAITPAGE2'
@@ -704,8 +730,11 @@ export class Dcsm25DetailComponent implements OnInit {
       this.printingFormRecord2.get('jobId')?.setValue(this.printingForm.getRawValue().id);
       this.printingFormRecord2.get('logType')?.setValue('EXTRA');
       this.printingFormRecord2.get('printSide')?.setValue('BACK');
-      const recordData = this.printingFormRecord2.value;
-      this.dcsm25Service.startPrintLog(recordData).subscribe({
+      const recordData = {
+          ...this.printingFormRecord2.value,
+          paperSourceType: 'NO_PAPER'
+      };
+      this.dcsm25Service.startOdPrintLog(recordData).subscribe({
         next: (responseLog) => {
           const updateData = {
             id: this.selectedExtraPrint.id,
@@ -714,12 +743,12 @@ export class Dcsm25DetailComponent implements OnInit {
             reason: this.selectedExtraPrint.reason,
             status: 'IN_PROGRESS_PAGE2',
             requestedBy: this.selectedExtraPrint.requestedBy,
-            printingRecordId: responseLog.logId
+            printingRecordId: responseLog.logId || responseLog.id
           };
           this.dcsm25Service.updateExtraPrint(updateData).subscribe({
             next: () => {
               this.dcsm25Service.getById(this.printingForm.getRawValue().id).subscribe((response) => {
-                response.printingRecordId = responseLog.logId;
+                response.printingRecordId = responseLog.logId || responseLog.id;
                 this.dcsm25Service.save(response).subscribe({
                   next: (response) => {
                     this.printingForm.patchValue(response);
@@ -732,7 +761,7 @@ export class Dcsm25DetailComponent implements OnInit {
           });
         },
         error: (error) => {
-          this.sweetAlert.error('Error', error.error.error);
+          this.sweetAlert.error('Error', error?.error?.error || error?.error || 'Error starting print page 2');
         }
       });
     } else {
@@ -758,7 +787,7 @@ export class Dcsm25DetailComponent implements OnInit {
       }
 
       const recordData = this.printingEndLog.value;
-      this.dcsm25Service.stopPrintLog(recordData).subscribe({
+      this.dcsm25Service.stopOdPrintLog(recordData).subscribe({
         next: () => {
           const newStatus = action === 'FINISH' ? 'COMPLETED' : 'PAUSED_PAGE2';
 
@@ -819,6 +848,15 @@ export class Dcsm25DetailComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load lots', err);
       }
+    });
+  }
+
+  loadAvailableCutPapers() {
+    this.dcsm25Service.getAvailableCutPapers().subscribe({
+      next: (res: any[]) => {
+        this.availableCutPapers = res || [];
+      },
+      error: (err) => console.error('Failed to load cut papers', err)
     });
   }
 

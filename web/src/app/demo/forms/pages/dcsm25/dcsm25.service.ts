@@ -59,6 +59,19 @@ export class Dcsm25Service {
   stopPrintLog(data: any): Observable<any> {
     return this.http.put(`${this.odUrl}/stop`, data);
   }
+  
+  // NEW OdPrinting API
+  startOdPrintLog(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/od-printing/start`, data);
+  }
+
+  stopOdPrintLog(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/od-printing/stop`, data);
+  }
+
+  getAvailableCutPapers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/od-printing/available-cut-papers`);
+  }
 
   getLogById(id: number): Observable<any> {
     return this.http.get(`${this.odUrl}/logById?logId=${id}`);
@@ -95,7 +108,7 @@ export class Dcsm25Service {
   }
 
   checkStock(lotId: number, requiredSheets: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/lots/${lotId}/check-stock?requiredSheets=${requiredSheets}`);
+    return this.http.get(`${this.apiUrl}/od-printing/check-stock?lotId=${lotId}&requiredSheets=${requiredSheets}`);
   }
 
   getInventory(): Observable<any[]> {

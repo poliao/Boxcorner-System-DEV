@@ -81,6 +81,9 @@ public class PrintLog extends BaseEntity {
     @Column(name = "lot_id")
     private Integer lotId;
 
+    @Column(name = "od_cut_paper_id")
+    private Long odCutPaperId;
+
     @Column(columnDefinition = "TEXT")
     private String note;
 

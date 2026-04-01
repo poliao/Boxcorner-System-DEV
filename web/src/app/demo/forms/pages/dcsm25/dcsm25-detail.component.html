@@ -339,27 +339,63 @@
               </select>
             </div>
 
-            <!-- Cascading: เลือกประเภทกระดาษ (material) ก่อน แล้วค่อยเลือก Lot -->
+            <!-- Paper Source Type Selection -->
             <div class="col-md-12">
-              <label class="form-label">ประเภทกระดาษ <span class="text-danger">*</span></label>
-              <select class="form-select" [(ngModel)]="selectedMaterialId" [ngModelOptions]="{standalone: true}"
-                (change)="onMaterialChange(selectedMaterialId, printingFormRecord)">
-                <option [ngValue]="null">-- เลือกประเภทกระดาษ --</option>
-                <option *ngFor="let mat of materials" [ngValue]="mat.materialId">
-                  {{ mat.materialCode }} | {{ mat.materialName }}
-                </option>
+              <label class="form-label">แหล่งกระดาษ <span class="text-danger">*</span></label>
+              <select formControlName="paperSourceType" class="form-select" style="color: black;">
+                <option value="NO_PAPER">-- ไม่ใช้กระดาษ --</option>
+                <option value="NEW_CUT">เบิกกระดาษแผ่นใหญ่มาตัดแบ่งกรีดใหม่</option>
+                <option value="DIRECT_LOT">ใช้กระดาษจากสต็อค Lot โดยตรง (ไม่ผ่านการกรีด)</option>
+                <option value="EXISTING_CUT">ใช้เศษกระดาษกองที่เหลือจากงานอื่น</option>
               </select>
             </div>
-            <div class="col-md-12">
-              <label class="form-label">Lot กระดาษ <span class="text-danger">*</span></label>
-              <select formControlName="unitStockId" class="form-select"
-                [attr.disabled]="!selectedMaterialId ? '' : null">
-                <option [ngValue]="null">{{ selectedMaterialId ? '-- เลือก Lot --' : '-- เลือกประเภทกระดาษก่อน --' }}</option>
-                <option *ngFor="let lot of lots" [value]="lot.id">
-                  {{ lot.lotNumber }} | คงเหลือ: {{ lot.baseQty | number }} {{ lot.material?.baseUom?.name }}
-                </option>
-              </select>
-            </div>
+
+            <!-- If NEW_CUT or DIRECT_LOT is selected -->
+            <ng-container *ngIf="printingFormRecord.get('paperSourceType')?.value === 'NEW_CUT' || printingFormRecord.get('paperSourceType')?.value === 'DIRECT_LOT'">
+              <div class="col-md-12">
+                <label class="form-label">ประเภทกระดาษ <span class="text-danger">*</span></label>
+                <select class="form-select" [(ngModel)]="selectedMaterialId" [ngModelOptions]="{standalone: true}"
+                  (change)="onMaterialChange(selectedMaterialId, printingFormRecord)">
+                  <option [ngValue]="null">-- เลือกประเภทกระดาษ --</option>
+                  <option *ngFor="let mat of materials" [ngValue]="mat.materialId">
+                    {{ mat.materialCode }} | {{ mat.materialName }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Lot กระดาษ <span class="text-danger">*</span></label>
+                <select formControlName="unitStockId" class="form-select"
+                  [attr.disabled]="!selectedMaterialId ? '' : null">
+                  <option [ngValue]="null">{{ selectedMaterialId ? '-- เลือก Lot --' : '-- เลือกประเภทกระดาษก่อน --' }}</option>
+                  <option *ngFor="let lot of lots" [value]="lot.id">
+                    {{ lot.lotNumber }} | คงเหลือ: {{ lot.baseQty | number }} {{ lot.material?.baseUom?.name }}
+                  </option>
+                </select>
+              </div>
+              <ng-container *ngIf="printingFormRecord.get('paperSourceType')?.value === 'NEW_CUT'">
+                <div class="col-md-6">
+                  <label class="form-label">แผ่นใหญ่ที่เบิก (แผ่น) <span class="text-danger">*</span></label>
+                  <input type="number" formControlName="largeSheetsTaken" class="form-control" step="0.01">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">กรีดแบ่งกระดาษเป็นกี่ส่วน? <span class="text-danger">*</span></label>
+                  <input type="number" formControlName="cutMultiplier" class="form-control" placeholder="เช่น 4">
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <!-- If EXISTING_CUT is selected -->
+            <ng-container *ngIf="printingFormRecord.get('paperSourceType')?.value === 'EXISTING_CUT'">
+              <div class="col-md-12">
+                <label class="form-label">เลือกเศษกระดาษกองเก่าที่ต้องการ <span class="text-danger">*</span></label>
+                <select formControlName="odCutPaperId" class="form-select">
+                  <option [ngValue]="null">-- เลือกเศษกระดาษ --</option>
+                  <option *ngFor="let cp of availableCutPapers" [value]="cp.id">
+                    รหัสกระดาษ: CP-{{ cp.id }} | {{ cp.material?.materialName }} | คงเหลือแผ่นเล็ก: {{ cp.remainingSmallSheets | number }} ชิ้น
+                  </option>
+                </select>
+              </div>
+            </ng-container>
           </div>
         </form>
       </div>
@@ -614,27 +650,63 @@
               </select>
             </div>
 
-            <!-- Cascading: เลือกประเภทกระดาษ (material) ก่อน แล้วค่อยเลือก Lot -->
+            <!-- Paper Source Type Selection -->
             <div class="col-md-12">
-              <label class="form-label">ประเภทกระดาษ <span class="text-danger">*</span></label>
-              <select class="form-select" [(ngModel)]="selectedMaterialId" [ngModelOptions]="{standalone: true}"
-                (change)="onMaterialChange(selectedMaterialId, printingFormRecord)">
-                <option [ngValue]="null">-- เลือกประเภทกระดาษ --</option>
-                <option *ngFor="let mat of materials" [ngValue]="mat.materialId">
-                  {{ mat.materialCode }} | {{ mat.materialName }}
-                </option>
+              <label class="form-label">แหล่งกระดาษ <span class="text-danger">*</span></label>
+              <select formControlName="paperSourceType" class="form-select" style="color: black;">
+                <option value="NO_PAPER">-- ไม่ใช้กระดาษ --</option>
+                <option value="NEW_CUT">เบิกกระดาษแผ่นใหญ่มาตัดแบ่งกรีดใหม่</option>
+                <option value="DIRECT_LOT">ใช้กระดาษจากสต็อค Lot โดยตรง (ไม่ผ่านการกรีด)</option>
+                <option value="EXISTING_CUT">ใช้เศษกระดาษกองที่เหลือจากงานอื่น</option>
               </select>
             </div>
-            <div class="col-md-12">
-              <label class="form-label">Lot กระดาษ <span class="text-danger">*</span></label>
-              <select formControlName="unitStockId" class="form-select"
-                [attr.disabled]="!selectedMaterialId ? '' : null">
-                <option [ngValue]="null">{{ selectedMaterialId ? '-- เลือก Lot --' : '-- เลือกประเภทกระดาษก่อน --' }}</option>
-                <option *ngFor="let lot of lots" [value]="lot.id">
-                  {{ lot.lotNumber }} | คงเหลือ: {{ lot.baseQty | number }} {{ lot.material?.baseUom?.name }}
-                </option>
-              </select>
-            </div>
+
+            <!-- If NEW_CUT or DIRECT_LOT is selected -->
+            <ng-container *ngIf="printingFormRecord.get('paperSourceType')?.value === 'NEW_CUT' || printingFormRecord.get('paperSourceType')?.value === 'DIRECT_LOT'">
+              <div class="col-md-12">
+                <label class="form-label">ประเภทกระดาษ <span class="text-danger">*</span></label>
+                <select class="form-select" [(ngModel)]="selectedMaterialId" [ngModelOptions]="{standalone: true}"
+                  (change)="onMaterialChange(selectedMaterialId, printingFormRecord)">
+                  <option [ngValue]="null">-- เลือกประเภทกระดาษ --</option>
+                  <option *ngFor="let mat of materials" [ngValue]="mat.materialId">
+                    {{ mat.materialCode }} | {{ mat.materialName }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Lot กระดาษ <span class="text-danger">*</span></label>
+                <select formControlName="unitStockId" class="form-select"
+                  [attr.disabled]="!selectedMaterialId ? '' : null">
+                  <option [ngValue]="null">{{ selectedMaterialId ? '-- เลือก Lot --' : '-- เลือกประเภทกระดาษก่อน --' }}</option>
+                  <option *ngFor="let lot of lots" [value]="lot.id">
+                    {{ lot.lotNumber }} | คงเหลือ: {{ lot.baseQty | number }} {{ lot.material?.baseUom?.name }}
+                  </option>
+                </select>
+              </div>
+              <ng-container *ngIf="printingFormRecord.get('paperSourceType')?.value === 'NEW_CUT'">
+                <div class="col-md-6">
+                  <label class="form-label">แผ่นใหญ่ที่เบิก (แผ่น) <span class="text-danger">*</span></label>
+                  <input type="number" formControlName="largeSheetsTaken" class="form-control" step="0.01">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">กรีดแบ่งกระดาษเป็นกี่ส่วน? <span class="text-danger">*</span></label>
+                  <input type="number" formControlName="cutMultiplier" class="form-control" placeholder="เช่น 4">
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <!-- If EXISTING_CUT is selected -->
+            <ng-container *ngIf="printingFormRecord.get('paperSourceType')?.value === 'EXISTING_CUT'">
+              <div class="col-md-12">
+                <label class="form-label">เลือกเศษกระดาษกองเก่าที่ต้องการ <span class="text-danger">*</span></label>
+                <select formControlName="odCutPaperId" class="form-select">
+                  <option [ngValue]="null">-- เลือกเศษกระดาษ --</option>
+                  <option *ngFor="let cp of availableCutPapers" [value]="cp.id">
+                    รหัสกระดาษ: CP-{{ cp.id }} | {{ cp.material?.materialName }} | คงเหลือแผ่นเล็ก: {{ cp.remainingSmallSheets | number }} ชิ้น
+                  </option>
+                </select>
+              </div>
+            </ng-container>
           </div>
         </form>
       </div>
