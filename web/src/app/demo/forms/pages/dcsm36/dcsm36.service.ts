@@ -70,4 +70,8 @@ export class Dcsm36Service {
   printReport(data: any): Observable<Blob> {
     return this.http.post(`${this.apiUrl}/test-report/pdf`, data, { responseType: 'blob' });
   }
+
+  DropdownList(department: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/userQc/getUserQc?department=${department}`);
+  }
 }

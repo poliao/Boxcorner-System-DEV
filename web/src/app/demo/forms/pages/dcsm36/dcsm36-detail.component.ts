@@ -26,61 +26,9 @@ export class Dcsm36DetailComponent implements OnInit {
   isCompleteModalOpen = false;
   isStartModalOpen = false;
   selectedQcType = null;
-  modalReceivedQty: number | null = null;
-  usersListOS: any[] = [
-    {
-      text: 'ต้อย',
-    },
-    {
-      text: 'ชื่นกมล',
-    },
-    {
-      text: 'รัตนา',
-    },
-    {
-      text: 'กาหลง',
-    },
-    {
-      text: 'รุ่งทิวา',
-    },
-    {
-      text: 'Ma Pwar',
-    },
-    {
-      text: 'Tham Htay Myint',
-    },
-    {
-      text: 'Lumba',
-    },
-    {
-      text: 'โอเมี๊ยะทุน',
-    },
-    {
-      text: 'มุกดา',
-    },
-    {
-      text: 'ศศิธร'
-    }
-  ];
-  usersListOD: any[] = [
-    {
-      text: 'ธีมาพร',
-    }, {
-      text: 'วราภรณ์',
-    }, {
-      text: 'นุชนารถ',
-    },
-  ];
   userRole: string = '';
-
-  get usersList() {
-    if (this.userRole === 'stam') {
-      return this.usersListOD;
-    } else if (this.userRole === 'qc') {
-      return this.usersListOS;
-    }
-    return [...this.usersListOD, ...this.usersListOS];
-  }
+  modalReceivedQty: number | null = null;
+  usersList: any[] = [];
 
   activeTab: 'staff' | 'waste' = 'staff';
   qcWasteList: any[] = [];
@@ -103,7 +51,7 @@ export class Dcsm36DetailComponent implements OnInit {
     if (user && user.role) {
       this.userRole = user.role.toLowerCase();
     }
-
+    this.loadDropdown();
     this.route.paramMap.subscribe(params => {
       const idStr = params.get('id');
       if (idStr) {
@@ -433,5 +381,34 @@ export class Dcsm36DetailComponent implements OnInit {
         this.loadingService.hide
       }
     });
+  }
+
+  loadDropdown() {
+    this.loadingService.show();
+    if (this.userRole == 'stam') {
+      this.dcsm36Service.DropdownList('OD').subscribe({
+        next: (data) => {
+          this.usersList = data;
+          this.loadingService.hide();
+        },
+        error: () => this.loadingService.hide()
+      });
+    } else if (this.userRole == 'qc') {
+      this.dcsm36Service.DropdownList('QC').subscribe({
+        next: (data) => {
+          this.usersList = data;
+          this.loadingService.hide();
+        },
+        error: () => this.loadingService.hide()
+      });
+    }else {
+      this.dcsm36Service.DropdownList('').subscribe({
+        next: (data) => {
+          this.usersList = data;
+          this.loadingService.hide();
+        },
+        error: () => this.loadingService.hide()
+      });
+    }
   }
 }

@@ -46,7 +46,7 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
                         SELECT * FROM print_jobs pj WHERE
                         pj.printer_name in ('CD','SM')
                         AND(:id IS NULL OR pj.id = :id)
-                        AND (:jobId IS NULL OR pj.job_id = :jobId)
+                        AND (:jobId IS NULL OR :jobId = '' OR UPPER(pj.job_id) LIKE UPPER(CONCAT('%', :jobId, '%')))
                         AND (:customerJobName IS NULL OR :customerJobName = '' OR UPPER(pj.customer_job_name) LIKE UPPER(CONCAT('%', :customerJobName, '%')))
                         AND (:printerName IS NULL OR :printerName = '' OR UPPER(pj.printer_name) LIKE UPPER(CONCAT('%', :printerName, '%')))
                         AND (:jobStatus IS NULL OR :jobStatus = '' OR CAST(pj.job_status AS TEXT) = :jobStatus)
