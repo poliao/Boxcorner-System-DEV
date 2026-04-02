@@ -30,6 +30,15 @@ export class Dcsm36DetailComponent implements OnInit {
   modalReceivedQty: number | null = null;
   usersList: any[] = [];
 
+  qcColorMatch: boolean = false;
+  qcColorConsistency: boolean = false;
+  qcInkResidue: boolean = false;
+  qcInkTransfer: boolean = false;
+  qcStains: boolean = false;
+  qcAlignment: boolean = false;
+  qcScratches: boolean = false;
+  qcMixedJobs: boolean = false;
+
   activeTab: 'staff' | 'waste' = 'staff';
   qcWasteList: any[] = [];
   qcStaffList: any[] = [{ userName: '', packs: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
@@ -200,6 +209,15 @@ export class Dcsm36DetailComponent implements OnInit {
     this.activeTab = 'staff';
     this.qcStaffList = [{ userName: null, packs: null, packsFraction: null, bundlesFraction: null, piecesFraction: null }];
     this.qcWasteList = [{ processName: null, wasteQty: null, remarks: null }];
+
+    this.qcColorMatch = false;
+    this.qcColorConsistency = false;
+    this.qcInkResidue = false;
+    this.qcInkTransfer = false;
+    this.qcStains = false;
+    this.qcAlignment = false;
+    this.qcScratches = false;
+    this.qcMixedJobs = false;
   }
 
   closeCompleteModal() {
@@ -276,7 +294,15 @@ export class Dcsm36DetailComponent implements OnInit {
           piecesFraction: s.piecesFraction
         };
       }),
-      wasteReportList: this.qcWasteList.filter(w => w.processName)
+      wasteReportList: this.qcWasteList.filter(w => w.processName),
+      qcColorMatch: this.qcColorMatch,
+      qcColorConsistency: this.qcColorConsistency,
+      qcInkResidue: this.qcInkResidue,
+      qcInkTransfer: this.qcInkTransfer,
+      qcStains: this.qcStains,
+      qcAlignment: this.qcAlignment,
+      qcScratches: this.qcScratches,
+      qcMixedJobs: this.qcMixedJobs
     };
 
     this.loadingService.show();

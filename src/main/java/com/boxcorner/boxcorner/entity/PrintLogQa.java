@@ -23,17 +23,29 @@ public class PrintLogQa extends BaseEntity {
     @Column(name = "job_id", nullable = false)
     private Long jobId;
 
-    @Column(name = "qc_alignment")
-    private Boolean qcAlignment; // พิมพ์ไม่เหลื่อม/ฉากตรง
-
-    @Column(name = "qc_scumming")
-    private Boolean qcScumming; // ไม่เกิดสกรัมหรือซับหลัง
-
     @Column(name = "qc_color_match")
-    private Boolean qcColorMatch; // สีตรงตามปรู๊ฟ
+    private Boolean qcColorMatch; // สีตรงตาม OK Sheet / ตัวอย่าง
 
-    @Column(name = "qc_color_density")
-    private Boolean qcColorDensity; // พิมพ์สีไม่ซีดหรือเข้มเกินไป
+    @Column(name = "qc_color_consistency")
+    private Boolean qcColorConsistency; // สีสม่ำเสมอ ไม่ด่าง
+
+    @Column(name = "qc_ink_residue")
+    private Boolean qcInkResidue; // ไม่มีขี้หมึก
+
+    @Column(name = "qc_ink_transfer")
+    private Boolean qcInkTransfer; // ไม่มีซับหลัง
+
+    @Column(name = "qc_stains")
+    private Boolean qcStains; // ไม่มีรอยเปื้อน / รอยเลอะหมึก
+
+    @Column(name = "qc_alignment")
+    private Boolean qcAlignment; // ไม่ตกทะเบียน / ไม่เบลอ
+
+    @Column(name = "qc_scratches")
+    private Boolean qcScratches; // ไม่มีรอยขีด / รอยครูด / รอยปาด
+
+    @Column(name = "qc_mixed_jobs")
+    private Boolean qcMixedJobs; // ไม่มีงานปน / หน้าหลังถูกต้อง
 
     @Column(name = "printed_sheet_number")
     private Integer printedSheetNumber; // ใบพิมพ์ที่เท่าไหร่

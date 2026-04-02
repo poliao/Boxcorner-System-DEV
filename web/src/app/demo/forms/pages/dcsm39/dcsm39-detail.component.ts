@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs';
 import { Dcsm39Service } from './dcsm39.service';
-import { Dcsm37Service } from '../dcsm37/dcsm37.service';
 import { Dcsm38Service } from '../dcsm38/dcsm38.service';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
@@ -33,7 +32,6 @@ export class Dcsm39DetailComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private service: Dcsm39Service,
-    private dcsm37Service: Dcsm37Service,
     private dcsm38Service: Dcsm38Service,
     private route: ActivatedRoute,
     private router: Router,
@@ -72,11 +70,11 @@ export class Dcsm39DetailComponent implements OnInit {
 
   loadDropdownData() {
     if (this.type === 'material' || this.type === 'uomConversion') {
-      this.dcsm37Service.getAllUoms().subscribe(data => this.uoms = data);
-      this.dcsm37Service.getAllMaterialTypes().subscribe(data => this.materialTypes = data);
+      this.service.getAllUoms().subscribe(data => this.uoms = data);
+      this.service.getAllMaterialTypes().subscribe(data => this.materialTypes = data);
     }
     if (this.type === 'uomConversion') {
-      this.dcsm37Service.getAllMaterials().subscribe(data => this.materials = data);
+      this.service.getAllMaterials().subscribe(data => this.materials = data);
     }
   }
 
@@ -119,7 +117,7 @@ export class Dcsm39DetailComponent implements OnInit {
     } else if (this.type === 'materialType') {
       this.service.getAllMaterialTypes().subscribe(list => this.handleList(list));
     } else if (this.type === 'material') {
-      this.dcsm37Service.getMaterialById(this.id!).subscribe(data => {
+      this.service.getMaterialById(this.id!).subscribe(data => {
         this.mainForm.patchValue({
           ...data,
           baseUom: data.baseUom?.id,
@@ -163,7 +161,7 @@ export class Dcsm39DetailComponent implements OnInit {
         baseUom: data.baseUom ? { id: data.baseUom } : null,
         materialType: data.materialType ? { id: data.materialType } : null
       };
-      obs = this.dcsm37Service.saveMaterial(payload);
+      obs = this.service.saveMaterial(payload);
     } else if (this.type === 'uomConversion') {
       const payload = {
         ...data,
@@ -197,7 +195,7 @@ export class Dcsm39DetailComponent implements OnInit {
       if (res.isConfirmed) {
         this.loadingService.show();
         let obs: Observable<any>;
-        if (this.type === 'material') obs = this.dcsm37Service.deleteMaterial(this.id!);
+        if (this.type === 'material') obs = this.service.deleteMaterial(this.id!);
         else if (this.type === 'uomConversion') obs = this.dcsm38Service.deleteConversion(this.id!);
         else if (this.type === 'supplier') obs = this.service.deleteSupplier(this.id!);
         else if (this.type === 'brand') obs = this.service.deleteBrand(this.id!);

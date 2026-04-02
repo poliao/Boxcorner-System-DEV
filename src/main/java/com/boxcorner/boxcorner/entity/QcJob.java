@@ -85,5 +85,29 @@ public class QcJob extends BaseEntity {
 
     @Column(name = "qc_location")
     private String qcLocation;
+    
+    @Column(name = "qc_color_match")
+    private Boolean qcColorMatch;
+    
+    @Column(name = "qc_color_consistency")
+    private Boolean qcColorConsistency;
+    
+    @Column(name = "qc_ink_residue")
+    private Boolean qcInkResidue;
+    
+    @Column(name = "qc_ink_transfer")
+    private Boolean qcInkTransfer;
+    
+    @Column(name = "qc_stains")
+    private Boolean qcStains;
+    
+    @Column(name = "qc_alignment")
+    private Boolean qcAlignment;
+    
+    @Column(name = "qc_scratches")
+    private Boolean qcScratches;
+    
+    @Column(name = "qc_mixed_jobs")
+    private Boolean qcMixedJobs;
 
 }

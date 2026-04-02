@@ -128,19 +128,6 @@ public class PrintLogOs extends BaseEntity {
     @Column(name = "operator_name")
     private String operatorName;
 
-    // --- 6. Quality Check (เช็คคุณภาพ) ---
-    @Column(name = "qc_alignment")
-    private Boolean qcAlignment; // พิมพ์ไม่เหลื่อม/ฉากตรง
-
-    @Column(name = "qc_scumming")
-    private Boolean qcScumming; // ไม่เกิดสกรัมหรือซับหลัง
-
-    @Column(name = "qc_color_match")
-    private Boolean qcColorMatch; // สีตรงตามปรู๊ฟ
-
-    @Column(name = "qc_color_density")
-    private Boolean qcColorDensity; // พิมพ์สีไม่ซีดหรือเข้มเกินไป
-
     @Column(name = "qc_remark")
     private String qcRemark; // หมายเหตุ
 }

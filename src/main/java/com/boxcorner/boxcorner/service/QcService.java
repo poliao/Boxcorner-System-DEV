@@ -48,6 +48,15 @@ public class QcService {
                 existingJob.setStartQcDatetime(qcJob.getStartQcDatetime());
                 existingJob.setQcLocation(qcJob.getQcLocation());
                 existingJob.setQcType(qcJob.getQcType());
+                
+                existingJob.setQcColorMatch(qcJob.getQcColorMatch());
+                existingJob.setQcColorConsistency(qcJob.getQcColorConsistency());
+                existingJob.setQcInkResidue(qcJob.getQcInkResidue());
+                existingJob.setQcInkTransfer(qcJob.getQcInkTransfer());
+                existingJob.setQcStains(qcJob.getQcStains());
+                existingJob.setQcAlignment(qcJob.getQcAlignment());
+                existingJob.setQcScratches(qcJob.getQcScratches());
+                existingJob.setQcMixedJobs(qcJob.getQcMixedJobs());
 
                 return qcJobRepository.save(existingJob);
             } else {
@@ -107,7 +116,9 @@ public class QcService {
     public QcJob completeQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle,
             Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction,
             java.util.List<QcStaff> staffList,
-            java.util.List<QcWasteReport> wasteReportList) {
+            java.util.List<QcWasteReport> wasteReportList,
+            Boolean qcColorMatch, Boolean qcColorConsistency, Boolean qcInkResidue, Boolean qcInkTransfer,
+            Boolean qcStains, Boolean qcAlignment, Boolean qcScratches, Boolean qcMixedJobs) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
@@ -118,6 +129,15 @@ public class QcService {
         qcJob.setPassedQtyFraction(passedQtyFraction);
         qcJob.setBundlesPerPackFraction(bundlesPerPackFraction);
         qcJob.setPiecesFraction(piecesFraction);
+        
+        qcJob.setQcColorMatch(qcColorMatch);
+        qcJob.setQcColorConsistency(qcColorConsistency);
+        qcJob.setQcInkResidue(qcInkResidue);
+        qcJob.setQcInkTransfer(qcInkTransfer);
+        qcJob.setQcStains(qcStains);
+        qcJob.setQcAlignment(qcAlignment);
+        qcJob.setQcScratches(qcScratches);
+        qcJob.setQcMixedJobs(qcMixedJobs);
 
         QcJob savedJob = qcJobRepository.save(qcJob);
 

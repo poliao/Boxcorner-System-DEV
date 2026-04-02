@@ -1004,27 +1004,51 @@
           <div class="d-flex flex-column gap-3 mb-4">
             <label class="d-flex align-items-center p-3 rounded shadow-sm"
               style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
-              <input class="form-check-input me-3" type="checkbox" formControlName="qcAlignment" id="qcAlignment"
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcColorMatch"
                 style="width: 20px; height: 20px;">
-              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">พิมพ์ไม่เหลื่อม / ฉากตรง</span>
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">สีตรงตาม OK Sheet / ตัวอย่าง</span>
             </label>
             <label class="d-flex align-items-center p-3 rounded shadow-sm"
               style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
-              <input class="form-check-input me-3" type="checkbox" formControlName="qcScumming" id="qcScumming"
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcColorConsistency"
                 style="width: 20px; height: 20px;">
-              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">ไม่เกิดสกรัมหรือซับหลัง</span>
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">สีสม่ำเสมอ ไม่ด่าง</span>
             </label>
             <label class="d-flex align-items-center p-3 rounded shadow-sm"
               style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
-              <input class="form-check-input me-3" type="checkbox" formControlName="qcColorMatch" id="qcColorMatch"
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcInkResidue"
                 style="width: 20px; height: 20px;">
-              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">สีตรงตามปรู๊ฟ</span>
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">ไม่มีขี้หมึก</span>
             </label>
             <label class="d-flex align-items-center p-3 rounded shadow-sm"
               style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
-              <input class="form-check-input me-3" type="checkbox" formControlName="qcColorDensity" id="qcColorDensity"
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcInkTransfer"
                 style="width: 20px; height: 20px;">
-              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">พิมพ์สีไม่ซีดหรือเข้มเกินไป</span>
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">ไม่มีซับหลัง</span>
+            </label>
+            <label class="d-flex align-items-center p-3 rounded shadow-sm"
+              style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcStains"
+                style="width: 20px; height: 20px;">
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">ไม่มีรอยเปื้อน / รอยเลอะหมึก</span>
+            </label>
+            <label class="d-flex align-items-center p-3 rounded shadow-sm"
+              style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcAlignment"
+                style="width: 20px; height: 20px;">
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">ไม่ตกทะเบียน / ไม่เบลอ</span>
+            </label>
+            <label class="d-flex align-items-center p-3 rounded shadow-sm"
+              style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcScratches"
+                style="width: 20px; height: 20px;">
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">ไม่มีรอยขีด / รอยครูด / รอยปาด</span>
+            </label>
+            <label class="d-flex align-items-center p-3 rounded shadow-sm"
+              style="background-color: white; cursor: pointer; border: 1px solid #e2e8f0;">
+              <input class="form-check-input me-3" type="checkbox" formControlName="qcMixedJobs"
+                style="width: 20px; height: 20px;">
+              <span style="font-size: 0.95rem; font-weight: 500; color: #334155;">ไม่มีงานปน / หน้าหลังถูกต้อง</span>
             </label>
           </div>
           <div class="mb-3">

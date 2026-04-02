@@ -11,8 +11,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface CoatingJobRepository extends JpaRepository<CoatingJob, Integer> {
 
-    // Check if coating job exists by JO Number to prevent duplicates
     boolean existsByJoId(String joId);
+
+    java.util.List<CoatingJob> findByJoId(String joId);
 
     @Query(value = """
             SELECT * FROM coating_jobs c

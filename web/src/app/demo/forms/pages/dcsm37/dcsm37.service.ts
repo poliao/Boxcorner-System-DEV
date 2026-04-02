@@ -3,36 +3,18 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class Dcsm37Service {
+  private api = environment.apiUrl;
+  constructor(private http: HttpClient) {}
 
-  private apiUrl = `${environment.apiUrl}`;
-
-  constructor(private http: HttpClient) { }
-
-  getAllMaterials(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/materials`);
+  search(params: any): Observable<any> {
+    const p: any = {};
+    Object.keys(params).forEach(k => { if (params[k] !== null && params[k] !== '') p[k] = params[k]; });
+    return this.http.get<any>(`${this.api}/reorder/search`, { params: p });
   }
 
-  getMaterialById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/materials/${id}`);
-  }
-
-  saveMaterial(material: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/materials`, material);
-  }
-
-  deleteMaterial(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/materials/${id}`);
-  }
-
-  getAllUoms(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/uoms`);
-  }
-
-  getAllMaterialTypes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/material-types`);
+  getDetail(productionOrderId: number): Observable<any> {
+    return this.http.get<any>(`${this.api}/reorder/detail`, { params: { productionOrderId } });
   }
 }

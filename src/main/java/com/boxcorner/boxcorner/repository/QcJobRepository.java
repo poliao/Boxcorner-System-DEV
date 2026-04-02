@@ -9,9 +9,12 @@ import org.springframework.stereotype.Repository;
 
 import com.boxcorner.boxcorner.entity.QcJob;
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface QcJobRepository extends JpaRepository<QcJob, Integer> {
+
+    List<QcJob> findByJoId(String joId);
 
     @Query("SELECT q FROM QcJob q WHERE " +
             "(:joId IS NULL OR q.joId LIKE %:joId%) AND " +

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.boxcorner.boxcorner.entity.CoatingLog;
+import java.util.List;
 
 @Repository
 public interface CoatingLogRepository extends JpaRepository<CoatingLog, Integer> {
@@ -19,4 +20,6 @@ public interface CoatingLogRepository extends JpaRepository<CoatingLog, Integer>
             @Param("joId") String joId,
             @Param("technicianName") String technicianName,
             Pageable pageable);
+
+    List<CoatingLog> findByCoatingJobIdOrderByIdAsc(Integer coatingJobId);
 }

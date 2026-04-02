@@ -8,7 +8,6 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 import { Dcsm39Service } from './dcsm39.service';
 import { Dcsm38Service } from '../dcsm38/dcsm38.service';
-import { Dcsm37Service } from '../dcsm37/dcsm37.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { StatusColorService } from 'src/app/shared/services/status-color.service';
@@ -70,7 +69,6 @@ export class Dcsm39Component implements OnInit {
   constructor(
     private service: Dcsm39Service,
     private dcsm38Service: Dcsm38Service,
-    private dcsm37Service: Dcsm37Service,
     private loadingService: LoadingService,
     private router: Router
   ) { }
@@ -105,7 +103,7 @@ export class Dcsm39Component implements OnInit {
   }
 
   loadMaterials() {
-    this.dcsm37Service.getAllMaterials().subscribe(data => this.materials = data);
+    this.service.getAllMaterials().subscribe(data => this.materials = data);
   }
 
   openDetail(type: string, id?: number) {

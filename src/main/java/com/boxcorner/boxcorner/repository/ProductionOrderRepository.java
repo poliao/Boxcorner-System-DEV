@@ -2,6 +2,7 @@ package com.boxcorner.boxcorner.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -278,7 +279,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     +
                     "AND (:dalivery IS NULL OR (p.data_dalivery = :dalivery AND (p.process_status = 'ส่งไฟล์แล้ว' OR p.process_status = 'เสร็จสิ้น')))"
                     +
-                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))",  nativeQuery = true)
+                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))", nativeQuery = true)
     Page<ProductionOrder> findProductionCheck(
             @Param("id") Integer id,
             @Param("jobId") String jobId,
@@ -385,29 +386,28 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     Integer countBacklogMoldStatus(@Param("moldStatus") String moldStatus);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.process_status = 'กำลังดำเนินการ' "+
-            "and po.job_type = 'Supplier' "+
+            "where po.process_status = 'กำลังดำเนินการ' " +
+            "and po.job_type = 'Supplier' " +
             "and po.operator_name = :operatorName", nativeQuery = true)
     Integer countBacklogSupplier(@Param("operatorName") String operatorName);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.process_status = 'ส่ง Supplier' "+
-            "and po.job_type = 'Supplier' "+
+            "where po.process_status = 'ส่ง Supplier' " +
+            "and po.job_type = 'Supplier' " +
             "and po.operator_name = :operatorName", nativeQuery = true)
     Integer countBacklogKeepSupplier(@Param("operatorName") String operatorName);
 
     @Query(value = "select count(id) as backlog from production_orders po " +
-            "where po.postpone = 'มีการเลื่อนเวลาส่ง' "+
+            "where po.postpone = 'มีการเลื่อนเวลาส่ง' " +
             "and po.job_owner = :jobOwner", nativeQuery = true)
     Integer countBacklogPostpone(@Param("jobOwner") String jobOwner);
 
     @Query(value = "select count(id) as backlog from production_orders po " +
-            "where po.process_status = 'ส่งไฟล์แล้ว' "+
-            "and po.job_status = 'เสร็จสิ้น' "+
-            "and po.job_type = 'OD' "+
+            "where po.process_status = 'ส่งไฟล์แล้ว' " +
+            "and po.job_status = 'เสร็จสิ้น' " +
+            "and po.job_type = 'OD' " +
             "and printing_machine is null", nativeQuery = true)
     Integer countBacklogMachine();
-
 
     @Query(value = """
             SELECT * FROM production_orders p
@@ -461,5 +461,60 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             @Param("jobType") String jobType,
             @Param("postpone") String postpone,
             Pageable pageable);
+
+    @Query(value = """
+            SELECT p.* FROM production_orders p
+            WHERE p.id IN (
+                SELECT MAX(p2.id) FROM production_orders p2
+                WHERE
+                    (:id IS NULL OR p2.id = :id)
+                    AND (:jobId IS NULL OR :jobId = '' OR UPPER(p2.job_id) LIKE UPPER(CONCAT('%', :jobId, '%')))
+                    AND (:folderName IS NULL OR :folderName = '' OR UPPER(p2.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                    AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p2.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                    AND (CAST(:startDate AS DATE) IS NULL OR p2.deadline_date >= :startDate)
+                    AND (CAST(:endDate AS DATE) IS NULL OR p2.deadline_date <= :endDate)
+                    AND (CAST(:deadlineTime AS time) IS NULL OR p2.deadline_time = :deadlineTime)
+                    AND (:jobStatus IS NULL OR :jobStatus = '' OR UPPER(p2.job_status) LIKE UPPER(CONCAT('%', :jobStatus, '%')))
+                    AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(p2.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                    AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p2.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
+                    AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p2.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
+                    AND (:jobType IS NULL OR :jobType = '' OR UPPER(p2.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                    AND (:postpone IS NULL OR :postpone = '' OR p2.postpone = :postpone)
+                GROUP BY p2.job_id
+            )
+            """, countQuery = """
+            SELECT count(DISTINCT p.job_id) FROM production_orders p
+            WHERE
+                (:id IS NULL OR p.id = :id)
+                AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%')))
+                AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
+                AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
+                AND (CAST(:startDate AS DATE) IS NULL OR p.deadline_date >= :startDate)
+                AND (CAST(:endDate AS DATE) IS NULL OR p.deadline_date <= :endDate)
+                AND (CAST(:deadlineTime AS time) IS NULL OR p.deadline_time = :deadlineTime)
+                AND (:jobStatus IS NULL OR :jobStatus = '' OR UPPER(p.job_status) LIKE UPPER(CONCAT('%', :jobStatus, '%')))
+                AND (:processStatus IS NULL OR :processStatus = '' OR UPPER(p.process_status) LIKE UPPER(CONCAT('%', :processStatus, '%')))
+                AND (:operatorName IS NULL OR :operatorName = '' OR UPPER(p.operator_name) LIKE UPPER(CONCAT('%', :operatorName, '%')))
+                AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%')))
+                AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%')))
+                AND (:postpone IS NULL OR :postpone = '' OR p.postpone = :postpone)
+            """, nativeQuery = true)
+    Page<ProductionOrder> findLatestByFilters(
+            @Param("id") Integer id,
+            @Param("jobId") String jobId,
+            @Param("folderName") String folderName,
+            @Param("jobOwner") String jobOwner,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("deadlineTime") LocalTime deadlineTime,
+            @Param("jobStatus") String jobStatus,
+            @Param("processStatus") String processStatus,
+            @Param("operatorName") String operatorName,
+            @Param("moldStatus") String moldStatus,
+            @Param("jobType") String jobType,
+            @Param("postpone") String postpone,
+            Pageable pageable);
+
+    List<ProductionOrder> findByJobIdOrderByIdDesc(String jobId);
 
 }

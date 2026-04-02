@@ -214,6 +214,50 @@
         </div>
       </div>
 
+      <div class="card bg-light border-0 mb-4">
+        <div class="card-body p-3">
+          <h6 class="fw-bold mb-3 border-bottom pb-2">รายการตรวจสอบคุณภาพ</h6>
+          <div class="row g-2">
+            <div class="col-12 col-md-6">
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcColorMatch" id="qcColorMatch">
+                <label class="form-check-label small fw-medium" for="qcColorMatch">1. สีตรงตาม OK Sheet / ตัวอย่าง</label>
+              </div>
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcColorConsistency" id="qcColorConsistency">
+                <label class="form-check-label small fw-medium" for="qcColorConsistency">2. สีสม่ำเสมอ ไม่ด่าง</label>
+              </div>
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcInkResidue" id="qcInkResidue">
+                <label class="form-check-label small fw-medium" for="qcInkResidue">3. ไม่มีขี้หมึก</label>
+              </div>
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcInkTransfer" id="qcInkTransfer">
+                <label class="form-check-label small fw-medium" for="qcInkTransfer">4. ไม่มีซับหลัง</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcStains" id="qcStains">
+                <label class="form-check-label small fw-medium" for="qcStains">5. ไม่มีรอยเปื้อน / รอยเลอะหมึก</label>
+              </div>
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcAlignment" id="qcAlignment">
+                <label class="form-check-label small fw-medium" for="qcAlignment">6. ไม่ตกทะเบียน / ไม่เบลอ</label>
+              </div>
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcScratches" id="qcScratches">
+                <label class="form-check-label small fw-medium" for="qcScratches">7. ไม่มีรอยขีด / รอยครูด / รอยปาด</label>
+              </div>
+              <div class="form-check p-2 rounded bg-white border mb-1">
+                <input class="form-check-input ms-0 me-2" type="checkbox" [(ngModel)]="qcMixedJobs" id="qcMixedJobs">
+                <label class="form-check-label small fw-medium" for="qcMixedJobs">8. ไม่มีงานปน / หน้าหลังถูกต้อง</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <hr>
       <ul class="nav nav-tabs mb-3">
         <li class="nav-item">

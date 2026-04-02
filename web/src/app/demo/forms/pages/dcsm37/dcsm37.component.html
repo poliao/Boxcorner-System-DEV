@@ -1,19 +1,72 @@
-<div class="row align-items-center mb-4 g-3">
-  <div class="col-12 col-md-6">
-    <h4 class="mb-0 fw-bold" style="color: #003747;">DCSM37 - จัดการพัสดุ/วัสดุ (Material Master)</h4>
+<div class="row align-items-center mb-3">
+  <div class="col">
+    <h4 class="mb-0 fw-bold" style="color: #003747;">DCSM37 - ติดตามการผลิต (Reorder Tracking)</h4>
   </div>
-  <div class="col-12 col-md-6 text-md-end">
-    <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="openDetail()">
-      <mat-icon class="me-2">add</mat-icon> เพิ่มวัสดุใหม่
-    </button>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body bg-light">
+    <div class="row g-2">
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">Job ID</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="searchParams.jobId"
+          placeholder="ค้นหา Job ID" (keyup.enter)="onSearchChange()">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">ชื่องาน</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="searchParams.folderName"
+          placeholder="ชื่องาน" (keyup.enter)="onSearchChange()">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">ลูกค้า</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="searchParams.customerName"
+          placeholder="ชื่อลูกค้า" (keyup.enter)="onSearchChange()">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">เจ้าของงาน</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="searchParams.jobOwner"
+          placeholder="เจ้าของงาน" (keyup.enter)="onSearchChange()">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold">สถานะกระบวนการ</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="searchParams.processStatus"
+          placeholder="สถานะ" (keyup.enter)="onSearchChange()">
+      </div>
+      <div class="col-md-1">
+        <label class="form-label small fw-bold">วันที่ (จาก)</label>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="searchParams.startDate"
+          (change)="onSearchChange()">
+      </div>
+      <div class="col-md-1">
+        <label class="form-label small fw-bold">วันที่ (ถึง)</label>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="searchParams.endDate"
+          (change)="onSearchChange()">
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col text-end">
+        <button mat-flat-button class="me-2 px-3" style="background:#003747;color:#fff" (click)="onSearchChange()">
+          <mat-icon>search</mat-icon> ค้นหา
+        </button>
+        <button mat-stroked-button class="px-3" style="color:#003747" (click)="clearFilters()">
+          <mat-icon>refresh</mat-icon> ล้างค่า
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="card border-0 shadow-sm">
   <div class="card-body">
-    <app-data-table 
-      [columns]="tableColumns" 
-      [data]="tableData" 
+    <app-data-table
+      [headerStyle]="'background: #003747; color: #ffffff;'"
+      [columns]="tableColumns"
+      [data]="tableData"
+      [totalElements]="totalElements"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [clickableColumn]="'productionOrderId'"
+      (pageChange)="onPageChange($event)"
       (rowClick)="onRowClick($event)">
     </app-data-table>
   </div>

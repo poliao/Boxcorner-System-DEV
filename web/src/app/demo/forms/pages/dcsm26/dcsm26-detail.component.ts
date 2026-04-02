@@ -225,10 +225,14 @@ export class Dcsm26DetailComponent implements OnInit {
 
   createQcForm() {
     this.qcForm = this.fb.group({
-      qcAlignment: [false],
-      qcScumming: [false],
       qcColorMatch: [false],
-      qcColorDensity: [false],
+      qcColorConsistency: [false],
+      qcInkResidue: [false],
+      qcInkTransfer: [false],
+      qcStains: [false],
+      qcAlignment: [false],
+      qcScratches: [false],
+      qcMixedJobs: [false],
       printedSheetNumber: [null, [Validators.required, Validators.min(1)]],
       qcRemark: [null]
     });
@@ -682,10 +686,14 @@ export class Dcsm26DetailComponent implements OnInit {
 
   openQcModal() {
     this.qcForm.reset({
-      qcAlignment: false,
-      qcScumming: false,
       qcColorMatch: false,
-      qcColorDensity: false,
+      qcColorConsistency: false,
+      qcInkResidue: false,
+      qcInkTransfer: false,
+      qcStains: false,
+      qcAlignment: false,
+      qcScratches: false,
+      qcMixedJobs: false,
       printedSheetNumber: null,
       qcRemark: null
     });

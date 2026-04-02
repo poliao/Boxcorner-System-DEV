@@ -90,7 +90,15 @@ public class QcController {
                     request.getBundlesPerPackFraction(),
                     request.getPiecesFraction(),
                     request.getStaffList(),
-                    request.getWasteReportList()));
+                    request.getWasteReportList(),
+                    request.getQcColorMatch(),
+                    request.getQcColorConsistency(),
+                    request.getQcInkResidue(),
+                    request.getQcInkTransfer(),
+                    request.getQcStains(),
+                    request.getQcAlignment(),
+                    request.getQcScratches(),
+                    request.getQcMixedJobs()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }
