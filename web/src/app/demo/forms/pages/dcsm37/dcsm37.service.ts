@@ -25,4 +25,8 @@ export class Dcsm37Service {
   reorderDesign(body: any): Observable<any> {
     return this.http.post<any>(`${this.api}/reorder/reorder-design`, body);
   }
+
+  reorderSample(body: any): Observable<any> {
+    return this.http.post<any>(`${this.api}/reorder/reorder-sample`, body);
+  }
 }

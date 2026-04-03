@@ -2,6 +2,7 @@ package com.boxcorner.boxcorner.controller;
 
 import com.boxcorner.boxcorner.entity.dto.ReorderDTO;
 import com.boxcorner.boxcorner.entity.dto.ReorderDesignRequest;
+import com.boxcorner.boxcorner.entity.dto.ReorderSampleRequest;
 import com.boxcorner.boxcorner.service.ReorderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -63,6 +64,15 @@ public class ReorderController {
     public ResponseEntity<?> reorderDesign(@RequestBody ReorderDesignRequest req) {
         try {
             return ResponseEntity.ok(reorderService.reorderDesign(req));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/reorder-sample")
+    public ResponseEntity<?> reorderSample(@RequestBody ReorderSampleRequest req) {
+        try {
+            return ResponseEntity.ok(reorderService.reorderSample(req));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

@@ -656,7 +656,75 @@
 </div>
 
 <!-- ===================================================================
-     MODAL: Coming Soon (Sample / Production)
+     MODAL STEP 2: ฟอร์มสั่งขึ้นตัวอย่าง
+=================================================================== -->
+<div *ngIf="showSampleModal" class="modal-backdrop-custom" (click)="closeAllModals()">
+  <div class="modal-box-custom" (click)="$event.stopPropagation()" style="max-width:520px">
+    <div class="modal-header-custom" style="background:#f59e0b">
+      <mat-icon class="me-2">science</mat-icon>
+      <span class="fw-bold">สั่งขึ้นตัวอย่างใหม่ (ReOrder)</span>
+      <button class="btn-close-modal ms-auto" (click)="closeAllModals()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="p-4">
+      <div class="alert alert-light border mb-3 small">
+        <mat-icon style="font-size:16px;vertical-align:middle" class="me-1">info</mat-icon>
+        ReOrder จาก JO: <strong>{{ jobId }}</strong> — {{ data?.folderName }}
+      </div>
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label fw-bold">JO ใหม่ <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="input-sample-jo"
+                 [(ngModel)]="sampleForm.joId" placeholder="เช่น JO-2025-001">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">QT ใหม่</label>
+          <input type="text" class="form-control" id="input-sample-qt"
+                 [(ngModel)]="sampleForm.qtId" placeholder="เช่น QT-2025-001">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">QP ใหม่</label>
+          <input type="text" class="form-control" id="input-sample-qp"
+                 [(ngModel)]="sampleForm.qpId" placeholder="เช่น QP-2025-001">
+        </div>
+        <div class="col-md-7">
+          <label class="form-label fw-bold">วันที่กำหนดส่ง <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="input-sample-delivery-date"
+                 [(ngModel)]="sampleForm.deliveryDate">
+        </div>
+        <div class="col-md-5">
+          <label class="form-label fw-bold">เวลาที่ต้องการ</label>
+          <input type="time" class="form-control" id="input-sample-delivery-time"
+                 [(ngModel)]="sampleForm.deliveryTime">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">จำนวน</label>
+          <input type="number" class="form-control" id="input-sample-qty"
+                 [(ngModel)]="sampleForm.quantity" placeholder="0">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">หน่วย</label>
+          <input type="text" class="form-control" id="input-sample-unit"
+                 [(ngModel)]="sampleForm.unit" placeholder="Pcs">
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold">หมายเหตุ</label>
+          <textarea class="form-control" id="input-sample-note" rows="2"
+                    [(ngModel)]="sampleForm.note" placeholder="ระบุรายละเอียดหรือหมายเหตุเพิ่มเติม..."></textarea>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button class="btn btn-outline-secondary" (click)="closeAllModals()">ยกเลิก</button>
+        <button class="btn btn-warning px-4 text-white" id="btn-submit-sample" (click)="submitSampleOrder()">
+          <mat-icon class="me-1" style="font-size:18px;vertical-align:middle">send</mat-icon>
+          ส่งคำสั่งขึ้นตัวอย่าง
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================
+     MODAL: Coming Soon (Production)
 =================================================================== -->
 <div *ngIf="showComingSoonModal" class="modal-backdrop-custom" (click)="closeAllModals()">
   <div class="modal-box-custom text-center" (click)="$event.stopPropagation()" style="max-width:360px">

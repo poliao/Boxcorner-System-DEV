@@ -24,6 +24,7 @@ export class Dcsm37DetailComponent implements OnInit {
   // ─── ReOrder modal state ───────────────────────────────────────────
   showTypeModal = false;           // Step 1: เลือกประเภท
   showDesignModal = false;         // Step 2: ฟอร์มสั่งออกแบบ
+  showSampleModal = false;         // Step 2: ฟอร์มสั่งขึ้นตัวอย่าง
   showComingSoonModal = false;     // ประเภทอื่นที่ยังไม่รองรับ
   comingSoonType = '';
 
@@ -35,6 +36,17 @@ export class Dcsm37DetailComponent implements OnInit {
     deadlineTime: '',
     jobDetails: '',
     remarks: '',
+  };
+
+  sampleForm = {
+    joId: '',
+    qtId: '',
+    qpId: '',
+    deliveryDate: '',
+    deliveryTime: '',
+    quantity: null as number | null,
+    unit: '',
+    note: '',
   };
 
   constructor(
@@ -79,6 +91,7 @@ export class Dcsm37DetailComponent implements OnInit {
   closeAllModals() {
     this.showTypeModal = false;
     this.showDesignModal = false;
+    this.showSampleModal = false;
     this.showComingSoonModal = false;
   }
 
@@ -88,8 +101,20 @@ export class Dcsm37DetailComponent implements OnInit {
       // Pre-fill form from existing data
       this.designForm = { joId: '', qtId: '', qpId: '', deadlineDate: '', deadlineTime: '', jobDetails: '', remarks: '' };
       this.showDesignModal = true;
-    } else {
-      this.comingSoonType = type === 'sample' ? 'สั่งขึ้นตัวอย่าง' : 'สั่งผลิต';
+    } else if (type === 'sample') {
+      this.sampleForm = {
+        joId: '',
+        qtId: '',
+        qpId: '',
+        deliveryDate: '',
+        deliveryTime: '',
+        quantity: null,
+        unit: 'Pcs',
+        note: '',
+      };
+      this.showSampleModal = true;
+    } else if (type === 'production') {
+      this.comingSoonType = 'สั่งผลิต';
       this.showComingSoonModal = true;
     }
   }
@@ -118,6 +143,39 @@ export class Dcsm37DetailComponent implements OnInit {
         this.loadingService.hide();
         this.closeAllModals();
         this.sweetAlert.success('สำเร็จ', 'สร้าง Design Order ใหม่แล้ว');
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('ผิดพลาด', err?.error?.error || 'ไม่สามารถบันทึกได้');
+      }
+    });
+  }
+
+  submitSampleOrder() {
+    if (!this.sampleForm.joId || !this.sampleForm.deliveryDate) {
+      this.sweetAlert.error('กรุณากรอกข้อมูล', 'JO ใหม่ และ วันที่กำหนดส่ง จำเป็นต้องกรอก');
+      return;
+    }
+    const body = {
+      reorderFromJoId: this.jobId,
+      jobId: this.sampleForm.joId,
+      qtId: this.sampleForm.qtId || null,
+      qpId: this.sampleForm.qpId || null,
+      deliveryDate: this.sampleForm.deliveryDate,
+      deliveryTime: this.sampleForm.deliveryTime || null,
+      quantity: this.sampleForm.quantity,
+      unit: this.sampleForm.unit || null,
+      note: this.sampleForm.note || null,
+      folderName: this.data?.folderName || null,
+      jobOwner: this.data?.jobOwner || null,
+      customerName: this.data?.customerName || null,
+    };
+    this.loadingService.show();
+    this.service.reorderSample(body).subscribe({
+      next: () => {
+        this.loadingService.hide();
+        this.closeAllModals();
+        this.sweetAlert.success('สำเร็จ', 'สร้าง Sample Order ใหม่แล้ว');
       },
       error: (err) => {
         this.loadingService.hide();

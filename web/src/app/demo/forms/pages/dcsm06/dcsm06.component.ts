@@ -113,7 +113,7 @@ export class Dcsm06Component implements OnInit {
     this.dcsm06Service.getOrdersWithSearch(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
-          ...item,
+          ...item, jobId: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));
@@ -148,7 +148,7 @@ export class Dcsm06Component implements OnInit {
     this.dcsm06Service.getOrdersWithSearchSort(apiFilters).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
-          ...item,
+          ...item, jobId: item.qpId || item.jobId,
           deadlineDate: this.formatDate(item.deadlineDate),
           deliveryDate: this.formatDate(item.deliveryDate)
         }));

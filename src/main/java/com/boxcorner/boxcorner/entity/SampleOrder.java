@@ -126,4 +126,7 @@ public class SampleOrder extends BaseEntity {
     @Column(name = "qp_id")
     private String qpId;
 
+    @Column(name = "reorder_from_jo_id")
+    private String reorderFromJoId;
+
 }

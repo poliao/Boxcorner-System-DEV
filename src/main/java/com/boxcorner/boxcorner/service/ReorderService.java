@@ -4,6 +4,7 @@ import com.boxcorner.boxcorner.entity.*;
 import com.boxcorner.boxcorner.entity.dto.JoHistoryDTO;
 import com.boxcorner.boxcorner.entity.dto.ReorderDTO;
 import com.boxcorner.boxcorner.entity.dto.ReorderDesignRequest;
+import com.boxcorner.boxcorner.entity.dto.ReorderSampleRequest;
 import com.boxcorner.boxcorner.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -883,5 +884,34 @@ public class ReorderService {
         d.setAssignee("รอผู้รับผิดชอบยืนยัน");
         d.setConfirmStatus("รอผู้รับผิดชอบยืนยัน");
         return designOrdersRepo.save(d);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ReOrder — สร้าง Sample Order ใหม่จาก JO เดิม
+    // ═══════════════════════════════════════════════════════════════
+    public SampleOrder reorderSample(ReorderSampleRequest req) {
+        SampleOrder s = new SampleOrder();
+        s.setJobId(req.getJobId());
+        s.setQtId(req.getQtId());
+        s.setQpId(req.getQpId());
+        s.setReorderFromJoId(req.getReorderFromJoId());
+        s.setDeliveryDate(req.getDeliveryDate());
+        s.setDeliveryTime(req.getDeliveryTime());
+        s.setQuantity(req.getQuantity());
+        s.setUnit(req.getUnit());
+        s.setNote(req.getNote());
+
+        // Copy standard fields
+        s.setFolderName(req.getFolderName());
+        s.setCustomerName(req.getCustomerName());
+        s.setJobOwner(req.getJobOwner());
+        s.setResponsiblePerson("รอผู้รับผิดชอบอนุมัติ");
+        // Default values
+        s.setOrderDate(java.time.LocalDate.now());
+        s.setOrderTime(java.time.LocalTime.now());
+        s.setStatus("รอผู้รับผิดชอบอนุมัติ");
+        s.setIsCreateSample(true);
+
+        return sampleOrderRepo.save(s);
     }
 }
