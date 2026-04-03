@@ -161,4 +161,7 @@ public class ProductionOrder extends BaseEntity {
 
     @Column(name = "is_new_proof")
     private Boolean isNewProof = false;
+
+    @Column(name = "reorder_from_jo_id")
+    private String reorderFromJoId;
 }

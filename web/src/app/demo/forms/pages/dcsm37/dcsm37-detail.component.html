@@ -724,7 +724,179 @@
 </div>
 
 <!-- ===================================================================
-     MODAL: Coming Soon (Production)
+     MODAL STEP 2: ฟอร์มสั่งผลิต
+=================================================================== -->
+<div *ngIf="showProductionModal" class="modal-backdrop-custom" (click)="closeAllModals()">
+  <div class="modal-box-custom" (click)="$event.stopPropagation()" style="max-width:520px">
+    <div class="modal-header-custom" style="background:#003747">
+      <mat-icon class="me-2">precision_manufacturing</mat-icon>
+      <span class="fw-bold">สั่งผลิตใหม่ (ReOrder)</span>
+      <button class="btn-close-modal ms-auto" (click)="closeAllModals()"><mat-icon>close</mat-icon></button>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <div class="d-flex border-bottom px-3 bg-light">
+      <button class="btn btn-sm px-4 py-2 border-0 rounded-0" 
+              [class.btn-primary]="prodModalTab === 'info'" 
+              [class.text-muted]="prodModalTab !== 'info'"
+              (click)="prodModalTab = 'info'"
+              style="border-bottom: 3px solid transparent !important;"
+              [style.border-bottom-color]="prodModalTab === 'info' ? '#003747' : 'transparent'">
+        1. ข้อมูลใบสั่งผลิต
+      </button>
+      <button class="btn btn-sm px-4 py-2 border-0 rounded-0" 
+              [class.btn-primary]="prodModalTab === 'decision'" 
+              [class.text-muted]="prodModalTab !== 'decision'"
+              (click)="prodModalTab = 'decision'"
+              style="border-bottom: 3px solid transparent !important;"
+              [style.border-bottom-color]="prodModalTab === 'decision' ? '#003747' : 'transparent'">
+        2. ผู้มีอำนาจตัดสินใจ & สเปก
+      </button>
+    </div>
+
+    <div class="p-4" style="max-height: 70vh; overflow-y: auto;">
+      <div class="alert alert-light border mb-3 small">
+        <mat-icon style="font-size:16px;vertical-align:middle" class="me-1">info</mat-icon>
+        ReOrder จาก JO: <strong>{{ jobId }}</strong> — {{ data?.folderName }}
+      </div>
+
+      <!-- Tab 1: Order Info -->
+      <div class="row g-3" *ngIf="prodModalTab === 'info'">
+        <div class="col-12">
+          <label class="form-label fw-bold">JO ใหม่ <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="input-prod-jo"
+                 [(ngModel)]="productionForm.joId" placeholder="เช่น JO-2025-001">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">QT ใหม่</label>
+          <input type="text" class="form-control" id="input-prod-qt"
+                 [(ngModel)]="productionForm.qtId" placeholder="เช่น QT-2025-001">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">QP ใหม่</label>
+          <input type="text" class="form-control" id="input-prod-qp"
+                 [(ngModel)]="productionForm.qpId" placeholder="เช่น QP-2025-001">
+        </div>
+        <div class="col-md-7">
+          <label class="form-label fw-bold">วันที่กำหนดส่งงาน <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="input-prod-deadline-date"
+                 [(ngModel)]="productionForm.deadlineDate">
+        </div>
+        <div class="col-md-5">
+          <label class="form-label fw-bold">เวลาที่ต้องการ</label>
+          <input type="time" class="form-control" id="input-prod-deadline-time"
+                 [(ngModel)]="productionForm.deadlineTime">
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold">หมายเหตุ</label>
+          <textarea class="form-control" id="input-prod-remarks" rows="3"
+                    [(ngModel)]="productionForm.remarks" placeholder="ระบุรายละเอียดหรือหมายเหตุเพิ่มเติม..."></textarea>
+        </div>
+        <div class="col-12 text-end mt-3">
+          <button class="btn btn-primary px-4" (click)="prodModalTab = 'decision'">ถัดไป: เลือกผู้มีอำนาจตัดสินใจ <mat-icon style="font-size:18px; vertical-align:middle">arrow_forward</mat-icon></button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Decision & Specs -->
+      <div class="row g-3" *ngIf="prodModalTab === 'decision'">
+        <div class="col-12">
+          <label class="form-label fw-bold font-size-lg">ผู้มีอำนาจตัดสินใจ <span class="text-danger">*</span></label>
+          <div class="alert alert-warning py-2 small mb-2" *ngIf="!productionForm.decisionAuthority">
+            กรุณาเลือกผู้มีอำนาจตัดสินใจก่อนส่งใบสั่งผลิต
+          </div>
+          <select class="form-select border-primary" id="input-prod-decision" [(ngModel)]="productionForm.decisionAuthority" style="border-width: 2px;">
+            <option value="" disabled selected>--- เลือกผู้มีอำนาจตัดสินใจ ---</option>
+            <option value="customerOnSite">ลูกค้าเข้าดูงานหน้างาน</option>
+            <option value="sampleToCustomer">ขึ้นตัวอย่างส่งลูกค้าตรวจ</option>
+            <option value="salesDecision">เซลล์ตัดสินใจแทนลูกค้า</option>
+            <option value="planningDecision">ฝ่ายแผนตัดสินใจ</option>
+            <option value="operatorQaDecision">ช่างพิมพ์ + QA ร่วมกัน</option>
+          </select>
+        </div>
+        <div class="col-12" *ngIf="productionForm.decisionAuthority">
+          <label class="form-label fw-bold">รายละเอียดผู้มีอำนาจตัดสินใจ</label>
+          <input type="text" class="form-control" id="input-prod-decision-remarks"
+                 [(ngModel)]="productionForm.decisionAuthorityRemarks" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)">
+        </div>
+
+        <!-- Section: รายละเอียดตัวอย่างจริง (Conditional) -->
+        <div class="col-12 mt-3" *ngIf="['sampleToCustomer', 'customerOnSite'].includes(productionForm.decisionAuthority)">
+          <div class="card border-success shadow-sm">
+            <div class="card-header bg-success text-white py-2">
+              <mat-icon style="font-size:18px; vertical-align:middle" class="me-1">vial</mat-icon>
+              <span class="small fw-bold">รายละเอียดตัวอย่างจริง (Proof)</span>
+            </div>
+            <div class="card-body p-3">
+              <div class="row g-2">
+                <!-- Fetch PAP -->
+                <div class="col-12 mb-2">
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-primary text-white">PAP ID:</span>
+                    <input type="text" class="form-control" [(ngModel)]="productionForm.searchId" placeholder="เลข ID">
+                    <button class="btn btn-primary" type="button" (click)="fetchPapData()">ดึงข้อมูล</button>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">ประเภทงาน <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleJobType">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">ระบบพิมพ์ <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePrintingSystem">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">ลักษณะงานพิมพ์ <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePrintingStyle">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">สีที่พิมพ์</label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePrintingColor">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">ขนาดกระดาษ</label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePaperSize">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">แกรมกระดาษ</label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePaperGrammage">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">ลักษณะงานเคลือบ</label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleCoatingStyle">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-bold">ลักษณะงานไดคัท</label>
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleDiecutStyle">
+                </div>
+                <div class="col-12">
+                  <label class="form-label small fw-bold">วัน-เวลาส่งงานปรู๊ฟ <span class="text-danger">*</span></label>
+                  <input type="datetime-local" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleDeliveryTimestamp">
+                </div>
+                <div class="col-12">
+                  <label class="form-label small fw-bold">คำสั่งพิเศษ</label>
+                  <textarea class="form-control form-control-sm" rows="1" [(ngModel)]="productionForm.sampleSpecialInstructions"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-between gap-2 mt-4">
+          <button class="btn btn-outline-secondary px-4" (click)="prodModalTab = 'info'"><mat-icon style="font-size:18px; vertical-align:middle">arrow_back</mat-icon> ย้อนกลับ</button>
+          <button class="btn text-white px-5 shadow" id="btn-submit-prod" (click)="submitProductionOrder()" 
+                  style="background:#003747" [disabled]="!productionForm.decisionAuthority">
+            <mat-icon class="me-1" style="font-size:18px;vertical-align:middle">send</mat-icon>
+            ส่งใบสั่งผลิตการผลิตใหม่
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================
+     MODAL: Coming Soon
 =================================================================== -->
 <div *ngIf="showComingSoonModal" class="modal-backdrop-custom" (click)="closeAllModals()">
   <div class="modal-box-custom text-center" (click)="$event.stopPropagation()" style="max-width:360px">

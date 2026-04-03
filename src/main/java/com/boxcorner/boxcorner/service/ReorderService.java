@@ -5,6 +5,7 @@ import com.boxcorner.boxcorner.entity.dto.JoHistoryDTO;
 import com.boxcorner.boxcorner.entity.dto.ReorderDTO;
 import com.boxcorner.boxcorner.entity.dto.ReorderDesignRequest;
 import com.boxcorner.boxcorner.entity.dto.ReorderSampleRequest;
+import com.boxcorner.boxcorner.entity.dto.ReorderProductionRequest;
 import com.boxcorner.boxcorner.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -913,5 +914,67 @@ public class ReorderService {
         s.setIsCreateSample(true);
 
         return sampleOrderRepo.save(s);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ReOrder — สร้าง Production Order ใหม่จาก JO เดิม
+    // ═══════════════════════════════════════════════════════════════
+    public ProductionOrder reorderProduction(ReorderProductionRequest req) {
+        ProductionOrder p = new ProductionOrder();
+        p.setJobId(req.getJobId());
+        p.setQtId(req.getQtId());
+        p.setQpId(req.getQpId());
+        p.setReorderFromJoId(req.getReorderFromJoId());
+        p.setDeadlineDate(req.getDeadlineDate());
+        p.setDeadlineTime(req.getDeadlineTime());
+        p.setRemarks(req.getRemarks());
+
+        // Copy standard fields
+        p.setFolderName(req.getFolderName());
+        p.setCustomerName(req.getCustomerName());
+        p.setJobOwner(req.getJobOwner());
+        p.setDecisionAuthority(req.getDecisionAuthority());
+        p.setDecisionAuthorityRemarks(req.getDecisionAuthorityRemarks());
+
+        // Copy technical specs from request (if provided) or original
+        List<ProductionOrder> originals = productionOrderRepo.findByJobIdOrderByIdDesc(req.getReorderFromJoId());
+        ProductionOrder orig = originals.isEmpty() ? null : originals.get(0);
+
+        p.setUsedFile(orig != null ? orig.getUsedFile() : null);
+        p.setColorSample(orig != null ? orig.getColorSample() : null);
+        p.setJobType(orig != null ? orig.getJobType() : null);
+        p.setQcType(orig != null ? orig.getQcType() : null);
+        p.setQcLocation(orig != null ? orig.getQcLocation() : null);
+        p.setPrint2Page(orig != null ? orig.getPrint2Page() : null);
+
+        // Technical Spec Fields
+        p.setSampleJobType(req.getSampleJobType() != null ? req.getSampleJobType()
+                : (orig != null ? orig.getSampleJobType() : null));
+        p.setSamplePrintingSystem(req.getSamplePrintingSystem() != null ? req.getSamplePrintingSystem()
+                : (orig != null ? orig.getSamplePrintingSystem() : null));
+        p.setSamplePrintingStyle(req.getSamplePrintingStyle() != null ? req.getSamplePrintingStyle()
+                : (orig != null ? orig.getSamplePrintingStyle() : null));
+        p.setSamplePrintingColor(req.getSamplePrintingColor() != null ? req.getSamplePrintingColor()
+                : (orig != null ? orig.getSamplePrintingColor() : null));
+        p.setSamplePaperSize(req.getSamplePaperSize() != null ? req.getSamplePaperSize()
+                : (orig != null ? orig.getSamplePaperSize() : null));
+        p.setSamplePaperGrammage(req.getSamplePaperGrammage() != null ? req.getSamplePaperGrammage()
+                : (orig != null ? orig.getSamplePaperGrammage() : null));
+        p.setSampleCoatingStyle(req.getSampleCoatingStyle() != null ? req.getSampleCoatingStyle()
+                : (orig != null ? orig.getSampleCoatingStyle() : null));
+        p.setSampleDiecutStyle(req.getSampleDiecutStyle() != null ? req.getSampleDiecutStyle()
+                : (orig != null ? orig.getSampleDiecutStyle() : null));
+        p.setSampleSpecialInstructions(req.getSampleSpecialInstructions() != null ? req.getSampleSpecialInstructions()
+                : (orig != null ? orig.getSampleSpecialInstructions() : null));
+        p.setSampleDeliveryTimestamp(req.getSampleDeliveryTimestamp() != null ? req.getSampleDeliveryTimestamp()
+                : (orig != null ? orig.getSampleDeliveryTimestamp() : null));
+
+        p.setJobStatus("รอผู้รับผิดชอบยืนยัน");
+        p.setProcessStatus("รอผู้รับผิดชอบยืนยัน");
+        p.setMoldStatus("รอผู้รับผิดชอบยืนยัน");
+        p.setOperatorName("รอผู้รับผิดชอบยืนยัน");
+        p.setCreatedTime(java.time.LocalTime.now());
+
+        return productionOrderRepo.save(p);
     }
 }

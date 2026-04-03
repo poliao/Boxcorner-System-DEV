@@ -1,4 +1,4 @@
-﻿package com.boxcorner.boxcorner.repository;
+package com.boxcorner.boxcorner.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -119,9 +119,9 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     @Query(value = """
             SELECT * FROM production_orders p
             WHERE
-                (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸')
+                (p.job_status != 'ยกเลิก')
+                AND (p.process_status != 'ยกเลิก')
+                AND (p.operator_name != 'ยกเลิก')
                 AND (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
@@ -137,9 +137,9 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             """, countQuery = """
             SELECT count(*) FROM production_orders p
             WHERE
-                (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸')
+                (p.job_status != 'ยกเลิก')
+                AND (p.process_status != 'ยกเลิก')
+                AND (p.operator_name != 'ยกเลิก')
                 AND (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
@@ -169,9 +169,9 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     @Query(value = """
             SELECT * FROM production_orders p
             WHERE
-                (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸')
+                (p.job_status != 'ยกเลิก')
+                AND (p.process_status != 'ยกเลิก')
+                AND (p.operator_name != 'ยกเลิก')
                 AND (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
@@ -187,9 +187,9 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             """, countQuery = """
             SELECT count(*) FROM production_orders p
             WHERE
-                (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸')
-                AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸')
+                (p.job_status != 'ยกเลิก')
+                AND (p.process_status != 'ยกเลิก')
+                AND (p.operator_name != 'ยกเลิก')
                 AND (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
@@ -217,21 +217,21 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             Pageable pageable);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.operator_name = :operatorName and po.process_status = 'à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£'", nativeQuery = true)
+            "where po.operator_name = :operatorName and po.process_status = 'รอดำเนินการ'", nativeQuery = true)
     Integer countBacklog(@Param("operatorName") String operatorName);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.operator_name = 'à¸£à¸­à¸œà¸¹à¹‰à¸£à¸±à¸šà¸œà¸´à¸”à¸Šà¸­à¸šà¸¢à¸·à¸™à¸¢à¸±à¸™'", nativeQuery = true)
+            "where po.operator_name = 'รอผู้รับผิดชอบยืนยัน'", nativeQuery = true)
     Integer countBacklogHPlanning();
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.process_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™ à¸£à¸­à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸š'", nativeQuery = true)
+            "where po.process_status = 'เสร็จสิ้น รอตรวจสอบ'", nativeQuery = true)
     Integer countBacklogCheck();
 
     @Query(value = "SELECT * FROM production_orders p " +
-            "WHERE (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-            "AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-            "AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
+            "WHERE (p.job_status != 'ยกเลิก') " +
+            "AND (p.process_status != 'ยกเลิก') " +
+            "AND (p.operator_name != 'ยกเลิก') " +
             "AND (:id IS NULL OR p.id = :id) " +
             "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
             "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
@@ -249,13 +249,13 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             "AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%'))) "
             +
             "AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%'))) " +
-            "AND (p.process_status NOT IN ('à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£', 'à¸£à¸­à¸œà¸¹à¹‰à¸£à¸±à¸šà¸œà¸´à¸”à¸Šà¸­à¸šà¸¢à¸·à¸™à¸¢à¸±à¸™', 'à¸à¸³à¸¥à¸±à¸‡à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£'))" +
+            "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ'))" +
             "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))" +
-            "AND (:dalivery IS NULL OR (p.data_dalivery = :dalivery AND (p.process_status = 'à¸ªà¹ˆà¸‡à¹„à¸Ÿà¸¥à¹Œà¹à¸¥à¹‰à¸§' OR p.process_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™')))" +
+            "AND (:dalivery IS NULL OR (p.data_dalivery = :dalivery AND (p.process_status = 'ส่งไฟล์แล้ว' OR p.process_status = 'เสร็จสิ้น')))" +
             "ORDER BY p.id DESC", countQuery = "SELECT count(*) FROM production_orders p " +
-                    "WHERE (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-                    "AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-                    "AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
+                    "WHERE (p.job_status != 'ยกเลิก') " +
+                    "AND (p.process_status != 'ยกเลิก') " +
+                    "AND (p.operator_name != 'ยกเลิก') " +
                     "AND (:id IS NULL OR p.id = :id) " +
                     "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
                     "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
@@ -277,9 +277,9 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     +
                     "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))"
                     +
-                    "AND (:dalivery IS NULL OR (p.data_dalivery = :dalivery AND (p.process_status = 'à¸ªà¹ˆà¸‡à¹„à¸Ÿà¸¥à¹Œà¹à¸¥à¹‰à¸§' OR p.process_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™')))"
+                    "AND (:dalivery IS NULL OR (p.data_dalivery = :dalivery AND (p.process_status = 'ส่งไฟล์แล้ว' OR p.process_status = 'เสร็จสิ้น')))"
                     +
-                    "AND (p.process_status NOT IN ('à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£', 'à¸£à¸­à¸œà¸¹à¹‰à¸£à¸±à¸šà¸œà¸´à¸”à¸Šà¸­à¸šà¸¢à¸·à¸™à¸¢à¸±à¸™', 'à¸à¸³à¸¥à¸±à¸‡à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£','à¸£à¸±à¸šà¸‚à¸­à¸‡à¸ˆà¸²à¸à¸‹à¸±à¸žà¸žà¸¥à¸²à¸¢à¹€à¸­à¸­à¸£à¹Œà¹à¸¥à¹‰à¸§','à¸ªà¹ˆà¸‡ Supplier'))", nativeQuery = true)
+                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))", nativeQuery = true)
     Page<ProductionOrder> findProductionCheck(
             @Param("id") Integer id,
             @Param("jobId") String jobId,
@@ -298,9 +298,9 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             Pageable pageable);
 
     @Query(value = "SELECT * FROM production_orders p " +
-            "WHERE (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-            "AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-            "AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
+            "WHERE (p.job_status != 'ยกเลิก') " +
+            "AND (p.process_status != 'ยกเลิก') " +
+            "AND (p.operator_name != 'ยกเลิก') " +
             "AND (:id IS NULL OR p.id = :id) " +
             "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
             "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
@@ -318,13 +318,13 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             "AND (:moldStatus IS NULL OR :moldStatus = '' OR UPPER(p.mold_status) LIKE UPPER(CONCAT('%', :moldStatus, '%'))) "
             +
             "AND (:jobType IS NULL OR :jobType = '' OR UPPER(p.job_type) LIKE UPPER(CONCAT('%', :jobType, '%'))) " +
-            "AND (p.process_status NOT IN ('à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£', 'à¸£à¸­à¸œà¸¹à¹‰à¸£à¸±à¸šà¸œà¸´à¸”à¸Šà¸­à¸šà¸¢à¸·à¸™à¸¢à¸±à¸™', 'à¸à¸³à¸¥à¸±à¸‡à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£'))" +
+            "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ'))" +
             "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))"
             +
             "ORDER BY p.delivery_date asc", countQuery = "SELECT count(*) FROM production_orders p " +
-                    "WHERE (p.job_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-                    "AND (p.process_status != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
-                    "AND (p.operator_name != 'à¸¢à¸à¹€à¸¥à¸´à¸') " +
+                    "WHERE (p.job_status != 'ยกเลิก') " +
+                    "AND (p.process_status != 'ยกเลิก') " +
+                    "AND (p.operator_name != 'ยกเลิก') " +
                     "AND (:id IS NULL OR p.id = :id) " +
                     "AND (:jobId IS NULL OR :jobId = '' OR UPPER(p.job_id) LIKE UPPER(CONCAT('%', :jobId, '%'))) " +
                     "AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%'))) "
@@ -346,7 +346,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                     +
                     "AND (:inspector IS NULL OR :inspector = '' OR UPPER(p.inspector) LIKE UPPER(CONCAT('%', :inspector, '%')))"
                     +
-                    "AND (p.process_status NOT IN ('à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£', 'à¸£à¸­à¸œà¸¹à¹‰à¸£à¸±à¸šà¸œà¸´à¸”à¸Šà¸­à¸šà¸¢à¸·à¸™à¸¢à¸±à¸™', 'à¸à¸³à¸¥à¸±à¸‡à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£','à¸£à¸±à¸šà¸‚à¸­à¸‡à¸ˆà¸²à¸à¸‹à¸±à¸žà¸žà¸¥à¸²à¸¢à¹€à¸­à¸­à¸£à¹Œà¹à¸¥à¹‰à¸§','à¸ªà¹ˆà¸‡ Supplier'))", nativeQuery = true)
+                    "AND (p.process_status NOT IN ('รอดำเนินการ', 'รอผู้รับผิดชอบยืนยัน', 'กำลังดำเนินการ','รับของจากซัพพลายเออร์แล้ว','ส่ง Supplier'))", nativeQuery = true)
     Page<ProductionOrder> findProductionCheckSort(
             @Param("id") Integer id,
             @Param("jobId") String jobId,
@@ -364,7 +364,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             Pageable pageable);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.job_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™' and po.process_status = 'à¸ªà¹ˆà¸‡à¹„à¸Ÿà¸¥à¹Œà¹à¸¥à¹‰à¸§' and po.mold_status = 'à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£'  and po.job_type = 'OS'", nativeQuery = true)
+            "where po.job_status = 'เสร็จสิ้น' and po.process_status = 'ส่งไฟล์แล้ว' and po.mold_status = 'รอดำเนินการ'  and po.job_type = 'OS'", nativeQuery = true)
     Integer countBacklogMold();
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
@@ -378,7 +378,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
             "where (po.data_dalivery = false or po.data_dalivery is null) " +
-            "and (po.process_status = 'à¸ªà¹ˆà¸‡à¹„à¸Ÿà¸¥à¹Œà¹à¸¥à¹‰à¸§' or po.process_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™')", nativeQuery = true)
+            "and (po.process_status = 'ส่งไฟล์แล้ว' or po.process_status = 'เสร็จสิ้น')", nativeQuery = true)
     Integer countBacklogDelivery();
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
@@ -386,25 +386,25 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     Integer countBacklogMoldStatus(@Param("moldStatus") String moldStatus);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.process_status = 'à¸à¸³à¸¥à¸±à¸‡à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£' " +
+            "where po.process_status = 'กำลังดำเนินการ' " +
             "and po.job_type = 'Supplier' " +
             "and po.operator_name = :operatorName", nativeQuery = true)
     Integer countBacklogSupplier(@Param("operatorName") String operatorName);
 
     @Query(value = "select count(id) as backlog from production_orders po  " +
-            "where po.process_status = 'à¸ªà¹ˆà¸‡ Supplier' " +
+            "where po.process_status = 'ส่ง Supplier' " +
             "and po.job_type = 'Supplier' " +
             "and po.operator_name = :operatorName", nativeQuery = true)
     Integer countBacklogKeepSupplier(@Param("operatorName") String operatorName);
 
     @Query(value = "select count(id) as backlog from production_orders po " +
-            "where po.postpone = 'à¸¡à¸µà¸à¸²à¸£à¹€à¸¥à¸·à¹ˆà¸­à¸™à¹€à¸§à¸¥à¸²à¸ªà¹ˆà¸‡' " +
+            "where po.postpone = 'มีการเลื่อนเวลาส่ง' " +
             "and po.job_owner = :jobOwner", nativeQuery = true)
     Integer countBacklogPostpone(@Param("jobOwner") String jobOwner);
 
     @Query(value = "select count(id) as backlog from production_orders po " +
-            "where po.process_status = 'à¸ªà¹ˆà¸‡à¹„à¸Ÿà¸¥à¹Œà¹à¸¥à¹‰à¸§' " +
-            "and po.job_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™' " +
+            "where po.process_status = 'ส่งไฟล์แล้ว' " +
+            "and po.job_status = 'เสร็จสิ้น' " +
             "and po.job_type = 'OD' " +
             "and printing_machine is null", nativeQuery = true)
     Integer countBacklogMachine();
@@ -412,8 +412,8 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     @Query(value = """
             SELECT * FROM production_orders p
             WHERE
-                (p.job_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™')
-                AND (p.process_status = 'à¸ªà¹ˆà¸‡à¹„à¸Ÿà¸¥à¹Œà¹à¸¥à¹‰à¸§')
+                (p.job_status = 'เสร็จสิ้น')
+                AND (p.process_status = 'ส่งไฟล์แล้ว')
                 AND (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))
@@ -431,8 +431,8 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
             """, countQuery = """
             SELECT count(*) FROM production_orders p
             WHERE
-                (p.job_status = 'à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™')
-                AND (p.process_status = 'à¸ªà¹ˆà¸‡à¹„à¸Ÿà¸¥à¹Œà¹à¸¥à¹‰à¸§')
+                (p.job_status = 'เสร็จสิ้น')
+                AND (p.process_status = 'ส่งไฟล์แล้ว')
                 AND (:id IS NULL OR p.id = :id)
                 AND (:folderName IS NULL OR :folderName = '' OR UPPER(p.folder_name) LIKE UPPER(CONCAT('%', :folderName, '%')))
                 AND (:jobOwner IS NULL OR :jobOwner = '' OR UPPER(p.job_owner) LIKE UPPER(CONCAT('%', :jobOwner, '%')))

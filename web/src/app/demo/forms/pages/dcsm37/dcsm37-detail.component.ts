@@ -8,6 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Dcsm37Service } from './dcsm37.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { Dcsm04Service } from '../dcsm04/dcsm04.service';
 
 @Component({
   selector: 'app-dcsm37-detail',
@@ -25,8 +26,10 @@ export class Dcsm37DetailComponent implements OnInit {
   showTypeModal = false;           // Step 1: เลือกประเภท
   showDesignModal = false;         // Step 2: ฟอร์มสั่งออกแบบ
   showSampleModal = false;         // Step 2: ฟอร์มสั่งขึ้นตัวอย่าง
+  showProductionModal = false;     // Step 2: ฟอร์มสั่งผลิต
   showComingSoonModal = false;     // ประเภทอื่นที่ยังไม่รองรับ
   comingSoonType = '';
+  prodModalTab: 'info' | 'decision' = 'info';
 
   designForm = {
     joId: '',
@@ -49,12 +52,36 @@ export class Dcsm37DetailComponent implements OnInit {
     note: '',
   };
 
+  productionForm = {
+    joId: '',
+    qtId: '',
+    qpId: '',
+    deadlineDate: '',
+    deadlineTime: '',
+    remarks: '',
+    decisionAuthority: '',
+    decisionAuthorityRemarks: '',
+    // Technical Spec
+    searchId: '',
+    sampleJobType: '',
+    samplePrintingSystem: '',
+    samplePrintingStyle: '',
+    samplePrintingColor: '',
+    samplePaperSize: '',
+    samplePaperGrammage: '',
+    sampleCoatingStyle: '',
+    sampleDiecutStyle: '',
+    sampleSpecialInstructions: '',
+    sampleDeliveryTimestamp: '',
+  };
+
   constructor(
     private service: Dcsm37Service,
     private route: ActivatedRoute,
     private router: Router,
     private loadingService: LoadingService,
-    private sweetAlert: SweetAlertService
+    private sweetAlert: SweetAlertService,
+    private dcsm04Service: Dcsm04Service
   ) {}
 
   ngOnInit() {
@@ -92,6 +119,7 @@ export class Dcsm37DetailComponent implements OnInit {
     this.showTypeModal = false;
     this.showDesignModal = false;
     this.showSampleModal = false;
+    this.showProductionModal = false;
     this.showComingSoonModal = false;
   }
 
@@ -114,8 +142,35 @@ export class Dcsm37DetailComponent implements OnInit {
       };
       this.showSampleModal = true;
     } else if (type === 'production') {
-      this.comingSoonType = 'สั่งผลิต';
-      this.showComingSoonModal = true;
+      // Find latest production order to pre-fill specs
+      const latestProd = this.data?.productionHistory && this.data.productionHistory.length > 0
+        ? this.data.productionHistory[0]
+        : null;
+
+      this.productionForm = {
+        joId: '',
+        qtId: '',
+        qpId: '',
+        deadlineDate: '',
+        deadlineTime: '',
+        remarks: '',
+        decisionAuthority: '',
+        decisionAuthorityRemarks: '',
+        // Fill from latest if exists
+        searchId: '',
+        sampleJobType: latestProd?.sampleJobType || '',
+        samplePrintingSystem: latestProd?.samplePrintingSystem || '',
+        samplePrintingStyle: latestProd?.samplePrintingStyle || '',
+        samplePrintingColor: latestProd?.samplePrintingColor || '',
+        samplePaperSize: latestProd?.samplePaperSize || '',
+        samplePaperGrammage: latestProd?.samplePaperGrammage || '',
+        sampleCoatingStyle: latestProd?.sampleCoatingStyle || '',
+        sampleDiecutStyle: latestProd?.sampleDiecutStyle || '',
+        sampleSpecialInstructions: latestProd?.sampleSpecialInstructions || '',
+        sampleDeliveryTimestamp: latestProd?.sampleDeliveryTimestamp || '',
+      };
+      this.prodModalTab = 'info';
+      this.showProductionModal = true;
     }
   }
 
@@ -180,6 +235,82 @@ export class Dcsm37DetailComponent implements OnInit {
       error: (err) => {
         this.loadingService.hide();
         this.sweetAlert.error('ผิดพลาด', err?.error?.error || 'ไม่สามารถบันทึกได้');
+      }
+    });
+  }
+
+  submitProductionOrder() {
+    if (!this.productionForm.joId || !this.productionForm.deadlineDate || !this.productionForm.decisionAuthority) {
+      this.sweetAlert.error('กรุณากรอกข้อมูล', 'JO ใหม่, วันที่ส่งงาน และ ผู้มีอำนาจตัดสินใจ จำเป็นต้องกรอก');
+      return;
+    }
+    const body = {
+      reorderFromJoId: this.jobId,
+      jobId: this.productionForm.joId,
+      qtId: this.productionForm.qtId || null,
+      qpId: this.productionForm.qpId || null,
+      deadlineDate: this.productionForm.deadlineDate,
+      deadlineTime: this.productionForm.deadlineTime || null,
+      remarks: this.productionForm.remarks || null,
+      decisionAuthority: this.productionForm.decisionAuthority || null,
+      decisionAuthorityRemarks: this.productionForm.decisionAuthorityRemarks || null,
+      // Technical Spec
+      sampleJobType: this.productionForm.sampleJobType || null,
+      samplePrintingSystem: this.productionForm.samplePrintingSystem || null,
+      samplePrintingStyle: this.productionForm.samplePrintingStyle || null,
+      samplePrintingColor: this.productionForm.samplePrintingColor || null,
+      samplePaperSize: this.productionForm.samplePaperSize || null,
+      samplePaperGrammage: this.productionForm.samplePaperGrammage || null,
+      sampleCoatingStyle: this.productionForm.sampleCoatingStyle || null,
+      sampleDiecutStyle: this.productionForm.sampleDiecutStyle || null,
+      sampleSpecialInstructions: this.productionForm.sampleSpecialInstructions || null,
+      sampleDeliveryTimestamp: this.productionForm.sampleDeliveryTimestamp || null,
+      
+      folderName: this.data?.folderName || null,
+      jobOwner: this.data?.jobOwner || null,
+      customerName: this.data?.customerName || null,
+    };
+    this.loadingService.show();
+    this.service.reorderProduction(body).subscribe({
+      next: () => {
+        this.loadingService.hide();
+        this.closeAllModals();
+        this.sweetAlert.success('สำเร็จ', 'สร้าง Production Order ใหม่แล้ว');
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('ผิดพลาด', err?.error?.error || 'ไม่สามารถบันทึกได้');
+      }
+    });
+  }
+
+  fetchPapData() {
+    if (!this.productionForm.searchId) {
+      this.sweetAlert.warning('สเปกงาน', 'กรุณาระบุ PAP ID ที่ต้องการดึงข้อมูล');
+      return;
+    }
+    this.loadingService.show();
+    this.dcsm04Service.getSobPAP(Number(this.productionForm.searchId)).subscribe({
+      next: (res: any) => {
+        this.loadingService.hide();
+        if (res && res.job_specifications) {
+          const spec = res.job_specifications;
+          this.productionForm.sampleJobType = spec.work_type || '';
+          this.productionForm.samplePrintingSystem = spec.print_system || '';
+          this.productionForm.samplePrintingStyle = spec.print_style || '';
+          this.productionForm.samplePrintingColor = spec.print_colors || '';
+          this.productionForm.samplePaperSize = spec.paper_size || '';
+          this.productionForm.samplePaperGrammage = spec.paper_weight || '';
+          this.productionForm.sampleCoatingStyle = spec.coating_style || '';
+          this.productionForm.sampleDiecutStyle = spec.diecut_style || '';
+          this.sweetAlert.success('ดึงข้อมูลสำเร็จ', 'อัปเดตรายละเอียดสเปกงานแล้ว');
+        } else {
+          this.sweetAlert.error('ไม่พบข้อมูล', 'ไม่พบสเปกงานสำหรับ ID ที่ระบุ');
+        }
+      },
+      error: () => {
+        this.loadingService.hide();
+        this.sweetAlert.error('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อดึงสเปกงานได้');
       }
     });
   }
