@@ -1,4 +1,4 @@
-package com.boxcorner.boxcorner.entity;
+﻿package com.boxcorner.boxcorner.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,4 +89,7 @@ public class DesignOrders extends BaseEntity {
 
     @Column(name = "end_datetime")
     private LocalDateTime endDatetime;
+
+    @Column(name = "reorder_from_jo_id")
+    private String reorderFromJoId;
 }

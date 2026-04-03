@@ -111,15 +111,18 @@ public class PrintJobController {
                 size);
         return ResponseEntity.ok(result);
     }
+
     @GetMapping("/findByProductionOrderId")
-    public ResponseEntity<PrintJob> findByProductionOrderId(@RequestParam("productionOrderId") Integer productionOrderId) {
-        return printJobService.findByProductionOrderId(productionOrderId) != null ? 
-            ResponseEntity.ok(printJobService.findByProductionOrderId(productionOrderId)) : 
-            ResponseEntity.notFound().build();
+    public ResponseEntity<PrintJob> findByProductionOrderId(
+            @RequestParam("productionOrderId") Integer productionOrderId) {
+        return printJobService.findByProductionOrderId(productionOrderId) != null
+                ? ResponseEntity.ok(printJobService.findByProductionOrderId(productionOrderId))
+                : ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<?> updateStatus(@PathVariable(value = "id") Long id, @RequestParam(value = "jobStatus") String jobStatus) {
+    public ResponseEntity<?> updateStatus(@PathVariable(value = "id") Long id,
+            @RequestParam(value = "jobStatus") String jobStatus) {
         try {
             return ResponseEntity.ok(printJobService.updateJobStatusOnly(id, jobStatus));
         } catch (Exception e) {

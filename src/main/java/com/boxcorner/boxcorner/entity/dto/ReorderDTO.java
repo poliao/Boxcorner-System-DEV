@@ -1,5 +1,6 @@
 package com.boxcorner.boxcorner.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -200,6 +201,11 @@ public class ReorderDTO {
     // === สรุประยะเวลารวม ===
     private Long totalDurationDays;
 
+    // === สรุปจำนวนรอบผลิต (สำหรับ list view) ===
+    private Integer totalOrders;
+    private Integer proofFailedCount;
+    private Integer cancelledCount;
+
     @Data
     public static class PrintLogSummary {
         private Long id;
@@ -317,14 +323,14 @@ public class ReorderDTO {
         private Boolean flagInkOld;
         
         // Ink details
-        private String cLot;
-        private String cBrand;
-        private String mLot;
-        private String mBrand;
-        private String yLot;
-        private String yBrand;
-        private String kLot;
-        private String kBrand;
+        @JsonProperty("cLot")   private String cLot;
+        @JsonProperty("cBrand") private String cBrand;
+        @JsonProperty("mLot")   private String mLot;
+        @JsonProperty("mBrand") private String mBrand;
+        @JsonProperty("yLot")   private String yLot;
+        @JsonProperty("yBrand") private String yBrand;
+        @JsonProperty("kLot")   private String kLot;
+        @JsonProperty("kBrand") private String kBrand;
         
         // Equipment & References
         private Boolean checkPlateCondition;

@@ -21,12 +21,15 @@ import { StatusColorService } from 'src/app/shared/services/status-color.service
 export class Dcsm37Component implements OnInit {
 
   tableColumns = [
-    { key: 'productionOrderId', label: 'เลขที่' },
     { key: 'jobId', label: 'Job ID' },
     { key: 'folderName', label: 'ชื่องาน' },
     { key: 'customerName', label: 'ลูกค้า' },
     { key: 'jobOwner', label: 'เจ้าของงาน' },
     { key: 'jobType', label: 'ประเภทงาน' },
+    { key: 'processStatus', label: 'สถานะล่าสุด' },
+    { key: 'totalOrders', label: 'รอบผลิต' },
+    { key: 'proofFailedCount', label: 'ปรู๊ฟไม่ผ่าน' },
+    { key: 'cancelledCount', label: 'ยกเลิก' },
   ];
 
   tableData: any[] = [];
@@ -92,6 +95,6 @@ export class Dcsm37Component implements OnInit {
   }
 
   onRowClick(row: any) {
-    if (row?.productionOrderId) this.router.navigate(['/Dcsm37Detail', row.productionOrderId]);
+    if (row?.jobId) this.router.navigate(['/Dcsm37Detail', row.jobId]);
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,22 +12,30 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 @Component({
   selector: 'app-dcsm37-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './dcsm37-detail.component.html',
   styleUrls: ['./dcsm37-detail.component.scss']
 })
 export class Dcsm37DetailComponent implements OnInit {
   data: any = null;
-  id!: number;
+  jobId!: string;
+  expandedRounds: Set<number> = new Set([0]);
 
-  steps = [
-    { key: 'design', label: 'ออกแบบ', icon: 'design_services', color: '#6366f1' },
-    { key: 'sample', label: 'ขึ้นตัวอย่าง', icon: 'science', color: '#f59e0b' },
-    { key: 'print', label: 'พิมพ์', icon: 'print', color: '#3b82f6' },
-    { key: 'coating', label: 'เคลือบ', icon: 'layers', color: '#10b981' },
-    { key: 'stamping', label: 'ปั๊ม/ตัด', icon: 'content_cut', color: '#ef4444' },
-    { key: 'qc', label: 'QC', icon: 'verified', color: '#8b5cf6' },
-  ];
+  // ─── ReOrder modal state ───────────────────────────────────────────
+  showTypeModal = false;           // Step 1: เลือกประเภท
+  showDesignModal = false;         // Step 2: ฟอร์มสั่งออกแบบ
+  showComingSoonModal = false;     // ประเภทอื่นที่ยังไม่รองรับ
+  comingSoonType = '';
+
+  designForm = {
+    joId: '',
+    qtId: '',
+    qpId: '',
+    deadlineDate: '',
+    deadlineTime: '',
+    jobDetails: '',
+    remarks: '',
+  };
 
   constructor(
     private service: Dcsm37Service,
@@ -37,18 +46,87 @@ export class Dcsm37DetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.id = Number(this.route.snapshot.params['id']);
+    this.jobId = this.route.snapshot.params['id'];
     this.loadData();
   }
 
   loadData() {
     this.loadingService.show();
-    this.service.getDetail(this.id).subscribe({
+    this.service.getJobHistory(this.jobId).subscribe({
       next: (res) => { this.data = res; this.loadingService.hide(); },
       error: () => { this.sweetAlert.error('ผิดพลาด', 'ไม่สามารถดึงข้อมูลได้'); this.loadingService.hide(); }
     });
   }
 
+  // ─── Accordion ────────────────────────────────────────────────────
+  toggleRound(index: number) {
+    if (this.expandedRounds.has(index)) {
+      this.expandedRounds.delete(index);
+    } else {
+      this.expandedRounds.add(index);
+    }
+  }
+
+  isRoundExpanded(index: number): boolean {
+    return this.expandedRounds.has(index);
+  }
+
+  // ─── ReOrder Modal ────────────────────────────────────────────────
+  openReorderModal() {
+    this.showTypeModal = true;
+  }
+
+  closeAllModals() {
+    this.showTypeModal = false;
+    this.showDesignModal = false;
+    this.showComingSoonModal = false;
+  }
+
+  selectType(type: 'design' | 'sample' | 'production') {
+    this.showTypeModal = false;
+    if (type === 'design') {
+      // Pre-fill form from existing data
+      this.designForm = { joId: '', qtId: '', qpId: '', deadlineDate: '', deadlineTime: '', jobDetails: '', remarks: '' };
+      this.showDesignModal = true;
+    } else {
+      this.comingSoonType = type === 'sample' ? 'สั่งขึ้นตัวอย่าง' : 'สั่งผลิต';
+      this.showComingSoonModal = true;
+    }
+  }
+
+  submitDesignOrder() {
+    if (!this.designForm.joId || !this.designForm.deadlineDate) {
+      this.sweetAlert.error('กรุณากรอกข้อมูล', 'JO ใหม่ และ วันที่กำหนดส่งงาน จำเป็นต้องกรอก');
+      return;
+    }
+    const body = {
+      reorderFromJoId: this.jobId,
+      joId: this.designForm.joId,
+      qtId: this.designForm.qtId || null,
+      qpId: this.designForm.qpId || null,
+      deadlineDate: this.designForm.deadlineDate,
+      deadlineTime: this.designForm.deadlineTime || null,
+      folderName: this.data?.folderName || null,
+      jobOwner: this.data?.jobOwner || null,
+      customerName: this.data?.customerName || null,
+      jobDetails: this.designForm.jobDetails || null,
+      remarks: this.designForm.remarks || null,
+    };
+    this.loadingService.show();
+    this.service.reorderDesign(body).subscribe({
+      next: () => {
+        this.loadingService.hide();
+        this.closeAllModals();
+        this.sweetAlert.success('สำเร็จ', 'สร้าง Design Order ใหม่แล้ว');
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('ผิดพลาด', err?.error?.error || 'ไม่สามารถบันทึกได้');
+      }
+    });
+  }
+
+  // ─── Helpers ──────────────────────────────────────────────────────
   formatDate(d: string | null): string {
     if (!d) return '-';
     try {
@@ -62,13 +140,6 @@ export class Dcsm37DetailComponent implements OnInit {
     } catch { return d; }
   }
 
-  formatDateTime(date: string | null, time: string | null): string {
-    if (!date) return '-';
-    const formattedDate = this.formatDate(date);
-    if (!time) return formattedDate;
-    return `${formattedDate} ${time.substring(0, 5)}`;
-  }
-
   formatMinutes(min: number | null): string {
     if (min == null) return '-';
     if (min < 60) return `${min} นาที`;
@@ -77,17 +148,26 @@ export class Dcsm37DetailComponent implements OnInit {
     return m > 0 ? `${h} ชม. ${m} นาที` : `${h} ชม.`;
   }
 
-  getStepStatus(key: string): 'done' | 'active' | 'pending' {
-    if (!this.data) return 'pending';
-    switch (key) {
-      case 'design': return this.data.designOrderId ? 'done' : 'pending';
-      case 'sample': return this.data.sampleOrderId ? 'done' : 'pending';
-      case 'print': return this.data.printJobId ? 'done' : 'pending';
-      case 'coating': return this.data.coatingJobId ? 'done' : 'pending';
-      case 'stamping': return (this.data.stampingLogs?.length > 0) ? 'done' : 'pending';
-      case 'qc': return this.data.qcJobId ? (this.data.qcStatus === 'เสร็จสิ้น' ? 'done' : 'active') : 'pending';
-      default: return 'pending';
+  getRoundBadge(round: any): { label: string; class: string } {
+    if (round.jobStatus === 'ยกเลิก' || round.processStatus === 'ยกเลิก') {
+      return { label: 'ยกเลิก', class: 'badge bg-danger' };
     }
+    if (round.isNewProof) {
+      return { label: 'ปรู๊ฟไม่ผ่าน (สั่งใหม่)', class: 'badge bg-warning text-dark' };
+    }
+    return { label: round.processStatus || '-', class: 'badge bg-primary' };
+  }
+
+  translateAuthority(value: string | null): string {
+    if (!value) return '-';
+    const map: Record<string, string> = {
+      customerOnSite:      'ลูกค้าเข้าดูงานหน้างาน',
+      sampleToCustomer:    'ขึ้นตัวอย่างส่งลูกค้าตรวจ',
+      salesDecision:       'เซลล์ตัดสินใจแทนลูกค้า',
+      planningDecision:    'ฝ่ายแผนตัดสินใจ',
+      operatorQaDecision:  'ช่างพิมพ์ + QA ร่วมกัน',
+    };
+    return map[value] ?? value;
   }
 
   back() { this.router.navigate(['/Dcsm37']); }

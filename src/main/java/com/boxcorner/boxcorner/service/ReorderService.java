@@ -1,7 +1,9 @@
 package com.boxcorner.boxcorner.service;
 
 import com.boxcorner.boxcorner.entity.*;
+import com.boxcorner.boxcorner.entity.dto.JoHistoryDTO;
 import com.boxcorner.boxcorner.entity.dto.ReorderDTO;
+import com.boxcorner.boxcorner.entity.dto.ReorderDesignRequest;
 import com.boxcorner.boxcorner.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,9 +47,19 @@ public class ReorderService {
                 null, jobId, folderName, jobOwner, startDate, endDate,
                 null, jobStatus, processStatus, null, null, null, null, pageable);
 
-        List<ReorderDTO> dtos = orders.getContent().stream()
-                .map(o -> buildDTO(o, false))
-                .collect(Collectors.toList());
+        List<ReorderDTO> dtos = orders.getContent().stream().map(o -> {
+            ReorderDTO dto = buildDTO(o, false);
+            if (o.getJobId() != null) {
+                List<ProductionOrder> rounds = productionOrderRepo.findByJobIdOrderByIdDesc(o.getJobId());
+                dto.setTotalOrders((int) rounds.size());
+                dto.setProofFailedCount(
+                        (int) rounds.stream().filter(r -> Boolean.TRUE.equals(r.getIsNewProof())).count());
+                dto.setCancelledCount((int) rounds.stream()
+                        .filter(r -> "ยกเลิก".equals(r.getJobStatus()) || "ยกเลิก".equals(r.getProcessStatus()))
+                        .count());
+            }
+            return dto;
+        }).collect(Collectors.toList());
 
         return new PageImpl<>(dtos, pageable, orders.getTotalElements());
     }
@@ -458,5 +471,417 @@ public class ReorderService {
         }
 
         return dto;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // JO History (grouped by job_id)
+    // ═══════════════════════════════════════════════════════════════
+    public JoHistoryDTO getJobHistory(String jobId) {
+        List<ProductionOrder> allOrders = productionOrderRepo.findByJobIdOrderByIdDesc(jobId);
+        if (allOrders.isEmpty()) {
+            throw new RuntimeException("ไม่พบข้อมูลสำหรับ Job ID: " + jobId);
+        }
+
+        JoHistoryDTO result = new JoHistoryDTO();
+        ProductionOrder primaryOrder = allOrders.get(0);
+
+        result.setJobId(jobId);
+        result.setFolderName(primaryOrder.getFolderName());
+        result.setCustomerName(primaryOrder.getCustomerName());
+        result.setJobOwner(primaryOrder.getJobOwner());
+        result.setQtId(primaryOrder.getQtId());
+        result.setQpId(primaryOrder.getQpId());
+        result.setTotalRounds(allOrders.size());
+        result.setProofFailedCount(
+                (int) allOrders.stream().filter(o -> Boolean.TRUE.equals(o.getIsNewProof())).count());
+        result.setCancelledCount((int) allOrders.stream()
+                .filter(o -> "ยกเลิก".equals(o.getJobStatus()) || "ยกเลิก".equals(o.getProcessStatus())).count());
+
+        // Design Order (from qt_id of primary)
+        if (primaryOrder.getQtId() != null && !primaryOrder.getQtId().isBlank()) {
+            designOrdersRepo.findByAll(null, null, null, null, null,
+                    primaryOrder.getQtId(), null, null, null, null, null, null,
+                    PageRequest.of(0, 1)).getContent().stream().findFirst().ifPresent(d -> {
+                        JoHistoryDTO.DesignOrderSummary ds = new JoHistoryDTO.DesignOrderSummary();
+                        ds.setId(d.getId());
+                        ds.setOrderDate(d.getOrderDate());
+                        ds.setOrderTime(d.getOrderTime());
+                        ds.setFolderName(d.getFolderName());
+                        ds.setJobDetails(d.getJobDetails());
+                        ds.setJobOwner(d.getJobOwner());
+                        ds.setCustomerName(d.getCustomerName());
+                        ds.setAssignee(d.getAssignee());
+                        ds.setAssigneeFirst(d.getAssigneeFirst());
+                        ds.setDeadlineDate(d.getDeadlineDate());
+                        ds.setDeadlineTime(d.getDeadlineTime());
+                        ds.setProcessStatus(d.getProcessStatus());
+                        ds.setConfirmStatus(d.getConfirmStatus());
+                        ds.setConfirmDate(d.getConfirmDate());
+                        ds.setFileName(d.getFileName());
+                        ds.setNoteEdit(d.getNoteEdit());
+                        ds.setRemarks(d.getRemarks());
+                        ds.setRemarkAdd(d.getRemarkAdd());
+                        ds.setVersion(d.getVersion());
+                        ds.setJoId(d.getJoId());
+                        ds.setQtId(d.getQtId());
+                        ds.setQpId(d.getQpId());
+                        ds.setStartDatetime(d.getStartDatetime());
+                        ds.setEndDatetime(d.getEndDatetime());
+                        if (d.getStartDatetime() != null && d.getEndDatetime() != null) {
+                            ds.setDurationMinutes(ChronoUnit.MINUTES.between(d.getStartDatetime(), d.getEndDatetime()));
+                        }
+                        result.setDesignOrder(ds);
+                    });
+        }
+
+        // Sample Order (from sample_order_id of primary)
+        if (primaryOrder.getSampleOrderId() != null) {
+            sampleOrderRepo.findById(primaryOrder.getSampleOrderId()).ifPresent(s -> {
+                JoHistoryDTO.SampleOrderSummary ss = new JoHistoryDTO.SampleOrderSummary();
+                ss.setId(s.getId());
+                ss.setOrderDate(s.getOrderDate());
+                ss.setOrderTime(s.getOrderTime());
+                ss.setFolderName(s.getFolderName());
+                ss.setJobOwner(s.getJobOwner());
+                ss.setCustomerName(s.getCustomerName());
+                ss.setResponsiblePerson(s.getResponsiblePerson());
+                ss.setStatus(s.getStatus());
+                ss.setDeliveryDate(s.getDeliveryDate());
+                ss.setDeliveryTime(s.getDeliveryTime());
+                ss.setQuantity(s.getQuantity());
+                ss.setUnit(s.getUnit());
+                ss.setNote(s.getNote());
+                ss.setNoteEdit(s.getNoteEdit());
+                ss.setCancelRemarks(s.getCancelRemarks());
+                ss.setFileName(s.getFileName());
+                ss.setJobType(s.getJobType());
+                ss.setPrintType(s.getPrintType());
+                ss.setPaperType(s.getPaperType());
+                ss.setDiecuttingType(s.getDiecuttingType());
+                ss.setCoatType(s.getCoatType());
+                ss.setSystemPrint(s.getSystemPrint());
+                ss.setColorPrint(s.getColorPrint());
+                ss.setPaperGram(s.getPaperGram());
+                ss.setJobId(s.getJobId());
+                ss.setQtId(s.getQtId());
+                ss.setQpId(s.getQpId());
+                ss.setPrint2Page(s.getPrint2Page());
+                ss.setTotalPrintSheets(s.getTotalPrintSheets());
+                ss.setCreatedAt(s.getCreatedAt());
+                ss.setUpdatedAt(s.getUpdatedAt());
+                if (s.getOrderDate() != null && s.getDeliveryDate() != null) {
+                    ss.setDurationDays(ChronoUnit.DAYS.between(s.getOrderDate(), s.getDeliveryDate()));
+                }
+                result.setSampleOrder(ss);
+            });
+        }
+
+        // Production Rounds
+        List<JoHistoryDTO.ProductionRound> rounds = new ArrayList<>();
+        int roundNum = allOrders.size();
+        for (ProductionOrder o : allOrders) {
+            JoHistoryDTO.ProductionRound round = new JoHistoryDTO.ProductionRound();
+            round.setProductionOrderId(o.getId());
+            round.setRoundNumber(roundNum--);
+            round.setIsNewProof(o.getIsNewProof());
+            round.setJobStatus(o.getJobStatus());
+            round.setProcessStatus(o.getProcessStatus());
+            round.setCancelRemarks(o.getCancelRemarks());
+            round.setRemarks(o.getRemarks());
+            round.setDecisionAuthority(o.getDecisionAuthority());
+            round.setDecisionAuthorityRemarks(o.getDecisionAuthorityRemarks());
+            round.setMoldStatus(o.getMoldStatus());
+            round.setMoldMakerName(o.getMoldMakerName());
+            round.setPrintingMachine(o.getPrintingMachine());
+            round.setOperatorName(o.getOperatorName());
+            round.setInspector(o.getInspector());
+            round.setPostpone(o.getPostpone());
+            round.setPrint2Page(o.getPrint2Page());
+            round.setPrintRound(o.getPrintRound());
+            round.setPrintRoundPage2(o.getPrintRoundPage2());
+            round.setDeadlineDate(o.getDeadlineDate());
+            round.setDeliveryDate(o.getDeliveryDate());
+            round.setInspectionDate(o.getInspectionDate());
+            round.setCreatedAt(o.getCreatedAt());
+            round.setUpdatedAt(o.getUpdatedAt());
+
+            // Print Job for this round
+            if (o.getPrintJobId() != null) {
+                printJobRepo.findById(o.getPrintJobId()).ifPresent(pj -> {
+                    JoHistoryDTO.PrintJobSummary pjs = new JoHistoryDTO.PrintJobSummary();
+                    pjs.setId(pj.getId());
+                    pjs.setJobId(pj.getJobId());
+                    pjs.setCustomerJobName(pj.getCustomerJobName());
+                    pjs.setJobStatus(pj.getJobStatus());
+                    pjs.setJobType(pj.getJobType());
+                    pjs.setPrintType(pj.getPrintType());
+                    pjs.setPaperType(pj.getPaperType());
+                    pjs.setDiecuttingType(pj.getDiecuttingType());
+                    pjs.setCoatType(pj.getCoatType());
+                    pjs.setSystemPrint(pj.getSystemPrint());
+                    pjs.setColorPrint(pj.getColorPrint());
+                    pjs.setPaperGram(pj.getPaperGram());
+                    pjs.setPrinterName(pj.getPrinterName());
+                    pjs.setSampleRefNo(pj.getSampleRefNo());
+                    pjs.setDecisionAuthority(pj.getDecisionAuthority());
+                    pjs.setDecisionAuthorityRemarks(pj.getDecisionAuthorityRemarks());
+                    pjs.setTypeJob(pj.getTypeJob());
+                    pjs.setTotalPrintSheets(pj.getTotalPrintSheets());
+                    pjs.setProductionQty(pj.getProductionQty());
+                    pjs.setSetupWaste(pj.getSetupWaste());
+                    pjs.setCurrentRound(pj.getCurrentRound());
+                    pjs.setGoodQty(pj.getGoodQty());
+                    pjs.setWasteQty(pj.getWasteQty());
+                    pjs.setIsSample(pj.getIssample());
+                    pjs.setPrint2Page(pj.getPrint2Page());
+                    pjs.setDeliveryDate(pj.getDeliveryDate());
+                    pjs.setDeliveryTime(pj.getDeliveryTime());
+                    pjs.setCreatedAt(pj.getCreatedAt());
+
+                    // Print Logs (OD)
+                    List<PrintLog> logs = printLogRepo.findByJobIdOrderByStartedAtDesc(pj.getId());
+                    pjs.setPrintLogs(logs.stream().map(pl -> {
+                        ReorderDTO.PrintLogSummary pls = new ReorderDTO.PrintLogSummary();
+                        pls.setId(pl.getId());
+                        pls.setStartedAt(pl.getStartedAt());
+                        pls.setEndedAt(pl.getEndedAt());
+                        pls.setOperatorName(pl.getOperatorName());
+                        pls.setTotalSheetsUsed(pl.getTotalSheetsUsed());
+                        pls.setGoodQty(pl.getGoodQty());
+                        pls.setWasteQty(pl.getWasteQty());
+                        pls.setPaperReqStart(pl.getPaperReqStart());
+                        pls.setPaperReqEnd(pl.getPaperReqEnd());
+                        pls.setNote(pl.getNote());
+                        if (pl.getLogType() != null)
+                            pls.setLogType(pl.getLogType().name());
+                        if (pl.getPrintSide() != null)
+                            pls.setPrintSide(pl.getPrintSide().name());
+                        if (pl.getStartedAt() != null && pl.getEndedAt() != null) {
+                            pls.setDurationMinutes(ChronoUnit.MINUTES.between(pl.getStartedAt(), pl.getEndedAt()));
+                        }
+                        return pls;
+                    }).collect(Collectors.toList()));
+
+                    // Print Logs QA
+                    List<PrintLogQa> qas = printLogQaRepo.findByJobIdOrderByCreatedAtDesc(pj.getId());
+                    pjs.setPrintLogsQa(qas.stream().map(qa -> {
+                        ReorderDTO.PrintLogQaSummary qasum = new ReorderDTO.PrintLogQaSummary();
+                        qasum.setId(qa.getId());
+                        qasum.setQcColorMatch(qa.getQcColorMatch());
+                        qasum.setQcColorConsistency(qa.getQcColorConsistency());
+                        qasum.setQcInkResidue(qa.getQcInkResidue());
+                        qasum.setQcInkTransfer(qa.getQcInkTransfer());
+                        qasum.setQcStains(qa.getQcStains());
+                        qasum.setQcAlignment(qa.getQcAlignment());
+                        qasum.setQcScratches(qa.getQcScratches());
+                        qasum.setQcMixedJobs(qa.getQcMixedJobs());
+                        qasum.setPrintedSheetNumber(qa.getPrintedSheetNumber());
+                        qasum.setQcRemark(qa.getQcRemark());
+                        qasum.setOperatorName(qa.getOperatorName());
+                        qasum.setCreatedAt(qa.getCreatedAt());
+                        return qasum;
+                    }).collect(Collectors.toList()));
+
+                    // Print Logs OS
+                    List<PrintLogOs> osLogs = printLogOsRepo.findByJobId(pj.getId());
+                    pjs.setPrintLogsOs(osLogs.stream().map(os -> {
+                        ReorderDTO.PrintLogOsSummary ossum = new ReorderDTO.PrintLogOsSummary();
+                        ossum.setId(os.getId());
+                        ossum.setStartTime(os.getStartTime());
+                        ossum.setEndTime(os.getEndTime());
+                        ossum.setOperatorName(os.getOperatorName());
+                        ossum.setMachineName(os.getMachineName());
+                        ossum.setStatus(os.getStatus() != null ? os.getStatus().name() : null);
+                        ossum.setPrintSide(os.getPrintSide());
+                        ossum.setTempFountain(os.getTempFountain());
+                        ossum.setIpaPercent(os.getIpaPercent());
+                        ossum.setConductivity(os.getConductivity());
+                        ossum.setAirPressure(os.getAirPressure());
+                        ossum.setPaperBrightness(os.getPaperBrightness());
+                        ossum.setFlagHasCmyk(os.getFlagHasCmyk());
+                        ossum.setFlagSpecialColor(os.getFlagSpecialColor());
+                        ossum.setFlagInkNew(os.getFlagInkNew());
+                        ossum.setFlagInkOld(os.getFlagInkOld());
+                        ossum.setCLot(os.getCLot());
+                        ossum.setCBrand(os.getCBrand());
+                        ossum.setMLot(os.getMLot());
+                        ossum.setMBrand(os.getMBrand());
+                        ossum.setYLot(os.getYLot());
+                        ossum.setYBrand(os.getYBrand());
+                        ossum.setKLot(os.getKLot());
+                        ossum.setKBrand(os.getKBrand());
+                        ossum.setCheckPlateCondition(os.getCheckPlateCondition());
+                        ossum.setCheckBlanketCondition(os.getCheckBlanketCondition());
+                        ossum.setCheckMachineWashed(os.getCheckMachineWashed());
+                        ossum.setRefProof(os.getRefProof());
+                        ossum.setRefDigital(os.getRefDigital());
+                        ossum.setRefOldJob(os.getRefOldJob());
+                        ossum.setRefNotSerious(os.getRefNotSerious());
+                        ossum.setQcRemark(os.getQcRemark());
+                        ossum.setTotalProduct(os.getTotalProduct());
+                        if (os.getStartTime() != null && os.getEndTime() != null) {
+                            ossum.setDurationMinutes(ChronoUnit.MINUTES.between(os.getStartTime(), os.getEndTime()));
+                        }
+                        return ossum;
+                    }).collect(Collectors.toList()));
+
+                    round.setPrintJob(pjs);
+                });
+            }
+            rounds.add(round);
+        }
+        result.setProductionRounds(rounds);
+
+        // Coating (shared per JO)
+        coatingJobRepo.findByJoId(jobId).stream().findFirst().ifPresent(cj -> {
+            JoHistoryDTO.CoatingJobSummary cjs = new JoHistoryDTO.CoatingJobSummary();
+            cjs.setId(cj.getId());
+            cjs.setJoId(cj.getJoId());
+            cjs.setJobCustomerName(cj.getJobCustomerName());
+            cjs.setJobOwnerName(cj.getJobOwnerName());
+            cjs.setStatus(cj.getStatus() != null ? cj.getStatus().name() : null);
+            cjs.setTechnicianName(cj.getTechnicianName());
+            cjs.setReceivedSheetsQty(cj.getReceivedSheetsQty());
+            cjs.setRequiredSheetsQty(cj.getRequiredSheetsQty());
+            cjs.setIsSample(cj.getIsSample());
+            cjs.setOrderDatetime(cj.getOrderDatetime());
+            cjs.setDeliveryDatetime(cj.getDeliveryDatetime());
+            List<CoatingLog> clogs = coatingLogRepo.findByCoatingJobIdOrderByIdAsc(cj.getId());
+            cjs.setCoatingLogs(clogs.stream().map(cl -> {
+                ReorderDTO.CoatingLogSummary cs = new ReorderDTO.CoatingLogSummary();
+                cs.setId(cl.getId());
+                cs.setReportDate(cl.getReportDate());
+                cs.setStartTime(cl.getStartTime());
+                cs.setEndTime(cl.getEndTime());
+                cs.setCoatingType(cl.getCoatingType());
+                cs.setLaminatingTemp(cl.getLaminatingTemp());
+                cs.setFilmStockName(cl.getFilmStockName());
+                cs.setPaperLength(cl.getPaperLength());
+                cs.setSheetQty(cl.getSheetQty());
+                cs.setTechnicianName(cl.getTechnicianName());
+                cs.setRemarks(cl.getRemarks());
+                if (cl.getStartTime() != null && cl.getEndTime() != null) {
+                    cs.setDurationMinutes(ChronoUnit.MINUTES.between(cl.getStartTime(), cl.getEndTime()));
+                }
+                return cs;
+            }).collect(Collectors.toList()));
+            result.setCoatingJob(cjs);
+        });
+
+        // Stamping (shared per JO)
+        List<ProductionStamping> stampings = stampingRepo.findByJobOrderNo(jobId);
+        result.setStampingLogs(stampings.stream().map(st -> {
+            JoHistoryDTO.StampingSummary ss = new JoHistoryDTO.StampingSummary();
+            ss.setId(st.getId());
+            ss.setReportDate(st.getReportDate());
+            ss.setStartTime(st.getStartTime());
+            ss.setEndTime(st.getEndTime());
+            ss.setTotalTime(st.getTotalTime());
+            ss.setQuantity(st.getQuantity());
+            ss.setStampingType(st.getStampingType());
+            ss.setReporterName(st.getReporterName());
+            ss.setRemarks(st.getRemarks());
+            return ss;
+        }).collect(Collectors.toList()));
+
+        // QC (shared per JO)
+        qcJobRepo.findByJoId(jobId).stream().findFirst().ifPresent(qj -> {
+            JoHistoryDTO.QcJobSummary qjs = new JoHistoryDTO.QcJobSummary();
+            qjs.setId(qj.getId());
+            qjs.setJoId(qj.getJoId());
+            qjs.setJobName(qj.getJobName());
+            qjs.setResponsibleName(qj.getResponsibleName());
+            qjs.setStatus(qj.getStatus());
+            qjs.setQcType(qj.getQcType());
+            qjs.setQcDetail(qj.getQcDetail());
+            qjs.setPartName(qj.getPartName());
+            qjs.setQcLocation(qj.getQcLocation());
+            qjs.setStartQcDatetime(qj.getStartQcDatetime());
+            qjs.setDeliveryDatetime(qj.getDeliveryDatetime());
+            qjs.setReceivedQty(qj.getReceivedQty());
+            qjs.setPassedQty(qj.getPassedQty());
+            qjs.setBundlesPerPack(qj.getBundlesPerPack());
+            qjs.setBoxesPerBundle(qj.getBoxesPerBundle());
+            qjs.setPassedQtyFraction(qj.getPassedQtyFraction());
+            qjs.setBundlesPerPackFraction(qj.getBundlesPerPackFraction());
+            qjs.setPiecesFraction(qj.getPiecesFraction());
+
+            List<LogQc> qcLogs = logQcRepo.findByQcJobIdOrderByIdAsc(qj.getId());
+            qjs.setQcLogs(qcLogs.stream().map(lq -> {
+                ReorderDTO.QcLogSummary qs = new ReorderDTO.QcLogSummary();
+                qs.setId(lq.getId());
+                qs.setReportDate(lq.getReportDate());
+                qs.setStartTime(lq.getStartTime());
+                qs.setEndTime(lq.getEndTime());
+                qs.setReceivedQty(lq.getReceivedQty());
+                qs.setPassedQty(lq.getPassedQty());
+                qs.setFailedQty(lq.getFailedQty());
+                qs.setBundlesPerPack(lq.getBundlesPerPack());
+                qs.setBoxesPerBundle(lq.getBoxesPerBundle());
+                qs.setPassedQtyFraction(lq.getPassedQtyFraction());
+                qs.setBundlesPerPackFraction(lq.getBundlesPerPackFraction());
+                qs.setPiecesFraction(lq.getPiecesFraction());
+                qs.setQcType(lq.getQcType());
+                qs.setOperatorName(lq.getOperatorName());
+                qs.setRemarks(lq.getRemarks());
+                if (lq.getStartTime() != null && lq.getEndTime() != null) {
+                    qs.setDurationMinutes(ChronoUnit.MINUTES.between(lq.getStartTime(), lq.getEndTime()));
+                }
+                return qs;
+            }).collect(Collectors.toList()));
+
+            List<QcWasteReport> wastes = qcWasteReportRepo.findByQcJobId(qj.getId());
+            qjs.setQcWasteReports(wastes.stream().map(w -> {
+                ReorderDTO.QcWasteReportSummary ws = new ReorderDTO.QcWasteReportSummary();
+                ws.setId(w.getId());
+                ws.setQcJobId(w.getQcJobId());
+                ws.setProcessName(w.getProcessName());
+                ws.setTechnicianName(w.getTechnicianName());
+                ws.setWasteQty(w.getWasteQty());
+                ws.setRemarks(w.getRemarks());
+                return ws;
+            }).collect(Collectors.toList()));
+
+            List<QcStaff> staffs = qcStaffRepo.findByQcJobId(qj.getId());
+            qjs.setQcStaffs(staffs.stream().map(qs -> {
+                ReorderDTO.QcStaffSummary s = new ReorderDTO.QcStaffSummary();
+                s.setId(qs.getId());
+                s.setQcJobId(qs.getQcJobId());
+                s.setUserName(qs.getUserName());
+                s.setPacks(qs.getPacks());
+                s.setPacksFraction(qs.getPacksFraction());
+                s.setBundlesFraction(qs.getBundlesFraction());
+                s.setPiecesFraction(qs.getPiecesFraction());
+                return s;
+            }).collect(Collectors.toList()));
+
+            result.setQcJob(qjs);
+        });
+
+        return result;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ReOrder — สร้าง Design Order ใหม่จาก JO เดิม
+    // ═══════════════════════════════════════════════════════════════
+    public DesignOrders reorderDesign(ReorderDesignRequest req) {
+        DesignOrders d = new DesignOrders();
+        d.setJoId(req.getJoId());
+        d.setQtId(req.getQtId());
+        d.setQpId(req.getQpId());
+        d.setReorderFromJoId(req.getReorderFromJoId());
+        d.setDeadlineDate(req.getDeadlineDate());
+        d.setDeadlineTime(req.getDeadlineTime());
+        d.setFolderName(req.getFolderName());
+        d.setJobOwner(req.getJobOwner());
+        d.setCustomerName(req.getCustomerName());
+        d.setJobDetails(req.getJobDetails());
+        d.setRemarks(req.getRemarks());
+        d.setOrderDate(java.time.LocalDate.now());
+        d.setOrderTime(java.time.LocalTime.now());
+        d.setProcessStatus("รอผู้รับผิดชอบยืนยัน");
+        d.setAssignee("รอผู้รับผิดชอบยืนยัน");
+        d.setConfirmStatus("รอผู้รับผิดชอบยืนยัน");
+        return designOrdersRepo.save(d);
     }
 }

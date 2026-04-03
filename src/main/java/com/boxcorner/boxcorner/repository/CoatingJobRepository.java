@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.boxcorner.boxcorner.entity.CoatingJob;
 
@@ -8,12 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.List;
 
+@Repository
 public interface CoatingJobRepository extends JpaRepository<CoatingJob, Integer> {
 
     boolean existsByJoId(String joId);
 
-    java.util.List<CoatingJob> findByJoId(String joId);
+    List<CoatingJob> findByJoId(String joId);
 
     @Query(value = """
             SELECT * FROM coating_jobs c

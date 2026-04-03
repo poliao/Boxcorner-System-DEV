@@ -17,4 +17,12 @@ export class Dcsm37Service {
   getDetail(productionOrderId: number): Observable<any> {
     return this.http.get<any>(`${this.api}/reorder/detail`, { params: { productionOrderId } });
   }
+
+  getJobHistory(jobId: string): Observable<any> {
+    return this.http.get<any>(`${this.api}/reorder/job-history`, { params: { jobId } });
+  }
+
+  reorderDesign(body: any): Observable<any> {
+    return this.http.post<any>(`${this.api}/reorder/reorder-design`, body);
+  }
 }

@@ -1,9 +1,19 @@
+<!-- ===== HEADER ===== -->
 <div class="row align-items-center mb-3">
   <div class="col">
-    <h4 class="mb-0 fw-bold" style="color:#003747;">ติดตามการผลิต - {{ data?.folderName || '...' }}</h4>
-    <small class="text-muted">Job ID: {{ data?.jobId || '-' }} | ลูกค้า: {{ data?.customerName || '-' }}</small>
+    <h4 class="mb-0 fw-bold" style="color:#003747;">
+      ประวัติการผลิต - {{ data?.folderName || '...' }}
+    </h4>
+    <small class="text-muted">
+      Job ID: <strong>{{ data?.jobId || '-' }}</strong> |
+      ลูกค้า: {{ data?.customerName || '-' }} |
+      เจ้าของงาน: {{ data?.jobOwner || '-' }}
+    </small>
   </div>
-  <div class="col-auto">
+  <div class="col-auto d-flex gap-2">
+    <button mat-raised-button color="warn" (click)="openReorderModal()" id="btn-reorder">
+      <mat-icon>replay</mat-icon> ReOrder
+    </button>
     <button mat-stroked-button style="color:#003747" (click)="back()">
       <mat-icon>arrow_back</mat-icon> กลับ
     </button>
@@ -12,637 +22,369 @@
 
 <ng-container *ngIf="data">
 
-  <!-- Summary Card -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-2">
-          <div class="text-muted small">เลขที่ Production</div>
-          <div class="fw-bold">{{ data.productionOrderId }}</div>
-        </div>
-        <div class="col-md-2">
-          <div class="text-muted small">ประเภทงาน</div>
-          <div class="fw-bold">{{ data.jobType || '-' }}</div>
-        </div>
-        <div class="col-md-2">
-          <div class="text-muted small">เจ้าของงาน</div>
-          <div class="fw-bold">{{ data.jobOwner || '-' }}</div>
-        </div>
-        <div class="col-md-2">
-          <div class="text-muted small">สถานะ</div>
-          <div class="fw-bold">{{ data.processStatus || '-' }}</div>
-        </div>
-        <div class="col-md-2">
-          <div class="text-muted small">กำหนดส่ง</div>
-          <div class="fw-bold">{{ formatDate(data.deadlineDate) }}</div>
-        </div>
-        <div class="col-md-2">
-          <div class="text-muted small">ระยะเวลารวม</div>
-          <div class="fw-bold text-primary">{{ data.totalDurationDays ?? '-' }} วัน</div>
-        </div>
-      </div>
-      <div class="row mt-2" *ngIf="data.remarks">
-        <div class="col">
-          <div class="text-muted small">หมายเหตุ</div>
-          <div>{{ data.remarks }}</div>
+  <!-- ===== SUMMARY CARDS ===== -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm text-center h-100">
+        <div class="card-body py-3">
+          <div class="display-6 fw-bold text-primary">{{ data.totalRounds }}</div>
+          <div class="text-muted small">รอบการผลิตทั้งหมด</div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Production Specification Section -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-header fw-bold bg-dark text-white">
-      <mat-icon class="me-2" style="vertical-align:middle">settings</mat-icon> ข้อมูลทางเทคนิค (Production Details)
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm text-center h-100" [class.border-warning]="data.proofFailedCount > 0">
+        <div class="card-body py-3">
+          <div class="display-6 fw-bold text-warning">{{ data.proofFailedCount }}</div>
+          <div class="text-muted small">ครั้งที่ปรู๊ฟไม่ผ่าน</div>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-3">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm text-center h-100" [class.border-danger]="data.cancelledCount > 0">
+        <div class="card-body py-3">
+          <div class="display-6 fw-bold text-danger">{{ data.cancelledCount }}</div>
+          <div class="text-muted small">ครั้งที่ยกเลิก</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm text-center h-100">
+        <div class="card-body py-3">
+          <div class="fw-bold">{{ data.qtId || '-' }}</div>
           <div class="text-muted small">QT ID / QP ID</div>
-          <div class="fw-bold">{{ data.qtId || '-' }} / {{ data.qpId || '-' }}</div>
+          <div class="small text-secondary">{{ data.qpId || '-' }}</div>
         </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ผู้คุมงาน / ผู้ตรวจสอบ</div>
-          <div>{{ data.operatorName || '-' }} / {{ data.inspector || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">สถานะแม่พิมพ์ / ผู้ทำ</div>
-          <div>{{ data.moldStatus || '-' }} / {{ data.moldMakerName || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">เครื่องพิมพ์ (ระบุ)</div>
-          <div>{{ data.printingMachine || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">เลื่อนส่ง / ตะขอ</div>
-          <div>{{ data.postpone || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ไฟล์ที่ใช้ / ตัวอย่างสี</div>
-          <div>{{ data.usedFile || '-' }} / {{ data.colorSample || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">พิมพ์ 2 หน้า / รอบพิมพ์ (P1/P2)</div>
-          <div class="fw-bold">{{ data.print2Page ? 'ใช่' : 'ไม่ใช่' }} / {{ data.printRound || 0 }} : {{
-            data.printRoundPage2 || 0 }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">วันที่ตรวจงาน / วันที่ส่ง</div>
-          <div>{{ formatDate(data.inspectionDate) }} / {{ formatDate(data.deliveryDate) }}</div>
-        </div>
-      </div>
-      <div class="mt-3 p-2 bg-light rounded" *ngIf="data.decisionAuthority">
-        <div class="row g-2">
-          <div class="col-md-12">
-            <span class="text-muted small">ผู้มีอำนาจตัดสินใจ: </span>
-            <span class="fw-bold text-danger">{{ data.decisionAuthority }}</span>
-            <span class="ms-2 small">({{ data.decisionAuthorityRemarks || 'ไม่มีหมายเหตุ' }})</span>
-          </div>
-        </div>
-      </div>
-      <div class="mt-2 text-danger small" *ngIf="data.cancelRemarks">
-        <strong>สาเหตุที่ยกเลิก:</strong> {{ data.cancelRemarks }}
       </div>
     </div>
   </div>
 
-  <!-- Step Progress Bar -->
-  <div class="card border-0 shadow-sm mb-4">
+  <!-- ===== PRODUCTION ROUNDS ===== -->
+  <div class="mb-2 fw-bold" style="color:#003747; font-size:1.05rem;">
+    <mat-icon style="vertical-align:middle; margin-right:6px;">repeat</mat-icon>
+    ประวัติการสั่งผลิต ({{ data.productionRounds?.length || 0 }} รอบ)
+  </div>
+
+  <div *ngFor="let round of data.productionRounds; let i = index" class="mb-3">
+    <!-- Round Header (Accordion) -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header d-flex align-items-center justify-content-between"
+        [style.background]="round.jobStatus === 'ยกเลิก' || round.processStatus === 'ยกเลิก' ? '#fee2e2'
+          : round.isNewProof ? '#fef3c7'
+          : '#eff6ff'"
+        style="cursor:pointer; border-radius:8px 8px 0 0;"
+        (click)="toggleRound(i)">
+        <div class="d-flex align-items-center gap-3">
+          <mat-icon style="color:#003747">
+            {{ isRoundExpanded(i) ? 'expand_less' : 'expand_more' }}
+          </mat-icon>
+          <span class="fw-bold" style="color:#003747;">
+            รอบที่ {{ round.roundNumber }} — Order #{{ round.productionOrderId }}
+          </span>
+          <span [class]="getRoundBadge(round).class" class="ms-1">
+            {{ getRoundBadge(round).label }}
+          </span>
+          <span *ngIf="round.isNewProof" class="badge bg-warning text-dark">ปรู๊ฟไม่ผ่านมาก่อน</span>
+        </div>
+        <div class="text-muted small">
+          {{ formatDate(round.createdAt) }} | ผู้คุมงาน: {{ round.operatorName || '-' }}
+        </div>
+      </div>
+
+      <div *ngIf="isRoundExpanded(i)">
+        <div class="card-body">
+
+          <!-- Round Info -->
+          <div class="row g-2 mb-3">
+            <div class="col-md-3">
+              <div class="text-muted small">สถานะงาน / กระบวนการ</div>
+              <div>{{ round.jobStatus || '-' }} / {{ round.processStatus || '-' }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">กำหนดส่ง</div>
+              <div>{{ formatDate(round.deadlineDate) }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">วันที่ส่ง / วันตรวจงาน</div>
+              <div>{{ formatDate(round.deliveryDate) }} / {{ formatDate(round.inspectionDate) }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">เครื่องพิมพ์</div>
+              <div>{{ round.printingMachine || '-' }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">สถานะแม่พิมพ์ / ผู้ทำ</div>
+              <div>{{ round.moldStatus || '-' }} / {{ round.moldMakerName || '-' }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">ผู้ตรวจสอบ</div>
+              <div>{{ round.inspector || '-' }}</div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-muted small">พิมพ์ 2 หน้า / รอบพิมพ์ (P1/P2)</div>
+              <div>{{ round.print2Page ? 'ใช่' : 'ไม่ใช่' }} / {{ round.printRound || 0 }} : {{ round.printRoundPage2 || 0 }}</div>
+            </div>
+            <div class="col-md-3" *ngIf="round.decisionAuthority">
+              <div class="text-muted small">ผู้มีอำนาจตัดสินใจ</div>
+              <div class="fw-bold text-danger">{{ translateAuthority(round.decisionAuthority) }}</div>
+              <div class="small text-muted">{{ round.decisionAuthorityRemarks }}</div>
+            </div>
+            <div class="col-12 text-danger small" *ngIf="round.cancelRemarks">
+              <mat-icon class="me-1" style="font-size:16px;vertical-align:middle;">cancel</mat-icon>
+              <strong>สาเหตุที่ยกเลิก:</strong> {{ round.cancelRemarks }}
+            </div>
+            <div class="col-12 small text-muted" *ngIf="round.remarks">
+              <strong>หมายเหตุ:</strong> {{ round.remarks }}
+            </div>
+          </div>
+
+          <!-- ===== PRINT JOB ===== -->
+          <div *ngIf="round.printJob; else noPrintJob">
+            <div class="fw-bold mb-2" style="color:#3b82f6;">
+              <mat-icon style="vertical-align:middle;margin-right:4px;">print</mat-icon>
+              งานพิมพ์ (Print Job #{{ round.printJob.id }})
+            </div>
+            <div class="row g-2 mb-3 p-2 bg-light rounded">
+              <div class="col-md-2">
+                <div class="text-muted small">สถานะ</div>
+                <div>{{ round.printJob.jobStatus || '-' }}</div>
+              </div>
+              <div class="col-md-2">
+                <div class="text-muted small">ประเภทงาน / ระบบพิมพ์</div>
+                <div>{{ round.printJob.jobType || '-' }} / {{ round.printJob.printType || '-' }}</div>
+              </div>
+              <div class="col-md-2">
+                <div class="text-muted small">ประเภทกระดาษ / แกรม</div>
+                <div>{{ round.printJob.paperType || '-' }} / {{ round.printJob.paperGram || '-' }}</div>
+              </div>
+              <div class="col-md-2">
+                <div class="text-muted small">จำนวนแผ่น / ผลิต</div>
+                <div>{{ round.printJob.totalPrintSheets | number }} / {{ round.printJob.productionQty | number }}</div>
+              </div>
+              <div class="col-md-2">
+                <div class="text-muted small">ดี / เสีย</div>
+                <div><span class="text-success fw-bold">{{ round.printJob.goodQty | number }}</span> / <span class="text-danger fw-bold">{{ round.printJob.wasteQty | number }}</span></div>
+              </div>
+              <div class="col-md-2">
+                <div class="text-muted small">เผื่อเสีย / รอบปัจจุบัน</div>
+                <div>{{ round.printJob.setupWaste | number }} / {{ round.printJob.currentRound || '-' }}</div>
+              </div>
+              <div class="col-md-4" *ngIf="round.printJob.decisionAuthority">
+                <div class="text-muted small">ผู้มีอำนาจตัดสินใจ (Print)</div>
+                <div class="fw-bold text-danger">{{ translateAuthority(round.printJob.decisionAuthority) }}</div>
+                <div class="small text-muted">{{ round.printJob.decisionAuthorityRemarks }}</div>
+              </div>
+            </div>
+
+            <!-- Print Logs (OD) -->
+            <div *ngIf="round.printJob.printLogs?.length > 0" class="mb-4">
+              <div class="fw-bold mb-2 text-primary">Log การพิมพ์ OD ({{ round.printJob.printLogs.length }} รายการ)</div>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th>#</th><th>ประเภท</th><th>ด้าน</th><th>เริ่ม</th><th>สิ้นสุด</th>
+                      <th>ระยะเวลา</th><th>ผู้ปฏิบัติ</th><th>แผ่นที่ใช้</th><th>ดี</th><th>เสีย</th><th>หมายเหตุ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let log of round.printJob.printLogs; let j = index">
+                      <td>{{ j+1 }}</td>
+                      <td>{{ log.logType || '-' }}</td>
+                      <td>{{ log.printSide || '-' }}</td>
+                      <td>{{ formatDate(log.startedAt) }}</td>
+                      <td>{{ formatDate(log.endedAt) }}</td>
+                      <td class="text-primary fw-bold">{{ formatMinutes(log.durationMinutes) }}</td>
+                      <td>{{ log.operatorName || '-' }}</td>
+                      <td>{{ log.totalSheetsUsed | number }}</td>
+                      <td class="text-success">{{ log.goodQty | number }}</td>
+                      <td class="text-danger">{{ log.wasteQty | number }}</td>
+                      <td>{{ log.note || '-' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Print Logs OS -->
+            <div *ngIf="round.printJob.printLogsOs?.length > 0" class="mb-4">
+              <div class="fw-bold mb-2 text-info">
+                <mat-icon class="me-1" style="vertical-align:middle;font-size:18px">precision_manufacturing</mat-icon>
+                Log การพิมพ์ OS ({{ round.printJob.printLogsOs.length }} รายการ)
+              </div>
+              <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                <table class="table table-bordered table-hover mb-0 align-middle" style="font-size:0.95rem; min-width:1600px; white-space:nowrap;">
+                  <thead class="table-light fw-bold">
+                    <tr>
+                      <th class="text-center">#</th>
+                      <th>เวลาเริ่ม / สิ้นสุด</th>
+                      <th>เครื่อง / ด้านพิมพ์</th>
+                      <th>สถานะ</th>
+                      <th>ผู้ปฏิบัติงาน</th>
+                      <th>อุณหภูมิฟาวเทน (°C)</th>
+                      <th>IPA (%)</th>
+                      <th>ค่าการนำไฟฟ้า</th>
+                      <th>แรงดันลม</th>
+                      <th>ความสว่างกระดาษ</th>
+                      <th>ประเภทหมึก</th>
+                      <th>อายุหมึก</th>
+                      <th>C (ยี่ห้อ/Lot)</th>
+                      <th>M (ยี่ห้อ/Lot)</th>
+                      <th>Y (ยี่ห้อ/Lot)</th>
+                      <th>K (ยี่ห้อ/Lot)</th>
+                      <th class="text-center">ตรวจแม่พิมพ์ / ยางรับ / ล้างเครื่อง</th>
+                      <th class="text-center">อ้างอิงสี</th>
+                      <th>หมายเหตุ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let os of round.printJob.printLogsOs; let j = index">
+                      <td class="text-center fw-bold">{{ j+1 }}</td>
+                      <td>
+                        <div class="fw-bold text-primary">{{ formatDate(os.startTime) }}</div>
+                        <div class="text-muted small">{{ formatDate(os.endTime) }}</div>
+                      </td>
+                      <td>
+                        <div class="fw-bold">{{ os.machineName || '-' }}</div>
+                        <span class="badge bg-secondary opacity-75">{{ os.printSide || '-' }}</span>
+                      </td>
+                      <td>
+                        <span class="badge" [ngClass]="os.status === 'COMPLETED' ? 'bg-success' : 'bg-warning'">{{ os.status || '-' }}</span>
+                      </td>
+                      <td>{{ os.operatorName || '-' }}</td>
+                      <td class="text-center">{{ os.tempFountain || '-' }}</td>
+                      <td class="text-center">{{ os.ipaPercent || '-' }}</td>
+                      <td class="text-center">{{ os.conductivity || '-' }}</td>
+                      <td class="text-center">{{ os.airPressure || '-' }}</td>
+                      <td class="text-center">{{ os.paperBrightness || '-' }}</td>
+                      <td class="text-center">
+                        <span *ngIf="os.flagHasCmyk" class="badge bg-info me-1">CMYK</span>
+                        <span *ngIf="os.flagSpecialColor" class="badge bg-purple text-white">พิเศษ</span>
+                        <span *ngIf="!os.flagHasCmyk && !os.flagSpecialColor">-</span>
+                      </td>
+                      <td class="text-center">
+                        <span *ngIf="os.flagInkNew" class="text-success fw-bold">ใหม่</span>
+                        <span *ngIf="os.flagInkOld" class="text-danger fw-bold">เก่า</span>
+                        <span *ngIf="!os.flagInkNew && !os.flagInkOld">-</span>
+                      </td>
+                      <td>{{ os.cBrand || '-' }}<span class="text-muted small" *ngIf="os.cLot"> ({{ os.cLot }})</span></td>
+                      <td>{{ os.mBrand || '-' }}<span class="text-muted small" *ngIf="os.mLot"> ({{ os.mLot }})</span></td>
+                      <td>{{ os.yBrand || '-' }}<span class="text-muted small" *ngIf="os.yLot"> ({{ os.yLot }})</span></td>
+                      <td>{{ os.kBrand || '-' }}<span class="text-muted small" *ngIf="os.kLot"> ({{ os.kLot }})</span></td>
+                      <td class="text-center">
+                        <mat-icon [matTooltip]="'สภาพแม่พิมพ์'" [style.color]="os.checkPlateCondition ? '#16a34a' : '#d1d5db'">view_quilt</mat-icon>
+                        <mat-icon [matTooltip]="'สภาพยางรับ'" [style.color]="os.checkBlanketCondition ? '#16a34a' : '#d1d5db'">layers</mat-icon>
+                        <mat-icon [matTooltip]="'ล้างเครื่องแล้ว'" [style.color]="os.checkMachineWashed ? '#16a34a' : '#d1d5db'">cleaning_services</mat-icon>
+                      </td>
+                      <td class="text-center">
+                        <span *ngIf="os.refProof" class="badge rounded-pill bg-primary text-white me-1">ปรู๊ฟ</span>
+                        <span *ngIf="os.refDigital" class="badge rounded-pill bg-info text-white me-1">ดิจิตอล</span>
+                        <span *ngIf="os.refOldJob" class="badge rounded-pill bg-secondary text-white me-1">งานเก่า</span>
+                        <span *ngIf="os.refNotSerious" class="badge rounded-pill bg-light text-dark border">ไม่เข้มงวด</span>
+                        <span *ngIf="!os.refProof && !os.refDigital && !os.refOldJob && !os.refNotSerious">-</span>
+                      </td>
+                      <td>{{ os.qcRemark || '-' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Print Logs QA (OS Checklist) -->
+            <div *ngIf="round.printJob.printLogsQa?.length > 0" class="mb-4">
+              <div class="fw-bold mb-2 text-warning">
+                <mat-icon class="me-1" style="vertical-align:middle;font-size:18px">fact_check</mat-icon>
+                Checklist สุ่มตรวจ ({{ round.printJob.printLogsQa.length }} รายการ)
+              </div>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th>#</th><th>วันที่/เวลา</th><th>แผ่นที่</th>
+                      <th>1.สีตรง</th><th>2.สีสม่ำเสมอ</th><th>3.ไม่มีขี้หมึก</th><th>4.ไม่มีซับหลัง</th>
+                      <th>5.ไม่มีรอยเปื้อน</th><th>6.ฉากตรง</th><th>7.ไม่มีรอยขีด</th><th>8.ไม่มีงานปน</th>
+                      <th>ผู้บันทึก</th><th>หมายเหตุ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let qa of round.printJob.printLogsQa; let j = index">
+                      <td>{{ j+1 }}</td>
+                      <td>{{ formatDate(qa.createdAt) }}</td>
+                      <td>{{ qa.printedSheetNumber || '-' }}</td>
+                      <td><mat-icon [style.color]="qa.qcColorMatch ? 'green' : 'red'">{{ qa.qcColorMatch ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcColorConsistency ? 'green' : 'red'">{{ qa.qcColorConsistency ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcInkResidue ? 'green' : 'red'">{{ qa.qcInkResidue ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcInkTransfer ? 'green' : 'red'">{{ qa.qcInkTransfer ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcStains ? 'green' : 'red'">{{ qa.qcStains ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcAlignment ? 'green' : 'red'">{{ qa.qcAlignment ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcScratches ? 'green' : 'red'">{{ qa.qcScratches ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcMixedJobs ? 'green' : 'red'">{{ qa.qcMixedJobs ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td>{{ qa.operatorName || '-' }}</td>
+                      <td>{{ qa.qcRemark || '-' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Print Job -->
+          <ng-template #noPrintJob>
+            <div class="alert alert-secondary d-flex align-items-center gap-2" *ngIf="round.jobStatus !== 'ยกเลิก' && round.processStatus !== 'ยกเลิก'">
+              <mat-icon>info</mat-icon> ยังไม่มีงานพิมพ์สำหรับรอบนี้
+            </div>
+          </ng-template>
+
+        </div><!-- /card-body -->
+      </div><!-- /collapse -->
+    </div><!-- /card -->
+  </div><!-- /round loop -->
+
+  <!-- ===== COATING ===== -->
+  <div class="card border-0 shadow-sm mb-3" *ngIf="data.coatingJob">
+    <div class="card-header fw-bold" style="background:#10b981;color:#fff">
+      <mat-icon class="me-2" style="vertical-align:middle">layers</mat-icon>
+      เคลือบ (Coating)
+      <span class="ms-2 badge bg-light text-dark">{{ data.coatingJob.status || '-' }}</span>
+    </div>
     <div class="card-body">
-      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <ng-container *ngFor="let step of steps; let i = index; let last = last">
-          <div class="d-flex flex-column align-items-center" style="min-width:80px">
-            <div class="rounded-circle d-flex align-items-center justify-content-center mb-1"
-              [style.background]="getStepStatus(step.key) === 'pending' ? '#e5e7eb' : step.color"
-              [style.color]="getStepStatus(step.key) === 'pending' ? '#9ca3af' : '#fff'" style="width:48px;height:48px">
-              <mat-icon style="font-size:22px;width:22px;height:22px">{{ step.icon }}</mat-icon>
-            </div>
-            <div class="small fw-bold text-center"
-              [style.color]="getStepStatus(step.key) === 'pending' ? '#9ca3af' : step.color">
-              {{ step.label }}
-            </div>
-            <div class="badge mt-1" [class.bg-success]="getStepStatus(step.key) === 'done'"
-              [class.bg-warning]="getStepStatus(step.key) === 'active'"
-              [class.bg-secondary]="getStepStatus(step.key) === 'pending'">
-              {{ getStepStatus(step.key) === 'done' ? 'เสร็จ' : getStepStatus(step.key) === 'active' ? 'กำลังทำ' : 'รอ'
-              }}
-            </div>
-          </div>
-          <div *ngIf="!last" class="flex-grow-1"
-            style="height:2px;background:#e5e7eb;min-width:20px;margin-bottom:24px"></div>
-        </ng-container>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 1: ออกแบบ -->
-  <div class="card border-0 shadow-sm mb-3" *ngIf="data.designOrderId">
-    <div class="card-header fw-bold" style="background:#6366f1;color:#fff">
-      <mat-icon class="me-2" style="vertical-align:middle">design_services</mat-icon>
-      ขั้นตอนที่ 1 - ออกแบบ (Design Order #{{ data.designOrderId }})
-    </div>
-    <div class="card-body">
-      <div class="row g-3">
+      <div class="row g-3 mb-3">
         <div class="col-md-3">
-          <div class="text-muted small">วันที่สั่งออกแบบ</div>
-          <div>{{ formatDate(data.designOrderDate) }}</div>
+          <div class="text-muted small">ช่างเทคนิค</div>
+          <div>{{ data.coatingJob.technicianName || '-' }}</div>
         </div>
         <div class="col-md-3">
-          <div class="text-muted small">กำหนดส่งงานออกแบบ</div>
-          <div>{{ formatDate(data.designDeadlineDate) }}</div>
+          <div class="text-muted small">วันที่สั่ง / กำหนดส่ง</div>
+          <div>{{ formatDate(data.coatingJob.orderDatetime) }} / {{ formatDate(data.coatingJob.deliveryDatetime) }}</div>
         </div>
         <div class="col-md-3">
-          <div class="text-muted small">ผู้รับผิดชอบ</div>
-          <div>{{ data.designAssignee || '-' }}</div>
+          <div class="text-muted small">จำนวนรับเข้า / ต้องการ</div>
+          <div>{{ data.coatingJob.receivedSheetsQty | number }} / {{ data.coatingJob.requiredSheetsQty | number }}</div>
         </div>
-        <div class="col-md-3">
-          <div class="text-muted small">สถานะ</div>
-          <div>{{ data.designProcessStatus || '-' }} / {{ data.designConfirmStatus || '-' }}</div>
-        </div>
-        <div class="col-md-3" *ngIf="data.designStartDatetime">
-          <div class="text-muted small">เริ่มออกแบบ</div>
-          <div>{{ formatDate(data.designStartDatetime) }}</div>
-        </div>
-        <div class="col-md-3" *ngIf="data.designEndDatetime">
-          <div class="text-muted small">เสร็จออกแบบ</div>
-          <div>{{ formatDate(data.designEndDatetime) }}</div>
-        </div>
-        <div class="col-md-3" *ngIf="data.designDurationMinutes != null">
-          <div class="text-muted small">ระยะเวลาออกแบบ</div>
-          <div class="fw-bold text-primary">{{ formatMinutes(data.designDurationMinutes) }}</div>
-        </div>
-        <div class="col-md-3" *ngIf="data.designFileName">
-          <div class="text-muted small">ชื่อไฟล์ / เวอร์ชัน</div>
-          <div>{{ data.designFileName }} / {{ data.designVersion || '-' }}</div>
-        </div>
-        <div class="col-md-3" *ngIf="data.designConfirmDate">
-          <div class="text-muted small">วันที่ยืนยันล่วงหน้า</div>
-          <div>{{ formatDate(data.designConfirmDate) }}</div>
-        </div>
-        <div class="col-md-12" *ngIf="data.designJobDetails">
-          <div class="text-muted small">รายละเอียดงาน</div>
-          <div class="p-2 border rounded bg-light">{{ data.designJobDetails }}</div>
-        </div>
-        <div class="col-md-6" *ngIf="data.designNoteEdit">
-          <div class="text-muted small">หมายเหตุการแก้ไข</div>
-          <div class="p-2 border rounded bg-light">{{ data.designNoteEdit }}</div>
-        </div>
-        <div class="col-md-6" *ngIf="data.designRemarks || data.designRemarkAdd">
-          <div class="text-muted small">หมายเหตุเพิ่มเติม</div>
-          <div class="p-2 border rounded bg-light">{{ data.designRemarks || '' }} {{ data.designRemarkAdd || '' }}</div>
+        <div class="col-md-3" *ngIf="data.coatingJob.isSample">
+          <div class="badge bg-info">งานตัวอย่าง</div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Step 2: ขึ้นตัวอย่าง -->
-  <div class="card border-0 shadow-sm mb-3" *ngIf="data.sampleOrderId">
-    <div class="card-header fw-bold" style="background:#f59e0b;color:#fff">
-      <mat-icon class="me-2" style="vertical-align:middle">science</mat-icon>
-      ขั้นตอนที่ 2 - ขึ้นตัวอย่าง (Sample Order #{{ data.sampleOrderId }})
-    </div>
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-3">
-          <div class="text-muted small">วันที่สั่งตัวอย่าง</div>
-          <div>{{ formatDate(data.sampleOrderDate) }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">กำหนดส่งตัวอย่าง</div>
-          <div>{{ formatDate(data.sampleDeliveryDate) }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ผู้รับผิดชอบ</div>
-          <div>{{ data.sampleResponsiblePerson || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">สถานะ</div>
-          <div>{{ data.sampleStatus || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ประเภทงาน</div>
-          <div>{{ data.sampleJobType || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ระบบพิมพ์</div>
-          <div>{{ data.samplePrintType || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ประเภทกระดาษ</div>
-          <div>{{ data.samplePaperType || '-' }}</div>
-        </div>
-        <div class="col-md-3" *ngIf="data.sampleDurationDays != null">
-          <div class="text-muted small">ระยะเวลาตัวอย่าง</div>
-          <div class="fw-bold text-primary">{{ data.sampleDurationDays }} วัน</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">จำนวน / หน่วย</div>
-          <div>{{ data.sampleQuantity | number }} {{ data.sampleUnit || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ประเภทไดคัท / เคลือบ</div>
-          <div>{{ data.sampleDiecuttingType || '-' }} / {{ data.sampleCoatType || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">ระบบพิมพ์ / สีที่พิมพ์ (Sample)</div>
-          <div>{{ data.sampleSystemPrint || '-' }} / {{ data.sampleColorPrint || '-' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">แกรม / พิมพ์ 2 หน้า</div>
-          <div>{{ data.samplePaperGram || '-' }} / {{ data.samplePrint2Page ? 'ใช่' : 'ไม่ใช่' }}</div>
-        </div>
-        <div class="col-md-3">
-          <div class="text-muted small">รวมแผ่นพิมพ์</div>
-          <div>{{ data.sampleTotalPrintSheets | number }}</div>
-        </div>
-        <div class="col-md-12" *ngIf="data.sampleNote || data.sampleNoteEdit">
-          <div class="text-muted small">หมายเหตุ / การแก้ไข (Sample)</div>
-          <div class="p-2 border rounded bg-light">{{ data.sampleNote || '' }} {{ data.sampleNoteEdit || '' }}</div>
-        </div>
-        <div class="col-md-12 text-danger small" *ngIf="data.sampleCancelRemarks">
-          <strong>สาเหตุที่ยกเลิก (Sample):</strong> {{ data.sampleCancelRemarks }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 3: สั่งผลิต/พิมพ์ -->
-  <ng-container *ngFor="let order of [data].concat(data.siblingOrders || [])">
-    <div class="card border-0 shadow-sm mb-3" *ngIf="order.printJobId">
-      <div class="card-header fw-bold" style="background:#3b82f6;color:#fff">
-        <mat-icon class="me-2" style="vertical-align:middle">print</mat-icon>
-        ขั้นตอนที่ 3 - สั่งผลิต/พิมพ์ (Order #{{ order.productionOrderId }})
-      </div>
-      <div class="card-body">
-        <div class="row g-3 mb-3">
-          <div class="col-md-3">
-            <div class="text-muted small">สถานะ</div>
-            <div>{{ order.printJobStatus || '-' }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">จำนวนแผ่นพิมพ์</div>
-            <div>{{ order.totalPrintSheets | number }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">จำนวนผลิต</div>
-            <div>{{ order.productionQty | number }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">เครื่องพิมพ์</div>
-            <div>{{ order.printerName || '-' }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">กำหนดส่ง</div>
-            <div>{{ formatDate(order.printDeliveryDate) }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">วันที่สร้าง</div>
-            <div>{{ formatDate(order.printJobCreatedAt) }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">จำนวนดี / เสีย (รวม)</div>
-            <div class="fw-bold">
-              <span class="text-success">{{ order.printJobGoodQty | number }}</span> /
-              <span class="text-danger">{{ order.printJobWasteQty | number }}</span>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">เผื่อเสีย (Setup Waste)</div>
-            <div>{{ order.setupWaste | number }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">รอบพิมพ์ปัจจุบัน</div>
-            <div>{{ order.printRoundCurrent || '-' }}</div>
-          </div>
-          <div class="col-md-6" *ngIf="order.printJobDecisionAuthority">
-            <div class="text-muted small">ผู้มีอำนาจตัดสินใจ (Print)</div>
-            <div class="fw-bold text-danger">{{ order.printJobDecisionAuthority }}</div>
-            <div class="small">{{ order.printJobDecisionAuthorityRemarks }}</div>
-          </div>
-        </div>
-
-        <!-- Print Logs -->
-        <div *ngIf="order.printLogs?.length > 0">
-          <div class="fw-bold mb-2 text-primary">Log การพิมพ์ ({{ order.printLogs.length }} รายการ)</div>
-          <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>ครั้งที่</th>
-                  <th>ประเภท</th>
-                  <th>ด้าน</th>
-                  <th>เริ่ม</th>
-                  <th>สิ้นสุด</th>
-                  <th>ระยะเวลา</th>
-                  <th>ผู้ปฏิบัติ</th>
-                  <th>แผ่นที่ใช้</th>
-                  <th>ดี</th>
-                  <th>เสีย</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let log of order.printLogs; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ log.logType || '-' }}</td>
-                  <td>{{ log.printSide || '-' }}</td>
-                  <td>{{ formatDate(log.startedAt) }}</td>
-                  <td>{{ formatDate(log.endedAt) }}</td>
-                  <td class="text-primary fw-bold">{{ formatMinutes(log.durationMinutes) }}</td>
-                  <td>{{ log.operatorName || '-' }}</td>
-                  <td>{{ log.totalSheetsUsed | number }}</td>
-                  <td class="text-success">{{ log.goodQty | number }}</td>
-                  <td class="text-danger">{{ log.wasteQty | number }}</td>
-                  <td>{{ log.note || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Print Sampling Logs (QA) -->
-        <div *ngIf="order.printLogQas?.length > 0" class="mt-4">
-          <div class="fw-bold mb-2 text-warning">Log การสุ่มตรวจ / Sampling ({{ order.printLogQas.length }} รายการ)
-          </div>
-          <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>ครั้งที่</th>
-                  <th>วันที่/เวลา</th>
-                  <th>แผ่นที่</th>
-                  <th>1.สีตรง</th>
-                  <th>2.สีสม่ำเสมอ</th>
-                  <th>3.ไม่มีขี้หมึก</th>
-                  <th>4.ไม่มีซับหลัง</th>
-                  <th>5.ไม่มีรอยเปื้อน</th>
-                  <th>6.ฉากตรง</th>
-                  <th>7.ไม่มีรอยขีด</th>
-                  <th>8.ไม่มีงานปน</th>
-                  <th>ผู้บันทึก</th>
-                  <th>หมายเหตุ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let qa of order.printLogQas; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ formatDate(qa.createdAt) }}</td>
-                  <td>{{ qa.printedSheetNumber || '-' }}</td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcColorMatch ? 'green' : 'red'">{{ qa.qcColorMatch ? 'check_circle' :
-                      'cancel' }}</mat-icon>
-                  </td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcColorConsistency ? 'green' : 'red'">{{ qa.qcColorConsistency ?
-                      'check_circle' : 'cancel' }}</mat-icon>
-                  </td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcInkResidue ? 'green' : 'red'">{{ qa.qcInkResidue ? 'check_circle' :
-                      'cancel' }}</mat-icon>
-                  </td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcInkTransfer ? 'green' : 'red'">{{ qa.qcInkTransfer ? 'check_circle' :
-                      'cancel' }}</mat-icon>
-                  </td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcStains ? 'green' : 'red'">{{ qa.qcStains ? 'check_circle' : 'cancel'
-                      }}</mat-icon>
-                  </td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcAlignment ? 'green' : 'red'">{{ qa.qcAlignment ? 'check_circle' :
-                      'cancel' }}</mat-icon>
-                  </td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcScratches ? 'green' : 'red'">{{ qa.qcScratches ? 'check_circle' :
-                      'cancel' }}</mat-icon>
-                  </td>
-                  <td>
-                    <mat-icon [style.color]="qa.qcMixedJobs ? 'green' : 'red'">{{ qa.qcMixedJobs ? 'check_circle' :
-                      'cancel' }}</mat-icon>
-                  </td>
-                  <td>{{ qa.operatorName || '-' }}</td>
-                  <td>{{ qa.qcRemark || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Print Logs (Outsourcing) -->
-        <div *ngIf="order.printLogOss?.length > 0" class="mt-4">
-          <div class="fw-bold mb-4 text-info d-flex align-items-center">
-            <mat-icon class="me-2">precision_manufacturing</mat-icon>
-            Log การพิมพ์ (Outsourcing) ({{ order.printLogOss.length }} รายการ)
-          </div>
-          <div class="table-responsive border rounded shadow-sm">
-            <table class="table table-sm table-hover mb-0 align-middle">
-              <thead class="table-light text-nowrap">
-                <tr class="small text-uppercase fw-bold text-muted">
-                  <th rowspan="2" class="align-middle text-center border-end">#</th>
-                  <th colspan="4" class="text-center border-end bg-light bg-opacity-50">General Info</th>
-                  <th colspan="5" class="text-center border-end">Process Parameters</th>
-                  <th colspan="6" class="text-center border-end bg-light bg-opacity-50">Ink & Materials</th>
-                  <th colspan="2" class="text-center border-end">Equipment & Refs</th>
-                  <th colspan="5" class="text-center border-end bg-light bg-opacity-50 text-success">Quality Control
-                  </th>
-                  <th rowspan="2" class="align-middle border-start">Remark</th>
-                </tr>
-                <tr class="small text-nowrap">
-                  <!-- General -->
-                  <th class="border-end">Start / End Time</th>
-                  <th>Machine / Side</th>
-                  <th>Status</th>
-                  <th class="border-end">Artist</th>
-                  <!-- Process -->
-                  <th>Temp</th>
-                  <th>IPA %</th>
-                  <th>Cond.</th>
-                  <th>Air</th>
-                  <th class="border-end">Bright.</th>
-                  <!-- Ink -->
-                  <th>Type</th>
-                  <th>Age</th>
-                  <th>C (Brand/Lot)</th>
-                  <th>M (Brand/Lot)</th>
-                  <th>Y (Brand/Lot)</th>
-                  <th class="border-end">K (Brand/Lot)</th>
-                  <!-- Equipment & Refs -->
-                  <th>Equip Checks</th>
-                  <th class="border-end">Refs</th>
-                  <th class="border-end">Qty</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let os of order.printLogOss; let i = index" class="small">
-                  <td class="text-center border-end fw-bold">{{ i + 1 }}</td>
-                  <!-- General -->
-                  <td class="border-end py-2">
-                    <div class="fw-bold text-primary">{{ formatDate(os.startTime) }}</div>
-                    <div class="text-muted small">{{ formatDate(os.endTime) }}</div>
-                  </td>
-                  <td>
-                    <div class="fw-bold">{{ os.machineName || '-' }}</div>
-                    <div class="badge bg-secondary opacity-75 small">{{ os.printSide || '-' }}</div>
-                  </td>
-                  <td>
-                    <span class="badge" [ngClass]="os.status === 'COMPLETED' ? 'bg-success' : 'bg-warning'">
-                      {{ os.status || '-' }}
-                    </span>
-                  </td>
-                  <td class="border-end">{{ os.operatorName || '-' }}</td>
-                  <!-- Process -->
-                  <td>{{ os.tempFountain || '-' }}°C</td>
-                  <td>{{ os.ipaPercent || '-' }}%</td>
-                  <td>{{ os.conductivity || '-' }}</td>
-                  <td>{{ os.airPressure || '-' }}</td>
-                  <td class="border-end">{{ os.paperBrightness || '-' }}</td>
-                  <!-- Ink -->
-                  <td>
-                    <span *ngIf="os.flagHasCmyk" class="badge bg-info me-1">CMYK</span>
-                    <span *ngIf="os.flagSpecialColor" class="badge bg-purple text-white">Spec</span>
-                  </td>
-                  <td>
-                    <span *ngIf="os.flagInkNew" class="text-success fw-bold">NEW</span>
-                    <span *ngIf="os.flagInkOld" class="text-danger fw-bold">OLD</span>
-                  </td>
-                  <td>{{ os.cBrand }} <span class="text-muted small" *ngIf="os.cLot">({{ os.cLot }})</span></td>
-                  <td>{{ os.mBrand }} <span class="text-muted small" *ngIf="os.mLot">({{ os.mLot }})</span></td>
-                  <td>{{ os.yBrand }} <span class="text-muted small" *ngIf="os.yLot">({{ os.yLot }})</span></td>
-                  <td class="border-end">{{ os.kBrand }} <span class="text-muted small" *ngIf="os.kLot">({{ os.kLot
-                      }})</span></td>
-                  <!-- Equipment & Refs -->
-                  <td class="text-center">
-                    <mat-icon [matTooltip]="'Plate'" [style.color]="os.checkPlateCondition ? 'green' : '#eee'"
-                      class="small">view_quilt</mat-icon>
-                    <mat-icon [matTooltip]="'Blanket'" [style.color]="os.checkBlanketCondition ? 'green' : '#eee'"
-                      class="small">layers</mat-icon>
-                    <mat-icon [matTooltip]="'Washed'" [style.color]="os.checkMachineWashed ? 'green' : '#eee'"
-                      class="small">cleaning_services</mat-icon>
-                  </td>
-                  <td class="text-center border-end">
-                    <span *ngIf="os.refProof" class="badge rounded-pill bg-light text-dark border me-1">Proof</span>
-                    <span *ngIf="os.refDigital" class="badge rounded-pill bg-light text-dark border me-1">Digi</span>
-                    <span *ngIf="os.refOldJob" class="badge rounded-pill bg-light text-dark border me-1">Old</span>
-                    <span *ngIf="os.refNotSerious" class="badge rounded-pill bg-light text-dark border">Normal</span>
-                  </td>
-
-                  <td class="text-center border-end fw-bold text-success">{{ os.totalProduct || '-' }}</td>
-                  <!-- Remark -->
-                  <td class="text-muted">{{ os.qcRemark || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-
-  <!-- Step 4: เคลือบ (Coating Job) -->
-  <ng-container *ngFor="let order of [data].concat(data.siblingOrders || [])">
-    <div class="card border-0 shadow-sm mb-3" *ngIf="order.coatingJobId">
-      <div class="card-header fw-bold" style="background:#10b981;color:#fff">
-        <mat-icon class="me-2" style="vertical-align:middle">layers</mat-icon>
-        ขั้นตอนที่ 4 - เคลือบ (Order #{{ order.productionOrderId }})
-      </div>
-      <div class="card-body">
-        <div class="row g-3 mb-3">
-          <div class="col-md-3">
-            <div class="text-muted small">สถานะ</div>
-            <div>{{ order.coatingStatus || '-' }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">ช่างเทคนิค</div>
-            <div>{{ order.coatingTechnicianName || '-' }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">วันที่สั่ง</div>
-            <div>{{ formatDate(order.coatingOrderDatetime) }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">กำหนดส่ง</div>
-            <div>{{ formatDate(order.coatingDeliveryDatetime) }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">จำนวนรับเข้า / ต้องการ</div>
-            <div>{{ order.coatingReceivedSheetsQty | number }} / {{ order.coatingRequiredSheetsQty | number }}</div>
-          </div>
-          <div class="col-md-3" *ngIf="order.coatingIsSample">
-            <div class="text-muted small">ประเภท</div>
-            <div class="badge bg-info">งานตัวอย่าง</div>
-          </div>
-        </div>
-
-        <!-- Coating Logs -->
-        <div *ngIf="order.coatingLogs?.length > 0">
-          <div class="fw-bold mb-2 text-success">Log การเคลือบ ({{ order.coatingLogs.length }} รายการ)</div>
-          <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>ครั้งที่</th>
-                  <th>วันที่</th>
-                  <th>ประเภทเคลือบ</th>
-                  <th>เริ่ม</th>
-                  <th>สิ้นสุด</th>
-                  <th>ระยะเวลา</th>
-                  <th>จำนวนแผ่น</th>
-                  <th>ช่างเทคนิค</th>
-                  <th>หมายเหตุ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let log of order.coatingLogs; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ formatDate(log.reportDate) }}</td>
-                  <td>{{ log.coatingType || '-' }}</td>
-                  <td>{{ log.startTime || '-' }}</td>
-                  <td>{{ log.endTime || '-' }}</td>
-                  <td class="text-primary fw-bold">{{ formatMinutes(log.durationMinutes) }}</td>
-                  <td>{{ log.sheetQty | number }}</td>
-                  <td>{{ log.technicianName || '-' }}</td>
-                  <td>{{ log.remarks || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-
-  <!-- Step 5: ปั๊ม/ตัด -->
-  <ng-container *ngFor="let order of [data].concat(data.siblingOrders || [])">
-    <div class="card border-0 shadow-sm mb-3" *ngIf="order.stampingLogs?.length > 0">
-      <div class="card-header fw-bold" style="background:#ef4444;color:#fff">
-        <mat-icon class="me-2" style="vertical-align:middle">content_cut</mat-icon>
-        ขั้นตอนที่ 5 - ปั๊ม/ตัด (Order #{{ order.productionOrderId }} - {{ order.stampingLogs.length }} รายการ)
-      </div>
-      <div class="card-body">
+      <div *ngIf="data.coatingJob.coatingLogs?.length > 0">
+        <div class="fw-bold mb-2 text-success">Log การเคลือบ ({{ data.coatingJob.coatingLogs.length }} รายการ)</div>
         <div class="table-responsive">
           <table class="table table-sm table-bordered">
             <thead class="table-light">
               <tr>
-                <th>ครั้งที่</th>
-                <th>วันที่</th>
-                <th>ประเภท</th>
-                <th>เริ่ม</th>
-                <th>สิ้นสุด</th>
-                <th>เวลารวม</th>
-                <th>จำนวน</th>
-                <th>ผู้รายงาน</th>
-                <th>หมายเหตุ</th>
+                <th>#</th><th>วันที่</th><th>ประเภทเคลือบ</th><th>เริ่ม</th><th>สิ้นสุด</th>
+                <th>ระยะเวลา</th><th>จำนวนแผ่น</th><th>ช่างเทคนิค</th><th>หมายเหตุ</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let log of order.stampingLogs; let i = index">
-                <td>{{ i + 1 }}</td>
+              <tr *ngFor="let log of data.coatingJob.coatingLogs; let i = index">
+                <td>{{ i+1 }}</td>
                 <td>{{ formatDate(log.reportDate) }}</td>
-                <td>{{ log.stampingType || '-' }}</td>
+                <td>{{ log.coatingType || '-' }}</td>
                 <td>{{ log.startTime || '-' }}</td>
                 <td>{{ log.endTime || '-' }}</td>
-                <td class="text-primary fw-bold">{{ log.totalTime || '-' }}</td>
-                <td>{{ log.quantity | number }}</td>
-                <td>{{ log.reporterName || '-' }}</td>
+                <td class="text-primary fw-bold">{{ formatMinutes(log.durationMinutes) }}</td>
+                <td>{{ log.sheetQty | number }}</td>
+                <td>{{ log.technicianName || '-' }}</td>
                 <td>{{ log.remarks || '-' }}</td>
               </tr>
             </tbody>
@@ -650,158 +392,283 @@
         </div>
       </div>
     </div>
-  </ng-container>
+  </div>
 
-  <!-- Step 6: QC -->
-  <ng-container *ngFor="let order of [data].concat(data.siblingOrders || [])">
-    <div class="card border-0 shadow-sm mb-3" *ngIf="order.qcJobId">
-      <div class="card-header fw-bold" style="background:#8b5cf6;color:#fff">
-        <mat-icon class="me-2" style="vertical-align:middle">verified</mat-icon>
-        ขั้นตอนที่ 6 - QC (Order #{{ order.productionOrderId }})
-      </div>
-      <div class="card-body">
-        <div class="row g-3 mb-3">
-          <div class="col-md-3">
-            <div class="text-muted small">สถานะ QC</div>
-            <div>{{ order.qcStatus || '-' }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">ประเภท QC</div>
-            <div>{{ order.qcType || '-' }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">วันที่เริ่ม QC</div>
-            <div>{{ formatDate(order.qcStartDate) }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">กำหนดส่ง</div>
-            <div>{{ formatDate(order.qcDeliveryDate) }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">จำนวนรับเข้า</div>
-            <div>{{ order.qcReceivedQty | number }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">จำนวนผ่าน</div>
-            <div class="text-success fw-bold">{{ order.qcPassedQty | number }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">ชื่อชิ้นส่วน / สถานที่</div>
-            <div>{{ order.qcJobPartName || '-' }} / {{ order.qcJobLocation || '-' }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">ห่อละ / มัดละ</div>
-            <div>{{ order.qcBundlesPerPack | number }} / {{ order.qcBoxesPerBundle | number }}</div>
-          </div>
-          <div class="col-md-3">
-            <div class="text-muted small">เศษ (ผ่าน/ห่อ/ชิ้น)</div>
-            <div>{{ order.qcPassedQtyFraction | number }} / {{ order.qcBundlesPerPackFraction | number }} / {{
-              order.qcPiecesFraction | number }}</div>
-          </div>
-
-          <div class="col-md-12" *ngIf="order.qcJobDetail">
-            <div class="text-muted small">รายละเอียด QC</div>
-            <div class="p-2 border rounded bg-light">{{ order.qcJobDetail }}</div>
-          </div>
-        </div>
-
-        <div *ngIf="order.qcLogs?.length > 0">
-          <div class="fw-bold mb-2" style="color:#8b5cf6">Log QC ({{ order.qcLogs.length }} รายการ)</div>
-          <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>ครั้งที่</th>
-                  <th>วันที่</th>
-                  <th>เริ่ม</th>
-                  <th>สิ้นสุด</th>
-                  <th>ระยะเวลา</th>
-                  <th>รับเข้า</th>
-                  <th>ผ่าน</th>
-                  <th>ไม่ผ่าน</th>
-                  <th>เศษ(ผ่าน/ห่อ/ชิ้น)</th>
-                  <th>ผู้ปฏิบัติ</th>
-                  <th>หมายเหตุ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let log of order.qcLogs; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ formatDate(log.reportDate) }}</td>
-                  <td>{{ log.startTime || '-' }}</td>
-                  <td>{{ log.endTime || '-' }}</td>
-                  <td class="text-primary fw-bold">{{ formatMinutes(log.durationMinutes) }}</td>
-                  <td>{{ log.receivedQty | number }}</td>
-                  <td class="text-success">{{ log.passedQty | number }}</td>
-                  <td class="text-danger">{{ log.failedQty | number }}</td>
-                  <td class="small">{{ log.passedQtyFraction | number }}/{{ log.bundlesPerPackFraction | number }}/{{
-                    log.piecesFraction | number }}</td>
-                  <td>{{ log.operatorName || '-' }}</td>
-                  <td>{{ log.remarks || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div *ngIf="order.qcStaffs?.length > 0" class="mt-4">
-          <div class="fw-bold mb-2 text-dark">รายชื่อพนักงาน QC (Staff Assignments) ({{ order.qcStaffs.length }} รายการ)
-          </div>
-          <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>ลำดับ</th>
-                  <th>พนักงาน</th>
-                  <th>ห่อเต็ม</th>
-                  <th>เศษ(ห่อ/ชิ้น)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let staff of order.qcStaffs; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ staff.userName || '-' }}</td>
-                  <td>{{ staff.packs | number }}</td>
-                  <td>{{ staff.packsFraction | number }} / {{ staff.piecesFraction | number }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- QC Waste Reports -->
-        <div *ngIf="order.qcWasteReports?.length > 0" class="mt-4">
-          <div class="fw-bold mb-2 text-danger">รายงานของเสีย (Waste Reports)</div>
-          <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>ลำดับ</th>
-                  <th>ขั้นตอน</th>
-                  <th>ชื่อที่เสีย (ช่าง)</th>
-                  <th>จำนวนเสีย</th>
-                  <th>หมายเหตุ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let waste of order.qcWasteReports; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ waste.processName || '-' }}</td>
-                  <td>{{ waste.technicianName || '-' }}</td>
-                  <td class="text-danger fw-bold">{{ waste.wasteQty | number }}</td>
-                  <td>{{ waste.remarks || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+  <!-- ===== STAMPING ===== -->
+  <div class="card border-0 shadow-sm mb-3" *ngIf="data.stampingLogs?.length > 0">
+    <div class="card-header fw-bold" style="background:#ef4444;color:#fff">
+      <mat-icon class="me-2" style="vertical-align:middle">content_cut</mat-icon>
+      ปั๊ม/ตัด ({{ data.stampingLogs.length }} รายการ)
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>#</th><th>วันที่</th><th>ประเภท</th><th>เริ่ม</th><th>สิ้นสุด</th>
+              <th>เวลารวม</th><th>จำนวน</th><th>ผู้รายงาน</th><th>หมายเหตุ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of data.stampingLogs; let i = index">
+              <td>{{ i+1 }}</td>
+              <td>{{ formatDate(log.reportDate) }}</td>
+              <td>{{ log.stampingType || '-' }}</td>
+              <td>{{ log.startTime || '-' }}</td>
+              <td>{{ log.endTime || '-' }}</td>
+              <td class="text-primary fw-bold">{{ log.totalTime || '-' }}</td>
+              <td>{{ log.quantity | number }}</td>
+              <td>{{ log.reporterName || '-' }}</td>
+              <td>{{ log.remarks || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </ng-container>
+  </div>
+
+  <!-- ===== QC ===== -->
+  <div class="card border-0 shadow-sm mb-4" *ngIf="data.qcJob">
+    <div class="card-header fw-bold" style="background:#8b5cf6;color:#fff">
+      <mat-icon class="me-2" style="vertical-align:middle">verified</mat-icon>
+      QC
+      <span class="ms-2 badge bg-light text-dark">{{ data.qcJob.status || '-' }}</span>
+    </div>
+    <div class="card-body">
+      <div class="row g-3 mb-3">
+        <div class="col-md-3">
+          <div class="text-muted small">ประเภท QC / สถานที่</div>
+          <div>{{ data.qcJob.qcType || '-' }} / {{ data.qcJob.qcLocation || '-' }}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-muted small">ชื่อชิ้นส่วน</div>
+          <div>{{ data.qcJob.partName || '-' }}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-muted small">วันที่เริ่ม QC / กำหนดส่ง</div>
+          <div>{{ formatDate(data.qcJob.startQcDatetime) }} / {{ formatDate(data.qcJob.deliveryDatetime) }}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-muted small">รับเข้า / ผ่าน</div>
+          <div><span class="text-success fw-bold">{{ data.qcJob.receivedQty | number }}</span> / <span class="text-success fw-bold">{{ data.qcJob.passedQty | number }}</span></div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-muted small">ห่อละ / มัดละ</div>
+          <div>{{ data.qcJob.bundlesPerPack | number }} / {{ data.qcJob.boxesPerBundle | number }}</div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-muted small">เศษ (ผ่าน/ห่อ/ชิ้น)</div>
+          <div>{{ data.qcJob.passedQtyFraction | number }} / {{ data.qcJob.bundlesPerPackFraction | number }} / {{ data.qcJob.piecesFraction | number }}</div>
+        </div>
+        <div class="col-md-12" *ngIf="data.qcJob.qcDetail">
+          <div class="text-muted small">รายละเอียด QC</div>
+          <div class="p-2 border rounded bg-light">{{ data.qcJob.qcDetail }}</div>
+        </div>
+      </div>
+
+      <!-- QC Logs -->
+      <div *ngIf="data.qcJob.qcLogs?.length > 0" class="mb-4">
+        <div class="fw-bold mb-2" style="color:#8b5cf6">Log QC ({{ data.qcJob.qcLogs.length }} รายการ)</div>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>#</th><th>วันที่</th><th>เริ่ม</th><th>สิ้นสุด</th><th>ระยะเวลา</th>
+                <th>รับเข้า</th><th>ผ่าน</th><th>ไม่ผ่าน</th><th>เศษ (ผ่าน/ห่อ/ชิ้น)</th>
+                <th>ผู้ปฏิบัติ</th><th>หมายเหตุ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let log of data.qcJob.qcLogs; let i = index">
+                <td>{{ i+1 }}</td>
+                <td>{{ formatDate(log.reportDate) }}</td>
+                <td>{{ log.startTime || '-' }}</td>
+                <td>{{ log.endTime || '-' }}</td>
+                <td class="text-primary fw-bold">{{ formatMinutes(log.durationMinutes) }}</td>
+                <td>{{ log.receivedQty | number }}</td>
+                <td class="text-success">{{ log.passedQty | number }}</td>
+                <td class="text-danger">{{ log.failedQty | number }}</td>
+                <td class="small">{{ log.passedQtyFraction | number }}/{{ log.bundlesPerPackFraction | number }}/{{ log.piecesFraction | number }}</td>
+                <td>{{ log.operatorName || '-' }}</td>
+                <td>{{ log.remarks || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- QC Staff -->
+      <div *ngIf="data.qcJob.qcStaffs?.length > 0" class="mb-4">
+        <div class="fw-bold mb-2 text-dark">รายชื่อพนักงาน QC ({{ data.qcJob.qcStaffs.length }} คน)</div>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr><th>#</th><th>พนักงาน</th><th>ห่อเต็ม</th><th>เศษ (ห่อ/ชิ้น)</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let staff of data.qcJob.qcStaffs; let i = index">
+                <td>{{ i+1 }}</td>
+                <td>{{ staff.userName || '-' }}</td>
+                <td>{{ staff.packs | number }}</td>
+                <td>{{ staff.packsFraction | number }} / {{ staff.piecesFraction | number }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- QC Waste Reports -->
+      <div *ngIf="data.qcJob.qcWasteReports?.length > 0">
+        <div class="fw-bold mb-2 text-danger">รายงานของเสีย ({{ data.qcJob.qcWasteReports.length }} รายการ)</div>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr><th>#</th><th>ขั้นตอน</th><th>ช่าง</th><th>จำนวนเสีย</th><th>หมายเหตุ</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let waste of data.qcJob.qcWasteReports; let i = index">
+                <td>{{ i+1 }}</td>
+                <td>{{ waste.processName || '-' }}</td>
+                <td>{{ waste.technicianName || '-' }}</td>
+                <td class="text-danger fw-bold">{{ waste.wasteQty | number }}</td>
+                <td>{{ waste.remarks || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
 </ng-container>
 
-<div *ngIf="!data" class="text-center py-5 text-muted">
-  <mat-icon style="font-size:48px;width:48px;height:48px">hourglass_empty</mat-icon>
-  <div class="mt-2">กำลังโหลดข้อมูล...</div>
+<ng-container *ngIf="!data">
+  <div class="text-center py-5 text-muted">กำลังโหลดข้อมูล...</div>
+</ng-container>
+
+<!-- ===================================================================
+     MODAL STEP 1: เลือกประเภท ReOrder
+=================================================================== -->
+<div *ngIf="showTypeModal" class="modal-backdrop-custom" (click)="closeAllModals()">
+  <div class="modal-box-custom" (click)="$event.stopPropagation()" style="max-width:460px">
+    <div class="modal-header-custom">
+      <mat-icon class="me-2">replay</mat-icon>
+      <span class="fw-bold">ReOrder — เลือกประเภท</span>
+      <button class="btn-close-modal ms-auto" (click)="closeAllModals()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="p-4">
+      <p class="text-muted mb-4">
+        ReOrder จาก Job ID: <strong class="text-danger">{{ jobId }}</strong><br>
+        <small>เลือกว่าต้องการสั่งใหม่ในขั้นตอนไหน</small>
+      </p>
+      <div class="d-grid gap-3">
+        <button class="btn btn-outline-primary py-3 text-start d-flex align-items-center gap-3"
+                id="btn-type-design" (click)="selectType('design')">
+          <mat-icon style="font-size:28px;width:32px">design_services</mat-icon>
+          <div>
+            <div class="fw-bold">สั่งออกแบบ</div>
+            <small class="text-muted">สร้าง Design Order ใหม่ พร้อมกำหนด JO / QT / QP</small>
+          </div>
+        </button>
+        <button class="btn btn-outline-warning py-3 text-start d-flex align-items-center gap-3"
+                id="btn-type-sample" (click)="selectType('sample')">
+          <mat-icon style="font-size:28px;width:32px">science</mat-icon>
+          <div>
+            <div class="fw-bold">สั่งขึ้นตัวอย่าง</div>
+            <small class="text-muted">สร้าง Sample Order ใหม่</small>
+          </div>
+        </button>
+        <button class="btn btn-outline-success py-3 text-start d-flex align-items-center gap-3"
+                id="btn-type-production" (click)="selectType('production')">
+          <mat-icon style="font-size:28px;width:32px">precision_manufacturing</mat-icon>
+          <div>
+            <div class="fw-bold">สั่งผลิต</div>
+            <small class="text-muted">สร้าง Production Order ใหม่จาก JO เดิม</small>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================
+     MODAL STEP 2: ฟอร์มสั่งออกแบบ
+=================================================================== -->
+<div *ngIf="showDesignModal" class="modal-backdrop-custom" (click)="closeAllModals()">
+  <div class="modal-box-custom" (click)="$event.stopPropagation()" style="max-width:520px">
+    <div class="modal-header-custom" style="background:#6366f1">
+      <mat-icon class="me-2">design_services</mat-icon>
+      <span class="fw-bold">สั่งออกแบบใหม่ (ReOrder)</span>
+      <button class="btn-close-modal ms-auto" (click)="closeAllModals()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="p-4">
+      <div class="alert alert-light border mb-3 small">
+        <mat-icon style="font-size:16px;vertical-align:middle" class="me-1">info</mat-icon>
+        ReOrder จาก JO: <strong>{{ jobId }}</strong> — {{ data?.folderName }}
+      </div>
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label fw-bold">JO ใหม่ <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="input-new-jo"
+                 [(ngModel)]="designForm.joId" placeholder="เช่น JO-2025-001">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">QT ใหม่</label>
+          <input type="text" class="form-control" id="input-new-qt"
+                 [(ngModel)]="designForm.qtId" placeholder="เช่น QT-2025-001">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">QP ใหม่</label>
+          <input type="text" class="form-control" id="input-new-qp"
+                 [(ngModel)]="designForm.qpId" placeholder="เช่น QP-2025-001">
+        </div>
+        <div class="col-md-7">
+          <label class="form-label fw-bold">วันที่ฝ่ายออกแบบต้องส่งงาน <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="input-design-deadline"
+                 [(ngModel)]="designForm.deadlineDate">
+        </div>
+        <div class="col-md-5">
+          <label class="form-label fw-bold">เวลาที่ต้องการ</label>
+          <input type="time" class="form-control" id="input-design-deadline-time"
+                 [(ngModel)]="designForm.deadlineTime">
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold">รายละเอียดงาน</label>
+          <textarea class="form-control" id="input-design-details" rows="2"
+                    [(ngModel)]="designForm.jobDetails" placeholder="ระบุรายละเอียดงาน..."></textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold">หมายเหตุ</label>
+          <textarea class="form-control" id="input-design-remarks" rows="2"
+                    [(ngModel)]="designForm.remarks" placeholder="ระบุหมายเหตุเพิ่มเติม..."></textarea>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button class="btn btn-outline-secondary" (click)="closeAllModals()">ยกเลิก</button>
+        <button class="btn btn-primary px-4" id="btn-submit-design" (click)="submitDesignOrder()">
+          <mat-icon class="me-1" style="font-size:18px;vertical-align:middle">send</mat-icon>
+          ส่งคำสั่งออกแบบ
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================
+     MODAL: Coming Soon (Sample / Production)
+=================================================================== -->
+<div *ngIf="showComingSoonModal" class="modal-backdrop-custom" (click)="closeAllModals()">
+  <div class="modal-box-custom text-center" (click)="$event.stopPropagation()" style="max-width:360px">
+    <div class="modal-header-custom" style="background:#64748b">
+      <mat-icon class="me-2">hourglass_empty</mat-icon>
+      <span class="fw-bold">{{ comingSoonType }}</span>
+      <button class="btn-close-modal ms-auto" (click)="closeAllModals()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="p-4">
+      <mat-icon style="font-size:56px;color:#94a3b8;display:block">construction</mat-icon>
+      <p class="mt-3 text-muted">ฟีเจอร์ <strong>{{ comingSoonType }}</strong><br>อยู่ระหว่างพัฒนา</p>
+      <button class="btn btn-secondary mt-2" (click)="closeAllModals()">ปิด</button>
+    </div>
+  </div>
 </div>
