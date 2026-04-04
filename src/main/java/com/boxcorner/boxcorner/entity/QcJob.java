@@ -110,4 +110,7 @@ public class QcJob extends BaseEntity {
     @Column(name = "qc_mixed_jobs")
     private Boolean qcMixedJobs;
 
+    @Column(name = "qc_caution")
+    private String qcCaution;
+
 }

@@ -164,4 +164,7 @@ public class ProductionOrder extends BaseEntity {
 
     @Column(name = "reorder_from_jo_id")
     private String reorderFromJoId;
+
+    @Column(name = "customer_feedback", columnDefinition = "TEXT")
+    private String customerFeedback;
 }

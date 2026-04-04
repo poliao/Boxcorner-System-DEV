@@ -118,7 +118,8 @@ public class QcService {
             java.util.List<QcStaff> staffList,
             java.util.List<QcWasteReport> wasteReportList,
             Boolean qcColorMatch, Boolean qcColorConsistency, Boolean qcInkResidue, Boolean qcInkTransfer,
-            Boolean qcStains, Boolean qcAlignment, Boolean qcScratches, Boolean qcMixedJobs) {
+            Boolean qcStains, Boolean qcAlignment, Boolean qcScratches, Boolean qcMixedJobs,
+            String qcCaution) {
         QcJob qcJob = qcJobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
 
@@ -138,6 +139,7 @@ public class QcService {
         qcJob.setQcAlignment(qcAlignment);
         qcJob.setQcScratches(qcScratches);
         qcJob.setQcMixedJobs(qcMixedJobs);
+        qcJob.setQcCaution(qcCaution);
 
         QcJob savedJob = qcJobRepository.save(qcJob);
 
@@ -151,6 +153,7 @@ public class QcService {
         logQc.setPassedQtyFraction(passedQtyFraction);
         logQc.setBundlesPerPackFraction(bundlesPerPackFraction);
         logQc.setPiecesFraction(piecesFraction);
+        logQc.setQcCaution(qcCaution);
         logQcRepository.save(logQc);
 
         if (staffList != null && !staffList.isEmpty()) {

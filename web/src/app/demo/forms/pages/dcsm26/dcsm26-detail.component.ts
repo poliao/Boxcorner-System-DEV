@@ -830,7 +830,6 @@ export class Dcsm26DetailComponent implements OnInit {
     this.loadingService.show();
     this.showExtraPrintQtyModal = false;
 
-    // Update log status
     const logId = this.selectedExtraPrint?.printingRecordId;
     if (logId) {
       this.dcsm26Service.getLogById(logId).subscribe({

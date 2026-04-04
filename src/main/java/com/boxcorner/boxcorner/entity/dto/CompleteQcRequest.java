@@ -23,4 +23,5 @@ public class CompleteQcRequest {
     private Boolean qcAlignment;
     private Boolean qcScratches;
     private Boolean qcMixedJobs;
+    private String qcCaution;
 }

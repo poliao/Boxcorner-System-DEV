@@ -84,7 +84,8 @@ export class Dcsm36DetailComponent implements OnInit {
       createdAt: [null],
       updatedAt: [null],
       qcDetail: [null],
-      partName: [null]
+      partName: [null],
+      qcCaution: [null]
     });
 
     this.papOrderForm = this.fb.group({
@@ -242,6 +243,7 @@ export class Dcsm36DetailComponent implements OnInit {
     const passedQtyFractionInput = document.getElementById('modalPassedQtyFraction') as HTMLInputElement;
     const bundlesPerPackFractionInput = document.getElementById('modalBundlesPerPackFraction') as HTMLInputElement;
     const piecesFractionInput = document.getElementById('modalPiecesFraction') as HTMLInputElement;
+    const qcCautionInput = document.getElementById('modalQcCaution') as HTMLTextAreaElement;
 
     for (let i = 0; i < this.qcStaffList.length; i++) {
       if (!this.qcStaffList[i].userName) {
@@ -279,6 +281,7 @@ export class Dcsm36DetailComponent implements OnInit {
         };
       }),
       wasteReportList: this.qcWasteList.filter(w => w.processName),
+      qcCaution: qcCautionInput?.value || null
     };
 
     this.loadingService.show();

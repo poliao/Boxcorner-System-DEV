@@ -2,13 +2,10 @@
   <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
     <h1 class="mb-0 text-center text-md-start">งานรอพิมพ์ OS</h1>
     <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
-      <!-- QC button -->
       <button
         *ngIf="['กำลังพิมพ์ด้านหน้า','กำลังพิมพ์ด้านหลัง','กำลังพิมพ์ส่งลูกค้า','กำลังพิมพ์ส่งลูกค้าหน้า 2'].includes(printingForm.get('jobStatus')?.value)"
         (click)="openQcModal()" class="btn text-white px-4 shadow-sm"
         style="background-color: #0dcaf0;">เช็คคุณภาพ</button>
-
-      <!-- กำลังพิมพ์ด้านหน้า rounds -->
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหน้า' && currentRound < (printingForm.getRawValue().printRound || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
@@ -18,8 +15,6 @@
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหน้า' && currentRound >= (printingForm.getRawValue().printRound || 1)"
         (click)="updatePrintStatus('Print')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">พิมพ์เสร็จ</button>
-
-      <!-- กำลังพิมพ์ด้านหลัง rounds -->
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหลัง' && currentRound < (printingForm.getRawValue().printRoundPage2 || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
@@ -29,8 +24,6 @@
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ด้านหลัง' && currentRound >= (printingForm.getRawValue().printRoundPage2 || 1)"
         (click)="updatePrintStatus('กำลังพิมพ์ด้านหลัง')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">พิมพ์เสร็จหน้า2</button>
-
-      <!-- กำลังพิมพ์ส่งลูกค้า rounds -->
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า' && currentRound < (printingForm.getRawValue().printRound || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
@@ -40,13 +33,9 @@
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้า' && currentRound >= (printingForm.getRawValue().printRound || 1)"
         (click)="updatePrintStatus('กำลังพิมพ์ส่งลูกค้า')" class="btn text-white px-4 shadow-sm"
         style="background-color: #0f766e;">พิมพ์ส่งลูกค้าเสร็จ</button>
-
-      <!-- รอพิมพ์ส่งลูกค้าหน้า 2 -->
       <button *ngIf="printingForm.get('jobStatus')?.value === 'รอพิมพ์ส่งลูกค้าหน้า 2'"
         (click)="onUpdatePrint('PROOF_PAGE2')" class="btn text-white px-4 shadow-sm"
         style="background-color: #1e1b4b;">เริ่มปรู๊ฟหน้า2</button>
-
-      <!-- กำลังพิมพ์ส่งลูกค้าหน้า 2 rounds -->
       <button
         *ngIf="printingForm.get('jobStatus')?.value === 'กำลังพิมพ์ส่งลูกค้าหน้า 2' && currentRound < (printingForm.getRawValue().printRoundPage2 || 1)"
         (click)="openNextRoundChecklist()" class="btn text-white px-4 shadow-sm" style="background-color: #065f46;">
@@ -211,7 +200,8 @@
   </div>
 </div>
 
-<div class="card shadow-sm mt-3" *ngIf="['sampleToCustomer', 'customerOnSite'].includes(printingForm.get('decisionAuthority')?.value)">
+<div class="card shadow-sm mt-3"
+  *ngIf="['sampleToCustomer', 'customerOnSite'].includes(printingForm.get('decisionAuthority')?.value)">
   <div class="card-header text-white" style="background-color: #198754;">
     <h5 class="card-title mb-0 text-white"><i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง</h5>
   </div>

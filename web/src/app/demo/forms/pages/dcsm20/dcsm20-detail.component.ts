@@ -96,7 +96,7 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isCoating = false
       this.isStamping = false
       this.isGluing = false
-    } else if (this.productionForm.getRawValue().id != null && this.productionForm.getRawValue().printStatus == 'กำลังQc' && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
+    } else if (this.productionForm.getRawValue().id != null && (this.productionForm.getRawValue().printStatus == 'กำลังQc' || this.productionForm.getRawValue().printStatus == 'เสร็จสิ้น') && this.productionForm.getRawValue().deliveryStatus != 'รอที่อยู่จัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'รอจัดส่ง' && this.productionForm.getRawValue().deliveryStatus != 'กำลังส่ง' && this.productionForm.getRawValue().deliveryStatus != 'จัดส่งเรียบร้อย') {
       // เปลี่ยนสเตตัสกลับด้วยจาก == กำลังQc ให้กลับเป็น เสร็จสิ้น
       this.isAddress = true
       this.isWaitDelivery = true

@@ -98,7 +98,8 @@ public class QcController {
                     request.getQcStains(),
                     request.getQcAlignment(),
                     request.getQcScratches(),
-                    request.getQcMixedJobs()));
+                    request.getQcMixedJobs(),
+                    request.getQcCaution()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }

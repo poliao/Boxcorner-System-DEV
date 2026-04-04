@@ -9,14 +9,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.boxcorner.boxcorner.entity.ProductionJob;
 import com.boxcorner.boxcorner.entity.PapProductionOrder;
+import com.boxcorner.boxcorner.entity.ProductionOrder;
 import com.boxcorner.boxcorner.entity.QcJob;
 import com.boxcorner.boxcorner.repository.PapProductionOrderRepository;
 import com.boxcorner.boxcorner.repository.ProductionJobRepository;
+import com.boxcorner.boxcorner.repository.ProductionOrderRepository;
 import com.boxcorner.boxcorner.repository.QcJobRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ProductionJobService {
@@ -29,6 +32,9 @@ public class ProductionJobService {
 
     @Autowired
     private PapProductionOrderRepository papProductionOrderRepository;
+
+    @Autowired
+    private ProductionOrderRepository productionOrderRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -76,7 +82,21 @@ public class ProductionJobService {
                 return productionJobRepository.save(existing);
             }
         }
-        return productionJobRepository.save(productionJob);
+        ProductionJob savedJob = productionJobRepository.save(productionJob);
+
+        // Sync with ProductionOrder status
+        if ("จัดส่งเรียบร้อย".equals(savedJob.getDeliveryStatus())) {
+            List<ProductionOrder> relatedOrders = productionOrderRepository.findByPrintJobId(savedJob.getId());
+            if (relatedOrders != null && !relatedOrders.isEmpty()) {
+                for (ProductionOrder order : relatedOrders) {
+                    if (!"ยกเลิก".equals(order.getProcessStatus())) {
+                        order.setProcessStatus("จัดส่งแล้ว");
+                        productionOrderRepository.save(order);
+                    }
+                }
+            }
+        }
+        return savedJob;
     }
 
     public ProductionJob findById(Long id) {

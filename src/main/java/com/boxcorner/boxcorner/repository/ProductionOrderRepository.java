@@ -519,4 +519,6 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
 
 
     long countByJobId(String jobId);
+
+    List<ProductionOrder> findByPrintJobId(Long printJobId);
 }

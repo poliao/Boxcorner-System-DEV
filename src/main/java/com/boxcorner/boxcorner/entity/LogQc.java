@@ -76,4 +76,7 @@ public class LogQc extends BaseEntity {
     @Column(name = "remarks", columnDefinition = "TEXT")
     private String remarks;
 
+    @Column(name = "qc_caution")
+    private String qcCaution;
+
 }

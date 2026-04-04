@@ -109,6 +109,10 @@
               <label class="form-label fw-bold">ประเภทQC</label>
               <input type="text" class="form-control bg-light" formControlName="qcType" readonly>
             </div>
+            <div class="col-12">
+              <label class="form-label fw-bold">ข้อควรระวัง</label>
+              <textarea class="form-control bg-light" formControlName="qcCaution" readonly rows="2"></textarea>
+            </div>
           </div>
         </form>
       </div>
@@ -211,6 +215,10 @@
         <div class="col-12 col-md-4" *ngIf="qcJobForm.get('qcType')?.value != 'Qc STK'">
           <label class="form-label fw-bold">จำนวนชิ้น(เศษ)</label>
           <input type="number" id="modalPiecesFraction" class="form-control" placeholder="จำนวนชิ้น(เศษ)">
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold">ข้อควรระวัง</label>
+          <textarea id="modalQcCaution" class="form-control" rows="3" placeholder="ระบุข้อควรระวัง (ถ้ามี)"></textarea>
         </div>
       </div>
 

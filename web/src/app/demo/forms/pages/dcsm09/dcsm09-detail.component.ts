@@ -142,7 +142,8 @@ export class Dcsm09DetailComponent implements OnInit {
       printRound: [null],
       printRoundPage2: [null],
       printJobId: [null],
-      isNewProof: [false]
+      isNewProof: [false],
+      customerFeedback: [null]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

@@ -92,7 +92,13 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('sampleDiecutStyle')?.enable();
       this.mainForm.get('sampleSpecialInstructions')?.enable();
       this.mainForm.get('sampleDeliveryTimestamp')?.enable();
+      this.mainForm.get('customerFeedback')?.enable();
       this.isSave = true
+    }
+
+    if (this.isApprove) {
+      this.mainForm.get('customerFeedback')?.enable();
+      this.isSave = true;
     }
   }
 
@@ -148,7 +154,8 @@ export class Dcsm06DetailComponent implements OnInit {
       printRound: [null],
       printRoundPage2: [null],
       printJobId: [null],
-      isNewProof: [false]
+      isNewProof: [false],
+      customerFeedback: [null]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -189,6 +196,7 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('sampleDiecutStyle')?.disable({ emitEvent: false });
     this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
     this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
+    this.mainForm.get('customerFeedback')?.disable({ emitEvent: false });
 
     // Conditional Validation: If QP is filled, JO is not required. If no QP, JO is required.
     this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
@@ -459,7 +467,7 @@ export class Dcsm06DetailComponent implements OnInit {
                 next: (printJob) => {
                   if (printJob) {
                     this.dcsm26Service.updatePrintJobStatus(printJob.id, 'อนุมัติผลิตแล้ว').subscribe({
-                      next: () => {},
+                      next: () => { },
                       error: (err) => {
                         console.error('Failed to update PrintJob status:', err);
                         this.sweetAlert.error('เกิดข้อผิดพลาด', 'อนุมัติสำเร็จ แต่ไม่สามารถอัปเดตสถานะตาราง print_job ได้: ' + (err.error || err.message));
@@ -549,7 +557,6 @@ export class Dcsm06DetailComponent implements OnInit {
       }
     });
   }
-
 
   getCreatedTime(): string {
     const createdAt = this.mainForm.get('createdAt')?.value;
