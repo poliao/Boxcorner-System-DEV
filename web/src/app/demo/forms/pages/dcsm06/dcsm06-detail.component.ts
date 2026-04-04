@@ -92,12 +92,17 @@ export class Dcsm06DetailComponent implements OnInit {
       this.mainForm.get('sampleDiecutStyle')?.enable();
       this.mainForm.get('sampleSpecialInstructions')?.enable();
       this.mainForm.get('sampleDeliveryTimestamp')?.enable();
-      this.mainForm.get('customerFeedback')?.enable();
       this.isSave = true
     }
 
-    if (this.isApprove) {
+    // Enable customerFeedback only when job is completed and delivered
+    if (this.mainForm.getRawValue().jobStatus === 'เสร็จสิ้น' &&
+      this.mainForm.getRawValue().processStatus === 'จัดส่งเรียบร้อย') {
       this.mainForm.get('customerFeedback')?.enable();
+      this.isSave = true;
+    }
+
+    if (this.isApprove) {
       this.isSave = true;
     }
   }

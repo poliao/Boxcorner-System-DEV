@@ -216,7 +216,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       qcLocation: [this.qcLocation],
       partName: [null],
       printJobId: [null],
-      qcType: [null]
+      qcType: [null],
+      productionOrderId: [this.referenceId ?? null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();

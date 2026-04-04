@@ -359,5 +359,14 @@ export class Dcsm37DetailComponent implements OnInit {
     return map[value] ?? value;
   }
 
+
+  calculateQcTotal(q: any): number {
+    if (!q) return 0;
+    const full = (q.passedQty || 0) * (q.bundlesPerPack || 0) * (q.boxesPerBundle || 0);
+    const fraction = (q.passedQtyFraction || 0) * (q.bundlesPerPackFraction || 0) * (q.boxesPerBundle || 0);
+    const extra = (q.piecesFraction || 0);
+    return full + fraction + extra;
+  }
+
   back() { this.router.navigate(['/Dcsm37']); }
 }

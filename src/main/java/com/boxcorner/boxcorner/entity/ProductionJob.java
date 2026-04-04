@@ -130,4 +130,7 @@ public class ProductionJob extends BaseEntity {
 
     @Column(name = "print_job_id")
     private Long printJobId;
+
+    @Column(name = "production_order_id")
+    private Integer productionOrderId;
 }

@@ -19,7 +19,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.List;
 
 @Service
 public class ProductionJobService {
@@ -79,24 +78,36 @@ public class ProductionJobService {
                 existing.setQcLocation(productionJob.getQcLocation());
                 existing.setPrintJobId(productionJob.getPrintJobId());
                 existing.setQcType(productionJob.getQcType());
-                return productionJobRepository.save(existing);
+                existing.setProductionOrderId(productionJob.getProductionOrderId());
+                ProductionJob updatedJob = productionJobRepository.save(existing);
+
+                // Sync ProductionOrder status on update when delivery is complete
+                if ("จัดส่งเรียบร้อย".equals(updatedJob.getDeliveryStatus())
+                        && updatedJob.getProductionOrderId() != null) {
+                    ProductionOrder order = productionOrderRepository.findById(Integer.valueOf(updatedJob.getProductionOrderId())).orElse(null);
+                    if (order != null && !"ยกเลิก".equals(order.getProcessStatus())) {
+                        order.setProcessStatus("จัดส่งเรียบร้อย");
+                        order.setJobStatus("เสร็จสิ้น");
+                        productionOrderRepository.save(order);
+                    }
+                }
+                return updatedJob;
             }
         }
         ProductionJob savedJob = productionJobRepository.save(productionJob);
 
-        // Sync with ProductionOrder status
-        if ("จัดส่งเรียบร้อย".equals(savedJob.getDeliveryStatus())) {
-            List<ProductionOrder> relatedOrders = productionOrderRepository.findByPrintJobId(savedJob.getId());
-            if (relatedOrders != null && !relatedOrders.isEmpty()) {
-                for (ProductionOrder order : relatedOrders) {
-                    if (!"ยกเลิก".equals(order.getProcessStatus())) {
-                        order.setProcessStatus("จัดส่งแล้ว");
-                        productionOrderRepository.save(order);
-                    }
-                }
+        // Sync ProductionOrder status on new save when delivery is complete
+        if ("จัดส่งเรียบร้อย".equals(savedJob.getDeliveryStatus())
+                && savedJob.getProductionOrderId() != null) {
+            ProductionOrder order = productionOrderRepository.findById(Integer.valueOf(savedJob.getProductionOrderId())).orElse(null);
+            if (order != null && !"ยกเลิก".equals(order.getProcessStatus())) {
+                order.setProcessStatus("จัดส่งเรียบร้อย");
+                order.setJobStatus("เสร็จสิ้น");
+                productionOrderRepository.save(order);
             }
         }
         return savedJob;
+
     }
 
     public ProductionJob findById(Long id) {
