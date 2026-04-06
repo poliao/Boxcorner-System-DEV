@@ -82,7 +82,7 @@ export class Dcsm37DetailComponent implements OnInit {
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private dcsm04Service: Dcsm04Service
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.jobId = this.route.snapshot.params['id'];
@@ -251,6 +251,7 @@ export class Dcsm37DetailComponent implements OnInit {
       qpId: this.productionForm.qpId || null,
       deadlineDate: this.productionForm.deadlineDate,
       deadlineTime: this.productionForm.deadlineTime || null,
+      dataDalivery: false,
       remarks: this.productionForm.remarks || null,
       decisionAuthority: this.productionForm.decisionAuthority || null,
       decisionAuthorityRemarks: this.productionForm.decisionAuthorityRemarks || null,
@@ -265,7 +266,7 @@ export class Dcsm37DetailComponent implements OnInit {
       sampleDiecutStyle: this.productionForm.sampleDiecutStyle || null,
       sampleSpecialInstructions: this.productionForm.sampleSpecialInstructions || null,
       sampleDeliveryTimestamp: this.productionForm.sampleDeliveryTimestamp || null,
-      
+
       folderName: this.data?.folderName || null,
       jobOwner: this.data?.jobOwner || null,
       customerName: this.data?.customerName || null,
@@ -350,11 +351,11 @@ export class Dcsm37DetailComponent implements OnInit {
   translateAuthority(value: string | null): string {
     if (!value) return '-';
     const map: Record<string, string> = {
-      customerOnSite:      'ลูกค้าเข้าดูงานหน้างาน',
-      sampleToCustomer:    'ขึ้นตัวอย่างส่งลูกค้าตรวจ',
-      salesDecision:       'เซลล์ตัดสินใจแทนลูกค้า',
-      planningDecision:    'ฝ่ายแผนตัดสินใจ',
-      operatorQaDecision:  'ช่างพิมพ์ + QA ร่วมกัน',
+      customerOnSite: 'ลูกค้าเข้าดูงานหน้างาน',
+      sampleToCustomer: 'ขึ้นตัวอย่างส่งลูกค้าตรวจ',
+      salesDecision: 'เซลล์ตัดสินใจแทนลูกค้า',
+      planningDecision: 'ฝ่ายแผนตัดสินใจ',
+      operatorQaDecision: 'ช่างพิมพ์ + QA ร่วมกัน',
     };
     return map[value] ?? value;
   }

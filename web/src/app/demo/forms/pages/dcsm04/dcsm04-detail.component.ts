@@ -131,7 +131,7 @@ export class Dcsm04DetailComponent implements OnInit {
       colorPrint: [null],
       paperGram: [null],
       rowVersion: [null],
-      jobId: [null, Validators.required],
+      jobId: [null, [Validators.required, Validators.pattern(/^\S*$/)]],
       qtId: [null, Validators.required],
       print2Page: [false],
       orderTime: [null],
@@ -159,11 +159,18 @@ export class Dcsm04DetailComponent implements OnInit {
     this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
       const jobIdControl = this.mainForm.get('jobId');
       if (value && value.trim() !== '') {
-        jobIdControl?.clearValidators();
+        jobIdControl?.setValidators([Validators.pattern(/^\S*$/)]);
       } else {
-        jobIdControl?.setValidators([Validators.required]);
+        jobIdControl?.setValidators([Validators.required, Validators.pattern(/^\S*$/)]);
       }
       jobIdControl?.updateValueAndValidity();
+    });
+
+    // Prevent whitespace in jobId
+    this.mainForm.get('jobId')?.valueChanges.subscribe(value => {
+      if (value && /\s/.test(value)) {
+        this.mainForm.get('jobId')?.setValue(value.replace(/\s+/g, ''), { emitEvent: false });
+      }
     });
 
     this.mainForm.controls['id'].disable({ emitEvent: false });

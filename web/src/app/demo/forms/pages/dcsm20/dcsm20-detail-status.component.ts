@@ -60,6 +60,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   sampleDeliveryTimestamp: any;
   printRound: any;
   printRoundPage2: any;
+  reorderFromJoId: any;
 
   constructor(
     private fb: FormBuilder,
@@ -105,6 +106,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       this.sampleDeliveryTimestamp = state.sampleDeliveryTimestamp;
       this.printRound = state.printRound;
       this.printRoundPage2 = state.printRoundPage2;
+      this.reorderFromJoId = state.reorderFromJoId;
     } else {
       this.qcType = this.productionForm?.getRawValue()?.qcType || null;
       this.qcLocation = this.productionForm?.getRawValue()?.qcLocation || null;
@@ -217,7 +219,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       partName: [null],
       printJobId: [null],
       qcType: [null],
-      productionOrderId: [this.referenceId ?? null]
+      productionOrderId: [this.referenceId ?? null],
+      reorderFromJoId: [this.reorderFromJoId ?? null]
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -315,7 +318,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
 
               const part = partsToSave[index];
               this.productionForm.get('partName')?.setValue(part.partName);
-              const formData = { ...this.productionForm.getRawValue() };
+              const formData = { ...this.productionForm.getRawValue(), productionOrderId: this.referenceId };
               this.checkDateEndProcess();
 
               if (formData.qcDate != null && formData.qcLocation != 'ไม่ส่งQC') {
@@ -463,7 +466,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
           } else if (status === 'DeliveryComplete') {
             this.productionForm.get('deliveryStatus')?.setValue('จัดส่งเรียบร้อย');
           }
-          const data = this.productionForm.getRawValue();
+          const data = { ...this.productionForm.getRawValue(), productionOrderId: this.referenceId };
 
           this.dcsm20Service.save(data).subscribe((response) => {
             this.patchFormData(response);
@@ -634,7 +637,8 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       sampleSpecialInstructions: this.sampleSpecialInstructions,
       sampleDeliveryTimestamp: this.sampleDeliveryTimestamp,
       printRound: this.printRound,
-      printRoundPage2: this.printRoundPage2
+      printRoundPage2: this.printRoundPage2,
+      reorderFromJoId: this.reorderFromJoId
     }
     return this.dcsm20Service.savePrintJob(DataJob);
   }
@@ -667,9 +671,9 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       qcLocation: this.productionForm.getRawValue().qcLocation || this.qcLocation,
       partName: partName,
       startQcDatetime: this.startQcDatetime,
-      qcDetail: this.papOrder.qcAndDelivery.detail
+      qcDetail: this.papOrder.qcAndDelivery.detail,
+      reorderFromJoId: this.reorderFromJoId
     }
-
     return this.dcsm20Service.saveQcJob(data);
   }
 

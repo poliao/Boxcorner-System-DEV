@@ -41,6 +41,7 @@ public class ReorderDTO {
     private LocalDateTime productionOrderCreatedAt;
     private LocalDateTime productionOrderUpdatedAt;
     private Boolean dataDalivery;
+    private String customerFeedback;
     private Boolean print2Page;
     private Boolean isNewProof;
     private Integer printRound;

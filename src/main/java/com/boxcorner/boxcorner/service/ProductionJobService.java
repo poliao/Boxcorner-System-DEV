@@ -1,5 +1,8 @@
 package com.boxcorner.boxcorner.service;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -7,18 +10,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.boxcorner.boxcorner.entity.ProductionJob;
+
 import com.boxcorner.boxcorner.entity.PapProductionOrder;
-import com.boxcorner.boxcorner.entity.ProductionOrder;
+import com.boxcorner.boxcorner.entity.ProductionJob;
 import com.boxcorner.boxcorner.entity.QcJob;
 import com.boxcorner.boxcorner.repository.PapProductionOrderRepository;
 import com.boxcorner.boxcorner.repository.ProductionJobRepository;
 import com.boxcorner.boxcorner.repository.ProductionOrderRepository;
 import com.boxcorner.boxcorner.repository.QcJobRepository;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 public class ProductionJobService {
@@ -79,35 +81,13 @@ public class ProductionJobService {
                 existing.setPrintJobId(productionJob.getPrintJobId());
                 existing.setQcType(productionJob.getQcType());
                 existing.setProductionOrderId(productionJob.getProductionOrderId());
+                existing.setReorderFromJoId(productionJob.getReorderFromJoId());
                 ProductionJob updatedJob = productionJobRepository.save(existing);
-
-                // Sync ProductionOrder status on update when delivery is complete
-                if ("จัดส่งเรียบร้อย".equals(updatedJob.getDeliveryStatus())
-                        && updatedJob.getProductionOrderId() != null) {
-                    ProductionOrder order = productionOrderRepository.findById(Integer.valueOf(updatedJob.getProductionOrderId())).orElse(null);
-                    if (order != null && !"ยกเลิก".equals(order.getProcessStatus())) {
-                        order.setProcessStatus("จัดส่งเรียบร้อย");
-                        order.setJobStatus("เสร็จสิ้น");
-                        productionOrderRepository.save(order);
-                    }
-                }
                 return updatedJob;
             }
         }
         ProductionJob savedJob = productionJobRepository.save(productionJob);
-
-        // Sync ProductionOrder status on new save when delivery is complete
-        if ("จัดส่งเรียบร้อย".equals(savedJob.getDeliveryStatus())
-                && savedJob.getProductionOrderId() != null) {
-            ProductionOrder order = productionOrderRepository.findById(Integer.valueOf(savedJob.getProductionOrderId())).orElse(null);
-            if (order != null && !"ยกเลิก".equals(order.getProcessStatus())) {
-                order.setProcessStatus("จัดส่งเรียบร้อย");
-                order.setJobStatus("เสร็จสิ้น");
-                productionOrderRepository.save(order);
-            }
-        }
         return savedJob;
-
     }
 
     public ProductionJob findById(Long id) {
@@ -148,6 +128,7 @@ public class ProductionJobService {
         return productionJobRepository.findByFiltersPrintingOS(id, jobId, customerJobName, printStatus,
                 startDate, endDate, paging);
     }
+
     public ProductionJob findByPapOrderId(Integer papOrderId) {
         return productionJobRepository.findByPapOrderId(papOrderId);
     }
@@ -173,10 +154,12 @@ public class ProductionJobService {
 
         // 3. อัปเดตตาราง pap_production_orders ถ้ามี papOrderId
         if (job.getPapOrderId() != null) {
-            Optional<PapProductionOrder> papOrderOpt = papProductionOrderRepository.findById(Long.valueOf(job.getPapOrderId()));
+            Optional<PapProductionOrder> papOrderOpt = papProductionOrderRepository
+                    .findById(Long.valueOf(job.getPapOrderId()));
             if (papOrderOpt.isPresent()) {
                 PapProductionOrder papOrder = papOrderOpt.get();
-                // อัปเดตทั้ง qcScheduledDate และ deliveryDateTime (หากจำเป็น แต่ในที่นี้เน้น QC)
+                // อัปเดตทั้ง qcScheduledDate และ deliveryDateTime (หากจำเป็น แต่ในที่นี้เน้น
+                // QC)
                 papOrder.setQcScheduledDate(newDate);
                 papProductionOrderRepository.save(papOrder);
             }

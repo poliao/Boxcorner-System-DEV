@@ -143,7 +143,9 @@ export class Dcsm09DetailComponent implements OnInit {
       printRoundPage2: [null],
       printJobId: [null],
       isNewProof: [false],
-      customerFeedback: [null]
+      customerFeedback: [null],
+      productionOrderId: [null],
+      reorderFromJoId: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -173,7 +175,6 @@ export class Dcsm09DetailComponent implements OnInit {
     this.mainForm.get('qpId')?.disable();
     this.mainForm.get('qcType')?.disable();
     this.mainForm.get('qcLocation')?.disable();
-
     this.mainForm.get('sampleJobType')?.disable({ emitEvent: false });
     this.mainForm.get('samplePrintingSystem')?.disable({ emitEvent: false });
     this.mainForm.get('samplePrintingStyle')?.disable({ emitEvent: false });
@@ -218,7 +219,8 @@ export class Dcsm09DetailComponent implements OnInit {
         sampleSpecialInstructions: this.mainForm.get('sampleSpecialInstructions')?.value,
         sampleDeliveryTimestamp: this.mainForm.get('sampleDeliveryTimestamp')?.value,
         printRound: this.mainForm.get('printRound')?.value,
-        printRoundPage2: this.mainForm.get('printRoundPage2')?.value
+        printRoundPage2: this.mainForm.get('printRoundPage2')?.value,
+        reorderFromJoId: this.mainForm.getRawValue().reorderFromJoId
       }
     };
     console.log('DCSM09: Navigating to DCSM20 with state:', navigationState.state);
@@ -309,7 +311,6 @@ export class Dcsm09DetailComponent implements OnInit {
       }
     })
   }
-
 
   updateOrder() {
     Swal.fire({

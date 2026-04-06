@@ -160,6 +160,9 @@ public class PrintJob extends BaseEntity {
     @Column(name = "unit_stock_id")
     private Long unitStockId;
 
+    @Column(name = "reorder_from_jo_id")
+    private String reorderFromJoId;
+
     @jakarta.persistence.Transient
     private Boolean hasRealJob = false;
 }

@@ -139,7 +139,7 @@ export class Dcsm06DetailComponent implements OnInit {
       decisionAuthority: [null, Validators.required],
       decisionAuthorityRemarks: [null],
       print2Page: [false],
-      jobId: [null, Validators.required],
+      jobId: [null, [Validators.required, Validators.pattern(/^\S*$/)]],
       qtId: [null],
       qpId: [null],
       createdTime: [null],
@@ -207,11 +207,18 @@ export class Dcsm06DetailComponent implements OnInit {
     this.mainForm.get('qpId')?.valueChanges.subscribe(value => {
       const jobIdControl = this.mainForm.get('jobId');
       if (value && value.trim() !== '') {
-        jobIdControl?.clearValidators();
+        jobIdControl?.setValidators([Validators.pattern(/^\S*$/)]);
       } else {
-        jobIdControl?.setValidators([Validators.required]);
+        jobIdControl?.setValidators([Validators.required, Validators.pattern(/^\S*$/)]);
       }
       jobIdControl?.updateValueAndValidity();
+    });
+
+    // Prevent whitespace in jobId
+    this.mainForm.get('jobId')?.valueChanges.subscribe(value => {
+      if (value && /\s/.test(value)) {
+        this.mainForm.get('jobId')?.setValue(value.replace(/\s+/g, ''), { emitEvent: false });
+      }
     });
 
     this.mainForm.get('decisionAuthority')?.valueChanges.subscribe(value => {
@@ -519,16 +526,6 @@ export class Dcsm06DetailComponent implements OnInit {
 
         this.dcsm06Service.save(currentOrder).subscribe({
           next: () => {
-            if (currentOrder.id) {
-              this.dcsm26Service.findByProductionOrderId(currentOrder.id).subscribe((printJob) => {
-                if (printJob) {
-                  printJob.jobStatus = 'ปรู๊ฟไม่ผ่าน';
-                  this.dcsm26Service.save(printJob).subscribe();
-                }
-              });
-            }
-
-            // 3. Create a new copy
             const newOrder = { ...currentOrder };
             delete newOrder.id;
             delete newOrder.rowVersion;

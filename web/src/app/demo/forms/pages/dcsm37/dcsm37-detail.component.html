@@ -68,12 +68,9 @@
   <div *ngFor="let round of data.productionRounds; let i = index" class="mb-3">
     <!-- Round Header (Accordion) -->
     <div class="card border-0 shadow-sm">
-      <div class="card-header d-flex align-items-center justify-content-between"
-        [style.background]="round.jobStatus === 'ยกเลิก' || round.processStatus === 'ยกเลิก' ? '#fee2e2'
+      <div class="card-header d-flex align-items-center justify-content-between" [style.background]="round.jobStatus === 'ยกเลิก' || round.processStatus === 'ยกเลิก' ? '#fee2e2'
           : round.isNewProof ? '#fef3c7'
-          : '#eff6ff'"
-        style="cursor:pointer; border-radius:8px 8px 0 0;"
-        (click)="toggleRound(i)">
+          : '#eff6ff'" style="cursor:pointer; border-radius:8px 8px 0 0;" (click)="toggleRound(i)">
         <div class="d-flex align-items-center gap-3">
           <mat-icon style="color:#003747">
             {{ isRoundExpanded(i) ? 'expand_less' : 'expand_more' }}
@@ -122,12 +119,17 @@
             </div>
             <div class="col-md-3">
               <div class="text-muted small">พิมพ์ 2 หน้า / รอบพิมพ์ (P1/P2)</div>
-              <div>{{ round.print2Page ? 'ใช่' : 'ไม่ใช่' }} / {{ round.printRound || 0 }} : {{ round.printRoundPage2 || 0 }}</div>
+              <div>{{ round.print2Page ? 'ใช่' : 'ไม่ใช่' }} / {{ round.printRound || 0 }} : {{ round.printRoundPage2 ||
+                0 }}</div>
             </div>
             <div class="col-md-3" *ngIf="round.decisionAuthority">
               <div class="text-muted small">ผู้มีอำนาจตัดสินใจ</div>
               <div class="fw-bold text-danger">{{ translateAuthority(round.decisionAuthority) }}</div>
               <div class="small text-muted">{{ round.decisionAuthorityRemarks }}</div>
+            </div>
+            <div class="col-12 text-primary small" *ngIf="round.customerFeedback">
+              <mat-icon class="me-1" style="font-size:16px;vertical-align:middle;">feedback</mat-icon>
+              <strong>ฟีดแบคจากลูกค้า:</strong> {{ round.customerFeedback }}
             </div>
             <div class="col-12 text-danger small" *ngIf="round.cancelRemarks">
               <mat-icon class="me-1" style="font-size:16px;vertical-align:middle;">cancel</mat-icon>
@@ -163,7 +165,8 @@
               </div>
               <div class="col-md-2">
                 <div class="text-muted small">ดี / เสีย</div>
-                <div><span class="text-success fw-bold">{{ round.printJob.goodQty | number }}</span> / <span class="text-danger fw-bold">{{ round.printJob.wasteQty | number }}</span></div>
+                <div><span class="text-success fw-bold">{{ round.printJob.goodQty | number }}</span> / <span
+                    class="text-danger fw-bold">{{ round.printJob.wasteQty | number }}</span></div>
               </div>
               <div class="col-md-2">
                 <div class="text-muted small">เผื่อเสีย / รอบปัจจุบัน</div>
@@ -178,13 +181,23 @@
 
             <!-- Print Logs (OD) -->
             <div *ngIf="round.printJob.printLogs?.length > 0" class="mb-4">
-              <div class="fw-bold mb-2 text-primary">Log การพิมพ์ OD ({{ round.printJob.printLogs.length }} รายการ)</div>
+              <div class="fw-bold mb-2 text-primary">Log การพิมพ์ OD ({{ round.printJob.printLogs.length }} รายการ)
+              </div>
               <div class="table-responsive">
                 <table class="table table-sm table-bordered">
                   <thead class="table-light">
                     <tr>
-                      <th>#</th><th>ประเภท</th><th>ด้าน</th><th>เริ่ม</th><th>สิ้นสุด</th>
-                      <th>ระยะเวลา</th><th>ผู้ปฏิบัติ</th><th>แผ่นที่ใช้</th><th>ดี</th><th>เสีย</th><th>หมายเหตุ</th>
+                      <th>#</th>
+                      <th>ประเภท</th>
+                      <th>ด้าน</th>
+                      <th>เริ่ม</th>
+                      <th>สิ้นสุด</th>
+                      <th>ระยะเวลา</th>
+                      <th>ผู้ปฏิบัติ</th>
+                      <th>แผ่นที่ใช้</th>
+                      <th>ดี</th>
+                      <th>เสีย</th>
+                      <th>หมายเหตุ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -213,7 +226,8 @@
                 Log การพิมพ์ OS ({{ round.printJob.printLogsOs.length }} รายการ)
               </div>
               <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
-                <table class="table table-bordered table-hover mb-0 align-middle" style="font-size:0.95rem; min-width:1600px; white-space:nowrap;">
+                <table class="table table-bordered table-hover mb-0 align-middle"
+                  style="font-size:0.95rem; min-width:1600px; white-space:nowrap;">
                   <thead class="table-light fw-bold">
                     <tr>
                       <th class="text-center">#</th>
@@ -249,7 +263,8 @@
                         <span class="badge bg-secondary opacity-75">{{ os.printSide || '-' }}</span>
                       </td>
                       <td>
-                        <span class="badge" [ngClass]="os.status === 'COMPLETED' ? 'bg-success' : 'bg-warning'">{{ os.status || '-' }}</span>
+                        <span class="badge" [ngClass]="os.status === 'COMPLETED' ? 'bg-success' : 'bg-warning'">{{
+                          os.status || '-' }}</span>
                       </td>
                       <td>{{ os.operatorName || '-' }}</td>
                       <td class="text-center">{{ os.tempFountain || '-' }}</td>
@@ -267,20 +282,29 @@
                         <span *ngIf="os.flagInkOld" class="text-danger fw-bold">เก่า</span>
                         <span *ngIf="!os.flagInkNew && !os.flagInkOld">-</span>
                       </td>
-                      <td>{{ os.cBrand || '-' }}<span class="text-muted small" *ngIf="os.cLot"> ({{ os.cLot }})</span></td>
-                      <td>{{ os.mBrand || '-' }}<span class="text-muted small" *ngIf="os.mLot"> ({{ os.mLot }})</span></td>
-                      <td>{{ os.yBrand || '-' }}<span class="text-muted small" *ngIf="os.yLot"> ({{ os.yLot }})</span></td>
-                      <td>{{ os.kBrand || '-' }}<span class="text-muted small" *ngIf="os.kLot"> ({{ os.kLot }})</span></td>
+                      <td>{{ os.cBrand || '-' }}<span class="text-muted small" *ngIf="os.cLot"> ({{ os.cLot }})</span>
+                      </td>
+                      <td>{{ os.mBrand || '-' }}<span class="text-muted small" *ngIf="os.mLot"> ({{ os.mLot }})</span>
+                      </td>
+                      <td>{{ os.yBrand || '-' }}<span class="text-muted small" *ngIf="os.yLot"> ({{ os.yLot }})</span>
+                      </td>
+                      <td>{{ os.kBrand || '-' }}<span class="text-muted small" *ngIf="os.kLot"> ({{ os.kLot }})</span>
+                      </td>
                       <td class="text-center">
-                        <mat-icon [matTooltip]="'สภาพแม่พิมพ์'" [style.color]="os.checkPlateCondition ? '#16a34a' : '#d1d5db'">view_quilt</mat-icon>
-                        <mat-icon [matTooltip]="'สภาพยางรับ'" [style.color]="os.checkBlanketCondition ? '#16a34a' : '#d1d5db'">layers</mat-icon>
-                        <mat-icon [matTooltip]="'ล้างเครื่องแล้ว'" [style.color]="os.checkMachineWashed ? '#16a34a' : '#d1d5db'">cleaning_services</mat-icon>
+                        <mat-icon [matTooltip]="'สภาพแม่พิมพ์'"
+                          [style.color]="os.checkPlateCondition ? '#16a34a' : '#d1d5db'">view_quilt</mat-icon>
+                        <mat-icon [matTooltip]="'สภาพยางรับ'"
+                          [style.color]="os.checkBlanketCondition ? '#16a34a' : '#d1d5db'">layers</mat-icon>
+                        <mat-icon [matTooltip]="'ล้างเครื่องแล้ว'"
+                          [style.color]="os.checkMachineWashed ? '#16a34a' : '#d1d5db'">cleaning_services</mat-icon>
                       </td>
                       <td class="text-center">
                         <span *ngIf="os.refProof" class="badge rounded-pill bg-primary text-white me-1">ปรู๊ฟ</span>
                         <span *ngIf="os.refDigital" class="badge rounded-pill bg-info text-white me-1">ดิจิตอล</span>
-                        <span *ngIf="os.refOldJob" class="badge rounded-pill bg-secondary text-white me-1">งานเก่า</span>
-                        <span *ngIf="os.refNotSerious" class="badge rounded-pill bg-light text-dark border">ไม่เข้มงวด</span>
+                        <span *ngIf="os.refOldJob"
+                          class="badge rounded-pill bg-secondary text-white me-1">งานเก่า</span>
+                        <span *ngIf="os.refNotSerious"
+                          class="badge rounded-pill bg-secondary text-dark border">ไม่เข้มงวด</span>
                         <span *ngIf="!os.refProof && !os.refDigital && !os.refOldJob && !os.refNotSerious">-</span>
                       </td>
                       <td>{{ os.qcRemark || '-' }}</td>
@@ -300,10 +324,19 @@
                 <table class="table table-sm table-bordered">
                   <thead class="table-light">
                     <tr>
-                      <th>#</th><th>วันที่/เวลา</th><th>แผ่นที่</th>
-                      <th>1.สีตรง</th><th>2.สีสม่ำเสมอ</th><th>3.ไม่มีขี้หมึก</th><th>4.ไม่มีซับหลัง</th>
-                      <th>5.ไม่มีรอยเปื้อน</th><th>6.ฉากตรง</th><th>7.ไม่มีรอยขีด</th><th>8.ไม่มีงานปน</th>
-                      <th>ผู้บันทึก</th><th>หมายเหตุ</th>
+                      <th>#</th>
+                      <th>วันที่/เวลา</th>
+                      <th>แผ่นที่</th>
+                      <th>1.สีตรง</th>
+                      <th>2.สีสม่ำเสมอ</th>
+                      <th>3.ไม่มีขี้หมึก</th>
+                      <th>4.ไม่มีซับหลัง</th>
+                      <th>5.ไม่มีรอยเปื้อน</th>
+                      <th>6.ฉากตรง</th>
+                      <th>7.ไม่มีรอยขีด</th>
+                      <th>8.ไม่มีงานปน</th>
+                      <th>ผู้บันทึก</th>
+                      <th>หมายเหตุ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -311,14 +344,22 @@
                       <td>{{ j+1 }}</td>
                       <td>{{ formatDate(qa.createdAt) }}</td>
                       <td>{{ qa.printedSheetNumber || '-' }}</td>
-                      <td><mat-icon [style.color]="qa.qcColorMatch ? 'green' : 'red'">{{ qa.qcColorMatch ? 'check_circle' : 'cancel' }}</mat-icon></td>
-                      <td><mat-icon [style.color]="qa.qcColorConsistency ? 'green' : 'red'">{{ qa.qcColorConsistency ? 'check_circle' : 'cancel' }}</mat-icon></td>
-                      <td><mat-icon [style.color]="qa.qcInkResidue ? 'green' : 'red'">{{ qa.qcInkResidue ? 'check_circle' : 'cancel' }}</mat-icon></td>
-                      <td><mat-icon [style.color]="qa.qcInkTransfer ? 'green' : 'red'">{{ qa.qcInkTransfer ? 'check_circle' : 'cancel' }}</mat-icon></td>
-                      <td><mat-icon [style.color]="qa.qcStains ? 'green' : 'red'">{{ qa.qcStains ? 'check_circle' : 'cancel' }}</mat-icon></td>
-                      <td><mat-icon [style.color]="qa.qcAlignment ? 'green' : 'red'">{{ qa.qcAlignment ? 'check_circle' : 'cancel' }}</mat-icon></td>
-                      <td><mat-icon [style.color]="qa.qcScratches ? 'green' : 'red'">{{ qa.qcScratches ? 'check_circle' : 'cancel' }}</mat-icon></td>
-                      <td><mat-icon [style.color]="qa.qcMixedJobs ? 'green' : 'red'">{{ qa.qcMixedJobs ? 'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcColorMatch ? 'green' : 'red'">{{ qa.qcColorMatch ?
+                          'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcColorConsistency ? 'green' : 'red'">{{ qa.qcColorConsistency ?
+                          'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcInkResidue ? 'green' : 'red'">{{ qa.qcInkResidue ?
+                          'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcInkTransfer ? 'green' : 'red'">{{ qa.qcInkTransfer ?
+                          'check_circle' : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcStains ? 'green' : 'red'">{{ qa.qcStains ? 'check_circle' :
+                          'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcAlignment ? 'green' : 'red'">{{ qa.qcAlignment ? 'check_circle'
+                          : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcScratches ? 'green' : 'red'">{{ qa.qcScratches ? 'check_circle'
+                          : 'cancel' }}</mat-icon></td>
+                      <td><mat-icon [style.color]="qa.qcMixedJobs ? 'green' : 'red'">{{ qa.qcMixedJobs ? 'check_circle'
+                          : 'cancel' }}</mat-icon></td>
                       <td>{{ qa.operatorName || '-' }}</td>
                       <td>{{ qa.qcRemark || '-' }}</td>
                     </tr>
@@ -330,7 +371,8 @@
 
           <!-- No Print Job -->
           <ng-template #noPrintJob>
-            <div class="alert alert-secondary d-flex align-items-center gap-2" *ngIf="round.jobStatus !== 'ยกเลิก' && round.processStatus !== 'ยกเลิก'">
+            <div class="alert alert-secondary d-flex align-items-center gap-2"
+              *ngIf="round.jobStatus !== 'ยกเลิก' && round.processStatus !== 'ยกเลิก'">
               <mat-icon>info</mat-icon> ยังไม่มีงานพิมพ์สำหรับรอบนี้
             </div>
           </ng-template>
@@ -355,7 +397,8 @@
         </div>
         <div class="col-md-3">
           <div class="text-muted small">วันที่สั่ง / กำหนดส่ง</div>
-          <div>{{ formatDate(data.coatingJob.orderDatetime) }} / {{ formatDate(data.coatingJob.deliveryDatetime) }}</div>
+          <div>{{ formatDate(data.coatingJob.orderDatetime) }} / {{ formatDate(data.coatingJob.deliveryDatetime) }}
+          </div>
         </div>
         <div class="col-md-3">
           <div class="text-muted small">จำนวนรับเข้า / ต้องการ</div>
@@ -371,8 +414,15 @@
           <table class="table table-sm table-bordered">
             <thead class="table-light">
               <tr>
-                <th>#</th><th>วันที่</th><th>ประเภทเคลือบ</th><th>เริ่ม</th><th>สิ้นสุด</th>
-                <th>ระยะเวลา</th><th>จำนวนแผ่น</th><th>ช่างเทคนิค</th><th>หมายเหตุ</th>
+                <th>#</th>
+                <th>วันที่</th>
+                <th>ประเภทเคลือบ</th>
+                <th>เริ่ม</th>
+                <th>สิ้นสุด</th>
+                <th>ระยะเวลา</th>
+                <th>จำนวนแผ่น</th>
+                <th>ช่างเทคนิค</th>
+                <th>หมายเหตุ</th>
               </tr>
             </thead>
             <tbody>
@@ -405,8 +455,15 @@
         <table class="table table-sm table-bordered">
           <thead class="table-light">
             <tr>
-              <th>#</th><th>วันที่</th><th>ประเภท</th><th>เริ่ม</th><th>สิ้นสุด</th>
-              <th>เวลารวม</th><th>จำนวน</th><th>ผู้รายงาน</th><th>หมายเหตุ</th>
+              <th>#</th>
+              <th>วันที่</th>
+              <th>ประเภท</th>
+              <th>เริ่ม</th>
+              <th>สิ้นสุด</th>
+              <th>เวลารวม</th>
+              <th>จำนวน</th>
+              <th>ผู้รายงาน</th>
+              <th>หมายเหตุ</th>
             </tr>
           </thead>
           <tbody>
@@ -439,26 +496,30 @@
       <div class="row g-3 mb-4">
         <div class="col-md-3">
           <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">info</mat-icon>ข้อมูลทั่วไป</div>
+            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
+                style="font-size:16px">info</mat-icon>ข้อมูลทั่วไป</div>
             <div class="fw-bold text-dark">{{ data.qcJob.qcType || '-' }}</div>
             <div class="text-secondary small">{{ data.qcJob.qcLocation || '-' }}</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">category</mat-icon>ชื่อชิ้นส่วน</div>
+            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
+                style="font-size:16px">category</mat-icon>ชื่อชิ้นส่วน</div>
             <div class="fw-bold text-dark">{{ data.qcJob.partName || '-' }}</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">calendar_today</mat-icon>วันที่เริ่ม QC</div>
+            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
+                style="font-size:16px">calendar_today</mat-icon>วันที่เริ่ม QC</div>
             <div class="fw-bold text-dark">{{ formatDate(data.qcJob.startQcDatetime) }}</div>
           </div>
         </div>
         <div class="col-md-3">
           <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">event_available</mat-icon>กำหนดส่ง</div>
+            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
+                style="font-size:16px">event_available</mat-icon>กำหนดส่ง</div>
             <div class="fw-bold text-dark">{{ formatDate(data.qcJob.deliveryDatetime) }}</div>
           </div>
         </div>
@@ -489,16 +550,20 @@
                   <div class="bg-white p-2 border rounded text-center">
                     <div class="small text-muted">1. ห่อเต็ม</div>
                     <div class="fw-bold text-success">{{ data.qcJob.passedQty | number }} ห่อ</div>
-                    <div class="small text-muted">x {{ data.qcJob.bundlesPerPack | number }} แพค x {{ data.qcJob.boxesPerBundle | number }} ชิ้น</div>
-                    <div class="text-primary small fw-bold">= {{ (data.qcJob.passedQty * data.qcJob.bundlesPerPack * data.qcJob.boxesPerBundle) | number }} ชิ้น</div>
+                    <div class="small text-muted">x {{ data.qcJob.bundlesPerPack | number }} แพค x {{
+                      data.qcJob.boxesPerBundle | number }} ชิ้น</div>
+                    <div class="text-primary small fw-bold">= {{ (data.qcJob.passedQty * data.qcJob.bundlesPerPack *
+                      data.qcJob.boxesPerBundle) | number }} ชิ้น</div>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="bg-white p-2 border rounded text-center">
                     <div class="small text-muted">2. ห่อเศษ</div>
                     <div class="fw-bold text-warning">{{ data.qcJob.passedQtyFraction | number }} ห่อ(เศษ)</div>
-                    <div class="small text-muted">x {{ data.qcJob.bundlesPerPackFraction | number }} แพค x {{ data.qcJob.boxesPerBundle | number }} ชิ้น</div>
-                    <div class="text-primary small fw-bold">= {{ (data.qcJob.passedQtyFraction * data.qcJob.bundlesPerPackFraction * data.qcJob.boxesPerBundle) | number }} ชิ้น</div>
+                    <div class="small text-muted">x {{ data.qcJob.bundlesPerPackFraction | number }} แพค x {{
+                      data.qcJob.boxesPerBundle | number }} ชิ้น</div>
+                    <div class="text-primary small fw-bold">= {{ (data.qcJob.passedQtyFraction *
+                      data.qcJob.bundlesPerPackFraction * data.qcJob.boxesPerBundle) | number }} ชิ้น</div>
                   </div>
                 </div>
                 <div class="col-md-4">
@@ -518,21 +583,29 @@
       <!-- Comparison Summary -->
       <div class="row mb-4">
         <div class="col-12">
-          <div class="card border-0 shadow-sm" [ngStyle]="{'background-color': calculateQcTotal(data.qcJob) === data.qcJob.receivedQty ? '#f0fdf4' : '#fff7ed'}">
+          <div class="card border-0 shadow-sm"
+            [ngStyle]="{'background-color': calculateQcTotal(data.qcJob) === data.qcJob.receivedQty ? '#f0fdf4' : '#fff7ed'}">
             <div class="card-body d-flex flex-column flex-md-row align-items-center justify-content-between">
               <div class="mb-3 mb-md-0">
-                <h5 class="mb-1 fw-bold" [class.text-success]="calculateQcTotal(data.qcJob) === data.qcJob.receivedQty" [class.text-warning]="calculateQcTotal(data.qcJob) !== data.qcJob.receivedQty">
+                <h5 class="mb-1 fw-bold" [class.text-success]="calculateQcTotal(data.qcJob) === data.qcJob.receivedQty"
+                  [class.text-warning]="calculateQcTotal(data.qcJob) !== data.qcJob.receivedQty">
                   รวมงานที่ผ่าน QC ทั้งหมด: {{ calculateQcTotal(data.qcJob) | number }} ชิ้น
                 </h5>
                 <div class="text-muted small d-flex align-items-center">
-                  <mat-icon class="me-1" style="font-size:16px" [class.text-success]="calculateQcTotal(data.qcJob) === data.qcJob.receivedQty" [class.text-warning]="calculateQcTotal(data.qcJob) !== data.qcJob.receivedQty">
+                  <mat-icon class="me-1" style="font-size:16px"
+                    [class.text-success]="calculateQcTotal(data.qcJob) === data.qcJob.receivedQty"
+                    [class.text-warning]="calculateQcTotal(data.qcJob) !== data.qcJob.receivedQty">
                     {{ calculateQcTotal(data.qcJob) === data.qcJob.receivedQty ? 'check_circle' : 'warning' }}
                   </mat-icon>
-                  เทียบกับยอดงานเข้า ({{ data.qcJob.receivedQty | number }} ชิ้น) : 
-                  <span class="ms-1 fw-bold">{{ calculateQcTotal(data.qcJob) === data.qcJob.receivedQty ? 'ยอดตรงกัน' : 'มียอดส่วนต่าง ' + (calculateQcTotal(data.qcJob) - data.qcJob.receivedQty | number) + ' ชิ้น' }}</span>
+                  เทียบกับยอดงานเข้า ({{ data.qcJob.receivedQty | number }} ชิ้น) :
+                  <span class="ms-1 fw-bold">{{ calculateQcTotal(data.qcJob) === data.qcJob.receivedQty ? 'ยอดตรงกัน' :
+                    'มียอดส่วนต่าง ' + (calculateQcTotal(data.qcJob) - data.qcJob.receivedQty | number) + ' ชิ้น'
+                    }}</span>
                 </div>
               </div>
-              <div class="badge p-3 rounded-pill" [class.bg-success]="calculateQcTotal(data.qcJob) === data.qcJob.receivedQty" [class.bg-warning]="calculateQcTotal(data.qcJob) !== data.qcJob.receivedQty">
+              <div class="badge p-3 rounded-pill"
+                [class.bg-success]="calculateQcTotal(data.qcJob) === data.qcJob.receivedQty"
+                [class.bg-warning]="calculateQcTotal(data.qcJob) !== data.qcJob.receivedQty">
                 {{ calculateQcTotal(data.qcJob) === data.qcJob.receivedQty ? 'ยอดถูกต้อง' : 'โปรดตรวจสอบส่วนต่าง' }}
               </div>
             </div>
@@ -553,9 +626,17 @@
           <table class="table table-sm table-bordered">
             <thead class="table-light">
               <tr>
-                <th>#</th><th>วันที่</th><th>เริ่ม</th><th>สิ้นสุด</th><th>ระยะเวลา</th>
-                <th>รับเข้า</th><th>ผ่าน</th><th>ไม่ผ่าน</th><th>เศษ (ผ่าน/ห่อ/ชิ้น)</th>
-                <th>ผู้ปฏิบัติ</th><th>หมายเหตุ</th>
+                <th>#</th>
+                <th>วันที่</th>
+                <th>เริ่ม</th>
+                <th>สิ้นสุด</th>
+                <th>ระยะเวลา</th>
+                <th>รับเข้า</th>
+                <th>ผ่าน</th>
+                <th>ไม่ผ่าน</th>
+                <th>เศษ (ผ่าน/ห่อ/ชิ้น)</th>
+                <th>ผู้ปฏิบัติ</th>
+                <th>หมายเหตุ</th>
               </tr>
             </thead>
             <tbody>
@@ -568,7 +649,8 @@
                 <td>{{ log.receivedQty | number }}</td>
                 <td class="text-success">{{ log.passedQty | number }}</td>
                 <td class="text-danger">{{ log.failedQty | number }}</td>
-                <td class="small">{{ log.passedQtyFraction | number }}/{{ log.bundlesPerPackFraction | number }}/{{ log.piecesFraction | number }}</td>
+                <td class="small">{{ log.passedQtyFraction | number }}/{{ log.bundlesPerPackFraction | number }}/{{
+                  log.piecesFraction | number }}</td>
                 <td>{{ log.operatorName || '-' }}</td>
                 <td>{{ log.remarks || '-' }}</td>
               </tr>
@@ -583,7 +665,12 @@
         <div class="table-responsive">
           <table class="table table-sm table-bordered">
             <thead class="table-light">
-              <tr><th>#</th><th>พนักงาน</th><th>ห่อเต็ม</th><th>เศษ (ห่อ/ชิ้น)</th></tr>
+              <tr>
+                <th>#</th>
+                <th>พนักงาน</th>
+                <th>ห่อเต็ม</th>
+                <th>เศษ (ห่อ/ชิ้น)</th>
+              </tr>
             </thead>
             <tbody>
               <tr *ngFor="let staff of data.qcJob.qcStaffs; let i = index">
@@ -603,7 +690,13 @@
         <div class="table-responsive">
           <table class="table table-sm table-bordered">
             <thead class="table-light">
-              <tr><th>#</th><th>ขั้นตอน</th><th>ช่าง</th><th>จำนวนเสีย</th><th>หมายเหตุ</th></tr>
+              <tr>
+                <th>#</th>
+                <th>ขั้นตอน</th>
+                <th>ช่าง</th>
+                <th>จำนวนเสีย</th>
+                <th>หมายเหตุ</th>
+              </tr>
             </thead>
             <tbody>
               <tr *ngFor="let waste of data.qcJob.qcWasteReports; let i = index">
@@ -643,24 +736,24 @@
         <small>เลือกว่าต้องการสั่งใหม่ในขั้นตอนไหน</small>
       </p>
       <div class="d-grid gap-3">
-        <button class="btn btn-outline-primary py-3 text-start d-flex align-items-center gap-3"
-                id="btn-type-design" (click)="selectType('design')">
+        <button class="btn btn-outline-primary py-3 text-start d-flex align-items-center gap-3" id="btn-type-design"
+          (click)="selectType('design')">
           <mat-icon style="font-size:28px;width:32px">design_services</mat-icon>
           <div>
             <div class="fw-bold">สั่งออกแบบ</div>
             <small class="text-muted">สร้าง Design Order ใหม่ พร้อมกำหนด JO / QT / QP</small>
           </div>
         </button>
-        <button class="btn btn-outline-warning py-3 text-start d-flex align-items-center gap-3"
-                id="btn-type-sample" (click)="selectType('sample')">
+        <button class="btn btn-outline-warning py-3 text-start d-flex align-items-center gap-3" id="btn-type-sample"
+          (click)="selectType('sample')">
           <mat-icon style="font-size:28px;width:32px">science</mat-icon>
           <div>
             <div class="fw-bold">สั่งขึ้นตัวอย่าง</div>
             <small class="text-muted">สร้าง Sample Order ใหม่</small>
           </div>
         </button>
-        <button class="btn btn-outline-success py-3 text-start d-flex align-items-center gap-3"
-                id="btn-type-production" (click)="selectType('production')">
+        <button class="btn btn-outline-success py-3 text-start d-flex align-items-center gap-3" id="btn-type-production"
+          (click)="selectType('production')">
           <mat-icon style="font-size:28px;width:32px">precision_manufacturing</mat-icon>
           <div>
             <div class="fw-bold">สั่งผลิต</div>
@@ -690,38 +783,36 @@
       <div class="row g-3">
         <div class="col-12">
           <label class="form-label fw-bold">JO ใหม่ <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="input-new-jo"
-                 [(ngModel)]="designForm.joId" placeholder="เช่น JO-2025-001">
+          <input type="text" class="form-control" id="input-new-jo" [(ngModel)]="designForm.joId"
+            placeholder="เช่น JO-2025-001">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">QT ใหม่</label>
-          <input type="text" class="form-control" id="input-new-qt"
-                 [(ngModel)]="designForm.qtId" placeholder="เช่น QT-2025-001">
+          <input type="text" class="form-control" id="input-new-qt" [(ngModel)]="designForm.qtId"
+            placeholder="เช่น QT-2025-001">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">QP ใหม่</label>
-          <input type="text" class="form-control" id="input-new-qp"
-                 [(ngModel)]="designForm.qpId" placeholder="เช่น QP-2025-001">
+          <input type="text" class="form-control" id="input-new-qp" [(ngModel)]="designForm.qpId"
+            placeholder="เช่น QP-2025-001">
         </div>
         <div class="col-md-7">
           <label class="form-label fw-bold">วันที่ฝ่ายออกแบบต้องส่งงาน <span class="text-danger">*</span></label>
-          <input type="date" class="form-control" id="input-design-deadline"
-                 [(ngModel)]="designForm.deadlineDate">
+          <input type="date" class="form-control" id="input-design-deadline" [(ngModel)]="designForm.deadlineDate">
         </div>
         <div class="col-md-5">
           <label class="form-label fw-bold">เวลาที่ต้องการ</label>
-          <input type="time" class="form-control" id="input-design-deadline-time"
-                 [(ngModel)]="designForm.deadlineTime">
+          <input type="time" class="form-control" id="input-design-deadline-time" [(ngModel)]="designForm.deadlineTime">
         </div>
         <div class="col-12">
           <label class="form-label fw-bold">รายละเอียดงาน</label>
-          <textarea class="form-control" id="input-design-details" rows="2"
-                    [(ngModel)]="designForm.jobDetails" placeholder="ระบุรายละเอียดงาน..."></textarea>
+          <textarea class="form-control" id="input-design-details" rows="2" [(ngModel)]="designForm.jobDetails"
+            placeholder="ระบุรายละเอียดงาน..."></textarea>
         </div>
         <div class="col-12">
           <label class="form-label fw-bold">หมายเหตุ</label>
-          <textarea class="form-control" id="input-design-remarks" rows="2"
-                    [(ngModel)]="designForm.remarks" placeholder="ระบุหมายเหตุเพิ่มเติม..."></textarea>
+          <textarea class="form-control" id="input-design-remarks" rows="2" [(ngModel)]="designForm.remarks"
+            placeholder="ระบุหมายเหตุเพิ่มเติม..."></textarea>
         </div>
       </div>
       <div class="d-flex justify-content-end gap-2 mt-4">
@@ -753,43 +844,41 @@
       <div class="row g-3">
         <div class="col-12">
           <label class="form-label fw-bold">JO ใหม่ <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="input-sample-jo"
-                 [(ngModel)]="sampleForm.joId" placeholder="เช่น JO-2025-001">
+          <input type="text" class="form-control" id="input-sample-jo" [(ngModel)]="sampleForm.joId"
+            placeholder="เช่น JO-2025-001">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">QT ใหม่</label>
-          <input type="text" class="form-control" id="input-sample-qt"
-                 [(ngModel)]="sampleForm.qtId" placeholder="เช่น QT-2025-001">
+          <input type="text" class="form-control" id="input-sample-qt" [(ngModel)]="sampleForm.qtId"
+            placeholder="เช่น QT-2025-001">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">QP ใหม่</label>
-          <input type="text" class="form-control" id="input-sample-qp"
-                 [(ngModel)]="sampleForm.qpId" placeholder="เช่น QP-2025-001">
+          <input type="text" class="form-control" id="input-sample-qp" [(ngModel)]="sampleForm.qpId"
+            placeholder="เช่น QP-2025-001">
         </div>
         <div class="col-md-7">
           <label class="form-label fw-bold">วันที่กำหนดส่ง <span class="text-danger">*</span></label>
-          <input type="date" class="form-control" id="input-sample-delivery-date"
-                 [(ngModel)]="sampleForm.deliveryDate">
+          <input type="date" class="form-control" id="input-sample-delivery-date" [(ngModel)]="sampleForm.deliveryDate">
         </div>
         <div class="col-md-5">
           <label class="form-label fw-bold">เวลาที่ต้องการ</label>
-          <input type="time" class="form-control" id="input-sample-delivery-time"
-                 [(ngModel)]="sampleForm.deliveryTime">
+          <input type="time" class="form-control" id="input-sample-delivery-time" [(ngModel)]="sampleForm.deliveryTime">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">จำนวน</label>
-          <input type="number" class="form-control" id="input-sample-qty"
-                 [(ngModel)]="sampleForm.quantity" placeholder="0">
+          <input type="number" class="form-control" id="input-sample-qty" [(ngModel)]="sampleForm.quantity"
+            placeholder="0">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">หน่วย</label>
-          <input type="text" class="form-control" id="input-sample-unit"
-                 [(ngModel)]="sampleForm.unit" placeholder="Pcs">
+          <input type="text" class="form-control" id="input-sample-unit" [(ngModel)]="sampleForm.unit"
+            placeholder="Pcs">
         </div>
         <div class="col-12">
           <label class="form-label fw-bold">หมายเหตุ</label>
-          <textarea class="form-control" id="input-sample-note" rows="2"
-                    [(ngModel)]="sampleForm.note" placeholder="ระบุรายละเอียดหรือหมายเหตุเพิ่มเติม..."></textarea>
+          <textarea class="form-control" id="input-sample-note" rows="2" [(ngModel)]="sampleForm.note"
+            placeholder="ระบุรายละเอียดหรือหมายเหตุเพิ่มเติม..."></textarea>
         </div>
       </div>
       <div class="d-flex justify-content-end gap-2 mt-4">
@@ -813,23 +902,19 @@
       <span class="fw-bold">สั่งผลิตใหม่ (ReOrder)</span>
       <button class="btn-close-modal ms-auto" (click)="closeAllModals()"><mat-icon>close</mat-icon></button>
     </div>
-    
+
     <!-- Tab Navigation -->
     <div class="d-flex border-bottom px-3 bg-light">
-      <button class="btn btn-sm px-4 py-2 border-0 rounded-0" 
-              [class.btn-primary]="prodModalTab === 'info'" 
-              [class.text-muted]="prodModalTab !== 'info'"
-              (click)="prodModalTab = 'info'"
-              style="border-bottom: 3px solid transparent !important;"
-              [style.border-bottom-color]="prodModalTab === 'info' ? '#003747' : 'transparent'">
+      <button class="btn btn-sm px-4 py-2 border-0 rounded-0" [class.btn-primary]="prodModalTab === 'info'"
+        [class.text-muted]="prodModalTab !== 'info'" (click)="prodModalTab = 'info'"
+        style="border-bottom: 3px solid transparent !important;"
+        [style.border-bottom-color]="prodModalTab === 'info' ? '#003747' : 'transparent'">
         1. ข้อมูลใบสั่งผลิต
       </button>
-      <button class="btn btn-sm px-4 py-2 border-0 rounded-0" 
-              [class.btn-primary]="prodModalTab === 'decision'" 
-              [class.text-muted]="prodModalTab !== 'decision'"
-              (click)="prodModalTab = 'decision'"
-              style="border-bottom: 3px solid transparent !important;"
-              [style.border-bottom-color]="prodModalTab === 'decision' ? '#003747' : 'transparent'">
+      <button class="btn btn-sm px-4 py-2 border-0 rounded-0" [class.btn-primary]="prodModalTab === 'decision'"
+        [class.text-muted]="prodModalTab !== 'decision'" (click)="prodModalTab = 'decision'"
+        style="border-bottom: 3px solid transparent !important;"
+        [style.border-bottom-color]="prodModalTab === 'decision' ? '#003747' : 'transparent'">
         2. ผู้มีอำนาจตัดสินใจ & สเปก
       </button>
     </div>
@@ -844,36 +929,37 @@
       <div class="row g-3" *ngIf="prodModalTab === 'info'">
         <div class="col-12">
           <label class="form-label fw-bold">JO ใหม่ <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="input-prod-jo"
-                 [(ngModel)]="productionForm.joId" placeholder="เช่น JO-2025-001">
+          <input type="text" class="form-control" id="input-prod-jo" [(ngModel)]="productionForm.joId"
+            placeholder="เช่น JO-2025-001">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">QT ใหม่</label>
-          <input type="text" class="form-control" id="input-prod-qt"
-                 [(ngModel)]="productionForm.qtId" placeholder="เช่น QT-2025-001">
+          <input type="text" class="form-control" id="input-prod-qt" [(ngModel)]="productionForm.qtId"
+            placeholder="เช่น QT-2025-001">
         </div>
         <div class="col-md-6">
           <label class="form-label fw-bold">QP ใหม่</label>
-          <input type="text" class="form-control" id="input-prod-qp"
-                 [(ngModel)]="productionForm.qpId" placeholder="เช่น QP-2025-001">
+          <input type="text" class="form-control" id="input-prod-qp" [(ngModel)]="productionForm.qpId"
+            placeholder="เช่น QP-2025-001">
         </div>
         <div class="col-md-7">
           <label class="form-label fw-bold">วันที่กำหนดส่งงาน <span class="text-danger">*</span></label>
           <input type="date" class="form-control" id="input-prod-deadline-date"
-                 [(ngModel)]="productionForm.deadlineDate">
+            [(ngModel)]="productionForm.deadlineDate">
         </div>
         <div class="col-md-5">
           <label class="form-label fw-bold">เวลาที่ต้องการ</label>
           <input type="time" class="form-control" id="input-prod-deadline-time"
-                 [(ngModel)]="productionForm.deadlineTime">
+            [(ngModel)]="productionForm.deadlineTime">
         </div>
         <div class="col-12">
           <label class="form-label fw-bold">หมายเหตุ</label>
-          <textarea class="form-control" id="input-prod-remarks" rows="3"
-                    [(ngModel)]="productionForm.remarks" placeholder="ระบุรายละเอียดหรือหมายเหตุเพิ่มเติม..."></textarea>
+          <textarea class="form-control" id="input-prod-remarks" rows="3" [(ngModel)]="productionForm.remarks"
+            placeholder="ระบุรายละเอียดหรือหมายเหตุเพิ่มเติม..."></textarea>
         </div>
         <div class="col-12 text-end mt-3">
-          <button class="btn btn-primary px-4" (click)="prodModalTab = 'decision'">ถัดไป: เลือกผู้มีอำนาจตัดสินใจ <mat-icon style="font-size:18px; vertical-align:middle">arrow_forward</mat-icon></button>
+          <button class="btn btn-primary px-4" (click)="prodModalTab = 'decision'">ถัดไป: เลือกผู้มีอำนาจตัดสินใจ
+            <mat-icon style="font-size:18px; vertical-align:middle">arrow_forward</mat-icon></button>
         </div>
       </div>
 
@@ -884,7 +970,8 @@
           <div class="alert alert-warning py-2 small mb-2" *ngIf="!productionForm.decisionAuthority">
             กรุณาเลือกผู้มีอำนาจตัดสินใจก่อนส่งใบสั่งผลิต
           </div>
-          <select class="form-select border-primary" id="input-prod-decision" [(ngModel)]="productionForm.decisionAuthority" style="border-width: 2px;">
+          <select class="form-select border-primary" id="input-prod-decision"
+            [(ngModel)]="productionForm.decisionAuthority" style="border-width: 2px;">
             <option value="" disabled selected>--- เลือกผู้มีอำนาจตัดสินใจ ---</option>
             <option value="customerOnSite">ลูกค้าเข้าดูงานหน้างาน</option>
             <option value="sampleToCustomer">ขึ้นตัวอย่างส่งลูกค้าตรวจ</option>
@@ -896,11 +983,12 @@
         <div class="col-12" *ngIf="productionForm.decisionAuthority">
           <label class="form-label fw-bold">รายละเอียดผู้มีอำนาจตัดสินใจ</label>
           <input type="text" class="form-control" id="input-prod-decision-remarks"
-                 [(ngModel)]="productionForm.decisionAuthorityRemarks" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)">
+            [(ngModel)]="productionForm.decisionAuthorityRemarks" placeholder="ระบุรายละเอียดเพิ่มเติม (ถ้ามี)">
         </div>
 
         <!-- Section: รายละเอียดตัวอย่างจริง (Conditional) -->
-        <div class="col-12 mt-3" *ngIf="['sampleToCustomer', 'customerOnSite'].includes(productionForm.decisionAuthority)">
+        <div class="col-12 mt-3"
+          *ngIf="['sampleToCustomer', 'customerOnSite'].includes(productionForm.decisionAuthority)">
           <div class="card border-success shadow-sm">
             <div class="card-header bg-success text-white py-2">
               <mat-icon style="font-size:18px; vertical-align:middle" class="me-1">vial</mat-icon>
@@ -916,22 +1004,25 @@
                     <button class="btn btn-primary" type="button" (click)="fetchPapData()">ดึงข้อมูล</button>
                   </div>
                 </div>
-                
+
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">ประเภทงาน <span class="text-danger">*</span></label>
                   <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleJobType">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">ระบบพิมพ์ <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePrintingSystem">
+                  <input type="text" class="form-control form-control-sm"
+                    [(ngModel)]="productionForm.samplePrintingSystem">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">ลักษณะงานพิมพ์ <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePrintingStyle">
+                  <input type="text" class="form-control form-control-sm"
+                    [(ngModel)]="productionForm.samplePrintingStyle">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">สีที่พิมพ์</label>
-                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePrintingColor">
+                  <input type="text" class="form-control form-control-sm"
+                    [(ngModel)]="productionForm.samplePrintingColor">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">ขนาดกระดาษ</label>
@@ -939,33 +1030,39 @@
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">แกรมกระดาษ</label>
-                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.samplePaperGrammage">
+                  <input type="text" class="form-control form-control-sm"
+                    [(ngModel)]="productionForm.samplePaperGrammage">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">ลักษณะงานเคลือบ</label>
-                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleCoatingStyle">
+                  <input type="text" class="form-control form-control-sm"
+                    [(ngModel)]="productionForm.sampleCoatingStyle">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small fw-bold">ลักษณะงานไดคัท</label>
-                  <input type="text" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleDiecutStyle">
+                  <input type="text" class="form-control form-control-sm"
+                    [(ngModel)]="productionForm.sampleDiecutStyle">
                 </div>
                 <div class="col-12">
                   <label class="form-label small fw-bold">วัน-เวลาส่งงานปรู๊ฟ <span class="text-danger">*</span></label>
-                  <input type="datetime-local" class="form-control form-control-sm" [(ngModel)]="productionForm.sampleDeliveryTimestamp">
+                  <input type="datetime-local" class="form-control form-control-sm"
+                    [(ngModel)]="productionForm.sampleDeliveryTimestamp">
                 </div>
                 <div class="col-12">
                   <label class="form-label small fw-bold">คำสั่งพิเศษ</label>
-                  <textarea class="form-control form-control-sm" rows="1" [(ngModel)]="productionForm.sampleSpecialInstructions"></textarea>
+                  <textarea class="form-control form-control-sm" rows="1"
+                    [(ngModel)]="productionForm.sampleSpecialInstructions"></textarea>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div class="d-flex justify-content-between gap-2 mt-4">
-          <button class="btn btn-outline-secondary px-4" (click)="prodModalTab = 'info'"><mat-icon style="font-size:18px; vertical-align:middle">arrow_back</mat-icon> ย้อนกลับ</button>
-          <button class="btn text-white px-5 shadow" id="btn-submit-prod" (click)="submitProductionOrder()" 
-                  style="background:#003747" [disabled]="!productionForm.decisionAuthority">
+          <button class="btn btn-outline-secondary px-4" (click)="prodModalTab = 'info'"><mat-icon
+              style="font-size:18px; vertical-align:middle">arrow_back</mat-icon> ย้อนกลับ</button>
+          <button class="btn text-white px-5 shadow" id="btn-submit-prod" (click)="submitProductionOrder()"
+            style="background:#003747" [disabled]="!productionForm.decisionAuthority">
             <mat-icon class="me-1" style="font-size:18px;vertical-align:middle">send</mat-icon>
             ส่งใบสั่งผลิตการผลิตใหม่
           </button>

@@ -106,6 +106,7 @@ public class ReorderService {
         dto.setProductionOrderCreatedAt(order.getCreatedAt());
         dto.setProductionOrderUpdatedAt(order.getUpdatedAt());
         dto.setDataDalivery(order.getDataDalivery());
+        dto.setCustomerFeedback(order.getCustomerFeedback());
         dto.setPrint2Page(order.getPrint2Page());
         dto.setIsNewProof(order.getIsNewProof());
         dto.setPrintRound(order.getPrintRound());
@@ -606,6 +607,7 @@ public class ReorderService {
             round.setInspectionDate(o.getInspectionDate());
             round.setCreatedAt(o.getCreatedAt());
             round.setUpdatedAt(o.getUpdatedAt());
+            round.setCustomerFeedback(o.getCustomerFeedback());
 
             // Print Job for this round
             if (o.getPrintJobId() != null) {

@@ -136,4 +136,11 @@ export class Dcsm20Service {
     return this.http.post(`${this.apiUrl}/production-job/update-qc-date?id=${id}&newDate=${newDate}`, {}, { responseType: 'text' });
   }
 
+  getByIdProduction(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/getById?id=${id}`,);
+  }
+
+  saveProductionOrder(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/production/save`, data);
+  }
 }

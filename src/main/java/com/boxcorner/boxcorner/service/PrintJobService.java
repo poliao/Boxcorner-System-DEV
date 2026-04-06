@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
 import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.repository.PrintJobRepository;
 
@@ -40,7 +39,7 @@ public class PrintJobService {
                 throw new RuntimeException("ข้อมูลถูกแก้ไขโดยผู้อื่นแล้ว กรุณาโหลดข้อมูลใหม่");
             }
 
-//            existing.setCreatedAt(printJob.getCreatedAt());
+            // existing.setCreatedAt(printJob.getCreatedAt());
             existing.setJobId(printJob.getJobId());
             existing.setDeliveryDate(printJob.getDeliveryDate());
             existing.setDeliveryTime(printJob.getDeliveryTime());
@@ -82,7 +81,7 @@ public class PrintJobService {
             existing.setPrintRound(printJob.getPrintRound());
             existing.setPrintRoundPage2(printJob.getPrintRoundPage2());
             existing.setCurrentRound(printJob.getCurrentRound());
- 
+            existing.setReorderFromJoId(printJob.getReorderFromJoId());
             return repository.save(existing);
         }
         printJob.setJobStatus("รอพิมพ์");
@@ -122,7 +121,8 @@ public class PrintJobService {
         return pageResult;
     }
 
-    public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName, String jobStatus, int page,
+    public Page<PrintJob> findByFiltersOS(Long id, String jobId, String customerJobName, String printerName,
+            String jobStatus, int page,
             int size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
         return repository.findByFiltersOS(id, jobId, customerJobName, printerName, jobStatus, paging);

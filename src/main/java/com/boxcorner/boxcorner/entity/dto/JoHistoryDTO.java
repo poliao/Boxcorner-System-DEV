@@ -132,6 +132,7 @@ public class JoHistoryDTO {
         private LocalDate inspectionDate;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private String customerFeedback;
 
         private PrintJobSummary printJob;   // null if no print job
     }

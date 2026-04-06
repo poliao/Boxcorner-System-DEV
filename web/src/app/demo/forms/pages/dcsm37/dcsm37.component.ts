@@ -39,7 +39,7 @@ export class Dcsm37Component implements OnInit {
 
   searchParams = {
     jobId: '', folderName: '', customerName: '',
-    jobOwner: '', jobStatus: '', processStatus: '',
+    jobOwner: '', jobStatus: '', processStatus: 'จัดส่งเรียบร้อย',
     startDate: '', endDate: ''
   };
 
@@ -84,7 +84,7 @@ export class Dcsm37Component implements OnInit {
   }
 
   clearFilters() {
-    this.searchParams = { jobId: '', folderName: '', customerName: '', jobOwner: '', jobStatus: '', processStatus: '', startDate: '', endDate: '' };
+    this.searchParams = { jobId: '', folderName: '', customerName: '', jobOwner: '', jobStatus: '', processStatus: 'จัดส่งเรียบร้อย', startDate: '', endDate: '' };
     this.onSearchChange();
   }
 

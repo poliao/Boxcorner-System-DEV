@@ -133,4 +133,7 @@ public class ProductionJob extends BaseEntity {
 
     @Column(name = "production_order_id")
     private Integer productionOrderId;
+
+    @Column(name = "reorder_from_jo_id")
+    private String reorderFromJoId;
 }

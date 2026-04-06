@@ -48,7 +48,6 @@ public class QcService {
                 existingJob.setStartQcDatetime(qcJob.getStartQcDatetime());
                 existingJob.setQcLocation(qcJob.getQcLocation());
                 existingJob.setQcType(qcJob.getQcType());
-                
                 existingJob.setQcColorMatch(qcJob.getQcColorMatch());
                 existingJob.setQcColorConsistency(qcJob.getQcColorConsistency());
                 existingJob.setQcInkResidue(qcJob.getQcInkResidue());
@@ -57,7 +56,7 @@ public class QcService {
                 existingJob.setQcAlignment(qcJob.getQcAlignment());
                 existingJob.setQcScratches(qcJob.getQcScratches());
                 existingJob.setQcMixedJobs(qcJob.getQcMixedJobs());
-
+                existingJob.setReorderFromJoId(qcJob.getReorderFromJoId());
                 return qcJobRepository.save(existingJob);
             } else {
                 return qcJobRepository.save(qcJob);
@@ -103,7 +102,8 @@ public class QcService {
             effectiveQcLocation = "ส่งQC";
         }
 
-        return qcJobRepository.findByFilters(joId, jobName, status, qcType, effectiveQcLocation, startFrom, startTo, deliveryFrom,
+        return qcJobRepository.findByFilters(joId, jobName, status, qcType, effectiveQcLocation, startFrom, startTo,
+                deliveryFrom,
                 deliveryTo, pageable);
     }
 
@@ -130,7 +130,7 @@ public class QcService {
         qcJob.setPassedQtyFraction(passedQtyFraction);
         qcJob.setBundlesPerPackFraction(bundlesPerPackFraction);
         qcJob.setPiecesFraction(piecesFraction);
-        
+
         qcJob.setQcColorMatch(qcColorMatch);
         qcJob.setQcColorConsistency(qcColorConsistency);
         qcJob.setQcInkResidue(qcInkResidue);

@@ -33,7 +33,7 @@ export class Dcsm02DetailComponent implements OnInit {
   isCreateSample = new FormControl(true);
   print2Page = new FormControl(false);
   approveRemarks = new FormControl('');
-  jobId = new FormControl('', Validators.required);
+  jobId = new FormControl('', [Validators.required, Validators.pattern(/^\S*$/)]);
   showEditModal = false;
   editNote = new FormControl('', Validators.required);
   showCancelModal = false;
@@ -107,12 +107,26 @@ export class Dcsm02DetailComponent implements OnInit {
       this.isFileName = true;
     }
     this.checkBtn();
+
+    // Prevent whitespace in joId
+    this.designForm.get('joId')?.valueChanges.subscribe(value => {
+      if (value && /\s/.test(value)) {
+        this.designForm.get('joId')?.setValue(value.replace(/\s+/g, ''), { emitEvent: false });
+      }
+    });
+
+    // Prevent whitespace in jobId (modal field)
+    this.jobId.valueChanges.subscribe(value => {
+      if (value && /\s/.test(value)) {
+        this.jobId.setValue(value.replace(/\s+/g, ''), { emitEvent: false });
+      }
+    });
   }
 
   initForm(): void {
     this.designForm = this.fb.group({
       id: [''],
-      joId: ['', Validators.required],
+      joId: ['', [Validators.required, Validators.pattern(/^\S*$/)]],
       qtId: [''],
       qpId: [''],
       version: [''],
@@ -146,9 +160,9 @@ export class Dcsm02DetailComponent implements OnInit {
 
     this.designForm.get('qpId')?.valueChanges.subscribe(value => {
       if (value) {
-        this.designForm.get('joId')?.clearValidators();
+        this.designForm.get('joId')?.setValidators([Validators.pattern(/^\S*$/)]);
       } else {
-        this.designForm.get('joId')?.setValidators([Validators.required]);
+        this.designForm.get('joId')?.setValidators([Validators.required, Validators.pattern(/^\S*$/)]);
       }
       this.designForm.get('joId')?.updateValueAndValidity();
     });

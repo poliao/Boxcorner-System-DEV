@@ -113,4 +113,6 @@ public class QcJob extends BaseEntity {
     @Column(name = "qc_caution")
     private String qcCaution;
 
+    @Column(name = "reorder_from_jo_id")
+    private String reorderFromJoId;
 }

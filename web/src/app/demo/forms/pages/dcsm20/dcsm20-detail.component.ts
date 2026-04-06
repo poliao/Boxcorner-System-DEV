@@ -185,6 +185,7 @@ export class Dcsm20DetailComponent implements OnInit {
       qcLocation: [null],
       printJobId: [null],
       qcType: [null],
+      productionOrderId: [null],
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -428,6 +429,7 @@ export class Dcsm20DetailComponent implements OnInit {
               this.productionForm.get('deliveryStatus')?.setValue('กำลังส่ง');
               this.performStatusUpdate();
             } else if (status === 'DeliveryComplete') {
+              this.updateStatusProductionOrder();
               this.productionForm.get('deliveryStatus')?.setValue('จัดส่งเรียบร้อย');
               this.performStatusUpdate();
             }
@@ -510,7 +512,6 @@ export class Dcsm20DetailComponent implements OnInit {
   private convertDateFormat(dateStr: string): string {
     if (!dateStr || dateStr === '-') return '';
 
-    // แปลงจาก "27/01/2026" หรือ "28/01/26" เป็น "2026-01-27"
     if (dateStr.includes('/')) {
       const parts = dateStr.split('/');
       if (parts.length === 3) {
@@ -518,14 +519,11 @@ export class Dcsm20DetailComponent implements OnInit {
         const month = parts[1].padStart(2, '0');
         let year = parts[2];
 
-        // จัดการปีสั้น (YY)
         if (year.length === 2) {
           const yearNum = parseInt(year);
-          // ถ้า <= 50 ถือว่าเป็น 20xx, ถ้า > 50 ถือว่าเป็น 19xx
           year = yearNum <= 50 ? `20${year}` : `25${year}`;
         }
 
-        // ตรวจสอบว่าเป็นปีพุทธศักราชหรือคริสต์ศักราช
         const yearNum = parseInt(year);
         const convertedYear = yearNum > 2500 ? (yearNum - 543).toString() : year;
 
@@ -533,7 +531,6 @@ export class Dcsm20DetailComponent implements OnInit {
       }
     }
 
-    // แปลงจาก "29 ม.ค. 2569" เป็น "2026-01-29"
     const thaiMonths: { [key: string]: string } = {
       'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03', 'เม.ย.': '04',
       'พ.ค.': '05', 'มิ.ย.': '06', 'ก.ค.': '07', 'ส.ค.': '08',
@@ -607,5 +604,30 @@ export class Dcsm20DetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  updateStatusProductionOrder() {
+    const productionOrderId = this.productionForm.getRawValue().productionOrderId;
+    if (!productionOrderId) {
+      return;
+    }
+    this.dcsm20Service.getByIdProduction(productionOrderId).subscribe({
+      next: (res) => {
+        res.processStatus = 'จัดส่งเรียบร้อย'
+        this.dcsm20Service.saveProductionOrder(res).subscribe({
+          next: () => {
+            this.loadingService.hide();
+          },
+          error: (err) => {
+            console.log(err);
+            this.loadingService.hide();
+          }
+        });
+      },
+      error: (err) => {
+        console.log(err);
+        this.loadingService.hide();
+      }
+    })
   }
 }
