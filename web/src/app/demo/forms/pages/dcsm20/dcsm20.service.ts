@@ -143,4 +143,8 @@ export class Dcsm20Service {
   saveProductionOrder(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/production/save`, data);
   }
+
+  updatePrintingDate(id: number, newDate: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/production-job/update-printing-date?id=${id}&newDate=${newDate}`, {}, { responseType: 'text' });
+  }
 }

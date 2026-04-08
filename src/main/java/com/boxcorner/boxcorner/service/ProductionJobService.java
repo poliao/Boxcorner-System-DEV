@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.boxcorner.boxcorner.entity.PapProductionOrder;
+import com.boxcorner.boxcorner.entity.PrintJob;
 import com.boxcorner.boxcorner.entity.ProductionJob;
 import com.boxcorner.boxcorner.entity.QcJob;
 import com.boxcorner.boxcorner.repository.PapProductionOrderRepository;
+import com.boxcorner.boxcorner.repository.PrintJobRepository;
 import com.boxcorner.boxcorner.repository.ProductionJobRepository;
 import com.boxcorner.boxcorner.repository.ProductionOrderRepository;
 import com.boxcorner.boxcorner.repository.QcJobRepository;
@@ -36,6 +38,9 @@ public class ProductionJobService {
 
     @Autowired
     private ProductionOrderRepository productionOrderRepository;
+
+    @Autowired
+    private PrintJobRepository printJobRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -161,6 +166,37 @@ public class ProductionJobService {
                 // อัปเดตทั้ง qcScheduledDate และ deliveryDateTime (หากจำเป็น แต่ในที่นี้เน้น
                 // QC)
                 papOrder.setQcScheduledDate(newDate);
+                papProductionOrderRepository.save(papOrder);
+            }
+        }
+    }
+
+    @Transactional
+    public void updatePrintingDate(Long productionJobId, LocalDate newDate) {
+        ProductionJob job = productionJobRepository.findById(productionJobId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลใบงานผลิต (ID: " + productionJobId + ")"));
+
+        // 1. อัปเดตตาราง production_jobs
+        job.setPrintingDate(newDate);
+        productionJobRepository.save(job);
+
+        // 2. อัปเดตตาราง print_jobs ถ้ามี printJobId
+        if (job.getPrintJobId() != null) {
+            Optional<PrintJob> printJobOpt = printJobRepository.findById(job.getPrintJobId());
+            if (printJobOpt.isPresent()) {
+                PrintJob printJob = printJobOpt.get();
+                printJob.setDeliveryDate(newDate);
+                printJobRepository.save(printJob);
+            }
+        }
+
+        // 3. อัปเดตตาราง pap_production_orders ถ้ามี papOrderId
+        if (job.getPapOrderId() != null) {
+            Optional<PapProductionOrder> papOrderOpt = papProductionOrderRepository
+                    .findById(Long.valueOf(job.getPapOrderId()));
+            if (papOrderOpt.isPresent()) {
+                PapProductionOrder papOrder = papOrderOpt.get();
+                papOrder.setPrintScheduledDate(newDate);
                 papProductionOrderRepository.save(papOrder);
             }
         }

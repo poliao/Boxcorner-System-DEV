@@ -1,0 +1,710 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ProofReport" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="277e25ef-cb77-475f-967b-debdc3189bc7">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="LocalDatabase"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="proofId" class="java.lang.Integer"/>
+	<query language="sql"><![CDATA[SELECT * FROM get_proof_order_details( $P{proofId});]]></query>
+	<field name="receiveddate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="receiveddate"/>
+		<property name="com.jaspersoft.studio.field.label" value="receiveddate"/>
+	</field>
+	<field name="deliverydate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="deliverydate"/>
+		<property name="com.jaspersoft.studio.field.label" value="deliverydate"/>
+	</field>
+	<field name="jobid" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="jobid"/>
+		<property name="com.jaspersoft.studio.field.label" value="jobid"/>
+	</field>
+	<field name="customername" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="customername"/>
+		<property name="com.jaspersoft.studio.field.label" value="customername"/>
+	</field>
+	<field name="jobname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="jobname"/>
+		<property name="com.jaspersoft.studio.field.label" value="jobname"/>
+	</field>
+	<field name="orderedby" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="orderedby"/>
+		<property name="com.jaspersoft.studio.field.label" value="orderedby"/>
+	</field>
+	<field name="platelocation" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="platelocation"/>
+		<property name="com.jaspersoft.studio.field.label" value="platelocation"/>
+	</field>
+	<field name="platecolorcount" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="platecolorcount"/>
+		<property name="com.jaspersoft.studio.field.label" value="platecolorcount"/>
+	</field>
+	<field name="platescreenmesh" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="platescreenmesh"/>
+		<property name="com.jaspersoft.studio.field.label" value="platescreenmesh"/>
+	</field>
+	<field name="plateotherdetails" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="plateotherdetails"/>
+		<property name="com.jaspersoft.studio.field.label" value="plateotherdetails"/>
+	</field>
+	<field name="papertype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="papertype"/>
+		<property name="com.jaspersoft.studio.field.label" value="papertype"/>
+	</field>
+	<field name="papercut" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="papercut"/>
+		<property name="com.jaspersoft.studio.field.label" value="papercut"/>
+	</field>
+	<field name="paperprintsize" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="paperprintsize"/>
+		<property name="com.jaspersoft.studio.field.label" value="paperprintsize"/>
+	</field>
+	<field name="paperprintqty" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="paperprintqty"/>
+		<property name="com.jaspersoft.studio.field.label" value="paperprintqty"/>
+	</field>
+	<field name="paperputtername" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="paperputtername"/>
+		<property name="com.jaspersoft.studio.field.label" value="paperputtername"/>
+	</field>
+	<field name="paperspecialinstructions" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="paperspecialinstructions"/>
+		<property name="com.jaspersoft.studio.field.label" value="paperspecialinstructions"/>
+	</field>
+	<field name="printscheduledate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="printscheduledate"/>
+		<property name="com.jaspersoft.studio.field.label" value="printscheduledate"/>
+	</field>
+	<field name="printdeliverydate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="printdeliverydate"/>
+		<property name="com.jaspersoft.studio.field.label" value="printdeliverydate"/>
+	</field>
+	<field name="printlocation" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="printlocation"/>
+		<property name="com.jaspersoft.studio.field.label" value="printlocation"/>
+	</field>
+	<field name="printcharacteristics" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="printcharacteristics"/>
+		<property name="com.jaspersoft.studio.field.label" value="printcharacteristics"/>
+	</field>
+	<field name="printcolorcount" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="printcolorcount"/>
+		<property name="com.jaspersoft.studio.field.label" value="printcolorcount"/>
+	</field>
+	<field name="printoperatoname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="printoperatoname"/>
+		<property name="com.jaspersoft.studio.field.label" value="printoperatoname"/>
+	</field>
+	<field name="printspecialinstructions" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="printspecialinstructions"/>
+		<property name="com.jaspersoft.studio.field.label" value="printspecialinstructions"/>
+	</field>
+	<field name="coatscheduledate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="coatscheduledate"/>
+		<property name="com.jaspersoft.studio.field.label" value="coatscheduledate"/>
+	</field>
+	<field name="coatlocation" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="coatlocation"/>
+		<property name="com.jaspersoft.studio.field.label" value="coatlocation"/>
+	</field>
+	<field name="coattype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="coattype"/>
+		<property name="com.jaspersoft.studio.field.label" value="coattype"/>
+	</field>
+	<field name="coatoperatorname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="coatoperatorname"/>
+		<property name="com.jaspersoft.studio.field.label" value="coatoperatorname"/>
+	</field>
+	<field name="coatspecialinstructions" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="coatspecialinstructions"/>
+		<property name="com.jaspersoft.studio.field.label" value="coatspecialinstructions"/>
+	</field>
+	<field name="diecutscheduledate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="diecutscheduledate"/>
+		<property name="com.jaspersoft.studio.field.label" value="diecutscheduledate"/>
+	</field>
+	<field name="diecutlocation" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diecutlocation"/>
+		<property name="com.jaspersoft.studio.field.label" value="diecutlocation"/>
+	</field>
+	<field name="diecuttype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diecuttype"/>
+		<property name="com.jaspersoft.studio.field.label" value="diecuttype"/>
+	</field>
+	<field name="diecutoperatorname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diecutoperatorname"/>
+		<property name="com.jaspersoft.studio.field.label" value="diecutoperatorname"/>
+	</field>
+	<field name="diecutspecialinstructions" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="diecutspecialinstructions"/>
+		<property name="com.jaspersoft.studio.field.label" value="diecutspecialinstructions"/>
+	</field>
+	<field name="imageurl" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="imageurl"/>
+		<property name="com.jaspersoft.studio.field.label" value="imageurl"/>
+	</field>
+	<background height="9" splitType="Stretch"/>
+	<title height="32" splitType="Stretch">
+		<element kind="textField" uuid="10201e4f-77ea-4382-aaea-1ff790239f60" x="167" y="1" width="220" height="30" fontName="THSarabun" fontSize="25.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
+			<expression><![CDATA["ใบสั่งปรู๊ฟ งานออฟเซ็ท"]]></expression>
+		</element>
+	</title>
+	<pageHeader height="60" splitType="Stretch">
+		<element kind="textField" uuid="886857ff-9ba7-4fa7-a207-a82b1d868e72" x="70" y="0" width="50" height="20" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<expression><![CDATA["วันที่รับงาน"]]></expression>
+		</element>
+		<element kind="textField" uuid="ca237371-d089-468e-8af7-0c1ee78e9b06" x="270" y="0" width="60" height="20" forecolor="#FF0703" fontName="THSarabun" fontSize="13.0" bold="true" vTextAlign="Bottom">
+			<expression><![CDATA["กำหนดส่งงาน"]]></expression>
+		</element>
+		<element kind="textField" uuid="49724053-5219-4def-8b7d-3abf7d16a70c" x="40" y="20" width="60" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<expression><![CDATA["รหัส JOB งาน"]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="3b30541e-03ef-4498-a411-0d1977df20d8" x="40" y="35" width="30" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<expression><![CDATA["ชื่องาน"]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="45c8f3b0-5687-4c3d-a3d3-f14f5b99f662" x="270" y="20" width="40" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<expression><![CDATA["ชื่อลูกค้า"]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="f34a485e-e922-4a0a-81ea-4472fb803435" x="270" y="35" width="40" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<expression><![CDATA["ผู้สั่งงาน"]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="line" uuid="360e57e3-671f-4677-b984-d2dfb3ddc374" x="113" y="17" width="144" height="1">
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+		</element>
+		<element kind="line" uuid="7bbc3d72-fc15-42b5-ad02-b852e2c95280" x="93" y="32" width="164" height="1">
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+		</element>
+		<element kind="line" uuid="2cbea97d-1196-4fe0-a683-9933ec854b91" x="67" y="47" width="190" height="1">
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+		</element>
+		<element kind="line" uuid="05d5e6b8-cc91-41fe-ab2f-94fae2026c65" x="322" y="17" width="141" height="1">
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+		</element>
+		<element kind="line" uuid="f7b2f28d-5d3a-4b23-b556-82cee8c5add3" x="304" y="32" width="159" height="1">
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+		</element>
+		<element kind="line" uuid="45c98c9c-985f-446c-bfbe-e1db2c7286a5" x="301" y="47" width="162" height="1">
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+		</element>
+		<element kind="textField" uuid="1dc18116-2bc2-4b46-ad66-2a69ea9924d4" x="120" y="0" width="150" height="20" fontName="THSarabun" fontSize="12.0" bold="true" vTextAlign="Middle">
+			<expression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{receiveddate})]]></expression>
+		</element>
+		<element kind="textField" uuid="c952b95d-196d-40f8-a221-1f8b05596ba6" x="330" y="0" width="139" height="20" forecolor="#FF0703" fontName="THSarabun" fontSize="12.0" bold="true" vTextAlign="Middle">
+			<expression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{deliverydate})]]></expression>
+		</element>
+		<element kind="textField" uuid="9603399d-f5e3-44bb-b006-854c1de29729" x="100" y="20" width="170" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<expression><![CDATA[$F{jobid}]]></expression>
+		</element>
+		<element kind="textField" uuid="2ae06f47-15ec-49f3-a6b0-ffaa5d36d783" x="310" y="20" width="159" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<expression><![CDATA[$F{customername}]]></expression>
+		</element>
+		<element kind="textField" uuid="c7b19fad-e5d5-4c49-807d-c2b53f57a320" x="70" y="35" width="200" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<expression><![CDATA[$F{jobname}]]></expression>
+		</element>
+		<element kind="textField" uuid="6690d47e-480f-464b-8aee-bd7c45fa896a" x="310" y="35" width="159" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<expression><![CDATA[$F{orderedby}]]></expression>
+		</element>
+	</pageHeader>
+	<detail>
+		<band height="700" splitType="Stretch">
+			<element kind="rectangle" uuid="5c1f4a63-57c4-4db5-b8e5-74270f342a0b" x="160" y="0" width="390" height="2" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="rectangle" uuid="4502037f-6403-4f6c-9724-7a605141f4b6" x="40" y="0" width="120" height="15" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="2f472f06-d4ac-41ed-9e45-f0821b9fe923" x="50" y="0" width="60" height="15" forecolor="#FFFFFF" fontName="THSarabun" fontSize="12.0" bold="true" vTextAlign="Middle">
+				<expression><![CDATA["งานแม่พิมพ์"]]></expression>
+			</element>
+			<element kind="rectangle" uuid="9f51ac4f-a0eb-412d-8fbd-f53871b2e1fa" x="40" y="60" width="120" height="15" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="rectangle" uuid="24f71c43-477a-4004-8ba7-d378ce41b456" x="160" y="60" width="390" height="2" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="4a987586-ef95-429d-9926-5a450efd97cf" x="50" y="60" width="60" height="15" forecolor="#FFFFFF" fontName="THSarabun" fontSize="12.0" bold="true" vTextAlign="Middle">
+				<expression><![CDATA["งานตัดกระดาษ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="f360cd26-cebb-4373-a5e0-62c49d07ab70" x="40" y="20" width="70" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["สถานที่ผลิตเพลท"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="155cfb38-6715-40c8-8bb2-bd34be87f7a7" x="40" y="35" width="70" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["รายละเอียดอื่นๆ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="ecbb35fe-6f1b-4ff1-bfa7-4c541780213d" x="220" y="20" width="40" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["จำนวนสี"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="4db43dd1-7956-4796-a571-7cb5d15e8b0b" x="253" y="32" width="103" height="1">
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="line" uuid="3b077042-f678-4b0a-a4a3-f655da1d1dc1" x="103" y="32" width="104" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="line" uuid="202abdde-7813-4c56-84a2-45d568866477" x="101" y="47" width="408" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="line" uuid="477452ef-7a59-4257-822a-02a66832a8a7" x="406" y="32" width="103" height="1">
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="4958b314-4e61-4dd4-9197-8aadaacde9ab" x="370" y="20" width="40" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["เม็ดสกรีน"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="7a70df3c-415f-41bf-b31f-56aa6dce3040" x="73" y="92" width="176" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="25076232-4aab-4bff-aa65-986085c267f9" x="40" y="80" width="40" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["กระดาษ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="67346ab4-c36d-4f58-8693-82fe78564f9e" x="250" y="80" width="20" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ผ่า"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="1acf4ac3-1fc4-42b0-88f4-3e53cce00ca2" x="262" y="92" width="25" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="d3eb7fc9-94de-4f21-ad2b-706f26fa3ffa" x="290" y="80" width="75" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ขนาดกระดาษพิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="bcb73595-7e9c-4eb4-b959-55b26b8a16dc" x="359" y="92" width="51" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="2b43028b-3db6-4849-880b-c887c76cb218" x="410" y="80" width="60" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["จำนวนใบพิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="27f2b927-84f5-4b20-a112-da349a57fbfc" x="463" y="92" width="87" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				<pen lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="rectangle" uuid="8b5d495f-ee6f-4901-903a-bf80e3b62087" x="160" y="130" width="390" height="2" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="rectangle" uuid="e4487070-41ef-4d18-b76a-1f33a6de5e27" x="40" y="130" width="120" height="15" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="5645b929-0d6b-4c89-886b-c393e8c0e000" x="50" y="130" width="70" height="15" forecolor="#FFFFFF" fontName="THSarabun" fontSize="12.0" bold="true" vTextAlign="Middle">
+				<expression><![CDATA["งานพิมพ์ออฟเซ็ท"]]></expression>
+			</element>
+			<element kind="textField" uuid="7ab5b500-6846-4f0a-aead-453b925817ab" x="40" y="150" width="60" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["กำหนดพิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="32494c66-c1e0-4359-b630-bbe99fbae568" x="87" y="162" width="123" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="2ebafc36-0fc2-467c-bb7f-614d84c19595" x="220" y="150" width="56" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["กำหนดส่งพิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="a0869917-db57-4617-882b-2a2bbadc7c01" x="274" y="162" width="125" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="f0bedb1b-a2f0-4300-9bca-d1167ccc12f2" x="410" y="150" width="50" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["สถานที่พิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="7a3a4609-fde6-4d60-9554-0dd9a8fc3656" x="457" y="162" width="93" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="ee667786-7367-4721-a01a-280a76d73511" x="510" y="20" width="35" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["LPI"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="a626387f-82a7-48c1-9ee1-dc7014f68ce0" x="40" y="165" width="63" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ลักษณะงานพิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="e9034d42-07ba-4b09-acac-2760e21550e8" x="101" y="177" width="109" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="line" uuid="be9859f1-26ca-426f-ac52-e38a15b032e9" x="276" y="177" width="124" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="c4bc11b0-3c6e-4e61-97ec-0c68e1d1bc96" x="220" y="165" width="63" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["จำนวนสีที่พิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="213031cb-5f3f-4687-8e93-d71b8a8efafc" x="80" y="207" width="469" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="070a26e1-d61b-4e9e-87c1-dd8cc7656ca8" x="40" y="195" width="47" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["คำสั่งพิเศษ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="rectangle" uuid="7545fa54-6b4f-4b09-81ff-c874574dc326" x="161" y="220" width="389" height="2" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="rectangle" uuid="dd4464fd-7d82-4030-a85b-a497c89933b7" x="40" y="220" width="120" height="15" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="ce223431-efad-49ea-af5c-9717eae45d8c" x="53" y="220" width="70" height="15" forecolor="#FFFFFF" fontName="THSarabun" fontSize="12.0" bold="true" vTextAlign="Middle">
+				<expression><![CDATA["งานเคลือบ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="95aefe97-cc5d-4a28-ac54-b91982214adc" x="40" y="240" width="69" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["กำหนดส่งเคลือบ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="5954bc12-4a72-4491-8150-04b3e1b67301" x="104" y="252" width="95" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="line" uuid="743ba0ea-5ea3-4863-8330-6dc3ca28a492" x="259" y="252" width="119" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="3a3662a2-ffa0-4bbb-b807-d1486edaced8" x="206" y="240" width="69" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["สถานที่เคลือบ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="8a2a7adf-85b3-42d5-93b9-8d8ebe21b2d9" x="437" y="252" width="113" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="e96b2bfe-e95f-4c33-ba87-0943800ea49c" x="380" y="240" width="60" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ประเภทเคลือบ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="b0da5766-49ca-43a4-9de2-8be8e4a7fd98" x="40" y="270" width="47" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["คำสั่งพิเศษ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="line" uuid="1534d00a-5aa9-476f-9dba-d9dabc3926f6" x="82" y="282" width="468" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="rectangle" uuid="565c60ff-72b4-41c1-abde-3252d6104f90" x="159" y="296" width="391" height="2" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="rectangle" uuid="de758e27-b6c4-457c-8aeb-b986c9397710" x="40" y="296" width="120" height="15" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="7db0e1bd-c584-4773-9f94-30bbda4389dd" x="51" y="296" width="70" height="15" forecolor="#FFFFFF" fontName="THSarabun" fontSize="12.0" bold="true" vTextAlign="Middle">
+				<expression><![CDATA["งานไดคัท/ปั้มพิเศษ"]]></expression>
+			</element>
+			<element kind="line" uuid="0098329d-8159-4a84-a88f-50949709d64d" x="79" y="328" width="101" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="line" uuid="4004a3a4-1be1-41b3-b96a-35dc80db3e7a" x="233" y="328" width="120" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="b9c2d2a4-5cd9-4c95-91f9-ee28dd4bcabe" x="40" y="316" width="41" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["กำหนดส่ง"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			</element>
+			<element kind="textField" uuid="c589da06-24cc-4ef1-836a-8872ece61e75" x="184" y="316" width="53" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["สถานที่ไดคัท"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			</element>
+			<element kind="line" uuid="b4da4f92-7df2-4f45-af2b-d9f82c506ee5" x="413" y="328" width="137" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="3854bbe9-96ae-42a3-927c-d7b5b85187a9" x="360" y="316" width="53" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ประเภทไดคัท"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			</element>
+			<element kind="line" uuid="b2d0f841-8284-43c3-adcf-34c292bfb8da" x="287" y="192" width="113" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="74b83bb2-ca5b-4501-8bbc-b02e8199351b" x="220" y="180" width="70" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["จำนวนใบพิมพ์ที่ได้"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="1d01ef13-2f8d-4c4c-a95a-b6a47514c5c2" x="69" y="192" width="141" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="3c239c82-6c08-43c0-8a03-40fc46a4e0ae" x="40" y="180" width="33" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ผู้พิมพ์"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="33521665-8918-4681-8d15-2f937a57e25d" x="40" y="255" width="38" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ผู้เคลือบ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="line" uuid="e02fe0b7-1a54-4be7-b1ba-e35f826a53a1" x="75" y="267" width="120" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="b213bf1c-2707-4cc1-a106-0659e11dde46" x="206" y="255" width="69" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["จำนวนใบพิมพ์ที่ได้"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="a24f1fe7-d49b-449c-bf5a-387bce221dd1" x="275" y="267" width="103" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="1ffa242f-7ca8-4e4b-b506-098b4e46f3e1" x="40" y="95" width="29" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ผู้ตัด"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="ac5d75b0-52ba-4cc6-8b0f-1012b9568f31" x="60" y="107" width="141" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="line" uuid="4c6c4f9d-11fd-4e60-87e3-f665ea2d0b58" x="82" y="343" width="98" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="51da1376-7b8f-4a43-821c-b42eb5337cbb" x="40" y="331" width="47" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ผู้ปั้ม/ไดคัท"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="a249c28c-3881-4688-92bf-4f6eb1f764b4" x="184" y="331" width="69" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["จำนวนใบพิมพ์ที่ได้"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="7f5f5f03-7e9a-424a-8505-9ab338c5d63d" x="253" y="343" width="100" height="1">
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="c4434d56-cc23-4459-bd5d-8a8e0986c270" x="0" y="0" width="31" height="336" rotation="Left" fontSize="19.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA["PROOF ORDER BOXCORNERART"]]></expression>
+			</element>
+			<element kind="line" uuid="4408d60e-60d2-4437-bc73-9aebcb20dde3" x="110" y="440" width="98" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="c2e200b8-235f-4064-9405-9cbc284465aa" x="119" y="390" width="80" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ตรวจสอบใบปรู๊ฟโดย"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="line" uuid="31176f44-393e-442d-92ec-2ffa310635b6" x="240" y="440" width="98" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="4e89e269-cfe3-46a3-8cf4-cb57c29ba92d" x="249" y="390" width="80" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ตรวจสอบใบปรู๊ฟโดย"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="line" uuid="9cb37839-d23e-4323-a7b5-215356b3637a" x="371" y="440" width="98" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="f2d9bb91-8438-4b27-aa00-3b213faabb49" x="380" y="390" width="80" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["ตรวจสอบใบปรู๊ฟโดย"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="rectangle" uuid="bd76bd49-054d-4fbe-a89f-b95f978e6dd1" x="91" y="380" width="391" height="2" backcolor="#030303">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="08adc738-3a9d-43c1-ad53-155bc2b76c3b" x="80" y="122" width="469" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="834b5f7a-1dfd-4e96-ab04-b2ce3c044dc6" x="40" y="110" width="47" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["คำสั่งพิเศษ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="c11f14d5-7399-4058-8728-8f76297966d5" x="80" y="358" width="469" height="1">
+				<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
+			</element>
+			<element kind="textField" uuid="252ab1c7-ee3d-41bc-995d-7798f6cd2345" x="40" y="346" width="47" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+				<expression><![CDATA["คำสั่งพิเศษ"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="image" uuid="39a9204e-1255-4934-b021-3822d394122b" x="110" y="450" width="335" height="249">
+				<expression><![CDATA[$F{imageurl}]]></expression>
+			</element>
+			<element kind="textField" uuid="5820c32e-4d9a-4807-a4c7-add940e74dc2" x="110" y="20" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{platelocation}]]></expression>
+			</element>
+			<element kind="textField" uuid="67ceb5dd-0a33-4b7b-9b66-f5394b69beeb" x="260" y="20" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{platecolorcount}]]></expression>
+			</element>
+			<element kind="textField" uuid="ac656149-285a-4017-9b18-6fefdefbb3e3" x="410" y="20" width="100" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{platescreenmesh}]]></expression>
+			</element>
+			<element kind="textField" uuid="bc18a2fe-ad3c-448c-9b34-07c710b9df79" x="110" y="35" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{plateotherdetails}]]></expression>
+			</element>
+			<element kind="textField" uuid="d0872781-c888-4763-9d0f-572ff4c9dbbc" x="80" y="80" width="170" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{papertype}]]></expression>
+			</element>
+			<element kind="textField" uuid="700294d0-24c0-4d9d-b4a1-2da777869024" x="270" y="80" width="20" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{papercut}]]></expression>
+			</element>
+			<element kind="textField" uuid="cb373ae2-9d2e-44cd-b406-a933bd86c80a" x="365" y="80" width="45" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{paperprintsize}]]></expression>
+			</element>
+			<element kind="textField" uuid="fd4e6828-9637-43b5-bb6e-0b53fa158d54" x="470" y="80" width="85" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{paperprintqty}]]></expression>
+			</element>
+			<element kind="textField" uuid="9fed1937-92aa-40e9-aebe-8e8808654a90" x="69" y="95" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{paperputtername}]]></expression>
+			</element>
+			<element kind="textField" uuid="7ecaee10-9ab6-4527-8494-b055fd776fd5" x="87" y="110" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{paperspecialinstructions}]]></expression>
+			</element>
+			<element kind="textField" uuid="705db102-1905-4860-8c05-f83da71a9642" x="100" y="150" width="120" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{printscheduledate})]]></expression>
+			</element>
+			<element kind="textField" uuid="675e158d-dc52-478f-a365-e322ee6e326a" x="276" y="150" width="134" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{printdeliverydate})]]></expression>
+			</element>
+			<element kind="textField" uuid="49071284-ed27-4d17-b74b-1cf4f0996323" x="460" y="150" width="95" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{printlocation}]]></expression>
+			</element>
+			<element kind="textField" uuid="218fe0d2-6976-4913-95b6-1a133cf22fe7" x="103" y="165" width="117" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{printcharacteristics}]]></expression>
+			</element>
+			<element kind="textField" uuid="ea2b9ba5-3828-4891-9be0-b153753fa813" x="283" y="165" width="117" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{printcolorcount}]]></expression>
+			</element>
+			<element kind="textField" uuid="c3b7909f-4d23-45ce-91a3-4d931f980eab" x="73" y="180" width="147" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{printoperatoname}]]></expression>
+			</element>
+			<element kind="textField" uuid="dc2b6708-7cd9-4d78-a5dd-e830ae48242c" x="87" y="195" width="468" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{printspecialinstructions}]]></expression>
+			</element>
+			<element kind="textField" uuid="897acaff-06b2-4030-99dc-8c41cc1f276d" x="109" y="240" width="97" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{coatscheduledate})]]></expression>
+			</element>
+			<element kind="textField" uuid="f18c43e4-807e-4a09-be16-8a3654277884" x="275" y="240" width="105" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{coatlocation}]]></expression>
+			</element>
+			<element kind="textField" uuid="be612da6-3ce9-4639-a8a8-07d3271ea8e9" x="440" y="240" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{coattype}]]></expression>
+			</element>
+			<element kind="textField" uuid="9fe9d2d2-9608-465f-a2fe-999aacba2542" x="78" y="255" width="128" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{coatoperatorname}]]></expression>
+			</element>
+			<element kind="textField" uuid="77dea138-5cb5-410c-908d-1b4f614a10b6" x="87" y="270" width="463" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{coatspecialinstructions}]]></expression>
+			</element>
+			<element kind="textField" uuid="96caf63f-e0ae-4b13-b2b0-89d50953a787" x="81" y="316" width="103" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{diecutscheduledate})]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="b07cc297-3779-42bc-9f46-cb871419423f" x="237" y="316" width="123" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{diecutlocation}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="00a2b60d-fa62-4d8d-a423-cb48afb4c774" x="413" y="316" width="132" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{diecuttype}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="f2e6e73f-81c0-4b00-8454-93c59be8ebc2" x="87" y="331" width="97" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{diecutoperatorname}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="6e1615fd-fabe-4d52-b49c-04a92a80ae06" x="87" y="346" width="457" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+				<expression><![CDATA[$F{diecutspecialinstructions}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</detail>
+</jasperReport>

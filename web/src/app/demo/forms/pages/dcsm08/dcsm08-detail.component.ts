@@ -9,6 +9,9 @@ import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 import { TokenService } from 'src/app/shared/token.service';
+import { PapService } from 'src/app/services/pap.service';
+
+
 @Component({
   selector: 'app-dcsm08-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule,],
@@ -24,6 +27,12 @@ export class Dcsm08DetailComponent implements OnInit {
   isEditMold = false;
   isSupplier = false;
   isKeepSupplier = false;
+  activeTab = 'general';
+  proofForm!: FormGroup;
+  productionOrderId: number | null = null;
+  showJobModal = false;
+  availableJobs: any[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -33,14 +42,19 @@ export class Dcsm08DetailComponent implements OnInit {
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private tokenService: TokenService,
+    private papService: PapService
   ) { }
 
   ngOnInit(): void {
     this.initForm();
     const resolvedData = this.route.snapshot.data['designOrder'];
     if (resolvedData) {
+      this.productionOrderId = resolvedData.id;
       this.patchFormData(resolvedData);
       this.checkBtn();
+      this.initProofForm();
+      this.loadProofData();
+
 
       this.mainForm.get('qpId')?.valueChanges.subscribe(val => {
         if (val) {
@@ -49,6 +63,12 @@ export class Dcsm08DetailComponent implements OnInit {
           this.mainForm.get('jobId')?.setValidators([Validators.required]);
         }
         this.mainForm.get('jobId')?.updateValueAndValidity();
+      });
+
+      this.mainForm.get('decisionAuthority')?.valueChanges.subscribe(val => {
+        if (!['customerOnSite', 'sampleToCustomer'].includes(val) && this.activeTab === 'proof') {
+          this.activeTab = 'general';
+        }
       });
     }
   }
@@ -144,6 +164,201 @@ export class Dcsm08DetailComponent implements OnInit {
     this.mainForm.get('sampleSpecialInstructions')?.disable({ emitEvent: false });
     this.mainForm.get('sampleDeliveryTimestamp')?.disable({ emitEvent: false });
   }
+
+  initProofForm(): void {
+    this.proofForm = this.fb.group({
+      id: [null],
+      productionOrderId: [this.productionOrderId],
+      receivedDate: [{ value: new Date().toISOString().substring(0, 10), disabled: true }],
+      deliveryDate: [{ value: this.mainForm.get('sampleDeliveryTimestamp')?.value?.substring(0, 10) || null, disabled: true }],
+      jobCode: [null],
+      customerName: [null],
+      jobName: [null],
+      orderedBy: [null],
+      plateLocation: [null],
+      plateColorCount: [null],
+      plateScreenMesh: [null],
+      plateOtherDetails: [null],
+      paperType: [null],
+      paperCut: [null],
+      paperPrintSize: [null],
+      paperPrintQty: [null],
+      paperCutterName: [null],
+      paperSpecialInstructions: [null],
+      printScheduleDate: [null],
+      printDeliveryDate: [null],
+      printLocation: [null],
+      printCharacteristics: [null],
+      printColorCount: [null],
+      printOperatorName: [null],
+      printQtyObtained: [null],
+      printSpecialInstructions: [null],
+      coatScheduleDate: [null],
+      coatLocation: [null],
+      coatType: [null],
+      coatOperatorName: [null],
+      coatQtyObtained: [null],
+      coatSpecialInstructions: [null],
+      diecutScheduleDate: [null],
+      diecutLocation: [null],
+      diecutType: [null],
+      diecutOperatorName: [null],
+      diecutQtyObtained: [null],
+      diecutSpecialInstructions: [null],
+      imageUrl: [null],
+    });
+  }
+
+  loadProofData(): void {
+    if (this.productionOrderId) {
+      this.dcsm08Service.getByProductionOrderId(this.productionOrderId).subscribe({
+        next: (res) => {
+          if (res) {
+            this.proofForm.patchValue(res);
+            if (!this.proofForm.get('deliveryDate')?.value) {
+              this.proofForm.get('deliveryDate')?.setValue(this.mainForm.get('sampleDeliveryTimestamp')?.value?.substring(0, 10));
+            }
+          }
+        },
+        error: (err) => console.error('Error loading proof data', err)
+      });
+    }
+  }
+
+  switchTab(tab: string): void {
+    this.activeTab = tab;
+  }
+
+  pullFromPap(): void {
+    Swal.fire({
+      title: 'กรอก OID PAP',
+      input: 'text',
+      inputLabel: 'OID จากระบบ PAP',
+      inputPlaceholder: 'ระบุ OID...',
+      showCancelButton: true,
+      confirmButtonText: 'ดึงข้อมูล',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#1e1b4b',
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.fetchPapData(result.value);
+      }
+    });
+  }
+
+  fetchPapData(oid: string): void {
+    this.loadingService.show();
+    this.papService.getJob(oid).subscribe({
+      next: (response: any[]) => {
+        this.loadingService.hide();
+        if (response && response.length > 0) {
+          if (response.length === 1) {
+            this.selectJob(response[0]);
+          } else {
+            this.availableJobs = response;
+            this.showJobModal = true;
+          }
+        } else {
+          this.sweetAlert.warning('ไม่พบข้อมูลใน Pap สำหรับ OID นี้');
+        }
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('เกิดข้อผิดพลาดในการดึงข้อมูลจาก Pap');
+      }
+    });
+  }
+
+  closeJobModal(): void {
+    this.showJobModal = false;
+    this.availableJobs = [];
+  }
+
+  selectJob(job: any): void {
+    this.patchProofFormFromPap(job);
+    this.closeJobModal();
+  }
+
+  private patchProofFormFromPap(res: any): void {
+    if (!res) return;
+
+    const header = res.header || {};
+    const plate = res.platemaking || {};
+    const cut = res.cutting || {};
+    const paper = cut.paper || {};
+    const print = res.printing || {};
+    const coat = res.coating || {};
+    const die = res.dieCutting || {};
+
+    this.proofForm.patchValue({
+      jobCode: header.jobCode,
+      customerName: header.customerName,
+      jobName: header.jobName,
+      orderedBy: header.orderedBy,
+      plateColorCount: plate.colors,
+      plateScreenMesh: plate.screenDot,
+      plateOtherDetails: plate.note,
+      paperType: paper.type,
+      paperCut: paper.cut,
+      paperPrintSize: paper.printSize,
+      paperPrintQty: paper.printQty,
+      paperCutterName: cut.responsiblePerson,
+      paperSpecialInstructions: cut.note,
+      printScheduleDate: this.convertPapDate(print.scheduledDate),
+      printLocation: print.machine,
+      printCharacteristics: print.jobType,
+      printSpecialInstructions: print.note,
+      coatLocation: coat.location,
+      coatType: coat.coatingPattern,
+      coatScheduleDate: this.convertPapDate(coat.scheduledDate),
+      coatSpecialInstructions: coat.note,
+      diecutLocation: die.location,
+      diecutType: die.dieCutType,
+      diecutScheduleDate: this.convertPapDate(die.dieCutDeadline),
+      diecutSpecialInstructions: die.note,
+      imageUrl: header.imageUrl
+    });
+    this.sweetAlert.success('ดึงข้อมูลจาก Pap สำเร็จ');
+  }
+
+  private convertPapDate(dateStr: string): string | null {
+    if (!dateStr || dateStr === '-' || dateStr.includes('แจ้งอีกที')) return null;
+
+    // Handle dd/MM/yyyy
+    if (dateStr.match(/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/) || dateStr.includes('/')) {
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        let year = parseInt(parts[2]);
+        if (year > 2500) year -= 543; // BE to AD
+        return `${year}-${month}-${day}`;
+      }
+    }
+    return dateStr;
+  }
+
+  saveProofData(): void {
+    if (this.proofForm.invalid) {
+      this.sweetAlert.warning('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
+    this.loadingService.show();
+    const data = { ...this.proofForm.getRawValue(), productionOrderId: this.productionOrderId };
+    this.dcsm08Service.saveProofOrder(data).subscribe({
+      next: (res) => {
+        this.loadingService.hide();
+        this.proofForm.patchValue(res);
+        this.sweetAlert.success('บันทึกข้อมูลปรู๊ฟสำเร็จ');
+      },
+      error: (err) => {
+        this.loadingService.hide();
+        this.sweetAlert.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+      }
+    });
+  }
+
 
   patchFormData(data: any): void {
     const apiData = data as any;
@@ -334,5 +549,59 @@ export class Dcsm08DetailComponent implements OnInit {
     const timePart = timestamp.split('T')[1]?.substring(0, 5);
     const dateStr = this.formatDateThai(datePart);
     return timePart ? `${dateStr} ${timePart}` : dateStr;
+  }
+
+  printReportProof() {
+    this.loadingService.show();
+    const data = {
+      "reportName": "ProofReport",
+      "proofId": this.proofForm.getRawValue().id,
+    }
+
+    this.dcsm08Service.printReport(data).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+        iframe.onload = () => {
+          setTimeout(() => {
+            iframe.contentWindow?.print();
+          }, 100);
+        };
+        document.body.appendChild(iframe);
+      },
+      error: (err) => {
+        console.error('Error printing report:', err);
+        this.loadingService.hide
+      }
+    });
+  }
+
+  dowloadReportProof() {
+    this.loadingService.show();
+    const data = {
+      "reportName": "ProofReport",
+      "proofId": this.proofForm.getRawValue().id,
+    }
+
+    this.dcsm08Service.printReport(data).subscribe({
+      next: (response) => {
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ProofReport.pdf';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.loadingService.hide();
+      },
+      error: (err) => {
+        console.error('Error printing report:', err);
+        this.loadingService.hide();
+      }
+    });
   }
 }

@@ -1,227 +1,516 @@
 <div class="card-body">
-  <div class="card total-income-card warning overflow-hidden">
-    <div style="padding: 10px;">
-      <form [formGroup]="mainForm" class="row g-3">
-        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-          <button *ngIf="isProsess == true" (click)="updateProcessStatus()" type="submit"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            กำลังดำเนินการ
-          </button>
-          <button *ngIf="isSuccess == true" (click)="updateSuccessStatus()" type="submit"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            เสร็จสิ้น
-          </button>
-          <button *ngIf="isSupplier == true" (click)="updateSupplierStatus()" type="submit"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            ส่ง Supplier
-          </button>
-          <button *ngIf="isKeepSupplier == true" (click)="updateKeepSupplierStatus()" type="submit"
-            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
-            รับของจากซัพพลายเออร์แล้ว
-          </button>
-        </div>
+  <ul class="nav nav-pills mb-3 border-bottom pb-2" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" [class.active]="activeTab === 'general'" (click)="switchTab('general')" type="button">
+        <i class="fas fa-info-circle me-1"></i> รายละเอียดงาน
+      </button>
+    </li>
+    <li class="nav-item" role="presentation"
+      *ngIf="['customerOnSite', 'sampleToCustomer'].includes(mainForm.get('decisionAuthority')?.value)">
+      <button class="nav-link" [class.active]="activeTab === 'proof'" (click)="switchTab('proof')" type="button">
+        <i class="fas fa-print me-1"></i> รายละเอียดปรู๊ฟ
+      </button>
+    </li>
+  </ul>
 
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">ลำดับ</label>
-          <input type="text" formControlName="id" class="form-control">
-        </div>
-        <div class="col-2">
-          <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
-              style="color: red;">*</span></label>
-          <input type="text" class="form-control" formControlName="jobId">
-        </div>
-        <div class="col-2">
-          <label class="form-label font-weight-bold">QTId</label>
-          <input type="text" class="form-control" formControlName="qtId">
-        </div>
-        <div class="col-2">
-          <label class="form-label font-weight-bold">QPId</label>
-          <input type="text" class="form-control" formControlName="qpId">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
-          <input type="date" formControlName="orderDate" class="form-control"
-            [class.is-invalid]="mainForm.get('order_date')?.invalid && mainForm.get('order_date')?.touched">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">เวลาที่สั่งงาน</label>
-          <input type="time" formControlName="createdTime" class="form-control">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
-          <input type="text" formControlName="folderName" class="form-control"
-            [class.is-invalid]="mainForm.get('folder_name')?.invalid && mainForm.get('folder_name')?.touched">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label font-weight-bold">ใช้ไฟล์</label>
-          <input type="text" formControlName="usedFile" class="form-control"
-            style="background-color: #ffee00; color: #000000;">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label font-weight-bold">สีตัวอย่าง</label>
-          <input type="text" formControlName="colorSample" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">เจ้าของงาน</label>
-          <input type="text" formControlName="jobOwner" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
-          <input type="date" formControlName="deadlineDate" class="form-control"
-            style="background-color: #ff0000; color: #ffffff;">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
-          <input type="time" formControlName="deadlineTime" class="form-control"
-            style="background-color: #ff0000; color: #ffffff;">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
-          <input type="date" formControlName="deliveryDate" class="form-control"
-            style="background-color: #ff9900; color: #000000;">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">สถานะงาน</label>
-          <input type="text" formControlName="jobStatus" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
-          <input type="text" formControlName="processStatus" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">สถานะแม่พิมพ์</label>
-          <input type="text" formControlName="moldStatus" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
-          <input type="text" formControlName="operatorName" class="form-control">
-        </div>
-        <div class="col-md-2">
-          <label class="form-label font-weight-bold">ประเภทงาน</label>
-          <input type="text" formControlName="jobType" class="form-control">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
-          <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
-        </div>
-        <div class="col-md-12">
-          <label class="form-label font-weight-bold">หมายเหตุ</label>
-          <textarea type="text" formControlName="remarks" class="form-control"></textarea>
-        </div>
+  <div *ngIf="activeTab === 'general'">
+    <div class="card total-income-card warning overflow-hidden">
+      <div style="padding: 10px;">
+        <form [formGroup]="mainForm" class="row g-3">
+          <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+            <button *ngIf="isProsess == true" (click)="updateProcessStatus()" type="submit"
+              class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+              กำลังดำเนินการ
+            </button>
+            <button *ngIf="isSuccess == true" (click)="updateSuccessStatus()" type="submit"
+              class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+              เสร็จสิ้น
+            </button>
+            <button *ngIf="isSupplier == true" (click)="updateSupplierStatus()" type="submit"
+              class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+              ส่ง Supplier
+            </button>
+            <button *ngIf="isKeepSupplier == true" (click)="updateKeepSupplierStatus()" type="submit"
+              class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+              รับของจากซัพพลายเออร์แล้ว
+            </button>
+          </div>
 
-        <!-- <div class="col-md-3">
-          <label class="form-label font-weight-bold">อัพเดทล่าสุด</label>
-          <input type="text" formControlName="updatedAt" class="form-control" >
-        </div> -->
-      </form>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">ลำดับ</label>
+            <input type="text" formControlName="id" class="form-control">
+          </div>
+          <div class="col-2">
+            <label class="form-label font-weight-bold">JOId <span *ngIf="!mainForm.get('qpId')?.value"
+                style="color: red;">*</span></label>
+            <input type="text" class="form-control" formControlName="jobId">
+          </div>
+          <div class="col-2">
+            <label class="form-label font-weight-bold">QTId</label>
+            <input type="text" class="form-control" formControlName="qtId">
+          </div>
+          <div class="col-2">
+            <label class="form-label font-weight-bold">QPId</label>
+            <input type="text" class="form-control" formControlName="qpId">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">วันที่สั่งงาน</label>
+            <input type="date" formControlName="orderDate" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">เวลาที่สั่งงาน</label>
+            <input type="time" formControlName="createdTime" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold">ชื่อโฟลเดอร์งาน</label>
+            <input type="text" formControlName="folderName" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">ใช้ไฟล์</label>
+            <input type="text" formControlName="usedFile" class="form-control"
+              style="background-color: #ffee00; color: #000000;">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">สีตัวอย่าง</label>
+            <input type="text" formControlName="colorSample" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">เจ้าของงาน</label>
+            <input type="text" formControlName="jobOwner" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">วันที่ส่งงานลูกค้า</label>
+            <input type="date" formControlName="deadlineDate" class="form-control"
+              style="background-color: #ff0000; color: #ffffff;">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">เวลาส่งงานลูกค้า</label>
+            <input type="time" formControlName="deadlineTime" class="form-control"
+              style="background-color: #ff0000; color: #ffffff;">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">วันที่ผู้รับผิดชอบต้องส่ง</label>
+            <input type="date" formControlName="deliveryDate" class="form-control"
+              style="background-color: #ff9900; color: #000000;">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">สถานะงาน</label>
+            <input type="text" formControlName="jobStatus" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">สถานะดำเนินการ</label>
+            <input type="text" formControlName="processStatus" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">สถานะแม่พิมพ์</label>
+            <input type="text" formControlName="moldStatus" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">ผู้รับผิดชอบ</label>
+            <input type="text" formControlName="operatorName" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label font-weight-bold">ประเภทงาน</label>
+            <input type="text" formControlName="jobType" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold">ชื่อลูกค้า</label>
+            <input type="text" formControlName="customerName" class="form-control" placeholder="ชื่อลูกค้า">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label font-weight-bold">หมายเหตุ</label>
+            <textarea type="text" formControlName="remarks" class="form-control"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card total-income-card warning overflow-hidden mt-3">
+      <div class="card-header" style="background-color: #1e1b4b; color: white; padding: 15px;">
+        <h6 class="mb-0 font-weight-bold">
+          <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
+        </h6>
+      </div>
+      <div class="card-body" style="padding: 15px;">
+        <form [formGroup]="mainForm">
+          <div class="d-flex flex-wrap gap-2">
+            <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="customerOnSite"
+              style="border-left: 4px solid #0d6efd !important; min-width: 200px; cursor: pointer;">
+              <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+                value="customerOnSite" id="customerOnSite" style="top: 10px; right: 10px;">
+              <strong class="text-primary d-block" style="font-size: 0.9rem;">ลูกค้าเข้าดูงานหน้างาน</strong>
+              <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
+            </label>
+            <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="sampleToCustomer"
+              style="border-left: 4px solid #198754 !important; min-width: 200px; cursor: pointer;">
+              <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+                value="sampleToCustomer" id="sampleToCustomer" style="top: 10px; right: 10px;">
+              <strong class="text-success d-block" style="font-size: 0.9rem;">ขึ้นตัวอย่างส่งลูกค้าตรวจ</strong>
+              <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
+            </label>
+            <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="salesDecision"
+              style="border-left: 4px solid #ffc107 !important; min-width: 200px; cursor: pointer;">
+              <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+                value="salesDecision" id="salesDecision" style="top: 10px; right: 10px;">
+              <strong class="text-warning d-block" style="font-size: 0.9rem;">เซลล์ตัดสินใจแทนลูกค้า</strong>
+              <span class="badge bg-warning text-dark mt-1" style="font-size: 0.7rem;">เซลล์</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามคำสั่งเซลล์
+                ไม่ปรับนอกคำสั่ง</small>
+            </label>
+            <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="planningDecision"
+              style="border-left: 4px solid #6c757d !important; min-width: 200px; cursor: pointer;">
+              <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+                value="planningDecision" id="planningDecision" style="top: 10px; right: 10px;">
+              <strong class="text-secondary d-block" style="font-size: 0.9rem;">ฝ่ายแผนตัดสินใจ</strong>
+              <span class="badge bg-secondary mt-1" style="font-size: 0.7rem;">ฝ่ายแผน</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามใบปรู๊ฟและมาตรฐาน</small>
+            </label>
+            <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="operatorQaDecision"
+              style="border-left: 4px solid #dc3545 !important; min-width: 200px; cursor: pointer;">
+              <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
+                value="operatorQaDecision" id="operatorQaDecision" style="top: 10px; right: 10px;">
+              <strong class="text-danger d-block" style="font-size: 0.9rem;">ช่างพิมพ์ + QA ร่วมกัน</strong>
+              <span class="badge bg-danger mt-1" style="font-size: 0.7rem;">ช่าง/QA</span>
+              <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">ปรับสีให้อยู่ในมาตรฐาน
+                บันทึกเหตุผล</small>
+            </label>
+          </div>
+          <div class="mt-3" *ngIf="mainForm.get('decisionAuthority')?.value">
+            <label class="form-label font-weight-bold">หมายเหตุผู้มีอำนาจตัดสินใจ</label>
+            <textarea formControlName="decisionAuthorityRemarks" class="form-control" rows="2"
+              placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mt-3"
+      *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)">
+      <div class="card-header text-white" style="background-color: #198754;">
+        <h5 class="card-title mb-0 text-white"><i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง</h5>
+      </div>
+      <div class="card-body" style="padding: 15px;">
+        <form [formGroup]="mainForm" class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">ประเภทงาน <span
+                *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
+                style="color: red;">*</span></label>
+            <input type="text" formControlName="sampleJobType" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">ระบบพิมพ์ <span
+                *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
+                style="color: red;">*</span></label>
+            <input type="text" formControlName="samplePrintingSystem" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">ลักษณะงานพิมพ์ <span
+                *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
+                style="color: red;">*</span></label>
+            <input type="text" formControlName="samplePrintingStyle" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">สีที่พิมพ์</label>
+            <input type="text" formControlName="samplePrintingColor" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label font-weight-bold">ขนาดกระดาษ</label>
+            <input type="text" formControlName="samplePaperSize" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
+            <input type="text" formControlName="sampleDiecutStyle" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold">วัน-เวลาส่งงานปรู๊ฟ</label>
+            <input type="text" [value]="getCombinedDateTime('sampleDeliveryTimestamp')" class="form-control"
+              placeholder="รอดำเนินการ" readonly disabled>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold">คำสั่งพิเศษ</label>
+            <textarea formControlName="sampleSpecialInstructions" class="form-control" rows="1"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- แท็บรายละเอียดปรู๊ฟ -->
+  <div *ngIf="activeTab === 'proof'">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-white"><i class="fas fa-file-invoice me-2"></i>ใบสั่งปรู๊ฟ งานออฟเซ็ท</h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-warning btn-sm shadow-sm" (click)="pullFromPap()">
+            <i class="fas fa-sync-alt me-1"></i> ดึงข้อมูลจาก Pap
+          </button>
+          <button class="btn btn-primary btn-sm shadow-sm" (click)="printReportProof()">
+            <i class="fas fa-print me-1"></i> ปริ้น
+          </button>
+          <button class="btn btn-info btn-sm shadow-sm" (click)="dowloadReportProof()">
+            <i class="fas fa-download me-1"></i> ดาวโหลดไฟล์
+          </button>
+          <button class="btn btn-success btn-sm shadow-sm" (click)="saveProofData()">
+            <i class="fas fa-save me-1"></i> บันทึก
+          </button>
+        </div>
+      </div>
+      <div class="card-body bg-light" style="padding: 20px;">
+        <form [formGroup]="proofForm">
+          <!-- Header Section -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-2">
+              <label class="form-label fw-bold">วันที่รับงาน</label>
+              <input type="date" formControlName="receivedDate" class="form-control" readonly>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-bold">กำหนดส่งงาน</label>
+              <input type="date" formControlName="deliveryDate" class="form-control" readonly>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-bold">รหัส JOB งาน</label>
+              <input type="text" formControlName="jobCode" class="form-control" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">ชื่อลูกค้า</label>
+              <input type="text" formControlName="customerName" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">ชื่องาน</label>
+              <input type="text" formControlName="jobName" class="form-control">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label fw-bold">ผู้สั่งงาน</label>
+              <input type="text" formControlName="orderedBy" class="form-control">
+            </div>
+            <div class="col-md-4 d-flex align-items-end" *ngIf="proofForm.get('imageUrl')?.value">
+              <div class="position-relative">
+                <label class="form-label fw-bold d-block">รูปภาพงาน (จาก PAP)</label>
+                <a [href]="proofForm.get('imageUrl')?.value" target="_blank" title="คลิกเพื่อดูรูปใหญ่">
+                  <img [src]="proofForm.get('imageUrl')?.value" class="img-thumbnail shadow-sm"
+                    style="max-height: 80px; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Row 1: Platemaking & Cutting -->
+          <div class="row g-4">
+            <!-- งานแม่พิมพ์ -->
+            <div class="col-md-6 border-end">
+              <div class="row g-3">
+                <div class="col-12">
+                  <h6 class="bg-black text-white p-2 d-inline-block rounded-end" style="min-width: 150px;">งานแม่พิมพ์
+                  </h6>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">สถานที่ผลิตเพลท</label>
+                  <input type="text" formControlName="plateLocation" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">จำนวนสี</label>
+                  <input type="text" formControlName="plateColorCount" class="form-control">
+                </div>
+                <div class="col-md-12">
+                  <div class="d-flex align-items-end gap-2">
+                    <div class="flex-grow-1">
+                      <label class="form-label fw-bold">เม็ดสกรีน</label>
+                      <input type="text" formControlName="plateScreenMesh" class="form-control">
+                    </div>
+                    <span class="mb-2">LPI</span>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-bold">รายละเอียดอื่นๆ</label>
+                  <textarea formControlName="plateOtherDetails" class="form-control" rows="1"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- งานตัดกระดาษ -->
+            <div class="col-md-6">
+              <div class="row g-3">
+                <div class="col-12">
+                  <h6 class="bg-black text-white p-2 d-inline-block rounded-end" style="min-width: 150px;">งานตัดกระดาษ
+                  </h6>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">กระดาษ</label>
+                  <input type="text" formControlName="paperType" class="form-control">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">ผ่า</label>
+                  <input type="text" formControlName="paperCut" class="form-control">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">ขนาดกระดาษพิมพ์</label>
+                  <input type="text" formControlName="paperPrintSize" class="form-control">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">จำนวนใบพิมพ์</label>
+                  <input type="number" formControlName="paperPrintQty" class="form-control">
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label fw-bold">ผู้ตัด</label>
+                  <input type="text" formControlName="paperCutterName" class="form-control">
+                </div>
+                <div class="col-md-7">
+                  <label class="form-label fw-bold">คำสั่งพิเศษ</label>
+                  <input type="text" formControlName="paperSpecialInstructions" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Row 2: Printing & Coating -->
+          <div class="row g-4">
+            <!-- งานพิมพ์ออฟเซ็ท -->
+            <div class="col-md-6 border-end">
+              <div class="row g-3">
+                <div class="col-12">
+                  <h6 class="bg-black text-white p-2 d-inline-block rounded-end" style="min-width: 150px;">
+                    งานพิมพ์ออฟเซ็ท
+                  </h6>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">กำหนดพิมพ์</label>
+                  <input type="date" formControlName="printScheduleDate" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">กำหนดส่ง</label>
+                  <input type="date" formControlName="printDeliveryDate" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">ผู้พิมพ์</label>
+                  <input type="text" formControlName="printOperatorName" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">สถานที่พิมพ์</label>
+                  <input type="text" formControlName="printLocation" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">ลักษณะงานพิมพ์</label>
+                  <input type="text" formControlName="printCharacteristics" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">จำนวนสีที่พิมพ์</label>
+                  <input type="text" formControlName="printColorCount" class="form-control">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">คำสั่งพิเศษ</label>
+                  <input type="text" formControlName="printSpecialInstructions" class="form-control">
+                </div>
+              </div>
+            </div>
+
+            <!-- งานเคลือบ -->
+            <div class="col-md-6">
+              <div class="row g-3">
+                <div class="col-12">
+                  <h6 class="bg-black text-white p-2 d-inline-block rounded-end" style="min-width: 150px;">งานเคลือบ
+                  </h6>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">กำหนดส่งเคลือบ</label>
+                  <input type="date" formControlName="coatScheduleDate" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">สถานที่เคลือบ</label>
+                  <input type="text" formControlName="coatLocation" class="form-control">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">ประเภทเคลือบ</label>
+                  <input type="text" formControlName="coatType" class="form-control">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">ผู้เคลือบ</label>
+                  <input type="text" formControlName="coatOperatorName" class="form-control">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">คำสั่งพิเศษ</label>
+                  <input type="text" formControlName="coatSpecialInstructions" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Row 3: Die-cutting -->
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <div class="row g-3">
+                <div class="col-12">
+                  <h6 class="bg-black text-white p-2 d-inline-block rounded-end" style="min-width: 150px;">
+                    งานไดคัท/ปั๊มพิเศษ
+                  </h6>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">กำหนดส่ง</label>
+                  <input type="date" formControlName="diecutScheduleDate" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">สถานที่ไดคัท</label>
+                  <input type="text" formControlName="diecutLocation" class="form-control">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">ประเภทไดคัท</label>
+                  <select formControlName="diecutType" class="form-select">
+                    <option [value]="null">-- เลือกประเภท --</option>
+                    <option value="JWEI">JWEI</option>
+                    <option value="ปั้มกล่อง">ปั้มกล่อง</option>
+                  </select>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">ผู้ปั๊ม/ไดคัท</label>
+                  <input type="text" formControlName="diecutOperatorName" class="form-control">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label fw-bold">คำสั่งพิเศษ</label>
+                  <input type="text" formControlName="diecutSpecialInstructions" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="card total-income-card warning overflow-hidden mt-3">
-  <div class="card-header" style="background-color: #1e1b4b; color: white; padding: 15px;">
-    <h6 class="mb-0 font-weight-bold">
-      <i class="fas fa-user-check me-2"></i>ผู้มีอำนาจตัดสินใจ
-    </h6>
-  </div>
-  <div class="card-body" style="padding: 15px;">
-    <form [formGroup]="mainForm">
-      <div class="d-flex flex-wrap gap-2">
-        <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="customerOnSite"
-          style="border-left: 4px solid #0d6efd !important; min-width: 200px; cursor: pointer;">
-          <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
-            value="customerOnSite" id="customerOnSite" style="top: 10px; right: 10px;">
-          <strong class="text-primary d-block" style="font-size: 0.9rem;">ลูกค้าเข้าดูงานหน้างาน</strong>
-          <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
-          <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
-        </label>
-        <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="sampleToCustomer"
-          style="border-left: 4px solid #198754 !important; min-width: 200px; cursor: pointer;">
-          <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
-            value="sampleToCustomer" id="sampleToCustomer" style="top: 10px; right: 10px;">
-          <strong class="text-success d-block" style="font-size: 0.9rem;">ขึ้นตัวอย่างส่งลูกค้าตรวจ</strong>
-          <span class="badge bg-info text-dark mt-1" style="font-size: 0.7rem;">ลูกค้า</span>
-          <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามที่ลูกค้าอนุมัติหน้าแท่น</small>
-        </label>
-        <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="salesDecision"
-          style="border-left: 4px solid #ffc107 !important; min-width: 200px; cursor: pointer;">
-          <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
-            value="salesDecision" id="salesDecision" style="top: 10px; right: 10px;">
-          <strong class="text-warning d-block" style="font-size: 0.9rem;">เซลล์ตัดสินใจแทนลูกค้า</strong>
-          <span class="badge bg-warning text-dark mt-1" style="font-size: 0.7rem;">เซลล์</span>
-          <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามคำสั่งเซลล์ ไม่ปรับนอกคำสั่ง</small>
-        </label>
-        <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="planningDecision"
-          style="border-left: 4px solid #6c757d !important; min-width: 200px; cursor: pointer;">
-          <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
-            value="planningDecision" id="planningDecision" style="top: 10px; right: 10px;">
-          <strong class="text-secondary d-block" style="font-size: 0.9rem;">ฝ่ายแผนตัดสินใจ</strong>
-          <span class="badge bg-secondary mt-1" style="font-size: 0.7rem;">ฝ่ายแผน</span>
-          <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">รันตามใบปรู๊ฟและมาตรฐาน</small>
-        </label>
-        <label class="border rounded p-2 shadow-sm flex-fill position-relative" for="operatorQaDecision"
-          style="border-left: 4px solid #dc3545 !important; min-width: 200px; cursor: pointer;">
-          <input class="form-check-input position-absolute" type="radio" formControlName="decisionAuthority"
-            value="operatorQaDecision" id="operatorQaDecision" style="top: 10px; right: 10px;">
-          <strong class="text-danger d-block" style="font-size: 0.9rem;">ช่างพิมพ์ + QA ร่วมกัน</strong>
-          <span class="badge bg-danger mt-1" style="font-size: 0.7rem;">ช่าง/QA</span>
-          <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">ปรับสีให้อยู่ในมาตรฐาน บันทึกเหตุผล</small>
-        </label>
+<!-- Custom Job Selection Modal -->
+<div *ngIf="showJobModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title text-white"><i class="fas fa-list-ul me-2"></i>เลือกใบงาน (JO)</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeJobModal()"></button>
       </div>
-      <div class="mt-3" *ngIf="mainForm.get('decisionAuthority')?.value">
-        <label class="form-label font-weight-bold">หมายเหตุผู้มีอำนาจตัดสินใจ</label>
-        <textarea formControlName="decisionAuthorityRemarks" class="form-control" rows="2"
-          placeholder="ระบุหมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+      <div class="modal-body bg-light">
+        <p class="mb-3 text-muted">พบหลายใบงานใน OID นี้ กรุณาเลือกใบงานที่ต้องการดึงข้อมูล</p>
+        <div class="list-group">
+          <button *ngFor="let job of availableJobs" type="button"
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            (click)="selectJob(job)">
+            <div>
+              <strong class="text-primary">{{ job.header?.jobCode || 'N/A' }}</strong>
+              <div class="small text-muted text-truncate" style="max-width: 300px;">{{ job.header?.jobName ||
+                'ไม่ระบุชื่องาน' }}</div>
+            </div>
+            <i class="fas fa-chevron-right text-muted small"></i>
+          </button>
+        </div>
       </div>
-    </form>
-  </div>
-</div>
-
-<div class="card shadow-sm mt-3" *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)">
-  <div class="card-header text-white" style="background-color: #198754;">
-    <h5 class="card-title mb-0 text-white"><i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง</h5>
-  </div>
-  <div class="card-body" style="padding: 15px;">
-    <form [formGroup]="mainForm" class="row g-3">
-      <div class="col-md-3">
-          <label class="form-label font-weight-bold">ประเภทงาน <span
-              *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
-        <input type="text" formControlName="sampleJobType" class="form-control"
-          [class.is-invalid]="mainForm.get('sampleJobType')?.invalid && mainForm.get('sampleJobType')?.touched">
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary px-4" (click)="closeJobModal()">ยกเลิก</button>
       </div>
-      <div class="col-md-3">
-          <label class="form-label font-weight-bold">ระบบพิมพ์ <span
-              *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
-        <input type="text" formControlName="samplePrintingSystem" class="form-control"
-          [class.is-invalid]="mainForm.get('samplePrintingSystem')?.invalid && mainForm.get('samplePrintingSystem')?.touched">
-      </div>
-      <div class="col-md-3">
-          <label class="form-label font-weight-bold">ลักษณะงานพิมพ์ <span
-              *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
-        <input type="text" formControlName="samplePrintingStyle" class="form-control"
-          [class.is-invalid]="mainForm.get('samplePrintingStyle')?.invalid && mainForm.get('samplePrintingStyle')?.touched">
-      </div>
-      <div class="col-md-3">
-        <label class="form-label font-weight-bold">สีที่พิมพ์</label>
-        <input type="text" formControlName="samplePrintingColor" class="form-control">
-      </div>
-      <div class="col-md-3">
-        <label class="form-label font-weight-bold">ขนาดกระดาษ</label>
-        <input type="text" formControlName="samplePaperSize" class="form-control">
-      </div>
-      <div class="col-md-4">
-        <label class="form-label font-weight-bold">ลักษณะงานไดคัท</label>
-        <input type="text" formControlName="sampleDiecutStyle" class="form-control">
-      </div>
-      <div class="col-md-4">
-        <label class="form-label font-weight-bold">วัน-เวลาส่งงานปรู๊ฟ</label>
-        <input type="text" [value]="getCombinedDateTime('sampleDeliveryTimestamp')" class="form-control"
-          placeholder="รอดำเนินการ" readonly disabled>
-      </div>
-      <div class="col-md-4">
-        <label class="form-label font-weight-bold">คำสั่งพิเศษ</label>
-        <textarea formControlName="sampleSpecialInstructions" class="form-control" rows="1"></textarea>
-      </div>
-    </form>
+    </div>
   </div>
 </div>

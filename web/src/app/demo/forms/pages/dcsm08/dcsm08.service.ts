@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
 export class Dcsm08Service {
 
   private apiUrl = environment.apiUrl;
+  private apiUrlProof = `${environment.apiUrl}/proof-orders`;
+
 
   constructor(private http: HttpClient) { }
 
@@ -97,5 +99,17 @@ export class Dcsm08Service {
 
   countBacklogKeepSupplier(): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countBacklogKeepSupplier`);
+  }
+
+  getByProductionOrderId(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrlProof}/by-production-id/${id}`);
+  }
+
+  saveProofOrder(data: any): Observable<any> {
+    return this.http.post(this.apiUrlProof, data);
+  }
+
+  printReport(data: any): Observable<Blob> {
+    return this.http.post(`${this.apiUrl}/test-report/pdf`, data, { responseType: 'blob' });
   }
 }

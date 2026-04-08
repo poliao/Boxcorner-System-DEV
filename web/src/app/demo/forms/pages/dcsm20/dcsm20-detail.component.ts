@@ -559,7 +559,50 @@ export class Dcsm20DetailComponent implements OnInit {
       this.dcsm20Service.saveQcJob(response).subscribe((response) => {
         this.loadingService.hide();
       })
-    })
+    });
+  }
+
+  onChangePrintingDate() {
+    const currentPrintingDate = this.productionForm.get('printingDate')?.value || new Date().toISOString().split('T')[0];
+
+    Swal.fire({
+      title: 'เปลี่ยนวันที่งานพิมพ์',
+      html: `
+        <div class="mb-3 text-start">
+          <label class="form-label fw-bold small">เลือกวันที่ใหม่</label>
+          <input type="date" id="new-printing-date" class="form-control" value="${currentPrintingDate}">
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยันการเปลี่ยนวันที่',
+      cancelButtonText: 'ยกเลิก',
+      preConfirm: () => {
+        const newDate = (document.getElementById('new-printing-date') as HTMLInputElement).value;
+        if (!newDate) {
+          Swal.showValidationMessage('กรุณาเลือกวันที่');
+        }
+        return newDate;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.loadingService.show();
+        this.dcsm20Service.updatePrintingDate(Number(this.id), result.value).subscribe({
+          next: () => {
+            this.loadingService.hide();
+            this.sweetAlert.success('สำเร็จ', 'อัปเดตวันที่งานพิมพ์เรียบร้อยแล้ว');
+            // รีโหลดข้อมูลใหม่
+            this.dcsm20Service.getById(Number(this.id)).subscribe(data => {
+              this.patchFormData(data);
+            });
+          },
+          error: (err) => {
+            console.log(err);
+            this.loadingService.hide();
+            this.sweetAlert.error('ผิดพลาด', err || 'ไม่สามารถอัปเดตวันที่ได้');
+          }
+        });
+      }
+    });
   }
 
   onChangeQcDate() {
