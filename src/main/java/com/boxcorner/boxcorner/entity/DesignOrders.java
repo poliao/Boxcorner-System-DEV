@@ -1,4 +1,4 @@
-﻿package com.boxcorner.boxcorner.entity;
+package com.boxcorner.boxcorner.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
