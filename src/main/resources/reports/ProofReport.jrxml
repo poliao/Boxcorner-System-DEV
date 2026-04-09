@@ -307,17 +307,17 @@
 				<expression><![CDATA["ขนาดกระดาษพิมพ์"]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			</element>
-			<element kind="line" uuid="bcb73595-7e9c-4eb4-b959-55b26b8a16dc" x="359" y="92" width="51" height="1">
+			<element kind="line" uuid="bcb73595-7e9c-4eb4-b959-55b26b8a16dc" x="359" y="92" width="191" height="1">
 				<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
 			</element>
-			<element kind="textField" uuid="2b43028b-3db6-4849-880b-c887c76cb218" x="410" y="80" width="60" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<element kind="textField" uuid="2b43028b-3db6-4849-880b-c887c76cb218" x="201" y="95" width="60" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
 				<expression><![CDATA["จำนวนใบพิมพ์"]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			</element>
-			<element kind="line" uuid="27f2b927-84f5-4b20-a112-da349a57fbfc" x="463" y="92" width="87" height="1">
+			<element kind="line" uuid="27f2b927-84f5-4b20-a112-da349a57fbfc" x="254" y="107" width="87" height="1">
 				<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
@@ -374,7 +374,7 @@
 				<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
 			</element>
-			<element kind="line" uuid="be9859f1-26ca-426f-ac52-e38a15b032e9" x="276" y="177" width="124" height="1">
+			<element kind="line" uuid="be9859f1-26ca-426f-ac52-e38a15b032e9" x="276" y="177" width="274" height="1">
 				<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -425,12 +425,12 @@
 				<expression><![CDATA["สถานที่เคลือบ"]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			</element>
-			<element kind="line" uuid="8a2a7adf-85b3-42d5-93b9-8d8ebe21b2d9" x="437" y="252" width="113" height="1">
+			<element kind="line" uuid="8a2a7adf-85b3-42d5-93b9-8d8ebe21b2d9" x="263" y="267" width="289" height="1">
 				<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
 			</element>
-			<element kind="textField" uuid="e96b2bfe-e95f-4c33-ba87-0943800ea49c" x="380" y="240" width="60" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<element kind="textField" uuid="e96b2bfe-e95f-4c33-ba87-0943800ea49c" x="206" y="255" width="60" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
 				<expression><![CDATA["ประเภทเคลือบ"]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			</element>
@@ -517,11 +517,11 @@
 				<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
 			</element>
-			<element kind="textField" uuid="b213bf1c-2707-4cc1-a106-0659e11dde46" x="206" y="255" width="69" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
+			<element kind="textField" uuid="b213bf1c-2707-4cc1-a106-0659e11dde46" x="380" y="240" width="69" height="15" fontName="THSarabun" fontSize="13.0" vTextAlign="Bottom">
 				<expression><![CDATA["จำนวนใบพิมพ์ที่ได้"]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			</element>
-			<element kind="line" uuid="a24f1fe7-d49b-449c-bf5a-387bce221dd1" x="275" y="267" width="103" height="1">
+			<element kind="line" uuid="a24f1fe7-d49b-449c-bf5a-387bce221dd1" x="449" y="252" width="103" height="1">
 				<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
@@ -556,7 +556,7 @@
 				<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A1A1A1"/>
 			</element>
-			<element kind="textField" uuid="c4434d56-cc23-4459-bd5d-8a8e0986c270" x="0" y="0" width="31" height="336" rotation="Left" fontSize="19.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<element kind="textField" uuid="c4434d56-cc23-4459-bd5d-8a8e0986c270" x="0" y="0" width="31" height="460" rotation="Left" fontSize="19.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA["PROOF ORDER BOXCORNERART"]]></expression>
 			</element>
 			<element kind="line" uuid="4408d60e-60d2-4437-bc73-9aebcb20dde3" x="110" y="440" width="98" height="1">
@@ -636,10 +636,10 @@
 			<element kind="textField" uuid="700294d0-24c0-4d9d-b4a1-2da777869024" x="270" y="80" width="20" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{papercut}]]></expression>
 			</element>
-			<element kind="textField" uuid="cb373ae2-9d2e-44cd-b406-a933bd86c80a" x="365" y="80" width="45" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<element kind="textField" uuid="cb373ae2-9d2e-44cd-b406-a933bd86c80a" x="365" y="80" width="190" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{paperprintsize}]]></expression>
 			</element>
-			<element kind="textField" uuid="fd4e6828-9637-43b5-bb6e-0b53fa158d54" x="470" y="80" width="85" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<element kind="textField" uuid="fd4e6828-9637-43b5-bb6e-0b53fa158d54" x="261" y="95" width="85" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{paperprintqty}]]></expression>
 			</element>
 			<element kind="textField" uuid="9fed1937-92aa-40e9-aebe-8e8808654a90" x="69" y="95" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
@@ -660,7 +660,7 @@
 			<element kind="textField" uuid="218fe0d2-6976-4913-95b6-1a133cf22fe7" x="103" y="165" width="117" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{printcharacteristics}]]></expression>
 			</element>
-			<element kind="textField" uuid="ea2b9ba5-3828-4891-9be0-b153753fa813" x="283" y="165" width="117" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<element kind="textField" uuid="ea2b9ba5-3828-4891-9be0-b153753fa813" x="283" y="165" width="272" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{printcolorcount}]]></expression>
 			</element>
 			<element kind="textField" uuid="c3b7909f-4d23-45ce-91a3-4d931f980eab" x="73" y="180" width="147" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
@@ -675,13 +675,13 @@
 			<element kind="textField" uuid="f18c43e4-807e-4a09-be16-8a3654277884" x="275" y="240" width="105" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{coatlocation}]]></expression>
 			</element>
-			<element kind="textField" uuid="be612da6-3ce9-4639-a8a8-07d3271ea8e9" x="440" y="240" width="110" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<element kind="textField" uuid="be612da6-3ce9-4639-a8a8-07d3271ea8e9" x="266" y="255" width="289" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{coattype}]]></expression>
 			</element>
 			<element kind="textField" uuid="9fe9d2d2-9608-465f-a2fe-999aacba2542" x="78" y="255" width="128" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{coatoperatorname}]]></expression>
 			</element>
-			<element kind="textField" uuid="77dea138-5cb5-410c-908d-1b4f614a10b6" x="87" y="270" width="463" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
+			<element kind="textField" uuid="77dea138-5cb5-410c-908d-1b4f614a10b6" x="87" y="270" width="468" height="15" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">
 				<expression><![CDATA[$F{coatspecialinstructions}]]></expression>
 			</element>
 			<element kind="textField" uuid="96caf63f-e0ae-4b13-b2b0-89d50953a787" x="81" y="316" width="103" height="15" forecolor="#FF0703" fontName="THSarabun" fontSize="12.0" blankWhenNull="true" bold="true" vTextAlign="Top">

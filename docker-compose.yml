@@ -17,7 +17,7 @@ services:
 
   # 2. Backend (Spring Boot)
   backend:
-    build: .                # <--- จุด (.) คือโฟลเดอร์ปัจจุบัน (Root)
+    image: 9near/my-backend:latest     # <--- ต้องใช้ :latest เท่านั้น
     container_name: my-backend
     restart: always
     ports:
@@ -32,11 +32,11 @@ services:
 
   # 3. Frontend (Angular)
   frontend:
-    build: ./web            # <--- ชี้ไปที่โฟลเดอร์ web ของคุณ
+    image: 9near/my-frontend:latest    # <--- ต้องใช้ :latest เท่านั้น
     container_name: my-frontend
     restart: always
     ports:
-      - "80:80"
+      - "8081:80"
     depends_on:
       - backend
 

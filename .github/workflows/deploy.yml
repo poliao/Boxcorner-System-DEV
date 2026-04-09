@@ -1,4 +1,4 @@
-name: CI/CD Pipeline to EC2
+name: CI/CD Pipeline to EC2 (Monorepo)
 
 # ทำงานเมื่อมีการ Push โค้ดเข้า Branch 'main'
 on:
@@ -21,29 +21,34 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 3. Build และ Push Image ขึ้น Docker Hub
-      - name: Build and Push Docker Image
+      # 3. Build และ Push Image สำหรับ Backend (Spring Boot)
+      - name: Build and Push Backend Image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: . # ใช้โฟลเดอร์หลัก
+          file: ./Dockerfile # ชี้ไปที่ Dockerfile ของ Java
           push: true
-          # เปลี่ยน 'my-app' เป็นชื่อแอปของคุณ
-          tags: ${{ secrets.DOCKER_USERNAME }}/my-app:latest 
+          tags: ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
 
-      # 4. SSH เข้าไปที่ EC2 เพื่ออัปเดตระบบ
-      - name: Deploy to EC2
+      # 4. Build และ Push Image สำหรับ Frontend (Angular)
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend # ชี้ไปที่โฟลเดอร์ frontend
+          file: ./frontend/Dockerfile # ชี้ไปที่ Dockerfile ของ Angular
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/my-frontend:latest
+
+      # 5. SSH เข้าไปที่ EC2 เพื่อรันระบบใหม่ด้วย Docker Compose
+      - name: Deploy to EC2 with Docker Compose
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # โหลด Image ล่าสุด
-            docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+            cd /home/${{ secrets.EC2_USERNAME }}/app
             
-            # หยุดและลบ Container ตัวเก่า (ถ้ามี)
-            docker stop my-app-container || true
-            docker rm my-app-container || true
+            docker-compose pull
             
-            # รัน Container ตัวใหม่ (สมมติว่าแอปใช้พอร์ต 80)
-            docker run -d --name my-app-container -p 80:80 ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+            docker-compose up -d
