@@ -12,8 +12,11 @@ export class Dcsm38Service {
 
   constructor(private http: HttpClient) { }
 
-  getAllConversions(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/material-conversions`);
+  getAllConversions(page?: number, size?: number): Observable<any> {
+    const params: any = {};
+    if (page !== undefined) params.page = page;
+    if (size !== undefined) params.size = size;
+    return this.http.get<any>(`${this.apiUrl}/material-conversions`, { params });
   }
 
   getConversionById(id: number): Observable<any> {

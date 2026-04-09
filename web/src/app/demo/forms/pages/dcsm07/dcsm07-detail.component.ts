@@ -202,6 +202,7 @@ export class Dcsm07DetailComponent implements OnInit {
       isNewProof: [false],
       customerFeedback: [null],
       productionOrderId: [null],
+      reorderFromJoId: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -585,5 +586,9 @@ export class Dcsm07DetailComponent implements OnInit {
     const timePart = timestamp.split('T')[1]?.substring(0, 5);
     const dateStr = this.formatDateThai(datePart);
     return timePart ? `${dateStr} ${timePart}` : dateStr;
+  }
+
+  jobHistory() {
+    this.router.navigate(['/Dcsm37Detail', this.mainForm.getRawValue().reorderFromJoId]);
   }
 }

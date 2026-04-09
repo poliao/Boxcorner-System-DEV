@@ -9,6 +9,7 @@ import { Dcsm37Service } from './dcsm37.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { Dcsm04Service } from '../dcsm04/dcsm04.service';
+import { MenuService } from 'src/app/services/menu.service';
 
 @Component({
   selector: 'app-dcsm37-detail',
@@ -21,6 +22,7 @@ export class Dcsm37DetailComponent implements OnInit {
   data: any = null;
   jobId!: string;
   expandedRounds: Set<number> = new Set([0]);
+  canReorder = false;
 
   // ─── ReOrder modal state ───────────────────────────────────────────
   showTypeModal = false;           // Step 1: เลือกประเภท
@@ -81,12 +83,28 @@ export class Dcsm37DetailComponent implements OnInit {
     private router: Router,
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
-    private dcsm04Service: Dcsm04Service
+    private dcsm04Service: Dcsm04Service,
+    private menuService: MenuService
   ) { }
 
   ngOnInit() {
     this.jobId = this.route.snapshot.params['id'];
+    this.checkPermission();
     this.loadData();
+  }
+
+  checkPermission() {
+    this.menuService.getMenu().subscribe(menus => {
+      this.canReorder = this.checkAccess(menus, '/Dcsm37');
+    });
+  }
+
+  private checkAccess(menus: any[], url: string): boolean {
+    for (const menu of menus) {
+      if (menu.url === url) return true;
+      if (menu.children && this.checkAccess(menu.children, url)) return true;
+    }
+    return false;
   }
 
   loadData() {

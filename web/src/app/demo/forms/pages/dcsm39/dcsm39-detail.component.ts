@@ -10,11 +10,15 @@ import { Dcsm38Service } from '../dcsm38/dcsm38.service';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { AuthService } from 'src/app/services/auth.service';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dcsm39-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule],
   templateUrl: './dcsm39-detail.component.html',
   styleUrls: ['./dcsm39-detail.component.scss']
 })
@@ -28,6 +32,10 @@ export class Dcsm39DetailComponent implements OnInit {
   materials: any[] = [];
   uoms: any[] = [];
   materialTypes: any[] = [];
+  
+  // Filtering for UOM Conversion
+  filterType: number | null = null;
+  filteredMaterials: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -50,7 +58,9 @@ export class Dcsm39DetailComponent implements OnInit {
       material: [null],
       largeUom: [null],
       smallUom: [null],
-      multiplier: [null]
+      multiplier: [null],
+      // Fields for Material Type
+      parent: [null]
     });
   }
 
@@ -69,13 +79,57 @@ export class Dcsm39DetailComponent implements OnInit {
   }
 
   loadDropdownData() {
-    if (this.type === 'material' || this.type === 'uomConversion') {
+    if (this.type === 'material' || this.type === 'uomConversion' || this.type === 'materialType') {
       this.service.getAllUoms().subscribe(data => this.uoms = data);
-      this.service.getAllMaterialTypes().subscribe(data => this.materialTypes = data);
+      this.service.getAllMaterialTypes().subscribe(data => {
+        // Filter out current item from the list to prevent circular parent selection
+        if (this.type === 'materialType' && this.id) {
+          this.materialTypes = data.filter(mt => mt.id !== this.id);
+        } else {
+          this.materialTypes = data;
+        }
+      });
     }
     if (this.type === 'uomConversion') {
-      this.service.getAllMaterials().subscribe(data => this.materials = data);
+      this.service.getAllMaterials().subscribe(data => {
+        this.materials = data;
+        this.applyMaterialFilter();
+      });
     }
+  }
+
+  applyMaterialFilter(searchText: string = '') {
+    this.filteredMaterials = this.materials.filter(m => {
+      const matchesType = !this.filterType || m.materialType?.id === this.filterType;
+      const matchesSearch = !searchText || 
+                           m.name?.toLowerCase().includes(searchText.toLowerCase()) || 
+                           m.code?.toLowerCase().includes(searchText.toLowerCase());
+      return matchesType && matchesSearch;
+    });
+  }
+
+  onMaterialSearch(event: any) {
+    const text = event.target.value;
+    this.applyMaterialFilter(text);
+  }
+
+  onTypeFilterChange(typeId: any) {
+    this.filterType = typeId ? Number(typeId) : null;
+    this.applyMaterialFilter();
+  }
+
+  displayMaterial(item: any): string {
+    return item ? `${item.name} (${item.code})` : '';
+  }
+
+  onMaterialSelected(event: any) {
+    const material = event.option.value;
+    this.mainForm.get('material')?.setValue(material.id);
+  }
+
+  getMaterialName(id: number): string {
+    const m = this.materials.find(mat => mat.id === id);
+    return m ? `${m.name} (${m.code})` : '';
   }
 
   setupForm() {
@@ -115,7 +169,16 @@ export class Dcsm39DetailComponent implements OnInit {
     } else if (this.type === 'uom') {
       this.service.getAllUoms().subscribe(list => this.handleList(list));
     } else if (this.type === 'materialType') {
-      this.service.getAllMaterialTypes().subscribe(list => this.handleList(list));
+      this.service.getAllMaterialTypes().subscribe(list => {
+        const item = list.find(i => i.id === this.id);
+        if (item) {
+          this.mainForm.patchValue({
+            ...item,
+            parent: item.parent?.id
+          });
+        }
+        this.loadingService.hide();
+      });
     } else if (this.type === 'material') {
       this.service.getMaterialById(this.id!).subscribe(data => {
         this.mainForm.patchValue({
@@ -176,6 +239,12 @@ export class Dcsm39DetailComponent implements OnInit {
       obs = this.service.saveBrand(data);
     } else if (this.type === 'uom') {
       obs = this.service.saveUom(data);
+    } else if (this.type === 'materialType') {
+      const payload = {
+        ...data,
+        parent: data.parent ? { id: data.parent } : null
+      };
+      obs = this.service.saveMaterialType(payload);
     } else {
       obs = this.service.saveMaterialType(data);
     }

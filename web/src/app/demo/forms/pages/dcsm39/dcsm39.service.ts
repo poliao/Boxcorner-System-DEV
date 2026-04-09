@@ -12,8 +12,11 @@ export class Dcsm39Service {
 
   constructor(private http: HttpClient) { }
 
-  getAllSuppliers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/suppliers`);
+  getAllSuppliers(page?: number, size?: number): Observable<any> {
+    const params: any = {};
+    if (page !== undefined) params.page = page;
+    if (size !== undefined) params.size = size;
+    return this.http.get<any>(`${this.apiUrl}/suppliers`, { params });
   }
   saveSupplier(data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/suppliers`, data);
@@ -22,8 +25,11 @@ export class Dcsm39Service {
     return this.http.delete<any>(`${this.apiUrl}/suppliers/${id}`);
   }
 
-  getAllBrands(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/brands`);
+  getAllBrands(page?: number, size?: number): Observable<any> {
+    const params: any = {};
+    if (page !== undefined) params.page = page;
+    if (size !== undefined) params.size = size;
+    return this.http.get<any>(`${this.apiUrl}/brands`, { params });
   }
   saveBrand(data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/brands`, data);
@@ -32,8 +38,11 @@ export class Dcsm39Service {
     return this.http.delete<any>(`${this.apiUrl}/brands/${id}`);
   }
 
-  getAllUoms(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/uoms`);
+  getAllUoms(page?: number, size?: number): Observable<any> {
+    const params: any = {};
+    if (page !== undefined) params.page = page;
+    if (size !== undefined) params.size = size;
+    return this.http.get<any>(`${this.apiUrl}/uoms`, { params });
   }
   saveUom(data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/uoms`, data);
@@ -42,8 +51,11 @@ export class Dcsm39Service {
     return this.http.delete<any>(`${this.apiUrl}/uoms/${id}`);
   }
 
-  getAllMaterialTypes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/material-types`);
+  getAllMaterialTypes(page?: number, size?: number): Observable<any> {
+    const params: any = {};
+    if (page !== undefined) params.page = page;
+    if (size !== undefined) params.size = size;
+    return this.http.get<any>(`${this.apiUrl}/material-types`, { params });
   }
   saveMaterialType(data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/material-types`, data);
@@ -52,8 +64,11 @@ export class Dcsm39Service {
     return this.http.delete<any>(`${this.apiUrl}/material-types/${id}`);
   }
 
-  getAllMaterials(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/materials`);
+  getAllMaterials(page?: number, size?: number): Observable<any> {
+    const params: any = {};
+    if (page !== undefined) params.page = page;
+    if (size !== undefined) params.size = size;
+    return this.http.get<any>(`${this.apiUrl}/materials`, { params });
   }
   getMaterialById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/materials/${id}`);

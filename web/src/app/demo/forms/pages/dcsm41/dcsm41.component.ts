@@ -31,6 +31,9 @@ export class Dcsm41Component implements OnInit {
   ];
 
   tableData: any[] = [];
+  totalElements = 0;
+  pageSize = 10;
+  pageIndex = 0;
 
   constructor(
     private service: Dcsm41Service,
@@ -46,11 +49,20 @@ export class Dcsm41Component implements OnInit {
     this.router.navigate(['/Dcsm41Detail', row.materialId]);
   }
 
+  onPageChange(event: { pageIndex: number, pageSize: number }) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadData();
+  }
+
   loadData() {
     this.loadingService.show();
-    this.service.getInventory().subscribe({
+    this.service.getInventory(this.pageIndex, this.pageSize).subscribe({
       next: (data) => {
-        this.tableData = data.map(item => {
+        const content = data.content || data;
+        this.totalElements = data.totalElements || data.length;
+
+        this.tableData = content.map(item => {
           const total = item.totalBaseQty || 0;
           const mult = item.multiplier || 1;
           const largeQty = mult > 1 ? Math.floor(total / mult) : 0;

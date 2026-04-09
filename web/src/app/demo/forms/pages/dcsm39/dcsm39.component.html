@@ -9,45 +9,45 @@
     <ul class="nav nav-tabs card-header-tabs">
       <li class="nav-item">
         <a class="nav-link cursor-pointer" [class.active]="activeTab === 'material'"
-          (click)="activeTab = 'material'">ข้อมูลพัสดุ/วัสดุ</a>
+          (click)="onTabChange('material')">ข้อมูลพัสดุ/วัสดุ</a>
       </li>
       <li class="nav-item">
         <a class="nav-link cursor-pointer" [class.active]="activeTab === 'supplier'"
-          (click)="activeTab = 'supplier'">ผู้จำหน่าย</a>
+          (click)="onTabChange('supplier')">ผู้จำหน่าย</a>
       </li>
       <li class="nav-item">
         <a class="nav-link cursor-pointer" [class.active]="activeTab === 'brand'"
-          (click)="activeTab = 'brand'">ยี่ห้อ</a>
+          (click)="onTabChange('brand')">ยี่ห้อ</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'uom'" (click)="activeTab = 'uom'">หน่วยนับ</a>
+        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'uom'" (click)="onTabChange('uom')">หน่วยนับ</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'materialType'" (click)="activeTab = 'materialType'">ประเภทวัสดุ</a>
+        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'materialType'" (click)="onTabChange('materialType')">ประเภทวัสดุ</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'uomConversion'" (click)="activeTab = 'uomConversion'">ตั้งค่าการแปลงหน่วย</a>
+        <a class="nav-link cursor-pointer" [class.active]="activeTab === 'uomConversion'" (click)="onTabChange('uomConversion')">ตั้งค่าการแปลงหน่วย</a>
       </li>
     </ul>
   </div>
   <div class="card-body">
     <div *ngIf="activeTab === 'material'">
-      <app-data-table [columns]="materialColumns" [data]="materials" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
+      <app-data-table [columns]="materialColumns" [data]="materials" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
     </div>
     <div *ngIf="activeTab === 'supplier'">
-      <app-data-table [columns]="supplierColumns" [data]="suppliers" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
+      <app-data-table [columns]="supplierColumns" [data]="suppliers" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
     </div>
     <div *ngIf="activeTab === 'brand'">
-      <app-data-table [columns]="brandColumns" [data]="brands" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
+      <app-data-table [columns]="brandColumns" [data]="brands" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
     </div>
     <div *ngIf="activeTab === 'uom'">
-      <app-data-table [columns]="uomColumns" [data]="uoms" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
+      <app-data-table [columns]="uomColumns" [data]="uoms" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
     </div>
     <div *ngIf="activeTab === 'materialType'">
-      <app-data-table [columns]="materialTypeColumns" [data]="materialTypes" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
+      <app-data-table [columns]="materialTypeColumns" [data]="materialTypes" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
     </div>
     <div *ngIf="activeTab === 'uomConversion'">
-      <app-data-table [columns]="uomConversionColumns" [data]="uomConversions" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
+      <app-data-table [columns]="uomConversionColumns" [data]="uomConversions" [totalElements]="totalElements" [pageSize]="pageSize" [pageIndex]="pageIndex" (pageChange)="onPageChange($event)" [clickableColumn]="'id'" (rowClick)="onRowClick($event)"></app-data-table>
     </div>
   </div>
 </div>

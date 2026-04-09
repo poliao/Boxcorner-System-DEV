@@ -9,10 +9,12 @@ import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
 import { Dcsm06Service } from '../dcsm06/dcsm06.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-dcsm26-detail',
-  imports: [RouterModule, ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [RouterModule, ReactiveFormsModule, CommonModule, FormsModule, MatIconModule, MatButtonModule],
   templateUrl: './dcsm26-detail.component.html',
   styleUrls: ['./dcsm26-detail.component.scss']
 })
@@ -137,7 +139,8 @@ export class Dcsm26DetailComponent implements OnInit {
       sampleDeliveryTimestamp: [null],
       printRound: [null],
       printRoundPage2: [null],
-      currentRound: [0]
+      currentRound: [0],
+      reorderFromJoId: [null]
     });
     this.printingForm.get('createdAt')?.disable();
     this.printingForm.get('jobId')?.disable();
@@ -866,5 +869,9 @@ export class Dcsm26DetailComponent implements OnInit {
         this.sweetAlert.error('Error', 'ไม่สามารถอัปเดตสถานะได้');
       }
     });
+  }
+
+  jobHistory() {
+    this.router.navigate(['/Dcsm37Detail', this.printingForm.getRawValue().reorderFromJoId]);
   }
 }

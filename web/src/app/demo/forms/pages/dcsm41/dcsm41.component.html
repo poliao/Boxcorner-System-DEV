@@ -9,6 +9,10 @@
     <app-data-table 
       [columns]="tableColumns" 
       [data]="tableData"
+      [totalElements]="totalElements" 
+      [pageSize]="pageSize" 
+      [pageIndex]="pageIndex" 
+      (pageChange)="onPageChange($event)"
       [clickableColumn]="'materialId'"
       (rowClick)="onRowClick($event)">
     </app-data-table>

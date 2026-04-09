@@ -3,6 +3,10 @@
     <div style="padding: 10px;">
       <form [formGroup]="mainForm" class="row g-3">
         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+          <button *ngIf="mainForm.get('reorderFromJoId')?.value != null" (click)="jobHistory()" type="submit"
+            class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+            ดูประวัติงาน
+          </button>
           <button *ngIf="isBtnSave == true" (click)="onSubmit()" type="submit" class="btn text-white px-5 shadow-sm"
             style="background-color: #1e1b4b;">
             บันทึกข้อมูล
@@ -283,7 +287,8 @@
   </div>
 </div>
 
-<div class="card shadow-sm mt-3" *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)">
+<div class="card shadow-sm mt-3"
+  *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)">
   <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #198754;">
     <h5 class="card-title mb-0 text-white"><i class="fas fa-vial me-2"></i>รายละเอียดตัวอย่างจริง</h5>
     <button type="button" class="btn btn-sm btn-light" (click)="openPrinterModal()">
@@ -295,19 +300,22 @@
       <!-- Fetch Data Row -->
       <div class="col-md-3">
         <label class="form-label font-weight-bold">ประเภทงาน <span
-            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
+            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
+            style="color: red;">*</span></label>
         <input type="text" formControlName="sampleJobType" class="form-control"
           [class.is-invalid]="mainForm.get('sampleJobType')?.invalid && mainForm.get('sampleJobType')?.touched">
       </div>
       <div class="col-md-3">
         <label class="form-label font-weight-bold">ระบบพิมพ์ <span
-            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
+            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
+            style="color: red;">*</span></label>
         <input type="text" formControlName="samplePrintingSystem" class="form-control"
           [class.is-invalid]="mainForm.get('samplePrintingSystem')?.invalid && mainForm.get('samplePrintingSystem')?.touched">
       </div>
       <div class="col-md-3">
         <label class="form-label font-weight-bold">ลักษณะงานพิมพ์ <span
-            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)" style="color: red;">*</span></label>
+            *ngIf="['sampleToCustomer', 'customerOnSite'].includes(mainForm.get('decisionAuthority')?.value)"
+            style="color: red;">*</span></label>
         <input type="text" formControlName="samplePrintingStyle" class="form-control"
           [class.is-invalid]="mainForm.get('samplePrintingStyle')?.invalid && mainForm.get('samplePrintingStyle')?.touched">
       </div>

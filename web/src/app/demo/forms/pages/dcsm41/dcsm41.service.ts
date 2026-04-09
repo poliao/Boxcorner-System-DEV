@@ -12,8 +12,11 @@ export class Dcsm41Service {
 
   constructor(private http: HttpClient) { }
 
-  getInventory(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getInventory(page?: number, size?: number): Observable<any> {
+    const params: any = {};
+    if (page !== undefined) params.page = page;
+    if (size !== undefined) params.size = size;
+    return this.http.get<any>(this.apiUrl, { params });
   }
 
   getMaterial(id: number): Observable<any> {

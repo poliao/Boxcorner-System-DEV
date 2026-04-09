@@ -16,6 +16,10 @@
     </div>
   </div>
   <div class="col-12 col-md-6 text-md-end">
+    <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="jobHistory()"
+      *ngIf="qcJobForm.get('reorderFromJoId')?.value != null">
+      <mat-icon class="me-2">restore_icon</mat-icon> ดูประวัติงาน
+    </button>
     <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="startQc()"
       *ngIf="qcJobForm.get('status')?.value === 'เข้าตรวจแล้ว'">
       <mat-icon class="me-2">play_arrow</mat-icon> เริ่ม QC

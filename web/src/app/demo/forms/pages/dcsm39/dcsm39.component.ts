@@ -40,6 +40,7 @@ export class Dcsm39Component implements OnInit {
   materialTypeColumns = [
     { key: 'id', label: 'ลำดับ' },
     { key: 'name', label: 'ชื่อประเภทวัสดุ' },
+    { key: 'parent.name', label: 'หมวดหมู่หลัก' },
   ];
   
   materialColumns = [
@@ -66,6 +67,10 @@ export class Dcsm39Component implements OnInit {
   materials: any[] = [];
   activeTab: 'material' | 'supplier' | 'brand' | 'uom' | 'materialType' | 'uomConversion' = 'material';
 
+  totalElements = 0;
+  pageSize = 10;
+  pageIndex = 0;
+
   constructor(
     private service: Dcsm39Service,
     private dcsm38Service: Dcsm38Service,
@@ -74,36 +79,77 @@ export class Dcsm39Component implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadMaterials();
-    this.loadSuppliers();
-    this.loadBrands();
-    this.loadUoms();
-    this.loadMaterialTypes();
-    this.loadUomConversions();
+    this.loadActiveTabData();
+  }
+
+  onTabChange(tab: any) {
+    this.activeTab = tab;
+    this.pageIndex = 0; // Reset pagination when switching tabs
+    this.loadActiveTabData();
+  }
+
+  onPageChange(event: { pageIndex: number, pageSize: number }) {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadActiveTabData();
+  }
+
+  loadActiveTabData() {
+    this.loadingService.show();
+    if (this.activeTab === 'material') this.loadMaterials();
+    else if (this.activeTab === 'supplier') this.loadSuppliers();
+    else if (this.activeTab === 'brand') this.loadBrands();
+    else if (this.activeTab === 'uom') this.loadUoms();
+    else if (this.activeTab === 'materialType') this.loadMaterialTypes();
+    else if (this.activeTab === 'uomConversion') this.loadUomConversions();
   }
 
   loadSuppliers() {
-    this.service.getAllSuppliers().subscribe(data => this.suppliers = data);
+    this.service.getAllSuppliers(this.pageIndex, this.pageSize).subscribe(data => {
+      this.suppliers = data.content || data;
+      this.totalElements = data.totalElements || data.length;
+      this.loadingService.hide();
+    });
   }
 
   loadBrands() {
-    this.service.getAllBrands().subscribe(data => this.brands = data);
+    this.service.getAllBrands(this.pageIndex, this.pageSize).subscribe(data => {
+      this.brands = data.content || data;
+      this.totalElements = data.totalElements || data.length;
+      this.loadingService.hide();
+    });
   }
 
   loadUoms() {
-    this.service.getAllUoms().subscribe(data => this.uoms = data);
+    this.service.getAllUoms(this.pageIndex, this.pageSize).subscribe(data => {
+      this.uoms = data.content || data;
+      this.totalElements = data.totalElements || data.length;
+      this.loadingService.hide();
+    });
   }
 
   loadMaterialTypes() {
-    this.service.getAllMaterialTypes().subscribe(data => this.materialTypes = data);
+    this.service.getAllMaterialTypes(this.pageIndex, this.pageSize).subscribe(data => {
+      this.materialTypes = data.content || data;
+      this.totalElements = data.totalElements || data.length;
+      this.loadingService.hide();
+    });
   }
 
   loadUomConversions() {
-    this.dcsm38Service.getAllConversions().subscribe(data => this.uomConversions = data);
+    this.dcsm38Service.getAllConversions(this.pageIndex, this.pageSize).subscribe(data => {
+      this.uomConversions = data.content || data;
+      this.totalElements = data.totalElements || data.length;
+      this.loadingService.hide();
+    });
   }
 
   loadMaterials() {
-    this.service.getAllMaterials().subscribe(data => this.materials = data);
+    this.service.getAllMaterials(this.pageIndex, this.pageSize).subscribe(data => {
+      this.materials = data.content || data;
+      this.totalElements = data.totalElements || data.length;
+      this.loadingService.hide();
+    });
   }
 
   openDetail(type: string, id?: number) {

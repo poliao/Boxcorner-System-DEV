@@ -626,7 +626,6 @@ const routes: Routes = [
       },
       {
         path: 'Dcsm37Detail/:id',
-        canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm37/dcsm37-detail.component').then((c) => c.Dcsm37DetailComponent)
       },
       {

@@ -19,8 +19,13 @@ public class StockController {
 
     // --- UOM ---
     @GetMapping("/uoms")
-    public ResponseEntity<?> getAllUoms() {
+    public ResponseEntity<?> getAllUoms(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "size", required = false) Integer size) {
         try {
+            if (page != null && size != null) {
+                return ResponseEntity.ok(stockService.getAllUoms(page, size));
+            }
             return ResponseEntity.ok(stockService.getAllUoms());
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,8 +56,13 @@ public class StockController {
 
     // --- Supplier ---
     @GetMapping("/suppliers")
-    public ResponseEntity<?> getAllSuppliers() {
+    public ResponseEntity<?> getAllSuppliers(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "size", required = false) Integer size) {
         try {
+            if (page != null && size != null) {
+                return ResponseEntity.ok(stockService.getAllSuppliers(page, size));
+            }
             return ResponseEntity.ok(stockService.getAllSuppliers());
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,8 +92,13 @@ public class StockController {
     }
 
     @GetMapping("/brands")
-    public ResponseEntity<?> getAllBrands() {
+    public ResponseEntity<?> getAllBrands(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "size", required = false) Integer size) {
         try {
+            if (page != null && size != null) {
+                return ResponseEntity.ok(stockService.getAllBrands(page, size));
+            }
             return ResponseEntity.ok(stockService.getAllBrands());
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,8 +129,13 @@ public class StockController {
 
     // --- Material Type ---
     @GetMapping("/material-types")
-    public ResponseEntity<?> getAllMaterialTypes() {
+    public ResponseEntity<?> getAllMaterialTypes(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "size", required = false) Integer size) {
         try {
+            if (page != null && size != null) {
+                return ResponseEntity.ok(stockService.getAllMaterialTypes(page, size));
+            }
             return ResponseEntity.ok(stockService.getAllMaterialTypes());
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,8 +166,13 @@ public class StockController {
 
     // --- Material ---
     @GetMapping("/materials")
-    public ResponseEntity<?> getAllMaterials() {
+    public ResponseEntity<?> getAllMaterials(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "size", required = false) Integer size) {
         try {
+            if (page != null && size != null) {
+                return ResponseEntity.ok(stockService.getAllMaterials(page, size));
+            }
             return ResponseEntity.ok(stockService.getAllMaterials());
         } catch (Exception e) {
             e.printStackTrace();
@@ -188,8 +213,13 @@ public class StockController {
 
     // --- Material Conversion ---
     @GetMapping("/material-conversions")
-    public ResponseEntity<?> getAllMaterialConversions() {
+    public ResponseEntity<?> getAllMaterialConversions(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "size", required = false) Integer size) {
         try {
+            if (page != null && size != null) {
+                return ResponseEntity.ok(stockService.getAllMaterialConversions(page, size));
+            }
             return ResponseEntity.ok(stockService.getAllMaterialConversions());
         } catch (Exception e) {
             e.printStackTrace();
@@ -303,8 +333,13 @@ public class StockController {
 
     // --- Inventory ---
     @GetMapping("/inventory")
-    public ResponseEntity<?> getInventory() {
+    public ResponseEntity<?> getInventory(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "size", required = false) Integer size) {
         try {
+            if (page != null && size != null) {
+                return ResponseEntity.ok(stockService.getInventory(page, size));
+            }
             return ResponseEntity.ok(stockService.getInventory());
         } catch (Exception e) {
             e.printStackTrace();

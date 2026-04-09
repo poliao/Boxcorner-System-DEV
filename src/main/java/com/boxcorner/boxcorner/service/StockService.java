@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import java.util.List;
 
 @Service
@@ -23,6 +26,7 @@ public class StockService {
 
     // --- UOM ---
     public List<Uom> getAllUoms() { return uomRepository.findAll(); }
+    public Page<Uom> getAllUoms(int page, int size) { return uomRepository.findAll(PageRequest.of(page, size)); }
     public Uom getUomById(Integer id) { return uomRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Uom not found")); }
     @Transactional public Uom saveUom(Uom uom) { 
         Uom existing;
@@ -39,6 +43,7 @@ public class StockService {
 
     // --- Supplier ---
     public List<Supplier> getAllSuppliers() { return supplierRepository.findAll(); }
+    public Page<Supplier> getAllSuppliers(int page, int size) { return supplierRepository.findAll(PageRequest.of(page, size)); }
     public Supplier getSupplierById(Integer id) { return supplierRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Supplier not found")); }
     @Transactional public Supplier saveSupplier(Supplier supplier) { 
         Supplier existing;
@@ -55,6 +60,7 @@ public class StockService {
 
     // --- Brand ---
     public List<Brand> getAllBrands() { return brandRepository.findAll(); }
+    public Page<Brand> getAllBrands(int page, int size) { return brandRepository.findAll(PageRequest.of(page, size)); }
     public Brand getBrandById(Integer id) { return brandRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Brand not found")); }
     @Transactional public Brand saveBrand(Brand brand) { 
         Brand existing;
@@ -71,6 +77,7 @@ public class StockService {
 
     // --- Material Type ---
     public List<MaterialType> getAllMaterialTypes() { return materialTypeRepository.findAll(); }
+    public Page<MaterialType> getAllMaterialTypes(int page, int size) { return materialTypeRepository.findAll(PageRequest.of(page, size)); }
     public MaterialType getMaterialTypeById(Integer id) { return materialTypeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Material Type not found")); }
     @Transactional public MaterialType saveMaterialType(MaterialType type) { 
         MaterialType existing;
@@ -81,12 +88,20 @@ public class StockService {
         } else {
             existing = type;
         }
+
+        if (type.getParent() != null && type.getParent().getId() != null) {
+            existing.setParent(materialTypeRepository.getReferenceById(type.getParent().getId()));
+        } else {
+            existing.setParent(null);
+        }
+
         return materialTypeRepository.save(existing); 
     }
     @Transactional public void deleteMaterialType(Integer id) { materialTypeRepository.deleteById(id); }
 
     // --- Material ---
     public List<Material> getAllMaterials() { return materialRepository.findAll(); }
+    public Page<Material> getAllMaterials(int page, int size) { return materialRepository.findAll(PageRequest.of(page, size)); }
     public Material getMaterialById(Integer id) { return materialRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Material not found")); }
     @Transactional public Material saveMaterial(Material material) { 
         Material existing;
@@ -117,6 +132,7 @@ public class StockService {
 
     // --- Material Conversion ---
     public List<MaterialConversion> getAllMaterialConversions() { return materialConversionRepository.findAll(); }
+    public Page<MaterialConversion> getAllMaterialConversions(int page, int size) { return materialConversionRepository.findAll(PageRequest.of(page, size)); }
     public List<MaterialConversion> getMaterialConversionsByMaterialId(Integer materialId) { return materialConversionRepository.findByMaterialId(materialId); }
     public MaterialConversion getMaterialConversionById(Integer id) { return materialConversionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Conversion not found")); }
     @Transactional public MaterialConversion saveMaterialConversion(MaterialConversion conversion) { 
@@ -225,32 +241,41 @@ public class StockService {
     // --- Inventory ---
     public List<InventoryDTO> getInventory() {
         List<Material> materials = materialRepository.findAll();
-        return materials.stream().map(m -> {
-            Double totalBaseQty = lotRepository.findByMaterialId(m.getId())
-                    .stream()
-                    .mapToDouble(Lot::getBaseQty)
-                    .sum();
-            
-            List<MaterialConversion> conversions = materialConversionRepository.findByMaterialId(m.getId());
-            String largeUomName = null;
-            Double multiplier = 1.0;
-            
-            if (!conversions.isEmpty()) {
-                MaterialConversion c = conversions.get(0);
-                largeUomName = c.getLargeUom().getName();
-                multiplier = c.getMultiplier();
-            }
+        return materials.stream().map(this::convertToInventoryDTO).toList();
+    }
 
-            return InventoryDTO.builder()
-                    .materialId(m.getId())
-                    .materialCode(m.getCode())
-                    .materialName(m.getName())
-                    .materialTypeName(m.getMaterialType() != null ? m.getMaterialType().getName() : "")
-                    .baseUomName(m.getBaseUom() != null ? m.getBaseUom().getName() : "")
-                    .totalBaseQty(totalBaseQty)
-                    .largeUomName(largeUomName)
-                    .multiplier(multiplier)
-                    .build();
-        }).toList();
+    public Page<InventoryDTO> getInventory(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Material> materialsPage = materialRepository.findAll(pageRequest);
+        List<InventoryDTO> dtos = materialsPage.getContent().stream().map(this::convertToInventoryDTO).toList();
+        return new PageImpl<>(dtos, pageRequest, materialsPage.getTotalElements());
+    }
+
+    private InventoryDTO convertToInventoryDTO(Material m) {
+        Double totalBaseQty = lotRepository.findByMaterialId(m.getId())
+                .stream()
+                .mapToDouble(lot -> lot.getBaseQty() != null ? lot.getBaseQty() : 0.0)
+                .sum();
+        
+        List<MaterialConversion> conversions = materialConversionRepository.findByMaterialId(m.getId());
+        String largeUomName = null;
+        Double multiplier = 1.0;
+        
+        if (!conversions.isEmpty()) {
+            MaterialConversion c = conversions.get(0);
+            largeUomName = c.getLargeUom() != null ? c.getLargeUom().getName() : null;
+            multiplier = c.getMultiplier() != null ? c.getMultiplier() : 1.0;
+        }
+
+        return InventoryDTO.builder()
+                .materialId(m.getId())
+                .materialCode(m.getCode())
+                .materialName(m.getName())
+                .materialTypeName(m.getMaterialType() != null ? m.getMaterialType().getName() : "")
+                .baseUomName(m.getBaseUom() != null ? m.getBaseUom().getName() : "")
+                .totalBaseQty(totalBaseQty)
+                .largeUomName(largeUomName)
+                .multiplier(multiplier)
+                .build();
     }
 }

@@ -123,6 +123,7 @@ export class Dcsm08DetailComponent implements OnInit {
       isNewProof: [false],
       customerFeedback: [null],
       productionOrderId: [null],
+      reorderFromJoId: [null],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -603,5 +604,9 @@ export class Dcsm08DetailComponent implements OnInit {
         this.loadingService.hide();
       }
     });
+  }
+
+  jobHistory() {
+    this.router.navigate(['/Dcsm37Detail', this.mainForm.getRawValue().reorderFromJoId]);
   }
 }

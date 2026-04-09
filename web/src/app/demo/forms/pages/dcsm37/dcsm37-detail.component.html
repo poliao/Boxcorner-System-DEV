@@ -11,10 +11,10 @@
     </small>
   </div>
   <div class="col-auto d-flex gap-2">
-    <button mat-raised-button color="warn" (click)="openReorderModal()" id="btn-reorder">
+    <button mat-raised-button color="warn" (click)="openReorderModal()" id="btn-reorder" *ngIf="canReorder">
       <mat-icon>replay</mat-icon> ReOrder
     </button>
-    <button mat-stroked-button style="color:#003747" (click)="back()">
+    <button mat-stroked-button style="color:#003747" (click)="back()" *ngIf="canReorder">
       <mat-icon>arrow_back</mat-icon> กลับ
     </button>
   </div>

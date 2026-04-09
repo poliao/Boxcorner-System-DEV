@@ -46,12 +46,38 @@
 
       <!-- UOM Conversion Specific Fields -->
       <ng-container *ngIf="type === 'uomConversion'">
-        <div class="mb-4">
-          <label class="form-label fw-bold">เลือกวัสดุ <span class="text-danger">*</span></label>
-          <select class="form-select form-select-lg" formControlName="material">
-            <option [ngValue]="null">--- เลือกวัสดุ ---</option>
-            <option *ngFor="let m of materials" [value]="m.id">{{m.name}} ({{m.code}})</option>
-          </select>
+        <div class="row g-3 mb-4">
+          <div class="col-md-5">
+            <label class="form-label fw-bold mb-1">1. กรองตามประเภทวัสดุ</label>
+            <select class="form-select" (change)="onTypeFilterChange($any($event.target).value)">
+              <option [value]="''">--- ทั้งหมด ---</option>
+              <option *ngFor="let mt of materialTypes" [value]="mt.id">{{mt.name}}</option>
+            </select>
+          </div>
+          <div class="col-md-7">
+            <label class="form-label fw-bold mb-1">2. ค้นหาและเลือกวัสดุ <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><mat-icon style="font-size: 18px; height: 18px; width: 18px; color: #666;">search</mat-icon></span>
+              <input type="text" class="form-control border-start-0 py-2" 
+                     [placeholder]="mainForm.get('material')?.value ? 'เปลี่ยนวัสดุ...' : 'พิมพ์ชื่อหรือรหัสวัสดุ...'"
+                     (input)="onMaterialSearch($event)"
+                     [matAutocomplete]="auto">
+            </div>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onMaterialSelected($event)" [displayWith]="displayMaterial">
+              <mat-option *ngFor="let m of filteredMaterials" [value]="m">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>{{m.name}}</span>
+                  <small class="text-muted ms-2">{{m.code}}</small>
+                </div>
+              </mat-option>
+            </mat-autocomplete>
+            <input type="hidden" formControlName="material">
+          </div>
+        </div>
+
+        <div class="alert alert-info py-2 px-3 mb-4 d-flex align-items-center" *ngIf="mainForm.get('material')?.value">
+          <mat-icon class="me-2 text-info">check_circle</mat-icon>
+          <span>วัสดุที่คุณเลือก: <strong>{{ getMaterialName(mainForm.get('material')?.value) }}</strong></span>
         </div>
 
         <div class="row g-3 mb-4">
@@ -82,6 +108,14 @@
         <div class="mb-4">
           <label class="form-label fw-bold">ชื่อ{{ getTypeLabel() }} <span class="text-danger">*</span></label>
           <input type="text" class="form-control form-control-lg" formControlName="name" placeholder="ระบุชื่อ">
+        </div>
+
+        <div class="mb-4" *ngIf="type === 'materialType'">
+          <label class="form-label fw-bold">หมวดหมู่หลัก (ถ้ามี)</label>
+          <select class="form-select form-select-lg" formControlName="parent">
+            <option [ngValue]="null">--- ไม่มีหมวดหมู่หลัก (หมวดหลัก) ---</option>
+            <option *ngFor="let mt of materialTypes" [value]="mt.id">{{mt.name}}</option>
+          </select>
         </div>
       </ng-container>
 

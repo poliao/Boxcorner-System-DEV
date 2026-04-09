@@ -34,6 +34,10 @@
               class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
               รับของจากซัพพลายเออร์แล้ว
             </button>
+            <button *ngIf="mainForm.get('reorderFromJoId')?.value != null" (click)="jobHistory()"
+              class="btn text-white px-5 shadow-sm" style="background-color: #1e1b4b;">
+              ดูประวัติงาน
+            </button>
           </div>
 
           <div class="col-md-2">

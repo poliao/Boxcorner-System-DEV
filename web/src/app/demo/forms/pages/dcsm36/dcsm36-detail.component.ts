@@ -85,7 +85,8 @@ export class Dcsm36DetailComponent implements OnInit {
       updatedAt: [null],
       qcDetail: [null],
       partName: [null],
-      qcCaution: [null]
+      qcCaution: [null],
+      reorderFromJoId: [null],
     });
 
     this.papOrderForm = this.fb.group({
@@ -406,7 +407,7 @@ export class Dcsm36DetailComponent implements OnInit {
         },
         error: () => this.loadingService.hide()
       });
-    }else {
+    } else {
       this.dcsm36Service.DropdownList('').subscribe({
         next: (data) => {
           this.usersList = data;
@@ -415,5 +416,9 @@ export class Dcsm36DetailComponent implements OnInit {
         error: () => this.loadingService.hide()
       });
     }
+  }
+
+  jobHistory() {
+    this.router.navigate(['/Dcsm37Detail', this.qcJobForm.getRawValue().reorderFromJoId]);
   }
 }

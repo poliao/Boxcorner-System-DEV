@@ -20,4 +20,8 @@ public class MaterialType extends BaseEntity {
 
     @Column(name = "name", length = 255)
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private MaterialType parent;
 }
