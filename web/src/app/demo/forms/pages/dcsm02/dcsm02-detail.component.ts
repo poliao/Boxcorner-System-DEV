@@ -184,7 +184,7 @@ export class Dcsm02DetailComponent implements OnInit {
       confirmButtonText: 'ยืนยัน',
       cancelButtonText: 'ยกเลิก'
     }).then((result) => {
-      if (this.designForm.valid) {
+      if (result.isConfirmed && this.designForm.valid) {
         this.loadingService.show();
         const data = this.designForm.getRawValue();
         if (data.remarkAdd != null && data.remarkAdd != 'เพิ่มรายละเอียดแล้ว') {
