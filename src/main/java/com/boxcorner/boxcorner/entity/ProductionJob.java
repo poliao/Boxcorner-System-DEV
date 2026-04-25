@@ -136,4 +136,14 @@ public class ProductionJob extends BaseEntity {
 
     @Column(name = "reorder_from_jo_id")
     private String reorderFromJoId;
+
+    // ยอดที่ส่งออกนอก (กรณีสถานที่ไม่ใช่ BCA)
+    @Column(name = "coating_qty")
+    private Integer coatingQty;
+
+    @Column(name = "stamping_qty")
+    private Integer stampingQty;
+
+    @Column(name = "gluing_qty")
+    private Integer gluingQty;
 }
