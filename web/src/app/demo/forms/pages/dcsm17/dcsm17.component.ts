@@ -15,7 +15,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
 
 @Component({
   selector: 'app-dcsm17',
@@ -36,13 +35,12 @@ import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
     MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ThaiDatePipe
   ],
   templateUrl: './dcsm17.component.html',
   styleUrls: ['./dcsm17.component.scss']
 })
 export class Dcsm17Component implements OnInit {
-  
+
   searchForm!: FormGroup;
 
   tableData: any[] = [];
@@ -52,7 +50,7 @@ export class Dcsm17Component implements OnInit {
   shif = 0;
   approveSample = 0;
   isSortMode: boolean = false;
-  
+
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
     { key: 'folderName', label: 'ชื่อโฟลเดอร์' },
@@ -68,7 +66,7 @@ export class Dcsm17Component implements OnInit {
     private router: Router,
     private dcsm17Service: Dcsm17Service,
     private statusColorService: StatusColorService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initSearchForm();
@@ -86,7 +84,7 @@ export class Dcsm17Component implements OnInit {
       responsiblePerson: [''],
       status: [''],
       startDate: [null],
-      endDate: [{value: null, disabled: true}]
+      endDate: [{ value: null, disabled: true }]
     });
   }
 
@@ -96,7 +94,7 @@ export class Dcsm17Component implements OnInit {
     this.dcsm17Service.getOrdersWithSearch(
       this.pageIndex,
       this.pageSize,
-      filters 
+      filters
     ).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
@@ -117,7 +115,7 @@ export class Dcsm17Component implements OnInit {
     this.dcsm17Service.getOrdersWithSearchSort(
       this.pageIndex,
       this.pageSize,
-      filters 
+      filters
     ).subscribe({
       next: (res: any) => {
         this.tableData = res.content.map((item: any) => ({
@@ -146,13 +144,13 @@ export class Dcsm17Component implements OnInit {
 
   onClear(): void {
     this.searchForm.reset({
-        id: '',
-        folderName: '',
-        jobOwner: '',
-        responsiblePerson: '',
-        status: '',
-        startDate: null,
-        endDate: null
+      id: '',
+      folderName: '',
+      jobOwner: '',
+      responsiblePerson: '',
+      status: '',
+      startDate: null,
+      endDate: null
     });
     this.searchForm.get('endDate')?.disable();
     this.onSearch();
@@ -171,7 +169,7 @@ export class Dcsm17Component implements OnInit {
   onStartDateChange(): void {
     const startDate = this.searchForm.get('startDate')?.value;
     const endDate = this.searchForm.get('endDate')?.value;
-    
+
     if (!startDate) {
       this.searchForm.get('endDate')?.disable();
       this.searchForm.patchValue({ endDate: null });
@@ -195,7 +193,7 @@ export class Dcsm17Component implements OnInit {
   }
 
   add(): void {
-    this.router.navigate(['/Dcsm17Detail']); 
+    this.router.navigate(['/Dcsm17Detail']);
   }
 
   onRowClick(row: any): void {

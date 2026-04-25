@@ -65,12 +65,18 @@ public class ProductionJobService {
                 existing.setCoatingDate(productionJob.getCoatingDate());
                 existing.setCoatingResponsible(productionJob.getCoatingResponsible());
                 existing.setCoatingLocation(productionJob.getCoatingLocation());
+                existing.setCoatingQty(productionJob.getCoatingQty());
+
                 existing.setStampingDate(productionJob.getStampingDate());
                 existing.setStampingResponsible(productionJob.getStampingResponsible());
                 existing.setStampingLocation(productionJob.getStampingLocation());
+                existing.setStampingQty(productionJob.getStampingQty());
+
                 existing.setGluingDate(productionJob.getGluingDate());
                 existing.setGluingResponsible(productionJob.getGluingResponsible());
                 existing.setGluingLocation(productionJob.getGluingLocation());
+                existing.setGluingQty(productionJob.getGluingQty());
+
                 existing.setQcDate(productionJob.getQcDate());
                 existing.setQcStatus(productionJob.getQcStatus());
                 existing.setDueDate(productionJob.getDueDate());
@@ -81,7 +87,9 @@ public class ProductionJobService {
                 existing.setImageUrl(productionJob.getImageUrl());
                 existing.setMachineSetupCount(productionJob.getMachineSetupCount());
                 existing.setPrintingRecordId(productionJob.getPrintingRecordId());
+                existing.setPapOrderId(productionJob.getPapOrderId());
                 existing.setQcJobId(productionJob.getQcJobId());
+                existing.setPartName(productionJob.getPartName());
                 existing.setQcLocation(productionJob.getQcLocation());
                 existing.setPrintJobId(productionJob.getPrintJobId());
                 existing.setQcType(productionJob.getQcType());

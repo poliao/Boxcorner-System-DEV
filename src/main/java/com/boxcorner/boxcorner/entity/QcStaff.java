@@ -52,4 +52,7 @@ public class QcStaff extends BaseEntity {
     @Column(name = "pieces_fraction")
     private Integer piecesFraction;
 
+    @Column(name = "log_qc_id")
+    private Integer logQcId;
+
 }

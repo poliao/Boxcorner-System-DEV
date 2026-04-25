@@ -40,6 +40,9 @@ public class JoHistoryDTO {
     // === Shared per JO: QC ===
     private QcJobSummary qcJob;
 
+    // === Shared per JO: Tracking (Delivery) ===
+    private List<TrackingSummary> trackingJobs;
+
     // ─────────────────── Inner Classes ───────────────────
 
     @Data
@@ -225,5 +228,44 @@ public class JoHistoryDTO {
         private List<ReorderDTO.QcLogSummary> qcLogs;
         private List<ReorderDTO.QcStaffSummary> qcStaffs;
         private List<ReorderDTO.QcWasteReportSummary> qcWasteReports;
+    }
+
+    @Data
+    public static class TrackingSummary {
+        private Long id;
+        private String jobId;
+        private String partName;
+        private Integer productionQuantity;
+        private String printStatus;
+        private String deliveryStatus;
+        private LocalDate dueDate;
+
+        // Print
+        private String printingResponsible;
+        private LocalDate printingDate;
+        private Integer printQuantity;
+
+        // Coating
+        private String coatingResponsible;
+        private String coatingLocation;
+        private LocalDate coatingDate;
+        private Integer coatingQty;
+
+        // Stamping
+        private String stampingResponsible;
+        private String stampingLocation;
+        private LocalDate stampingDate;
+        private Integer stampingQty;
+
+        // Gluing
+        private String gluingResponsible;
+        private String gluingLocation;
+        private LocalDate gluingDate;
+        private Integer gluingQty;
+
+        // QC
+        private String qcLocation;
+        private String qcType;
+        private LocalDate qcDate;
     }
 }

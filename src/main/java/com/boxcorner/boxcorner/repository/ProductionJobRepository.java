@@ -1,6 +1,7 @@
 package com.boxcorner.boxcorner.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -126,4 +127,6 @@ public interface ProductionJobRepository extends JpaRepository<ProductionJob, Lo
             Pageable pageable);
     @Query(value = "SELECT * FROM production_jobs p WHERE p.pap_order_id = :papOrderId LIMIT 1", nativeQuery = true)
     ProductionJob findByPapOrderId(@Param("papOrderId") Integer papOrderId);
+
+    List<ProductionJob> findByJobIdOrderByIdAsc(String jobId);
 }

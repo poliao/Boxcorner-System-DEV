@@ -345,7 +345,7 @@ export class Dcsm02DetailComponent implements OnInit {
       designOrderId: this.designForm.getRawValue().id,
       customerName: this.designForm.getRawValue().customerName,
       fileName: this.designForm.getRawValue().fileName,
-      jobId: this.jobId.value,
+      jobId: this.designForm.getRawValue().joId,
       print2Page: this.print2Page.value,
       qtId: this.designForm.getRawValue().qtId,
       qpId: this.designForm.getRawValue().qpId,

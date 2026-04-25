@@ -33,6 +33,9 @@ export class Dcsm37DetailComponent implements OnInit {
   comingSoonType = '';
   prodModalTab: 'info' | 'decision' = 'info';
 
+  // ─── Tab State ───
+  activeTab: 'print' | 'coating' | 'stamping' | 'qc' | 'tracking' = 'print';
+
   designForm = {
     joId: '',
     qtId: '',
@@ -348,6 +351,18 @@ export class Dcsm37DetailComponent implements OnInit {
     } catch { return d; }
   }
 
+  formatDateTime(d: Date | null): string {
+    if (!d) return '-';
+    try {
+      const day = d.getDate().toString().padStart(2, '0');
+      const m = (d.getMonth() + 1).toString().padStart(2, '0');
+      const y = d.getFullYear().toString();
+      const hrs = d.getHours().toString().padStart(2, '0');
+      const mins = d.getMinutes().toString().padStart(2, '0');
+      return `${day}/${m}/${y} ${hrs}:${mins} น.`;
+    } catch { return String(d); }
+  }
+
   formatMinutes(min: number | null): string {
     if (min == null) return '-';
     if (min < 60) return `${min} นาที`;
@@ -385,6 +400,51 @@ export class Dcsm37DetailComponent implements OnInit {
     const fraction = (q.passedQtyFraction || 0) * (q.bundlesPerPackFraction || 0) * (q.boxesPerBundle || 0);
     const extra = (q.piecesFraction || 0);
     return full + fraction + extra;
+  }
+
+  getQcStartEndSummary(qcJob: any): { start: Date | null, end: Date | null, hours: string } {
+    if (!qcJob || !qcJob.qcLogs || qcJob.qcLogs.length === 0) {
+      return { start: null, end: null, hours: '-' };
+    }
+    
+    let minDate: Date | null = null;
+    let maxDate: Date | null = null;
+
+    qcJob.qcLogs.forEach((log: any) => {
+      if (log.reportDate) {
+        const rDate = new Date(log.reportDate);
+        
+        let sDate = new Date(rDate);
+        if (log.startTime) {
+           const [h, m] = log.startTime.split(':');
+           sDate.setHours(+h, +m, 0, 0);
+        } else {
+           sDate.setHours(0, 0, 0, 0);
+        }
+        
+        let eDate = new Date(rDate);
+        if (log.endTime) {
+           const [h, m] = log.endTime.split(':');
+           eDate.setHours(+h, +m, 0, 0);
+        } else {
+           eDate.setHours(23, 59, 59, 999);
+        }
+
+        if (!minDate || sDate < minDate) minDate = sDate;
+        if (!maxDate || eDate > maxDate) maxDate = eDate;
+      }
+    });
+
+    let hoursStr = '-';
+    if (minDate && maxDate) {
+      const diffMs = maxDate.getTime() - minDate.getTime();
+      const diffHrs = diffMs / (1000 * 60 * 60);
+      if (diffHrs >= 0) {
+        hoursStr = diffHrs.toFixed(2) + ' ชั่วโมง';
+      }
+    }
+
+    return { start: minDate, end: maxDate, hours: hoursStr };
   }
 
   back() { this.router.navigate(['/Dcsm37']); }

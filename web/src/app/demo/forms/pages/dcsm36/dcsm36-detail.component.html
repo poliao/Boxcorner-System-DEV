@@ -26,7 +26,15 @@
     </button>
     <button mat-flat-button color="accent" class="rounded-pill px-4" (click)="completeQc()"
       *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
-      <mat-icon class="me-2">check_circle</mat-icon> QC แล้ว
+      <mat-icon class="me-2">check_circle</mat-icon> ปิดจ๊อบ (QC แล้ว)
+    </button>
+    <button mat-flat-button color="primary" class="rounded-pill px-4 ms-2" (click)="openSplitPrintModal()"
+      *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
+      <mat-icon class="me-2">splitscreen</mat-icon> แบ่ง QC
+    </button>
+    <button mat-flat-button color="warn" class="rounded-pill px-4 ms-2" (click)="printPackageLabel()"
+      *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ' || qcJobForm.get('status')?.value === 'เสร็จสิ้น'">
+      <mat-icon class="me-2">local_shipping</mat-icon> พิมพ์ใบแปะหน้า
     </button>
     <mat-icon class="me-2" (click)="dowloadReportQc()" style="cursor: pointer;"
       *ngIf="qcJobForm.get('status')?.value === 'เสร็จสิ้น'">get_app</mat-icon>
@@ -165,8 +173,8 @@
   <div class="modal-container qc-modal">
     <div class="modal-header qc-modal-header">
       <div class="d-flex align-items-center gap-2">
-        <mat-icon class="text-white">assignment_turned_in</mat-icon>
-        <h5 class="mb-0 text-white">บันทึกผล QC</h5>
+        <mat-icon class="text-white">{{ isPartialMode ? 'splitscreen' : 'assignment_turned_in' }}</mat-icon>
+        <h5 class="mb-0 text-white">{{ isPartialMode ? 'บันทึกแบ่งส่ง / แบ่ง QC' : 'บันทึกผล QC' }}</h5>
       </div>
       <button type="button" class="btn-close btn-close-white" (click)="closeCompleteModal()"></button>
     </div>
@@ -357,8 +365,8 @@
       <button mat-button class="me-2" (click)="closeCompleteModal()">
         <mat-icon class="me-1">close</mat-icon> ยกเลิก
       </button>
-      <button mat-flat-button color="primary" (click)="onSubmitComplete()">
-        <mat-icon class="me-1">save</mat-icon> บันทึกข้อมูล
+      <button mat-flat-button color="primary" (click)="isPartialMode ? onSubmitPartial() : onSubmitComplete()">
+        <mat-icon class="me-1">save</mat-icon> {{ isPartialMode ? 'บันทึกและพิมพ์ใบปะหน้า' : 'บันทึกข้อมูล' }}
       </button>
     </div>
   </div>

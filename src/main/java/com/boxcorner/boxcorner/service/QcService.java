@@ -172,4 +172,79 @@ public class QcService {
 
         return savedJob;
     }
+
+    @Transactional
+    public Integer partialQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle,
+            Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction,
+            java.util.List<QcStaff> staffList,
+            java.util.List<QcWasteReport> wasteReportList,
+            Boolean qcColorMatch, Boolean qcColorConsistency, Boolean qcInkResidue, Boolean qcInkTransfer,
+            Boolean qcStains, Boolean qcAlignment, Boolean qcScratches, Boolean qcMixedJobs,
+            String qcCaution) {
+        QcJob qcJob = qcJobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + id));
+
+        // Accumulate the passedQty
+        Integer currentPassedQty = qcJob.getPassedQty() != null ? qcJob.getPassedQty() : 0;
+        qcJob.setPassedQty(currentPassedQty + passedQty);
+        
+        // Update packing configuration to the latest
+        qcJob.setBundlesPerPack(bundlesPerPack);
+        qcJob.setBoxesPerBundle(boxesPerBundle);
+        
+        // Update fractions to the latest (or should it accumulate? Usually just latest state)
+        qcJob.setPassedQtyFraction(passedQtyFraction);
+        qcJob.setBundlesPerPackFraction(bundlesPerPackFraction);
+        qcJob.setPiecesFraction(piecesFraction);
+
+        qcJob.setQcColorMatch(qcColorMatch);
+        qcJob.setQcColorConsistency(qcColorConsistency);
+        qcJob.setQcInkResidue(qcInkResidue);
+        qcJob.setQcInkTransfer(qcInkTransfer);
+        qcJob.setQcStains(qcStains);
+        qcJob.setQcAlignment(qcAlignment);
+        qcJob.setQcScratches(qcScratches);
+        qcJob.setQcMixedJobs(qcMixedJobs);
+        qcJob.setQcCaution(qcCaution);
+
+        // DO NOT change status to 'เสร็จสิ้น'
+        // qcJob.setStatus("อยู่ระหว่างตรวจ"); 
+
+        QcJob savedJob = qcJobRepository.save(qcJob);
+
+        // Create a new LogQc for this partial submission
+        LogQc logQc = LogQc.builder()
+                .qcJobId(id)
+                .operatorName("System") // Or extract from staff list
+                .reportDate(LocalDate.now())
+                .startTime(LocalTime.now())
+                .endTime(LocalTime.now())
+                .passedQty(passedQty) // Save the partial quantity
+                .bundlesPerPack(bundlesPerPack)
+                .boxesPerBundle(boxesPerBundle)
+                .passedQtyFraction(passedQtyFraction)
+                .bundlesPerPackFraction(bundlesPerPackFraction)
+                .piecesFraction(piecesFraction)
+                .qcCaution(qcCaution)
+                .qcType(qcJob.getQcType())
+                .build();
+        LogQc savedLog = logQcRepository.save(logQc);
+
+        if (staffList != null && !staffList.isEmpty()) {
+            for (com.boxcorner.boxcorner.entity.QcStaff staff : staffList) {
+                staff.setQcJobId(id);
+                staff.setLogQcId(savedLog.getId());
+                qcStaffRepository.save(staff);
+            }
+        }
+
+        if (wasteReportList != null && !wasteReportList.isEmpty()) {
+            for (com.boxcorner.boxcorner.entity.QcWasteReport waste : wasteReportList) {
+                waste.setQcJobId(id);
+                qcWasteReportRepository.save(waste);
+            }
+        }
+
+        return savedLog.getId();
+    }
 }

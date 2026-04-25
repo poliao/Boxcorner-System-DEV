@@ -361,98 +361,17 @@ export class Dcsm20DetailComponent implements OnInit {
           } else {
             this.loadingService.show();
             if (status === 'Print') {
-              if (this.productionForm.getRawValue().coatingDate != null) {
-                this.productionForm.get('printStatus')?.setValue('กำลังเคลือบ');
-              } else if (this.productionForm.getRawValue().stampingDate != null) {
-                this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
-              } else if (this.productionForm.getRawValue().gluingDate != null) {
-                this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-              } else if (this.productionForm.getRawValue().qcDate != null) {
-                this.productionForm.get('printStatus')?.setValue('ส่งQc');
-              } else {
-                this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-              }
-              this.performStatusUpdate();
+              this.loadingService.hide();
+              this.openQtyModal('พิมพ์', 'Print');
             } else if (status === 'Coating') {
-              // coatingResponsible เก็บค่า location จาก PAP (BCA หรือ ชื่อบริษัทนอก)
-              const coatingLoc = this.productionForm.getRawValue().coatingResponsible
-                              || this.productionForm.getRawValue().coatingLocation;
-              if (coatingLoc !== 'BCA') {
-                // ส่งออกนอก — ให้กรอกยอดก่อน
-                this.loadingService.hide();
-                this.openQtyModal('เคลือบ', 'Coating');
-              } else {
-                if (this.productionForm.getRawValue().stampingDate != null) {
-                  this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
-                } else if (this.productionForm.getRawValue().gluingDate != null) {
-                  this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-                } else if (this.productionForm.getRawValue().qcDate != null) {
-                  this.productionForm.get('printStatus')?.setValue('ส่งQc');
-                } else {
-                  this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-                }
-                this.performStatusUpdate();
-              }
+              this.loadingService.hide();
+              this.openQtyModal('เคลือบ', 'Coating');
             } else if (status === 'Stamping') {
-              // stampingResponsible เก็บค่า location จาก PAP (BCA หรือ ชื่อบริษัทนอก)
-              const stampingLoc = this.productionForm.getRawValue().stampingResponsible
-                               || this.productionForm.getRawValue().stampingLocation;
-              if (stampingLoc !== 'BCA') {
-                // ปั้มนอก BCA — ให้กรอกยอดก่อน
-                this.loadingService.hide();
-                this.openQtyModal('ปั้ม', 'Stamping');
-              } else {
-                if (this.productionForm.getRawValue().gluingDate != null) {
-                  if (this.productionForm.getRawValue().qcType == 'ปะมือ+Qc' || this.productionForm.getRawValue().qcType == 'ปะเครื่อง+Qc') {
-                    this.loadingService.hide();
-                    this.sweetAlert.input('ยอดก่อน QC', 'กรุณากรอกจำนวนยอดก่อน QC', 'number').then((res) => {
-                      if (res.isConfirmed && res.value && this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
-                        const qty = parseInt(res.value, 10);
-                        this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-                        this.saveQcJob(qty);
-                        this.performStatusUpdate();
-                      }
-                    });
-                  } else {
-                    this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-                    this.performStatusUpdate();
-                  }
-                } else if (this.productionForm.getRawValue().qcDate != null) {
-                  if (this.productionForm.getRawValue().qcType == 'ปะมือ+Qc' || this.productionForm.getRawValue().qcType == 'ปะเครื่อง+Qc') {
-                    this.loadingService.hide();
-                    this.sweetAlert.input('ยอดก่อน QC', 'กรุณากรอกจำนวนยอดก่อน QC', 'number').then((res) => {
-                      if (res.isConfirmed && res.value && this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
-                        const qty = parseInt(res.value, 10);
-                        this.productionForm.get('printStatus')?.setValue('ส่งQc');
-                        this.saveQcJob(qty);
-                        this.performStatusUpdate();
-                      }
-                    });
-                  } else {
-                    this.productionForm.get('printStatus')?.setValue('ส่งQc');
-                    this.performStatusUpdate();
-                  }
-                } else {
-                  this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-                  this.performStatusUpdate();
-                }
-              }
+              this.loadingService.hide();
+              this.openQtyModal('ปั้ม', 'Stamping');
             } else if (status === 'Gluing') {
-              // gluingResponsible เก็บค่า location จาก PAP (BCA หรือ ชื่อบริษัทนอก)
-              const gluingLoc = this.productionForm.getRawValue().gluingResponsible
-                             || this.productionForm.getRawValue().gluingLocation;
-              if (gluingLoc !== 'BCA') {
-                // ปะนอก BCA — ให้กรอกยอดก่อน
-                this.loadingService.hide();
-                this.openQtyModal('ปะ', 'Gluing');
-              } else {
-                if (this.productionForm.getRawValue().qcDate != null) {
-                  this.productionForm.get('printStatus')?.setValue('ส่งQc');
-                } else {
-                  this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
-                }
-                this.performStatusUpdate();
-              }
+              this.loadingService.hide();
+              this.openQtyModal('ปะ', 'Gluing');
             } else if (status === 'Address') {
               this.productionForm.get('deliveryStatus')?.setValue('รอที่อยู่จัดส่ง');
               this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
@@ -589,7 +508,7 @@ export class Dcsm20DetailComponent implements OnInit {
 
   // ─── Qty Modal (เคลือบ/ปั้ม/ปะ นอก BCA) ───
   openQtyModal(label: string, status: string): void {
-    this.qtyModalTitle = `ยอด${label}ที่ส่งออกนอก`;
+    this.qtyModalTitle = `ยอด${label}ที่ได้รับ`;
     this.qtyModalValue = null;
     this.pendingQtyStatus = status;
     this.showQtyModal = true;
@@ -610,7 +529,20 @@ export class Dcsm20DetailComponent implements OnInit {
     const qty = this.qtyModalValue;
     this.closeQtyModal();
 
-    if (status === 'Coating') {
+    if (status === 'Print') {
+      this.productionForm.get('printQuantity')?.setValue(qty);
+      if (this.productionForm.getRawValue().coatingDate != null) {
+        this.productionForm.get('printStatus')?.setValue('กำลังเคลือบ');
+      } else if (this.productionForm.getRawValue().stampingDate != null) {
+        this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
+      } else if (this.productionForm.getRawValue().gluingDate != null) {
+        this.productionForm.get('printStatus')?.setValue('กำลังปะ');
+      } else if (this.productionForm.getRawValue().qcDate != null) {
+        this.productionForm.get('printStatus')?.setValue('ส่งQc');
+      } else {
+        this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');
+      }
+    } else if (status === 'Coating') {
       this.productionForm.get('coatingQty')?.setValue(qty);
       if (this.productionForm.getRawValue().stampingDate != null) {
         this.productionForm.get('printStatus')?.setValue('กำลังปั้ม');
@@ -624,8 +556,25 @@ export class Dcsm20DetailComponent implements OnInit {
     } else if (status === 'Stamping') {
       this.productionForm.get('stampingQty')?.setValue(qty);
       if (this.productionForm.getRawValue().gluingDate != null) {
+        // Handle special QC logic if applicable
+        if (this.productionForm.getRawValue().qcType == 'ปะมือ+Qc' || this.productionForm.getRawValue().qcType == 'ปะเครื่อง+Qc') {
+          if (this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
+            this.productionForm.get('printStatus')?.setValue('กำลังปะ');
+            this.saveQcJob(qty);
+            this.performStatusUpdate();
+            return;
+          }
+        }
         this.productionForm.get('printStatus')?.setValue('กำลังปะ');
       } else if (this.productionForm.getRawValue().qcDate != null) {
+        if (this.productionForm.getRawValue().qcType == 'ปะมือ+Qc' || this.productionForm.getRawValue().qcType == 'ปะเครื่อง+Qc') {
+          if (this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
+            this.productionForm.get('printStatus')?.setValue('ส่งQc');
+            this.saveQcJob(qty);
+            this.performStatusUpdate();
+            return;
+          }
+        }
         this.productionForm.get('printStatus')?.setValue('ส่งQc');
       } else {
         this.productionForm.get('printStatus')?.setValue('เสร็จสิ้น');

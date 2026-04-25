@@ -15,7 +15,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ThaiDatePipe } from 'src/app/shared/pipes/thai-date.pipe';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -37,7 +36,6 @@ import { AuthService } from 'src/app/services/auth.service';
     MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ThaiDatePipe
   ],
   templateUrl: './dcsm04.component.html',
   styleUrls: ['./dcsm04.component.scss']

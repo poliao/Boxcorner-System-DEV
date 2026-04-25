@@ -23,7 +23,20 @@ export class Dcsm36DetailComponent implements OnInit {
   jobId: number | null = null;
   isLoading = false;
   isCompleteModalOpen = false;
+  isPartialMode = false;
   isStartModalOpen = false;
+
+  splitPrintData = {
+    jobName: '',
+    customerName: '',
+    partName: '',
+    qtyPerPack: '',
+    bundlesPerPack: '',
+    totalQty: '',
+    startPack: 1,
+    endPack: 1,
+    deliveryDate: ''
+  };
   userRole: string = '';
   modalReceivedQty: number | null = null;
   usersList: any[] = [];
@@ -327,6 +340,27 @@ export class Dcsm36DetailComponent implements OnInit {
     });
   }
 
+  printPackageLabel() {
+    this.loadingService.show();
+    const data = { reportName: 'PackageLabel', jobId: this.jobId };
+    this.dcsm36Service.printReport(data).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none'; iframe.src = url;
+        iframe.onload = () => setTimeout(() => iframe.contentWindow?.print(), 100);
+        document.body.appendChild(iframe);
+      },
+      error: (err) => { 
+        console.error('Error printing package label:', err); 
+        this.sweetAlert.error('Error', 'ไม่สามารถพิมพ์ใบแปะหน้าได้');
+        this.loadingService.hide(); 
+      }
+    });
+  }
+
   loadDropdown() {
     this.loadingService.show();
     const group = this.userRole === 'stam' ? 'OD' : this.userRole === 'qc' ? 'QC' : '';
@@ -338,5 +372,83 @@ export class Dcsm36DetailComponent implements OnInit {
 
   jobHistory() {
     this.router.navigate(['/Dcsm37Detail', this.qcJobForm.getRawValue().reorderFromJoId]);
+  }
+
+  // ─── แบ่ง QC (Partial QC) ───
+  openSplitPrintModal() {
+    this.isPartialMode = true;
+    this.modalBoxesPerBundle = this.qcJobForm.get('boxesPerBundle')?.value;
+    this.modalBundlesPerPack = this.qcJobForm.get('bundlesPerPack')?.value;
+    this.modalTotalPassedPieces = null;
+    this.qcStaffList = [{ userName: '', totalPieces: null, packs: 0, packsFraction: 0, bundlesFraction: 0, piecesFraction: 0 }];
+    this.qcWasteList = [{ processName: '', wasteQty: null, remarks: '' }];
+    this.modalQcCaution = this.qcJobForm.get('qcCaution')?.value || '';
+    this.activeTab = 'staff';
+    this.isCompleteModalOpen = true;
+  }
+
+  onSubmitPartial() {
+    const totalInput = this.qcStaffList.reduce((sum, item) => sum + (item.totalPieces || 0), 0);
+    if (totalInput !== this.modalTotalPassedPieces) {
+      this.sweetAlert.error('ยอดไม่ตรงกัน', 'ยอดรวมที่พนักงานทำ ต้องเท่ากับ ยอดรวมงานดีทั้งหมด');
+      return;
+    }
+
+    // validate waste
+    const validWaste = this.qcWasteList.filter(w => w.processName && w.wasteQty != null && w.wasteQty > 0);
+
+    const payload = {
+      id: this.jobId,
+      passedQty: this.modalTotalPassedPieces,
+      bundlesPerPack: this.modalBundlesPerPack,
+      boxesPerBundle: this.modalBoxesPerBundle,
+      passedQtyFraction: this.modalPassedQtyFraction,
+      bundlesPerPackFraction: this.modalBundlesPerPackFraction,
+      piecesFraction: this.modalPiecesFraction,
+      staffList: this.qcStaffList,
+      wasteReportList: validWaste,
+      qcColorMatch: this.qcJobForm.get('qcColorMatch')?.value,
+      qcColorConsistency: this.qcJobForm.get('qcColorConsistency')?.value,
+      qcInkResidue: this.qcJobForm.get('qcInkResidue')?.value,
+      qcInkTransfer: this.qcJobForm.get('qcInkTransfer')?.value,
+      qcStains: this.qcJobForm.get('qcStains')?.value,
+      qcAlignment: this.qcJobForm.get('qcAlignment')?.value,
+      qcScratches: this.qcJobForm.get('qcScratches')?.value,
+      qcMixedJobs: this.qcJobForm.get('qcMixedJobs')?.value,
+      qcCaution: this.modalQcCaution
+    };
+
+    this.sweetAlert.confirm('ยืนยันแบ่ง QC', 'ระบบจะบันทึกยอดสะสมและเปิดใบปะหน้าให้ทันที ยืนยันหรือไม่?').then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm36Service.partialQc(payload).subscribe({
+          next: (logId: any) => {
+            this.loadingService.hide();
+            this.sweetAlert.success('บันทึกสำเร็จ', 'กำลังพิมพ์ใบหน้าห่อ...');
+            this.closeCompleteModal();
+            this.loadJobDetails(this.jobId!);
+            
+            // Print Jasper Report right after
+            const data = { reportName: 'PackageLabel', jobId: this.jobId, logId: logId };
+            this.dcsm36Service.printReport(data).subscribe({
+              next: (response) => {
+                const blob = new Blob([response], { type: 'application/pdf' });
+                const url = window.URL.createObjectURL(blob);
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none'; iframe.src = url;
+                iframe.onload = () => setTimeout(() => iframe.contentWindow?.print(), 100);
+                document.body.appendChild(iframe);
+              },
+              error: (err) => console.error('Error printing split label:', err)
+            });
+          },
+          error: (err) => {
+            console.error('Error saving partial qc:', err);
+            this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้');
+            this.loadingService.hide();
+          }
+        });
+      }
+    });
   }
 }

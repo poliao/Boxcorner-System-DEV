@@ -50,3 +50,40 @@
   from { transform: translateY(24px); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
+
+/* ── Custom Tabs ── */
+.custom-tabs {
+  border-bottom: 2px solid #e2e8f0;
+  
+  .nav-item {
+    margin-bottom: -2px;
+  }
+  
+  .nav-link {
+    border: none;
+    color: #64748b;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    transition: all 0.2s ease;
+    
+    mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    
+    &:hover {
+      color: #0f172a;
+      background: #f8fafc;
+      border-radius: 6px 6px 0 0;
+    }
+    
+    &.active {
+      color: #003747;
+      border-bottom-color: #003747;
+      background: transparent;
+      font-weight: 600;
+    }
+  }
+}

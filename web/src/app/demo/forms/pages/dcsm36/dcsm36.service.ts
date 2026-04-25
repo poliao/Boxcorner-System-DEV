@@ -55,6 +55,10 @@ export class Dcsm36Service {
     return this.http.post<any>(`${this.apiUrl}/qc/complete`, data);
   }
 
+  partialQc(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/qc/partial`, data);
+  }
+
   getByIdProductionJob(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/production-job/getById?id=${id}`);
   }

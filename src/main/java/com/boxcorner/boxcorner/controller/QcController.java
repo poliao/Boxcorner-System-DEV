@@ -104,4 +104,31 @@ public class QcController {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }
     }
+
+    @PostMapping("/partial")
+    public ResponseEntity<?> partialQc(@RequestBody CompleteQcRequest request) {
+        try {
+            return ResponseEntity.ok(qcService.partialQc(
+                    request.getId(),
+                    request.getPassedQty(),
+                    request.getBundlesPerPack(),
+                    request.getBoxesPerBundle(),
+                    request.getPassedQtyFraction(),
+                    request.getBundlesPerPackFraction(),
+                    request.getPiecesFraction(),
+                    request.getStaffList(),
+                    request.getWasteReportList(),
+                    request.getQcColorMatch(),
+                    request.getQcColorConsistency(),
+                    request.getQcInkResidue(),
+                    request.getQcInkTransfer(),
+                    request.getQcStains(),
+                    request.getQcAlignment(),
+                    request.getQcScratches(),
+                    request.getQcMixedJobs(),
+                    request.getQcCaution()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
+    }
 }

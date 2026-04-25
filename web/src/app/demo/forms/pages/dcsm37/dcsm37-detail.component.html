@@ -59,13 +59,38 @@
     </div>
   </div>
 
-  <!-- ===== PRODUCTION ROUNDS ===== -->
-  <div class="mb-2 fw-bold" style="color:#003747; font-size:1.05rem;">
-    <mat-icon style="vertical-align:middle; margin-right:6px;">repeat</mat-icon>
-    ประวัติการสั่งผลิต ({{ data.productionRounds?.length || 0 }} รอบ)
-  </div>
+  <!-- ===== TABS NAVIGATION ===== -->
+  <ul class="nav nav-tabs custom-tabs mb-4">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'print'" (click)="activeTab = 'print'">
+        <mat-icon>print</mat-icon> งานพิมพ์ ({{ data.productionRounds?.length || 0 }})
+      </button>
+    </li>
+    <li class="nav-item" *ngIf="data.coatingJob">
+      <button class="nav-link" [class.active]="activeTab === 'coating'" (click)="activeTab = 'coating'">
+        <mat-icon>layers</mat-icon> งานเคลือบ
+      </button>
+    </li>
+    <li class="nav-item" *ngIf="data.stampingLogs?.length > 0">
+      <button class="nav-link" [class.active]="activeTab === 'stamping'" (click)="activeTab = 'stamping'">
+        <mat-icon>content_cut</mat-icon> งานปั๊ม/ตัด ({{ data.stampingLogs.length }})
+      </button>
+    </li>
+    <li class="nav-item" *ngIf="data.qcJob">
+      <button class="nav-link" [class.active]="activeTab === 'qc'" (click)="activeTab = 'qc'">
+        <mat-icon>verified</mat-icon> QC
+      </button>
+    </li>
+    <li class="nav-item" *ngIf="data.trackingJobs && data.trackingJobs.length > 0">
+      <button class="nav-link" [class.active]="activeTab === 'tracking'" (click)="activeTab = 'tracking'">
+        <mat-icon>local_shipping</mat-icon> ประวัติการจัดส่ง ({{ data.trackingJobs.length }})
+      </button>
+    </li>
+  </ul>
 
-  <div *ngFor="let round of data.productionRounds; let i = index" class="mb-3">
+  <!-- ===== TAB CONTENT: PRINT (PRODUCTION ROUNDS) ===== -->
+  <div *ngIf="activeTab === 'print'">
+    <div *ngFor="let round of data.productionRounds; let i = index" class="mb-3">
     <!-- Round Header (Accordion) -->
     <div class="card border-0 shadow-sm">
       <div class="card-header d-flex align-items-center justify-content-between" [style.background]="round.jobStatus === 'ยกเลิก' || round.processStatus === 'ยกเลิก' ? '#fee2e2'
@@ -382,13 +407,16 @@
     </div><!-- /card -->
   </div><!-- /round loop -->
 
-  <!-- ===== COATING ===== -->
-  <div class="card border-0 shadow-sm mb-3" *ngIf="data.coatingJob">
-    <div class="card-header fw-bold" style="background:#10b981;color:#fff">
-      <mat-icon class="me-2" style="vertical-align:middle">layers</mat-icon>
-      เคลือบ (Coating)
-      <span class="ms-2 badge bg-light text-dark">{{ data.coatingJob.status || '-' }}</span>
-    </div>
+  </div><!-- /tab-content: print -->
+
+  <!-- ===== TAB CONTENT: COATING ===== -->
+  <div *ngIf="activeTab === 'coating'">
+    <div class="card border-0 shadow-sm mb-3" *ngIf="data.coatingJob">
+      <div class="card-header fw-bold" style="background:#10b981;color:#fff">
+        <mat-icon class="me-2" style="vertical-align:middle">layers</mat-icon>
+        เคลือบ (Coating)
+        <span class="ms-2 badge bg-light text-dark">{{ data.coatingJob.status || '-' }}</span>
+      </div>
     <div class="card-body">
       <div class="row g-3 mb-3">
         <div class="col-md-3">
@@ -443,13 +471,15 @@
       </div>
     </div>
   </div>
+  </div><!-- /tab-content: coating -->
 
-  <!-- ===== STAMPING ===== -->
-  <div class="card border-0 shadow-sm mb-3" *ngIf="data.stampingLogs?.length > 0">
-    <div class="card-header fw-bold" style="background:#ef4444;color:#fff">
-      <mat-icon class="me-2" style="vertical-align:middle">content_cut</mat-icon>
-      ปั๊ม/ตัด ({{ data.stampingLogs.length }} รายการ)
-    </div>
+  <!-- ===== TAB CONTENT: STAMPING ===== -->
+  <div *ngIf="activeTab === 'stamping'">
+    <div class="card border-0 shadow-sm mb-3" *ngIf="data.stampingLogs?.length > 0">
+      <div class="card-header fw-bold" style="background:#ef4444;color:#fff">
+        <mat-icon class="me-2" style="vertical-align:middle">content_cut</mat-icon>
+        ปั๊ม/ตัด ({{ data.stampingLogs.length }} รายการ)
+      </div>
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-sm table-bordered">
@@ -483,47 +513,60 @@
       </div>
     </div>
   </div>
+  </div><!-- /tab-content: stamping -->
 
-  <!-- ===== QC ===== -->
-  <div class="card border-0 shadow-sm mb-4" *ngIf="data.qcJob">
-    <div class="card-header fw-bold" style="background:#8b5cf6;color:#fff">
-      <mat-icon class="me-2" style="vertical-align:middle">verified</mat-icon>
-      QC
-      <span class="ms-2 badge bg-light text-dark">{{ data.qcJob.status || '-' }}</span>
-    </div>
-    <div class="card-body">
-      <!-- QC Header Info -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
-                style="font-size:16px">info</mat-icon>ข้อมูลทั่วไป</div>
-            <div class="fw-bold text-dark">{{ data.qcJob.qcType || '-' }}</div>
-            <div class="text-secondary small">{{ data.qcJob.qcLocation || '-' }}</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
-                style="font-size:16px">category</mat-icon>ชื่อชิ้นส่วน</div>
-            <div class="fw-bold text-dark">{{ data.qcJob.partName || '-' }}</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
-                style="font-size:16px">calendar_today</mat-icon>วันที่เริ่ม QC</div>
-            <div class="fw-bold text-dark">{{ formatDate(data.qcJob.startQcDatetime) }}</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="p-3 border rounded h-100 bg-light">
-            <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1"
-                style="font-size:16px">event_available</mat-icon>กำหนดส่ง</div>
-            <div class="fw-bold text-dark">{{ formatDate(data.qcJob.deliveryDatetime) }}</div>
-          </div>
-        </div>
+  <!-- ===== TAB CONTENT: QC ===== -->
+  <div *ngIf="activeTab === 'qc'">
+    <!-- ===== QC ===== -->
+    <div class="card border-0 shadow-sm mb-4" *ngIf="data.qcJob">
+      <div class="card-header fw-bold" style="background:#8b5cf6;color:#fff">
+        <mat-icon class="me-2" style="vertical-align:middle">verified</mat-icon>
+        QC
+        <span class="ms-2 badge bg-light text-dark">{{ data.qcJob.status || '-' }}</span>
       </div>
+      <div class="card-body">
+      <!-- QC Header Info -->
+      <ng-container *ngIf="getQcStartEndSummary(data.qcJob) as qcSum">
+        <div class="row g-3 mb-4">
+          <div class="col-md-2">
+            <div class="p-3 border rounded h-100 bg-light">
+              <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">info</mat-icon>ข้อมูลทั่วไป</div>
+              <div class="fw-bold text-dark text-truncate" [title]="data.qcJob.qcType">{{ data.qcJob.qcType || '-' }}</div>
+              <div class="text-secondary small text-truncate" [title]="data.qcJob.qcLocation">{{ data.qcJob.qcLocation || '-' }}</div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="p-3 border rounded h-100 bg-light">
+              <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">category</mat-icon>ชื่อชิ้นส่วน</div>
+              <div class="fw-bold text-dark text-truncate" [title]="data.qcJob.partName">{{ data.qcJob.partName || '-' }}</div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="p-3 border rounded h-100 bg-light border-start-3 border-info">
+              <div class="text-info small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">play_circle</mat-icon>เวลาเริ่มจริง</div>
+              <div class="fw-bold text-dark">{{ formatDateTime(qcSum.start) }}</div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="p-3 border rounded h-100 bg-light border-start-3 border-success">
+              <div class="text-success small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">check_circle</mat-icon>เวลาจบจริง</div>
+              <div class="fw-bold text-dark">{{ formatDateTime(qcSum.end) }}</div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="p-3 border rounded h-100 bg-light border-start-3 border-primary">
+              <div class="text-primary small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">timer</mat-icon>รวมเวลาทำงาน</div>
+              <div class="fw-bold fs-5 text-primary">{{ qcSum.hours }}</div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="p-3 border rounded h-100 bg-light">
+              <div class="text-muted small fw-bold mb-1"><mat-icon class="align-middle me-1" style="font-size:16px">event_available</mat-icon>กำหนดส่ง</div>
+              <div class="fw-bold text-dark">{{ formatDate(data.qcJob.deliveryDatetime) }}</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
 
       <div class="row g-3 mb-4">
         <!-- Input Info -->
@@ -710,9 +753,110 @@
           </table>
         </div>
       </div>
-
     </div>
   </div>
+  </div><!-- /tab-content: qc -->
+
+  <!-- ===== TAB CONTENT: TRACKING (DELIVERY HISTORY) ===== -->
+  <div *ngIf="activeTab === 'tracking'">
+    <div class="card border-0 shadow-sm mb-4" *ngFor="let track of data.trackingJobs; let i = index">
+      <div class="card-header fw-bold" style="background:#0f766e;color:#fff">
+        <mat-icon class="me-2" style="vertical-align:middle">local_shipping</mat-icon>
+        ชิ้นส่วนที่ {{ i+1 }} : {{ track.partName || '-' }}
+        <span class="badge bg-light text-dark ms-2">ยอดผลิต: {{ track.productionQuantity | number }}</span>
+      </div>
+      <div class="card-body">
+        
+        <div class="row g-3 mb-3">
+          <div class="col-md-3">
+            <div class="p-2 border rounded bg-light text-center h-100 border-start border-3 border-secondary">
+              <div class="small text-muted fw-bold">สถานะงานพิมพ์</div>
+              <div class="fw-bold">{{ track.printStatus || '-' }}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="p-2 border rounded bg-light text-center h-100 border-start border-3 border-success">
+              <div class="small text-muted fw-bold">สถานะจัดส่ง</div>
+              <div class="fw-bold">{{ track.deliveryStatus || '-' }}</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="p-2 border rounded bg-light text-center h-100">
+              <div class="small text-muted fw-bold">วันที่ต้องส่งมอบ</div>
+              <div class="fw-bold">{{ formatDate(track.dueDate) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive mt-4">
+          <table class="table table-bordered table-hover align-middle m-0 text-center">
+            <thead class="table-light">
+              <tr>
+                <th>ขั้นตอน</th>
+                <th>สถานที่จัดส่ง / ผู้รับผิดชอบ</th>
+                <th>วันที่จัดส่ง</th>
+                <th>ยอดจัดส่ง</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Print -->
+              <tr>
+                <td class="fw-bold text-start"><span class="badge bg-secondary me-2">1</span>งานพิมพ์</td>
+                <td>{{ track.printingResponsible || '-' }}</td>
+                <td>{{ formatDate(track.printingDate) }}</td>
+                <td>{{ track.printQuantity | number }}</td>
+              </tr>
+              <!-- Coating -->
+              <tr>
+                <td class="fw-bold text-start"><span class="badge bg-secondary me-2">2</span>งานเคลือบ</td>
+                <td>
+                  <div *ngIf="track.coatingLocation"><strong>ที่:</strong> {{ track.coatingLocation }}</div>
+                  <div *ngIf="track.coatingResponsible"><strong>ผู้รับผิดชอบ:</strong> {{ track.coatingResponsible }}</div>
+                  <div *ngIf="!track.coatingLocation && !track.coatingResponsible">-</div>
+                </td>
+                <td>{{ formatDate(track.coatingDate) }}</td>
+                <td>{{ track.coatingQty | number }}</td>
+              </tr>
+              <!-- Stamping -->
+              <tr>
+                <td class="fw-bold text-start"><span class="badge bg-secondary me-2">3</span>งานปั๊ม</td>
+                <td>
+                  <div *ngIf="track.stampingLocation"><strong>ที่:</strong> {{ track.stampingLocation }}</div>
+                  <div *ngIf="track.stampingResponsible"><strong>ผู้รับผิดชอบ:</strong> {{ track.stampingResponsible }}</div>
+                  <div *ngIf="!track.stampingLocation && !track.stampingResponsible">-</div>
+                </td>
+                <td>{{ formatDate(track.stampingDate) }}</td>
+                <td>{{ track.stampingQty | number }}</td>
+              </tr>
+              <!-- Gluing -->
+              <tr>
+                <td class="fw-bold text-start"><span class="badge bg-secondary me-2">4</span>งานปะ</td>
+                <td>
+                  <div *ngIf="track.gluingLocation"><strong>ที่:</strong> {{ track.gluingLocation }}</div>
+                  <div *ngIf="track.gluingResponsible"><strong>ผู้รับผิดชอบ:</strong> {{ track.gluingResponsible }}</div>
+                  <div *ngIf="!track.gluingLocation && !track.gluingResponsible">-</div>
+                </td>
+                <td>{{ formatDate(track.gluingDate) }}</td>
+                <td>{{ track.gluingQty | number }}</td>
+              </tr>
+              <!-- QC -->
+              <tr>
+                <td class="fw-bold text-start"><span class="badge bg-secondary me-2">5</span>QC</td>
+                <td>
+                  <div *ngIf="track.qcLocation"><strong>ที่:</strong> {{ track.qcLocation }}</div>
+                  <div *ngIf="track.qcType"><strong>ประเภท:</strong> {{ track.qcType }}</div>
+                  <div *ngIf="!track.qcLocation && !track.qcType">-</div>
+                </td>
+                <td>{{ formatDate(track.qcDate) }}</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /tab-content: tracking -->
 
 </ng-container>
 

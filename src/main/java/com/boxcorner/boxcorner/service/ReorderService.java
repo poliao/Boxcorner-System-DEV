@@ -39,6 +39,7 @@ public class ReorderService {
     private final QcWasteReportRepository qcWasteReportRepo;
     private final PrintLogOsRepository printLogOsRepo;
     private final QcStaffRepository qcStaffRepo;
+    private final ProductionJobRepository productionJobRepo;
 
     public Page<ReorderDTO> search(String jobId, String folderName, String customerName,
             String jobOwner, String jobStatus, String processStatus,
@@ -861,6 +862,46 @@ public class ReorderService {
 
             result.setQcJob(qjs);
         });
+
+        // Tracking (Delivery Routing by Part)
+        List<ProductionJob> trackingList = productionJobRepo.findByJobIdOrderByIdAsc(jobId);
+        if (trackingList != null && !trackingList.isEmpty()) {
+            result.setTrackingJobs(trackingList.stream().map(pj -> {
+                JoHistoryDTO.TrackingSummary ts = new JoHistoryDTO.TrackingSummary();
+                ts.setId(pj.getId());
+                ts.setJobId(pj.getJobId());
+                ts.setPartName(pj.getPartName() != null && !pj.getPartName().isBlank() ? pj.getPartName() : "ชิ้นส่วนหลัก");
+                ts.setProductionQuantity(pj.getProductionQuantity());
+                ts.setPrintStatus(pj.getPrintStatus());
+                ts.setDeliveryStatus(pj.getDeliveryStatus());
+                ts.setDueDate(pj.getDueDate());
+
+                ts.setPrintingResponsible(pj.getPrintingResponsible());
+                ts.setPrintingDate(pj.getPrintingDate());
+                ts.setPrintQuantity(pj.getPrintQuantity());
+
+                ts.setCoatingResponsible(pj.getCoatingResponsible());
+                ts.setCoatingLocation(pj.getCoatingLocation());
+                ts.setCoatingDate(pj.getCoatingDate());
+                ts.setCoatingQty(pj.getCoatingQty());
+
+                ts.setStampingResponsible(pj.getStampingResponsible());
+                ts.setStampingLocation(pj.getStampingLocation());
+                ts.setStampingDate(pj.getStampingDate());
+                ts.setStampingQty(pj.getStampingQty());
+
+                ts.setGluingResponsible(pj.getGluingResponsible());
+                ts.setGluingLocation(pj.getGluingLocation());
+                ts.setGluingDate(pj.getGluingDate());
+                ts.setGluingQty(pj.getGluingQty());
+
+                ts.setQcLocation(pj.getQcLocation());
+                ts.setQcType(pj.getQcType());
+                ts.setQcDate(pj.getQcDate());
+
+                return ts;
+            }).collect(Collectors.toList()));
+        }
 
         return result;
     }
