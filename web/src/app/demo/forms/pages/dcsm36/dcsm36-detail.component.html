@@ -15,31 +15,38 @@
       </div>
     </div>
   </div>
-  <div class="col-12 col-md-6 text-md-end">
-    <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="jobHistory()"
+  <div class="col-12 col-md-6 d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
+    <button mat-stroked-button color="primary" class="rounded-pill px-3" (click)="jobHistory()"
       *ngIf="qcJobForm.get('reorderFromJoId')?.value != null">
-      <mat-icon class="me-2">restore_icon</mat-icon> ดูประวัติงาน
+      <mat-icon class="me-1">history</mat-icon> ประวัติ
     </button>
+
     <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="startQc()"
       *ngIf="qcJobForm.get('status')?.value === 'เข้าตรวจแล้ว'">
       <mat-icon class="me-2">play_arrow</mat-icon> เริ่ม QC
     </button>
+
+    <button mat-stroked-button color="primary" class="rounded-pill px-3" (click)="openSplitPrintModal()"
+      *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
+      <mat-icon class="me-1">splitscreen</mat-icon> แบ่ง QC
+    </button>
+
     <button mat-flat-button color="accent" class="rounded-pill px-4" (click)="completeQc()"
       *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
-      <mat-icon class="me-2">check_circle</mat-icon> ปิดจ๊อบ (QC แล้ว)
+      <mat-icon class="me-2">check_circle</mat-icon> ปิดจ๊อบ
     </button>
-    <button mat-flat-button color="primary" class="rounded-pill px-4 ms-2" (click)="openSplitPrintModal()"
-      *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
-      <mat-icon class="me-2">splitscreen</mat-icon> แบ่ง QC
-    </button>
-    <button mat-flat-button color="warn" class="rounded-pill px-4 ms-2" (click)="printPackageLabel()"
-      *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ' || qcJobForm.get('status')?.value === 'เสร็จสิ้น'">
-      <mat-icon class="me-2">local_shipping</mat-icon> พิมพ์ใบแปะหน้า
-    </button>
-    <mat-icon class="me-2" (click)="dowloadReportQc()" style="cursor: pointer;"
-      *ngIf="qcJobForm.get('status')?.value === 'เสร็จสิ้น'">get_app</mat-icon>
-    <mat-icon class="me-2" (click)="printReportQc()" style="cursor: pointer;"
-      *ngIf="qcJobForm.get('status')?.value === 'เสร็จสิ้น'">printer</mat-icon>
+
+
+    <div class="d-flex gap-1 ms-2">
+      <button mat-icon-button color="primary" (click)="dowloadReportQc()"
+        *ngIf="qcJobForm.get('status')?.value !== 'เข้าตรวจแล้ว'" title="ดาวน์โหลดรายงาน">
+        <mat-icon>get_app</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="printReportQc()" title="พิมพ์รายงาน"
+        *ngIf="qcJobForm.get('status')?.value !== 'เข้าตรวจแล้ว'">
+        <mat-icon>print</mat-icon>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -76,7 +83,8 @@
             </div>
             <div class="col-12 col-md-4 col-lg-2">
               <label class="form-label fw-bold">จำนวนห่อเต็ม</label>
-              <input type="text" class="form-control bg-light text-success fw-bold" formControlName="passedQty" readonly>
+              <input type="text" class="form-control bg-light text-success fw-bold" formControlName="passedQty"
+                readonly>
             </div>
             <div class="col-12 col-md-4 col-lg-2">
               <label class="form-label fw-bold">จำนวนแพคต่อห่อเต็ม</label>
