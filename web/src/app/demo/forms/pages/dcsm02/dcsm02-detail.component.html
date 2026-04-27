@@ -174,7 +174,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeApproveModal()">ยกเลิก</button>
         <button type="button" class="btn btn-success" (click)="confirmApprove()"
-          [disabled]="jobId.invalid || approveDate.invalid || approveTime.invalid || (isCreateSample.value && (approveQty.invalid || approveUnit.invalid ))">
+          [disabled]="approveDate.invalid || approveTime.invalid || (isCreateSample.value && (approveQty.invalid || approveUnit.invalid ))">
           ยืนยันอนุมัติ
         </button>
       </div>
@@ -215,13 +215,6 @@
         <button type="button" class="btn-close" (click)="closeApproveProductModal()"></button>
       </div>
       <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-        <div class="row mb-3">
-          <div class="col-6">
-            <label class="form-label font-weight-bold">รหัสงาน<span style="color: red;">*</span></label>
-            <input type="text" class="form-control" [formControl]="jobId"
-              [class.is-invalid]="jobId.invalid && jobId.touched">
-          </div>
-        </div>
         <div class="row mb-3">
           <div class="col-6">
             <label class="form-label font-weight-bold">ใช้ไฟล์<span style="color: red;">*</span></label>
