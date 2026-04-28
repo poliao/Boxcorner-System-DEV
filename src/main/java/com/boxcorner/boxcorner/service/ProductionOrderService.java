@@ -74,6 +74,7 @@ public class ProductionOrderService {
             existingOrder.setPrintJobId(productionOrder.getPrintJobId());
             existingOrder.setIsNewProof(productionOrder.getIsNewProof());
             existingOrder.setCustomerFeedback(productionOrder.getCustomerFeedback());
+            existingOrder.setIsProductionApproved(productionOrder.getIsProductionApproved());
 
             return productionOrderRepository.save(existingOrder);
         } else {

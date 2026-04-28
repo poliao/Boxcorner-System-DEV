@@ -25,6 +25,11 @@
       *ngIf="qcJobForm.get('status')?.value === 'เข้าตรวจแล้ว'">
       <mat-icon class="me-2">play_arrow</mat-icon> เริ่ม QC
     </button>
+    
+    <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="startQc()"
+      *ngIf="qcJobForm.get('status')?.value === 'แบ่งส่ง'">
+      <mat-icon class="me-2">play_arrow</mat-icon> แบ่งส่ง
+    </button>
 
     <button mat-stroked-button color="primary" class="rounded-pill px-3" (click)="openSplitPrintModal()"
       *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
@@ -384,7 +389,7 @@
 <div class="modal-overlay" *ngIf="isStartModalOpen">
   <div class="modal-container" style="max-width: 500px;">
     <div class="modal-header">
-      <h5 class="mb-0">เริ่ม QC</h5>
+      <h5 class="mb-0">{{ qcJobForm.get('status')?.value === 'แบ่งส่ง' ? 'แบ่งส่ง' : 'เริ่ม QC' }}</h5>
       <button type="button" class="btn-close" (click)="closeStartModal()"></button>
     </div>
     <div class="modal-body">
@@ -396,7 +401,7 @@
     </div>
     <div class="modal-footer">
       <button mat-button class="me-2" (click)="closeStartModal()">ยกเลิก</button>
-      <button mat-flat-button color="primary" (click)="onSubmitStart()">เริ่ม QC</button>
+      <button mat-flat-button color="primary" (click)="onSubmitStart()">{{ qcJobForm.get('status')?.value === 'แบ่งส่ง' ? 'แบ่งส่ง' : 'เริ่ม QC' }}</button>
     </div>
   </div>
 </div>

@@ -115,9 +115,8 @@ public class PrintJobController {
     @GetMapping("/findByProductionOrderId")
     public ResponseEntity<PrintJob> findByProductionOrderId(
             @RequestParam("productionOrderId") Integer productionOrderId) {
-        return printJobService.findByProductionOrderId(productionOrderId) != null
-                ? ResponseEntity.ok(printJobService.findByProductionOrderId(productionOrderId))
-                : ResponseEntity.notFound().build();
+        PrintJob job = printJobService.findByProductionOrderId(productionOrderId);
+        return ResponseEntity.ok(job);
     }
 
     @PatchMapping("/{id}/status")

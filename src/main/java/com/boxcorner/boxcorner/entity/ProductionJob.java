@@ -146,4 +146,7 @@ public class ProductionJob extends BaseEntity {
 
     @Column(name = "gluing_qty")
     private Integer gluingQty;
+
+    @Column(name = "is_split_delivery")
+    private Boolean isSplitDelivery;
 }

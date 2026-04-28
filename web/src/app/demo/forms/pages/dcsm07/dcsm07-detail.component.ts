@@ -203,6 +203,7 @@ export class Dcsm07DetailComponent implements OnInit {
       customerFeedback: [null],
       productionOrderId: [null],
       reorderFromJoId: [null],
+      isProductionApproved: [false],
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();

@@ -167,4 +167,7 @@ public class ProductionOrder extends BaseEntity {
 
     @Column(name = "customer_feedback", columnDefinition = "TEXT")
     private String customerFeedback;
+
+    @Column(name = "is_production_approved")
+    private Boolean isProductionApproved;
 }

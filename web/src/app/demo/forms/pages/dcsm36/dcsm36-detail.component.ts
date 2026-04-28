@@ -204,6 +204,10 @@ export class Dcsm36DetailComponent implements OnInit {
   }
 
   completeQc() {
+    if (this.qcJobForm.get('receivedQty')?.value == null) {
+      this.startQc();
+      return;
+    }
     this.isCompleteModalOpen = true;
     this.activeTab = 'staff';
     this.qcStaffList = [{ userName: null, totalPieces: null, packs: 0, packsFraction: 0, bundlesFraction: 0, piecesFraction: 0 }];
@@ -376,6 +380,10 @@ export class Dcsm36DetailComponent implements OnInit {
 
   // ─── แบ่ง QC (Partial QC) ───
   openSplitPrintModal() {
+    if (this.qcJobForm.get('receivedQty')?.value == null) {
+      this.startQc();
+      return;
+    }
     this.isPartialMode = true;
     this.modalBoxesPerBundle = this.qcJobForm.get('boxesPerBundle')?.value;
     this.modalBundlesPerPack = this.qcJobForm.get('bundlesPerPack')?.value;

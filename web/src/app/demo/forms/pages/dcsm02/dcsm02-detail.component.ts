@@ -551,7 +551,7 @@ export class Dcsm02DetailComponent implements OnInit {
       sampleOrderId: null,
       customerName: this.designForm.getRawValue().customerName,
       dataDalivery: false,
-      jobId: this.designForm.getRawValue().jobId,
+      jobId: this.ensureJobIdSuffix(this.designForm.getRawValue().jobId),
       decisionAuthority: this.decisionAuthority.value,
       decisionAuthorityRemarks: this.decisionAuthorityRemarks.value,
       print2Page: this.print2Page.value,

@@ -160,7 +160,8 @@ export class Dcsm06DetailComponent implements OnInit {
       printRoundPage2: [null],
       printJobId: [null],
       isNewProof: [false],
-      customerFeedback: [null]
+      customerFeedback: [null],
+      isProductionApproved: [false]
     });
     this.mainForm.get('sampleOrderId')?.disable();
     this.mainForm.get('id')?.disable();
@@ -467,31 +468,13 @@ export class Dcsm06DetailComponent implements OnInit {
         this.loadingService.show();
         const formData = this.mainForm.getRawValue();
         formData.processStatus = 'อนุมัติผลิตแล้ว';
+        formData.isProductionApproved = true;
         this.dcsm06Service.save(formData).subscribe({
           next: (response) => {
             this.loadingService.hide();
             this.patchFormData(response);
             this.isApprove = false;
 
-            // Sync with ProductionJob (Post-printing stages)
-            if (response.id) {
-              this.dcsm26Service.findByProductionOrderId(response.id).subscribe({
-                next: (printJob) => {
-                  if (printJob) {
-                    this.dcsm26Service.updatePrintJobStatus(printJob.id, 'อนุมัติผลิตแล้ว').subscribe({
-                      next: () => { },
-                      error: (err) => {
-                        console.error('Failed to update PrintJob status:', err);
-                        this.sweetAlert.error('เกิดข้อผิดพลาด', 'อนุมัติสำเร็จ แต่ไม่สามารถอัปเดตสถานะตาราง print_job ได้: ' + (err.error || err.message));
-                      }
-                    });
-                  }
-                },
-                error: (err) => {
-                  console.error('Failed to find PrintJob:', err);
-                }
-              });
-            }
 
             this.sweetAlert.success('อนุมัติสำเร็จ', 'อนุมัติผลิตเรียบร้อยแล้ว');
           },

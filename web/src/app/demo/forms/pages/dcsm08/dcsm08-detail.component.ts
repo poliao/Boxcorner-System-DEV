@@ -124,6 +124,7 @@ export class Dcsm08DetailComponent implements OnInit {
       customerFeedback: [null],
       productionOrderId: [null],
       reorderFromJoId: [null],
+      isProductionApproved: [false]
     });
     this.mainForm.get('id')?.disable();
     this.mainForm.get('orderDate')?.disable();
@@ -207,6 +208,7 @@ export class Dcsm08DetailComponent implements OnInit {
       diecutQtyObtained: [null],
       diecutSpecialInstructions: [null],
       imageUrl: [null],
+
     });
   }
 
@@ -608,5 +610,34 @@ export class Dcsm08DetailComponent implements OnInit {
 
   jobHistory() {
     this.router.navigate(['/Dcsm37Detail', this.mainForm.getRawValue().reorderFromJoId]);
+  }
+
+  onSendForFinalInspection() {
+    Swal.fire({
+      title: 'ยืนยันส่งตรวจ',
+      text: "ยืนยันส่งตรวจเพื่ออัปเดตข้อมูล ใช่หรือไม่?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.mainForm.get('processStatus')?.setValue('เสร็จสิ้น รอตรวจสอบ');
+        this.dcsm08Service.save(this.mainForm.getRawValue()).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            this.sweetAlert.success('ส่งตรวจสำเร็จ', 'ส่งข้อมูลไปให้ DCSM09 เรียบร้อยแล้ว');
+            this.router.navigate(['/Dcsm08']);
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('เกิดข้อผิดพลาด', error.error || 'ไม่สามารถส่งข้อมูลได้');
+          }
+        });
+      }
+    });
   }
 }

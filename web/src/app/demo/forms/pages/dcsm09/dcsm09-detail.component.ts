@@ -8,8 +8,12 @@ import { Dcsm26Service } from '../dcsm26/dcsm26.service';
 import { MatIconModule } from '@angular/material/icon';
 import { LoadingService } from 'src/app/demo/loadingservice/loading';
 import { SweetAlertService } from 'src/app/services/sweet-alert.service';
+import { Dcsm20Service } from '../dcsm20/dcsm20.service';
+import { Dcsm06Service } from '../dcsm06/dcsm06.service';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 @Component({
   selector: 'app-dcsm09-detail.component',
   imports: [ReactiveFormsModule, CommonModule, MatIconModule, FormsModule],
@@ -25,6 +29,7 @@ export class Dcsm09DetailComponent implements OnInit {
   isSendOrder = false;
   isSendFile = false;
   isDelivery = false;
+  isFinalReview = false;
   activeTab: string = 'authority';
 
   constructor(
@@ -35,7 +40,9 @@ export class Dcsm09DetailComponent implements OnInit {
     private loadingService: LoadingService,
     private sweetAlert: SweetAlertService,
     private authService: AuthService,
-    private dcsm26Service: Dcsm26Service
+    private dcsm26Service: Dcsm26Service,
+    private dcsm20Service: Dcsm20Service,
+    private dcsm06Service: Dcsm06Service
   ) { }
 
   ngOnInit(): void {
@@ -128,6 +135,8 @@ export class Dcsm09DetailComponent implements OnInit {
       qpId: [null],
       qcType: [null],
       qcLocation: [null],
+      printingMachine: [null, Validators.required],
+      printerName: [null, Validators.required],
       parts: this.fb.array([]),
       sampleJobType: [null],
       samplePrintingSystem: [null],
@@ -144,6 +153,7 @@ export class Dcsm09DetailComponent implements OnInit {
       printJobId: [null],
       isNewProof: [false],
       customerFeedback: [null],
+      isProductionApproved: [false],
       productionOrderId: [null],
       reorderFromJoId: [null],
     });
@@ -203,6 +213,7 @@ export class Dcsm09DetailComponent implements OnInit {
     const navigationState = {
       state: {
         referenceId: this.mainForm.getRawValue().id,
+        qpId: this.mainForm.getRawValue().qpId,
         decisionAuthority: this.mainForm.getRawValue().decisionAuthority,
         decisionAuthorityRemarks: this.mainForm.getRawValue().decisionAuthorityRemarks,
         print2Page: this.mainForm.getRawValue().print2Page,
@@ -228,6 +239,13 @@ export class Dcsm09DetailComponent implements OnInit {
   }
 
   checkBtn() {
+    this.isCheckMold = false;
+    this.isOrder = false;
+    this.isSendOrder = false;
+    this.isSendFile = false;
+    this.isDelivery = false;
+    this.isFinalReview = false;
+
     if (this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น รอตรวจสอบ') {
       this.isCheckMold = true;
       this.isOrder = false;
@@ -253,10 +271,6 @@ export class Dcsm09DetailComponent implements OnInit {
       this.isCheckMold = false;
       this.isDelivery = false;
     } else if ((this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' || this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น') && (this.mainForm.getRawValue().dataDalivery == false || this.mainForm.getRawValue().dataDalivery == null) && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
-      this.isSendFile = false;
-      this.isSendOrder = false;
-      this.isOrder = false;
-      this.isCheckMold = false;
       this.isDelivery = true;
     } else {
       this.isCheckMold = false;
@@ -264,6 +278,22 @@ export class Dcsm09DetailComponent implements OnInit {
       this.isSendOrder = false;
       this.isSendFile = false;
       this.isDelivery = false;
+    }
+
+    // Hide normal delivery button if it's a proofing job (it will use onFinalApproveProduction instead)
+    const decisionAuth = this.mainForm.getRawValue().decisionAuthority;
+    if (['customerOnSite', 'sampleToCustomer'].includes(decisionAuth)) {
+      this.isDelivery = false;
+
+      // Check for Final Review
+      this.dcsm26Service.findByProductionOrderId(this.mainForm.getRawValue().id).pipe(
+        catchError(() => of(null))
+      ).subscribe((printJob) => {
+        if (printJob && (printJob.jobStatus === 'อนุมัติผลิตแล้ว' || printJob.jobStatus === 'รอการอนุมัติผลิต') &&
+          (this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' || this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น')) {
+          this.isFinalReview = true;
+        }
+      });
     }
   }
 
@@ -399,76 +429,80 @@ export class Dcsm09DetailComponent implements OnInit {
   }
 
   updateSendFile() {
-    const apiFilters = {
-      id: this.mainForm.getRawValue().id,
-      processStatus: 'ส่งไฟล์แล้ว',
+    const rawData = this.mainForm.getRawValue();
+    const currentPrinter = rawData.printingMachine;
+    const isProductionApproved = rawData.isProductionApproved;
+
+    const proceedSave = (selectedPrinter: string) => {
+      this.loadingService.show();
+      this.mainForm.get('jobStatus')?.setValue('เสร็จสิ้น');
+      this.mainForm.get('processStatus')?.setValue('ส่งไฟล์แล้ว');
+      this.mainForm.get('printingMachine')?.setValue(selectedPrinter);
+      this.mainForm.get('printerName')?.setValue(selectedPrinter);
+
+      this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
+        next: (response) => {
+          const orderId = response.id;
+          const partsData = this.mainForm.getRawValue().parts;
+
+          this.dcsm09Service.saveParts(orderId, partsData).subscribe({
+            next: () => {
+              this.syncWithPrintJob(response, selectedPrinter);
+              this.patchFormData(response);
+              this.checkBtn();
+              this.loadingService.hide();
+              this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
+            },
+            error: (err) => {
+              this.loadingService.hide();
+              console.error('Error saving parts', err);
+              this.sweetAlert.warning('ยืนยันสำเร็จ แต่ไม่สามารถบันทึกข้อมูลชิ้นส่วนได้');
+            }
+          });
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
+          this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
+        }
+      });
     };
 
-    const data = {
-      id: this.mainForm.getRawValue().id,
-      jobStatus: 'เสร็จสิ้น',
-    };
+    if (isProductionApproved === true) {
+      proceedSave(currentPrinter || '');
+      return;
+    }
 
     Swal.fire({
       title: 'ยืนยันส่งไฟล์แล้ว',
-      text: "ยืนยันส่งไฟล์แล้ว ใช่หรือไม่?",
-      icon: 'warning',
+      html: `
+        <div class="mb-3 text-start">
+          <label class="form-label fw-bold small">เลือกเครื่องพิมพ์เพื่อบันทึกลงตารางงานพิมพ์</label>
+          <select id="printer-select" class="form-select">
+            <option value="">-- กรุณาเลือกเครื่องพิมพ์ --</option>
+            <option value="CD" ${currentPrinter === 'CD' ? 'selected' : ''}>CD</option>
+            <option value="SM" ${currentPrinter === 'SM' ? 'selected' : ''}>SM</option>
+            <option value="RM" ${currentPrinter === 'RM' ? 'selected' : ''}>RM</option>
+            <option value="BCA" ${currentPrinter === 'BCA' ? 'selected' : ''}>BCA</option>
+          </select>
+        </div>
+      `,
+      icon: 'info',
       showCancelButton: true,
       confirmButtonColor: '#1e1b4b',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'ยืนยัน',
-      cancelButtonText: 'ยกเลิก'
+      confirmButtonText: 'ยืนยันและบันทึก',
+      cancelButtonText: 'ยกเลิก',
+      preConfirm: () => {
+        const printer = (document.getElementById('printer-select') as HTMLSelectElement).value;
+        if (!printer) {
+          Swal.showValidationMessage('กรุณาเลือกเครื่องพิมพ์');
+        }
+        return printer;
+      }
     }).then((result) => {
       if (result.isConfirmed) {
-        this.loadingService.show();
-        this.mainForm.get('jobStatus')?.setValue('เสร็จสิ้น');
-        this.mainForm.get('processStatus')?.setValue('ส่งไฟล์แล้ว');
-
-        this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe({
-          next: (response) => {
-            const orderId = response.id;
-            const partsData = this.mainForm.getRawValue().parts;
-
-            this.dcsm09Service.saveParts(orderId, partsData).subscribe({
-              next: () => {
-                const formData = this.mainForm.getRawValue();
-                if (formData.isNewProof && formData.printJobId) {
-                  this.dcsm26Service.getById(formData.printJobId).subscribe((originalJob) => {
-                    if (originalJob) {
-                      const newJob = { ...originalJob };
-                      delete newJob.id;
-                      delete newJob.rowVersion;
-                      delete newJob.createdAt;
-                      delete newJob.updatedAt;
-                      newJob.jobStatus = 'รอพิมพ์';
-                      newJob.productionOrderId = response.id;
-                      this.dcsm26Service.save(newJob).subscribe({
-                        next: (res) => {
-                          this.mainForm.get('printJobId')?.setValue(res.id);
-                          this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe()
-                        },
-                      });
-                    }
-                  });
-                }
-                this.patchFormData(response);
-                this.checkBtn();
-                this.loadingService.hide();
-                this.sweetAlert.success('ยืนยันสำเร็จ', 'เรียบร้อย')
-              },
-              error: (err) => {
-                this.loadingService.hide();
-                console.error('Error saving parts', err);
-                this.sweetAlert.warning('ยืนยันสำเร็จ แต่ไม่สามารถบันทึกข้อมูลชิ้นส่วนได้');
-              }
-            });
-          },
-          error: (error) => {
-            this.loadingService.hide();
-            const msg = error.error || 'ไม่สามารถบันทึกข้อมูลได้';
-            this.sweetAlert.error('เกิดข้อผิดพลาด', msg);
-          }
-        });
+        proceedSave(result.value);
       }
     });
   }
@@ -491,4 +525,282 @@ export class Dcsm09DetailComponent implements OnInit {
     return timePart ? `${dateStr} ${timePart}` : dateStr;
   }
 
+  onFinalApproveProduction() {
+    Swal.fire({
+      title: 'ดำเนินการขั้นสุดท้าย',
+      html: `
+        <div class="mb-3 text-start">
+          <label class="form-label fw-bold small">ระบุเลขที่ใบสั่งผลิต (PAP ID)</label>
+          <input type="text" id="pap-id-input" class="form-control" value="${this.mainForm.get('qpId')?.value || ''}" placeholder="กรอก PAP ID">
+        </div>
+      `,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#1e1b4b',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ตกลง',
+      cancelButtonText: 'ยกเลิก',
+      preConfirm: () => {
+        const papId = (document.getElementById('pap-id-input') as HTMLInputElement).value;
+        if (!papId) {
+          Swal.showValidationMessage('กรุณาระบุ PAP ID');
+        }
+        return papId;
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const papIdInput = result.value;
+        const selectedPrinter = this.mainForm.get('printingMachine')?.value;
+        this.loadingService.show();
+
+        // Update qpId and jobStatus in form
+        this.mainForm.get('qpId')?.setValue(papIdInput);
+        this.mainForm.get('jobStatus')?.setValue('อนุมัติผลิตแล้ว');
+        this.mainForm.get('isProductionApproved')?.setValue(true);
+        this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe();
+
+        // 1. Fetch PAP Data
+        this.dcsm20Service.getJobPAP(papIdInput).subscribe({
+          next: (papResponses: any[]) => {
+            if (papResponses && papResponses.length > 0) {
+              const papData = papResponses[0]; // Take the first one if multiple
+
+              // Override printer from user selection
+              if (papData.printing) {
+                papData.printing.machine = selectedPrinter;
+              }
+
+              // 2. Save PAP Order
+              this.dcsm20Service.savePapOrder(papData).subscribe((savedPap) => {
+
+                // 3. Update DCSM26 status and details
+                const formData = this.mainForm.getRawValue();
+                this.dcsm26Service.findByProductionOrderId(formData.id).subscribe((printJob) => {
+                  if (printJob) {
+                    const updatedJob = {
+                      ...printJob,
+                      jobStatus: 'อนุมัติผลิตแล้ว',
+                      jobId: papData.header.jobCode || formData.jobId || formData.qpId,
+                      customerJobName: papData.header.jobName + ' - ' + papData.header.customerName,
+                      totalPrintSheets: papData.cutting.paper.printQty,
+                      productionQty: papData.header.totalPrintQty,
+                      deliveryDate: formData.sampleDeliveryTimestamp ? formData.sampleDeliveryTimestamp.split('T')[0] : this.convertPapDate(papData.header.deliveryDate),
+                      deliveryTime: formData.sampleDeliveryTimestamp ? formData.sampleDeliveryTimestamp.split('T')[1]?.substring(0, 5) : null,
+                      printerName: papData.printing.machine === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : papData.printing.machine,
+                      decisionAuthority: formData.decisionAuthority,
+                      decisionAuthorityRemarks: formData.decisionAuthorityRemarks,
+                      sampleJobType: formData.sampleJobType,
+                      samplePrintingSystem: formData.samplePrintingSystem,
+                      samplePrintingStyle: formData.samplePrintingStyle,
+                      samplePrintingColor: formData.samplePrintingColor,
+                      samplePaperSize: formData.samplePaperSize,
+                      samplePaperGrammage: formData.samplePaperGrammage,
+                      sampleCoatingStyle: formData.sampleCoatingStyle,
+                      sampleDiecutStyle: formData.sampleDiecutStyle,
+                      sampleSpecialInstructions: formData.sampleSpecialInstructions,
+                      sampleDeliveryTimestamp: formData.sampleDeliveryTimestamp,
+                      print2Page: formData.print2Page,
+                      reorderFromJoId: formData.reorderFromJoId,
+                      machineSetupCount: papData.printing.setupWaste ? papData.printing.setupWaste.toString() : null,
+                      setupWaste: papData.printing.setupWaste
+                    };
+                    this.dcsm26Service.save(updatedJob).subscribe();
+                  }
+                });
+
+                // 4. Create ProductionJobs (Dcsm20 records) for each part
+                const parts = this.parts.length > 0 ? this.mainForm.getRawValue().parts : [{ partName: null }];
+                const savePromises = parts.map((part: any) => {
+                  const prodJob = {
+                    date: new Date().toISOString().substring(0, 10),
+                    jobId: papData.header.jobCode,
+                    customerJobName: papData.header.jobName + ' - ' + papData.header.customerName,
+                    printQuantity: papData.cutting.paper.printQty,
+                    productionQuantity: papData.header.totalPrintQty,
+                    printingDate: this.convertPapDate(papData.printing.scheduledDate),
+                    printingResponsible: papData.printing.machine === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : papData.printing.machine,
+                    coatingDate: this.convertPapDate(papData.coating.scheduledDate),
+                    coatingResponsible: papData.coating.location === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : papData.coating.location,
+                    stampingDate: this.convertPapDate(papData.dieCutting.dieCutDeadline),
+                    stampingResponsible: papData.dieCutting.location === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : papData.dieCutting.location,
+                    gluingDate: this.convertPapDate(papData.gluing.scheduledDate),
+                    gluingResponsible: papData.gluing.location === 'บ็อกซ์คอร์เนอร์อาร์ต' ? 'BCA' : papData.gluing.location,
+                    qcDate: this.convertPapDate(papData.qcAndDelivery.scheduledDate),
+                    dueDate: this.convertPapDate(papData.header.deliveryDate),
+                    imageUrl: papData.header.imageUrl,
+                    papOrderId: savedPap.id,
+                    productionOrderId: this.mainForm.getRawValue().id,
+                    partName: part.partName,
+                    qcType: this.mainForm.getRawValue().qcType,
+                    qcLocation: this.mainForm.getRawValue().qcLocation,
+                    machineSetupCount: papData.printing.setupWaste ? papData.printing.setupWaste.toString() : null
+                  };
+                  return this.dcsm20Service.save(prodJob).toPromise();
+                });
+
+                Promise.all(savePromises).then(() => {
+                  // 5. Update dataDalivery status in Dcsm09
+                  this.dcsm20Service.updateDataDalivery({ id: this.mainForm.getRawValue().id }).subscribe(() => {
+                    this.loadingService.hide();
+                    this.sweetAlert.success('ดำเนินการสำเร็จ', 'ดึงข้อมูล PAP และสร้างตารางจัดส่งเรียบร้อยแล้ว');
+                    this.router.navigate(['/Dcsm20']);
+                  });
+                }).catch(err => {
+                  this.loadingService.hide();
+                  this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลจัดส่งได้');
+                });
+              });
+            } else {
+              this.loadingService.hide();
+              this.sweetAlert.error('ไม่พบข้อมูล', 'ไม่พบใบงานสำหรับ QPId นี้ในระบบ PAP');
+            }
+          },
+          error: (err) => {
+            this.loadingService.hide();
+            this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อระบบ PAP ได้');
+          }
+        });
+      }
+    });
+  }
+
+  private convertPapDate(dateStr: string): string | null {
+    if (!dateStr || dateStr === '-') return null;
+
+    // Handle date ranges (e.g., "27/04/2026-28/04/2026") - Take the first date
+    let cleanDate = dateStr.trim();
+    if (cleanDate.includes('-') && !cleanDate.includes(' ')) {
+      // Simple range like 27/04/2026-28/04/2026
+      cleanDate = cleanDate.split('-')[0];
+    } else if (cleanDate.includes(' - ')) {
+      // Range with spaces like 27/04/2026 - 28/04/2026
+      cleanDate = cleanDate.split(' - ')[0];
+    }
+
+    if (cleanDate.includes('/')) {
+      const parts = cleanDate.split('/');
+      if (parts.length === 3) {
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2];
+        const yearNum = parseInt(year);
+        const convertedYear = yearNum > 2500 ? (yearNum - 543).toString() : year;
+        return `${convertedYear}-${month}-${day}`;
+      }
+    }
+
+    const thaiMonths: { [key: string]: string } = {
+      'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03', 'เม.ย.': '04',
+      'พ.ค.': '05', 'มิ.ย.': '06', 'ก.ค.': '07', 'ส.ค.': '08',
+      'ก.ย.': '09', 'ต.ค.': '10', 'พ.ย.': '11', 'ธ.ค.': '12'
+    };
+
+    const parts = cleanDate.split(' ');
+    if (parts.length === 3) {
+      const day = parts[0].padStart(2, '0');
+      const month = thaiMonths[parts[1]];
+      let year = parts[2];
+      const yearNum = parseInt(year);
+      if (yearNum > 2500) {
+        year = (yearNum - 543).toString();
+      }
+      if (month && year) {
+        return `${year}-${month}-${day}`;
+      }
+    }
+
+    // If it's already in YYYY-MM-DD format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(cleanDate)) {
+      return cleanDate;
+    }
+
+    return null; // Return null instead of invalid string to prevent backend 400/403 errors
+  }
+
+  private syncWithPrintJob(response: any, printerName?: string) {
+    const formData = this.mainForm.getRawValue();
+
+    // Helper to extract date and time from timestamp
+    const extractDateTime = (job: any, timestamp: string) => {
+      if (timestamp && timestamp.includes('T')) {
+        const [date, time] = timestamp.split('T');
+        job.deliveryDate = date;
+        job.deliveryTime = time;
+      }
+    };
+    console.log('formData', formData);
+
+    if (formData.isNewProof && formData.printJobId) {
+      console.log('new proof true', response);
+
+      this.dcsm26Service.getById(formData.printJobId).subscribe((originalJob) => {
+        console.log('originalJob', originalJob);
+        if (originalJob) {
+          const newJob = { ...originalJob };
+          delete newJob.id;
+          delete newJob.rowVersion;
+          delete newJob.createdAt;
+          delete newJob.updatedAt;
+          newJob.jobStatus = 'รอพิมพ์';
+          newJob.productionOrderId = response.id;
+          if (printerName) newJob.printerName = printerName;
+          extractDateTime(newJob, formData.sampleDeliveryTimestamp);
+
+          this.dcsm26Service.save(newJob).subscribe({
+            next: (res) => {
+              this.mainForm.get('printJobId')?.setValue(res.id);
+              this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe()
+            },
+          });
+        }
+      });
+    } else if (['customerOnSite', 'sampleToCustomer'].includes(formData.decisionAuthority)) {
+      // Automatic send to DCSM26 for proofing
+      this.dcsm26Service.findByProductionOrderId(response.id).pipe(
+        catchError(() => of(null))
+      ).subscribe((existingJob) => {
+        if (!existingJob) {
+          const newJob: any = {
+            jobId: formData.jobId || formData.qpId,
+            customerJobName: formData.folderName,
+            productionOrderId: response.id,
+            jobStatus: 'รอพิมพ์',
+            printerName: printerName,
+            issample: true,
+            decisionAuthority: formData.decisionAuthority,
+            decisionAuthorityRemarks: formData.decisionAuthorityRemarks,
+            sampleJobType: formData.sampleJobType,
+            samplePrintingSystem: formData.samplePrintingSystem,
+            samplePrintingStyle: formData.samplePrintingStyle,
+            samplePrintingColor: formData.samplePrintingColor,
+            samplePaperSize: formData.samplePaperSize,
+            samplePaperGrammage: formData.samplePaperGrammage,
+            sampleCoatingStyle: formData.sampleCoatingStyle,
+            sampleDiecutStyle: formData.sampleDiecutStyle,
+            sampleSpecialInstructions: formData.sampleSpecialInstructions,
+            sampleDeliveryTimestamp: formData.sampleDeliveryTimestamp,
+            print2Page: formData.print2Page,
+            reorderFromJoId: formData.reorderFromJoId
+          };
+          extractDateTime(newJob, formData.sampleDeliveryTimestamp);
+          this.dcsm26Service.save(newJob).subscribe();
+        } else {
+          if (printerName) existingJob.printerName = printerName;
+          extractDateTime(existingJob, formData.sampleDeliveryTimestamp);
+          this.dcsm26Service.save(existingJob).subscribe();
+        }
+      });
+    } else {
+      // Normal Job: Update existing print job printer and date
+      this.dcsm26Service.findByProductionOrderId(response.id).pipe(
+        catchError(() => of(null))
+      ).subscribe((existingJob) => {
+        if (existingJob) {
+          if (printerName) existingJob.printerName = printerName;
+          extractDateTime(existingJob, formData.sampleDeliveryTimestamp);
+          this.dcsm26Service.save(existingJob).subscribe();
+        }
+      });
+    }
+  }
 }

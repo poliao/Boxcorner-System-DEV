@@ -19,8 +19,8 @@
             class="btn text-white px-5 shadow-sm" style="background-color: #2ace24;">
             ส่งไฟล์แล้ว
           </button>
-          <button *ngIf="isDelivery == true" class="btn text-white px-5 shadow-sm" type="button" (click)="add()"
-            style="background-color: #00b7c4;">
+          <button *ngIf="isDelivery || isFinalReview" class="btn text-white px-5 shadow-sm" type="button"
+            (click)="add()" style="background-color: #00b7c4;">
             เพิ่มข้อมูลไปตารางจัดส่ง
           </button>
         </div>

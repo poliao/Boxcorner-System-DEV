@@ -86,7 +86,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state || history.state;
     console.log('DCSM20: Received navigation state:', state);
-    
+
     if (state?.referenceId) {
       this.referenceId = state.referenceId;
       this.decisionAuthority = state.decisionAuthority;
@@ -290,10 +290,10 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
         cancelButtonText: 'ยกเลิก',
       }).then((result) => {
         if (result.isConfirmed) {
-          if(this.qcType != null || this.qcType != ''){
+          if (this.qcType != null || this.qcType != '') {
             this.productionForm.get('qcType')?.setValue(this.qcType);
           }
-          
+
           this.loadingService.show();
           this.papOrder.printing.machine = this.productionForm.getRawValue().printingResponsible
           this.papOrder.coating.location = this.productionForm.getRawValue().coatingResponsible
@@ -640,6 +640,16 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       printRoundPage2: this.printRoundPage2,
       reorderFromJoId: this.reorderFromJoId
     }
+
+    this.dcsm06Service.getById(this.referenceId).subscribe((prodOrder) => {
+      console.log(prodOrder);
+      if (prodOrder.printJobId != null && prodOrder.printJobId != '' && prodOrder.isProductionApproved == true) {
+        DataJob.id = prodOrder.printJobId;
+        DataJob.jobStatus = 'อนุมัติผลิตแล้ว';
+      }
+    })
+    console.log('ข้อมูลที่จะ save', DataJob);
+
     return this.dcsm20Service.savePrintJob(DataJob);
   }
 

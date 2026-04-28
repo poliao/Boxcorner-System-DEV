@@ -195,6 +195,11 @@ export class Dcsm20DetailComponent implements OnInit {
       coatingQty: [null],
       stampingQty: [null],
       gluingQty: [null],
+      isSplitDelivery: [false],
+      partName: [null],
+      reorderFromJoId: [null],
+      qcStatus: [null],
+      printingRecordId: [null],
     });
     this.productionForm.get('printStatus')?.disable();
     this.productionForm.get('deliveryStatus')?.disable();
@@ -354,7 +359,9 @@ export class Dcsm20DetailComponent implements OnInit {
               if (res.isConfirmed && res.value && this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
                 const qty = parseInt(res.value, 10);
                 this.productionForm.get('printStatus')?.setValue('กำลังQc');
-                this.saveQcJob(qty);
+                if (this.productionForm.getRawValue().isSplitDelivery !== true) {
+                  this.saveQcJob(qty);
+                }
                 this.performStatusUpdate();
               }
             });
@@ -560,7 +567,9 @@ export class Dcsm20DetailComponent implements OnInit {
         if (this.productionForm.getRawValue().qcType == 'ปะมือ+Qc' || this.productionForm.getRawValue().qcType == 'ปะเครื่อง+Qc') {
           if (this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
             this.productionForm.get('printStatus')?.setValue('กำลังปะ');
-            this.saveQcJob(qty);
+            if (this.productionForm.getRawValue().isSplitDelivery !== true) {
+              this.saveQcJob(qty);
+            }
             this.performStatusUpdate();
             return;
           }
@@ -570,7 +579,9 @@ export class Dcsm20DetailComponent implements OnInit {
         if (this.productionForm.getRawValue().qcType == 'ปะมือ+Qc' || this.productionForm.getRawValue().qcType == 'ปะเครื่อง+Qc') {
           if (this.productionForm.getRawValue().qcLocation != 'ไม่ส่งQC') {
             this.productionForm.get('printStatus')?.setValue('ส่งQc');
-            this.saveQcJob(qty);
+            if (this.productionForm.getRawValue().isSplitDelivery !== true) {
+              this.saveQcJob(qty);
+            }
             this.performStatusUpdate();
             return;
           }
@@ -590,15 +601,39 @@ export class Dcsm20DetailComponent implements OnInit {
     this.performStatusUpdate();
   }
 
-  saveQcJob(receivedQty: number) {
+  saveQcJob(receivedQty: number, status: string = 'เข้าตรวจแล้ว') {
     this.loadingService.show();
     this.dcsm20Service.getQcJobId(this.productionForm.getRawValue().qcJobId).subscribe((response) => {
-      response.status = 'เข้าตรวจแล้ว';
+      response.status = status;
       response.receivedQty = receivedQty;
       this.dcsm20Service.saveQcJob(response).subscribe((response) => {
         this.loadingService.hide();
       })
     });
+  }
+
+  onSplitDelivery(): void {
+    if (this.productionForm.valid) {
+      Swal.fire({
+        title: 'ยืนยันการแบ่งส่ง',
+        text: "ยืนยันการแบ่งส่งงานไป QC ใช่หรือไม่?",
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#1e1b4b',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.productionForm.get('isSplitDelivery')?.setValue(true);
+          this.saveQcJob(null as any, 'แบ่งส่ง');
+          this.performStatusUpdate();
+        }
+      });
+    } else {
+      this.markFormGroupTouched();
+      this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+    }
   }
 
   onChangePrintingDate() {

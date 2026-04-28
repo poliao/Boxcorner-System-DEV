@@ -27,6 +27,9 @@ public class User extends BaseEntity implements UserDetails {
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role == null || role.isEmpty()) {
+            return Collections.emptyList();
+        }
         return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
