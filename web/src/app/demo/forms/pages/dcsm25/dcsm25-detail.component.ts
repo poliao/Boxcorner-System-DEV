@@ -31,6 +31,7 @@ export class Dcsm25DetailComponent implements OnInit {
   extraPrints: any[] = [];
   selectedExtraPrint: any = null;
 
+
   constructor(
     private fb: FormBuilder,
     private dcsm25Service: Dcsm25Service,
@@ -51,11 +52,9 @@ export class Dcsm25DetailComponent implements OnInit {
     this.isEditMode = !!this.id;
     const resolvedData = this.route.snapshot.data['designDiecut'];
 
-      if (resolvedData) {
+    if (resolvedData) {
       this.printingForm.patchValue(resolvedData);
 
-      // เงื่อนไข: ถ้าเป็นงานตัวอย่าง (issample=true) และใน DB ยังไม่มีค่า setupWaste (null/empty)
-      // ให้เปิด field ให้ช่างพิมพ์กรอกได้
       const dbSetupWaste = resolvedData.setupWaste;
       if (this.isSampleJob && (dbSetupWaste === null || dbSetupWaste === undefined || dbSetupWaste === '')) {
         this.printingForm.get('setupWaste')?.enable();
@@ -198,7 +197,8 @@ export class Dcsm25DetailComponent implements OnInit {
       meterBwStart: [null],
       meterSpecialStart: [null],
       paperReqStart: [null],
-      printerName: [null, Validators.required]
+      printerName: [null, Validators.required],
+      paperSourceType: ['NO_PAPER']
     });
   }
 
@@ -211,12 +211,12 @@ export class Dcsm25DetailComponent implements OnInit {
       meterSpecialEnd: [null],
       paperReqEnd: [null],
       note: [null],
-      unitStockId: [null],
-      paperUsed: [null],
       goodQty: [null, [Validators.min(0)]],
       wasteQty: [null, [Validators.min(0)]],
     });
   }
+
+
 
 
 
@@ -298,12 +298,11 @@ export class Dcsm25DetailComponent implements OnInit {
   startPrintLog() {
     if (this.printingFormRecord.valid) {
       const formRaw = this.printingForm.getRawValue();
-
       this.chengePringterAuto(this.printingFormRecord.getRawValue().printerName);
       this.printingFormRecord.get('jobId')?.setValue(formRaw.id);
       this.printingFormRecord.get('logType')?.setValue('NORMAL');
       this.printingFormRecord.get('printSide')?.setValue('FRONT');
-      const recordData = { ...this.printingFormRecord.value, paperSourceType: 'NO_PAPER' };
+      const recordData = { ...this.printingFormRecord.value };
       this.dcsm25Service.startOdPrintLog(recordData).subscribe({
         next: (responseLog) => {
           this.dcsm25Service.getById(formRaw.id).subscribe((response) => {
@@ -314,8 +313,9 @@ export class Dcsm25DetailComponent implements OnInit {
                 this.sweetAlert.success('Success', 'เริ่มปริ้น');
               }
             });
-          })
-        }, error: (error) => {
+          });
+        },
+        error: (error) => {
           this.sweetAlert.error('Error', error?.error?.error || 'เกิดข้อผิดพลาดในการเริ่มพิมพ์');
         }
       });
@@ -379,12 +379,7 @@ export class Dcsm25DetailComponent implements OnInit {
       this.printingEndLog.get('action')?.setValue(Status);
     }
 
-    const actionValue = this.printingEndLog.get('action')?.value;
-    if (actionValue === 'FINISH' || actionValue === 'WAITPAGE2') {
-      let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
-      let sWaste = this.printingForm.getRawValue().setupWaste || 0;
-      this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
-    }
+
 
     const recordData = this.printingEndLog.value;
     this.dcsm25Service.stopOdPrintLog(recordData).subscribe({
@@ -431,12 +426,7 @@ export class Dcsm25DetailComponent implements OnInit {
       this.printingEndLog.get('action')?.setValue(Status);
     }
 
-    const actionValue = this.printingEndLog.get('action')?.value;
-    if (actionValue === 'FINISH_PAGE2') {
-      let pQty = this.printingForm.getRawValue().totalPrintSheets || 0;
-      let sWaste = this.printingForm.getRawValue().setupWaste || 0;
-      this.printingEndLog.get('paperUsed')?.setValue(pQty + sWaste);
-    }
+
 
     const recordData = this.printingEndLog.value;
     this.dcsm25Service.stopOdPrintLog(recordData).subscribe({
@@ -495,7 +485,7 @@ export class Dcsm25DetailComponent implements OnInit {
       this.printingFormRecord.get('jobId')?.setValue(this.printingForm.getRawValue().id);
       this.printingFormRecord.get('logType')?.setValue('EXTRA');
       this.printingFormRecord.get('printSide')?.setValue('FRONT');
-      const recordData = { ...this.printingFormRecord.value, paperSourceType: 'NO_PAPER' };
+      const recordData = this.printingFormRecord.value;
       this.dcsm25Service.startOdPrintLog(recordData).subscribe({
         next: (responseLog) => {
           const updateData = {
@@ -550,11 +540,7 @@ export class Dcsm25DetailComponent implements OnInit {
         this.printingEndLog.get('action')?.setValue(action);
       }
 
-      const actionValue = this.printingEndLog.get('action')?.value;
-      if (actionValue === 'FINISH' || actionValue === 'WAITPAGE2') {
-        let additionalQty = this.selectedExtraPrint?.additionalQty || 0;
-        this.printingEndLog.get('paperUsed')?.setValue(additionalQty);
-      }
+
 
       const recordData = this.printingEndLog.value;
       this.dcsm25Service.stopOdPrintLog(recordData).subscribe({
@@ -695,6 +681,7 @@ export class Dcsm25DetailComponent implements OnInit {
       this.sweetAlert.warning('Error', 'กรุณากรอกข้อมูลให้ครบ');
     }
   }
+
 
 
   closeModal(modalId: string) {

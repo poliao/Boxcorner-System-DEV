@@ -69,9 +69,6 @@ export class Dcsm25Service {
     return this.http.post(`${this.apiUrl}/od-printing/stop`, data);
   }
 
-  getAvailableCutPapers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/od-printing/available-cut-papers`);
-  }
 
   getLogById(id: number): Observable<any> {
     return this.http.get(`${this.odUrl}/logById?logId=${id}`);
@@ -89,9 +86,6 @@ export class Dcsm25Service {
     return this.http.post(`${this.odUrl}/extra-prints/save`, data);
   }
 
-  returnPaper(data: any): Observable<any> {
-    return this.http.post(`${this.odUrl}/return-paper`, data);
-  }
 
   // ── APIs ที่ไม่มีใน dcsm26 — ยังใช้ path เดิม ──────────────────────────
 
@@ -107,17 +101,6 @@ export class Dcsm25Service {
     return this.http.post(`${this.apiUrl}/printing/saveCalibrate`, data);
   }
 
-  checkStock(lotId: number, requiredSheets: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/od-printing/check-stock?lotId=${lotId}&requiredSheets=${requiredSheets}`);
-  }
-
-  getInventory(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/inventory`);
-  }
-
-  getLotsByMaterial(materialId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/lots/material/${materialId}`);
-  }
 
   saveCoatingJob(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/coating-jobs/create`, data);
