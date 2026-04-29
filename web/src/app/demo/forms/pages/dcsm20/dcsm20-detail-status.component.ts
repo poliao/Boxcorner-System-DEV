@@ -10,7 +10,7 @@ import { SweetAlertService } from 'src/app/services/sweet-alert.service';
 import Swal from 'sweetalert2';
 import { Dcsm09Service } from '../dcsm09/dcsm09.service';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { Dcsm06Service } from '../dcsm06/dcsm06.service';
 
 @Component({
@@ -599,7 +599,7 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
   }
 
   setPrintJob(id: any, response: any): Observable<any> {
-    const DataJob = {
+    const DataJob: any = {
       id: null,
       createdAt: new Date(),
       jobId: response.jobCode,
@@ -639,20 +639,32 @@ export class Dcsm20DetailStatusComponent implements OnInit, OnDestroy {
       printRound: this.printRound,
       printRoundPage2: this.printRoundPage2,
       reorderFromJoId: this.reorderFromJoId
-    }
+    };
 
-    this.dcsm06Service.getById(this.referenceId).subscribe((prodOrder) => {
-      console.log(prodOrder);
-      if (prodOrder.printJobId != null && prodOrder.printJobId != '' && prodOrder.isProductionApproved == true) {
-        DataJob.id = prodOrder.printJobId;
-        DataJob.jobStatus = 'อนุมัติผลิตแล้ว';
-      }
-    })
-    console.log('ข้อมูลที่จะ save', DataJob);
-
-    return this.dcsm20Service.savePrintJob(DataJob);
+    // ดึงข้อมูล ProductionOrder ก่อน แล้วค่อย save print_job
+    return this.dcsm06Service.getById(this.referenceId).pipe(
+      switchMap((prodOrder) => {
+        console.log('ProductionOrder data:', prodOrder);
+        if (
+          prodOrder &&
+          prodOrder.printJobId != null &&
+          prodOrder.printJobId !== '' &&
+          prodOrder.isProductionApproved === true
+        ) {
+          // มี printJobId และอนุมัติผลิตแล้ว → อัปเดตแถวเดิม
+          DataJob.id = prodOrder.printJobId;
+          DataJob.jobStatus = 'อนุมัติผลิตแล้ว';
+          console.log('Update existing PrintJob id:', DataJob.id);
+        } else {
+          // ยังไม่มี หรือยังไม่อนุมัติ → สร้างใหม่ (id = null)
+          DataJob.id = null;
+          console.log('Create new PrintJob');
+        }
+        console.log('ข้อมูลที่จะ save', DataJob);
+        return this.dcsm20Service.savePrintJob(DataJob);
+      })
+    );
   }
-
 
   setCoatJob(id) {
   }

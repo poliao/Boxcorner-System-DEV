@@ -36,6 +36,8 @@ export class Dcsm20DetailComponent implements OnInit {
   showJobModal = false;
   availableJobs: any[] = [];
   QcDetail: any;
+  isQcSendable = false;
+  qcJobStatus: string = '';
 
   // Modal สำหรับกรอกยอด (เคลือบ/ปั้ม/ปะ นอก BCA)
   showQtyModal = false;
@@ -69,6 +71,8 @@ export class Dcsm20DetailComponent implements OnInit {
     }
     this.disableForm();
     this.checkButton();
+    // โหลด QC Job status จาก API ถ้ามี qcJobId
+    this.loadQcJobStatus();
   }
 
   checkButton() {
@@ -154,6 +158,35 @@ export class Dcsm20DetailComponent implements OnInit {
       this.isGluing = false
       this.isQc = false
     }
+    // คำนวณ isQcSendable: เช็คจาก qcJobStatus ที่โหลดมาจริงๆ
+    const raw = this.productionForm.getRawValue();
+    this.isQcSendable =
+      raw.qcJobId != null &&
+      this.qcJobStatus === 'รอส่งตรวจ';
+  }
+
+  /** โหลด status ของ QC Job จาก API */
+  loadQcJobStatus(): void {
+    const qcJobId = this.productionForm.getRawValue().qcJobId;
+    if (!qcJobId) {
+      this.qcJobStatus = '';
+      this.isQcSendable = false;
+      return;
+    }
+    this.dcsm20Service.getQcJobId(qcJobId).subscribe({
+      next: (qcJob) => {
+        this.qcJobStatus = qcJob?.status ?? '';
+        const raw = this.productionForm.getRawValue();
+        if (this.qcJobStatus === 'รอส่งตรวจ') {
+          this.isQcSendable = true;
+        }
+
+      },
+      error: () => {
+        this.qcJobStatus = '';
+        this.isQcSendable = false;
+      }
+    });
   }
 
   initForm(): void {
@@ -634,6 +667,40 @@ export class Dcsm20DetailComponent implements OnInit {
       this.markFormGroupTouched();
       this.sweetAlert.error('Validation', 'กรุณากรอกข้อมูลให้ครบถ้วน');
     }
+  }
+
+  onSendToQc(): void {
+    Swal.fire({
+      title: 'ยืนยันส่งเข้า QC',
+      text: 'ยืนยันส่งเข้าตรวจ QC ใช่หรือไม่?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm20Service.getQcJobId(this.productionForm.getRawValue().qcJobId).subscribe((qcJob) => {
+          qcJob.status = 'เข้าตรวจแล้ว';
+          this.dcsm20Service.saveQcJob(qcJob).subscribe(() => {
+            // อัปเดต qcStatus ใน production job ด้วย
+            this.productionForm.get('qcStatus')?.setValue('เข้าตรวจแล้ว');
+            // อัปเดต local state ทันทีเพื่อซ่อนปุ่ม
+            this.qcJobStatus = 'เข้าตรวจแล้ว';
+            this.isQcSendable = false;
+            const data = this.productionForm.getRawValue();
+            this.dcsm20Service.save(data).subscribe((response) => {
+              this.patchFormData(response);
+              this.checkButton();
+              this.loadingService.hide();
+              this.sweetAlert.success('สำเร็จ', 'อัปเดตสถานะ QC เป็น เข้าตรวจแล้ว เรียบร้อย!');
+            });
+          });
+        });
+      }
+    });
   }
 
   onChangePrintingDate() {

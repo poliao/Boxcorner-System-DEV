@@ -468,11 +468,18 @@ export class Dcsm09DetailComponent implements OnInit {
       });
     };
 
-    if (isProductionApproved === true) {
+    const qcType = rawData.decisionAuthority;
+    const requiresPrinterSelection =
+      (qcType === 'sampleToCustomer' || qcType === 'customerOnSite') &&
+      isProductionApproved !== true;
+
+    if (!requiresPrinterSelection) {
+      // isProductionApproved = true, หรือ qcType อื่น → บันทึกทันทีโดยไม่เลือกเครื่อง
       proceedSave(currentPrinter || '');
       return;
     }
 
+    // ขึ้นตัวอย่างส่งลูกค้าตรวจ / ลูกค้าเข้าดูงานหน้างาน และยังไม่ approved → ให้เลือกเครื่อง
     Swal.fire({
       title: 'ยืนยันส่งไฟล์แล้ว',
       html: `
@@ -482,8 +489,6 @@ export class Dcsm09DetailComponent implements OnInit {
             <option value="">-- กรุณาเลือกเครื่องพิมพ์ --</option>
             <option value="CD" ${currentPrinter === 'CD' ? 'selected' : ''}>CD</option>
             <option value="SM" ${currentPrinter === 'SM' ? 'selected' : ''}>SM</option>
-            <option value="RM" ${currentPrinter === 'RM' ? 'selected' : ''}>RM</option>
-            <option value="BCA" ${currentPrinter === 'BCA' ? 'selected' : ''}>BCA</option>
           </select>
         </div>
       `,
@@ -783,11 +788,21 @@ export class Dcsm09DetailComponent implements OnInit {
             reorderFromJoId: formData.reorderFromJoId
           };
           extractDateTime(newJob, formData.sampleDeliveryTimestamp);
-          this.dcsm26Service.save(newJob).subscribe();
+          this.dcsm26Service.save(newJob).subscribe({
+            next: (res) => {
+              this.mainForm.get('printJobId')?.setValue(res.id);
+              this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe()
+            },
+          });
         } else {
           if (printerName) existingJob.printerName = printerName;
           extractDateTime(existingJob, formData.sampleDeliveryTimestamp);
-          this.dcsm26Service.save(existingJob).subscribe();
+          this.dcsm26Service.save(existingJob).subscribe({
+            next: (res) => {
+              this.mainForm.get('printJobId')?.setValue(res.id);
+              this.dcsm09Service.save(this.mainForm.getRawValue()).subscribe()
+            },
+          });
         }
       });
     } else {

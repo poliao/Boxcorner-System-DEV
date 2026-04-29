@@ -94,6 +94,7 @@ public class ProductionOrderController {
     @GetMapping("/searchProduct")
     public ResponseEntity<Page<ProductionOrder>> searchProduct(
             @RequestParam(required = false, name = "id") Integer id,
+            @RequestParam(required = false, name = "jobId") String jobId,
             @RequestParam(required = false, name = "folderName") String folderName,
             @RequestParam(required = false, name = "jobOwner") String jobOwner,
             @RequestParam(required = false, name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -111,11 +112,11 @@ public class ProductionOrderController {
         Page<ProductionOrder> result;
         if (Boolean.TRUE.equals(sortByDeadline)) {
             result = productionOrderService.findByProductionFiltersSort(
-                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
                     jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
         } else {
             result = productionOrderService.findByProductionFilters(
-                    id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                    id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
                     jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
         }
         return ResponseEntity.ok(result);

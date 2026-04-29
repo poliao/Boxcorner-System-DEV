@@ -120,21 +120,21 @@ public class ProductionOrderService {
                 jobStatus, processStatus, operatorName, moldStatus, jobType, postpone, pageable);
     }
 
-    public Page<ProductionOrder> findByProductionFilters(Integer id, String folderName, String jobOwner,
+    public Page<ProductionOrder> findByProductionFilters(Integer id, String jobId, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
             String moldStatus, String jobType, Pageable pageable) {
         return productionOrderRepository.findByProductionFilters(
-                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }
 
-    public Page<ProductionOrder> findByProductionFiltersSort(Integer id, String folderName, String jobOwner,
+    public Page<ProductionOrder> findByProductionFiltersSort(Integer id, String jobId, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
             String moldStatus, String jobType, Pageable pageable) {
         return productionOrderRepository.findByProductionFiltersSort(
-                id, folderName, jobOwner, startDate, endDate, deadlineTime,
+                id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
                 jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
     }
 

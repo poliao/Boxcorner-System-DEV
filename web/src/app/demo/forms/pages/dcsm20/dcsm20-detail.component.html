@@ -16,9 +16,14 @@
           <button *ngIf="isGluing" (click)="onUpdatePrint('Gluing')"
             class="btn btn-outline-secondary btn-sm">ปะ</button>
           <button *ngIf="isQc" (click)="onUpdatePrint('Qc')" class="btn btn-outline-secondary btn-sm">QC</button>
-          <button *ngIf="id && !productionForm.get('isSplitDelivery')?.value && (isPrint || isCoating || isStamping || isGluing)" 
+          <button
+            *ngIf="id && !productionForm.get('isSplitDelivery')?.value && (isPrint || isCoating || isStamping || isGluing)"
             (click)="onSplitDelivery()" class="btn btn-outline-warning btn-sm">แบ่งส่ง</button>
         </div>
+
+        <button *ngIf="isQcSendable" (click)="onSendToQc()" class="btn btn-success btn-sm text-white">
+          <i class="fas fa-vials me-1"></i> ส่งเข้า QC
+        </button>
 
         <button *ngIf="isAddress" (click)="onUpdatePrint('Address')"
           class="btn btn-info btn-sm text-white">รอที่อยู่จัดส่ง</button>
@@ -116,7 +121,8 @@
             </div>
             <div *ngIf="jobImageUrl">
               <label class="form-label fw-bold small">รูปภาพงาน</label>
-              <img [src]="jobImageUrl" class="img-fluid rounded border" style="max-height: 200px; width: 100%; object-fit: contain;">
+              <img [src]="jobImageUrl" class="img-fluid rounded border"
+                style="max-height: 200px; width: 100%; object-fit: contain;">
             </div>
           </div>
         </div>
@@ -127,10 +133,12 @@
             <div class="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-3">
 
               <div class="col">
-                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #dc3545 !important;">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded"
+                  style="border-color: #dc3545 !important;">
                   <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="fw-bold small text-danger mb-0">งานพิมพ์</label>
-                    <button *ngIf="isEditMode" type="button" class="btn btn-link btn-sm p-0 text-decoration-none" (click)="onChangePrintingDate()">
+                    <button *ngIf="isEditMode" type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
+                      (click)="onChangePrintingDate()">
                       <i class="fas fa-edit small"></i> เปลี่ยนวันที่
                     </button>
                   </div>
@@ -140,7 +148,8 @@
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #ffc107 !important;">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded"
+                  style="border-color: #ffc107 !important;">
                   <label class="d-block fw-bold small text-primary">งานเคลือบ</label>
                   <input type="date" formControlName="coatingDate" class="form-control form-control-sm mb-1 border-0">
                   <input type="text" formControlName="coatingResponsible" class="form-control form-control-sm">
@@ -148,7 +157,8 @@
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #007bff !important;">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded"
+                  style="border-color: #007bff !important;">
                   <label class="d-block fw-bold small text-primary">งานปั๊ม</label>
                   <input type="date" formControlName="stampingDate" class="form-control form-control-sm mb-1 border-0">
                   <input type="text" formControlName="stampingResponsible" class="form-control form-control-sm">
@@ -156,7 +166,8 @@
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #17a2b8 !important;">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded"
+                  style="border-color: #17a2b8 !important;">
                   <label class="d-block fw-bold small text-info">งานปะ</label>
                   <input type="date" formControlName="gluingDate" class="form-control form-control-sm mb-1 border-0">
                   <input type="text" formControlName="gluingResponsible" class="form-control form-control-sm">
@@ -164,10 +175,12 @@
               </div>
 
               <div class="col">
-                <div class="p-2 border-start border-4 bg-white shadow-sm rounded" style="border-color: #670097ff !important;">
+                <div class="p-2 border-start border-4 bg-white shadow-sm rounded"
+                  style="border-color: #670097ff !important;">
                   <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="fw-bold small text-success mb-0">QC/QA</label>
-                    <button *ngIf="isEditMode" type="button" class="btn btn-link btn-sm p-0 text-decoration-none" (click)="onChangeQcDate()">
+                    <button *ngIf="isEditMode" type="button" class="btn btn-link btn-sm p-0 text-decoration-none"
+                      (click)="onChangeQcDate()">
                       <i class="fas fa-edit small"></i> เปลี่ยนวันที่
                     </button>
                   </div>
@@ -193,8 +206,7 @@
       <div class="modal-body">
         <p class="mb-3 text-muted">พบหลายใบงานใน OID นี้ กรุณาเลือกใบงานที่ต้องการ</p>
         <div class="list-group">
-          <button *ngFor="let job of availableJobs" type="button" 
-            class="list-group-item list-group-item-action"
+          <button *ngFor="let job of availableJobs" type="button" class="list-group-item list-group-item-action"
             (click)="selectJob(job)">
             {{ job.header?.jobCode || 'ไม่ระบุ' }} - {{ job.header?.jobName || 'ไม่ระบุชื่องาน' }}
           </button>
@@ -227,9 +239,8 @@
           <label class="form-label fw-bold">จำนวน (ชิ้น/แผ่น) <span class="text-danger">*</span></label>
           <div class="input-group input-group-lg">
             <span class="input-group-text bg-light"><i class="fas fa-hashtag"></i></span>
-            <input type="number" class="form-control form-control-lg fw-bold"
-              [(ngModel)]="qtyModalValue" placeholder="0" min="1"
-              (keyup.enter)="onConfirmQty()">
+            <input type="number" class="form-control form-control-lg fw-bold" [(ngModel)]="qtyModalValue"
+              placeholder="0" min="1" (keyup.enter)="onConfirmQty()">
           </div>
         </div>
       </div>
@@ -244,4 +255,4 @@
       </div>
     </div>
   </div>
-</div>
+</div>
