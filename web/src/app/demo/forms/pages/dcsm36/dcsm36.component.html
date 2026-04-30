@@ -71,34 +71,6 @@
                 </button>
               </div>
 
-              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <div class="position-relative">
-                  <button mat-flat-button type="button" class="w-100 px-4 btn text-white"
-                    style="background-color: #003747;" (click)="filterJobsToDo()">
-                    <span *ngIf="qcCounts.jobsToDo > 0"
-                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                      style="font-size: 0.75rem; border: 2px solid #fff;">
-                      {{ qcCounts.jobsToDo }}
-                    </span>
-                    <mat-icon>assignment</mat-icon> งานที่ต้องทำ
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
-                <div class="position-relative">
-                  <button mat-flat-button type="button" class="w-100 px-4 btn text-white"
-                    style="background-color: #d32f2f;" (click)="filterJobsToSend()">
-                    <span *ngIf="qcCounts.jobsToSend > 0"
-                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark"
-                      style="font-size: 0.75rem; border: 2px solid #fff;">
-                      {{ qcCounts.jobsToSend }}
-                    </span>
-                    <mat-icon>event_available</mat-icon> งานที่ต้องส่ง
-                  </button>
-                </div>
-              </div>
-
             </div>
           </div>
         </div>
