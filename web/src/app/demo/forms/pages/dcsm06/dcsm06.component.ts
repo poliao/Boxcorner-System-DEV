@@ -43,6 +43,7 @@ export class Dcsm06Component implements OnInit {
   pageIndex = 0;
   isSortMode: boolean = false;
   isPostpone = 0;
+  isWaitingApproval = 0;
 
   tableColumns = [
     { key: 'id', label: 'ลำดับ' },
@@ -69,6 +70,7 @@ export class Dcsm06Component implements OnInit {
     this.initSearchForm();
     this.loadData();
     this.countBacklogPostpone();
+    this.countBacklogWaitingApproval();
   }
 
   initSearchForm(): void {
@@ -249,6 +251,22 @@ export class Dcsm06Component implements OnInit {
   onFilterPostpone() {
     this.searchForm.patchValue({
       postpone: 'มีการเลื่อนเวลาส่ง',
+      jobOwner: this.authService.getUserFromToken().sub,
+    });
+    this.onSearch();
+  }
+
+  countBacklogWaitingApproval() {
+    this.dcsm06Service.countBacklogWaitingApproval().subscribe({
+      next: (data: number) => {
+        this.isWaitingApproval = data;
+      },
+    });
+  }
+
+  onFilterWaitingApproval() {
+    this.searchForm.patchValue({
+      processStatus: 'รอการอนุมัติผลิต',
       jobOwner: this.authService.getUserFromToken().sub,
     });
     this.onSearch();

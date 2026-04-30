@@ -200,6 +200,10 @@ public class ProductionOrderService {
         return productionOrderRepository.countBacklogPostpone(username);
     }
 
+    public Integer countBacklogWaitingApproval(String username) {
+        return productionOrderRepository.countBacklogWaitingApproval(username);
+    }
+
     public Integer countBacklogMachine() {
         return productionOrderRepository.countBacklogMachine();
     }

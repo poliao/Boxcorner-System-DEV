@@ -409,6 +409,11 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
     Integer countBacklogPostpone(@Param("jobOwner") String jobOwner);
 
     @Query(value = "select count(id) as backlog from production_orders po " +
+            "where po.process_status = 'รอการอนุมัติผลิต' " +
+            "and po.job_owner = :jobOwner", nativeQuery = true)
+    Integer countBacklogWaitingApproval(@Param("jobOwner") String jobOwner);
+
+    @Query(value = "select count(id) as backlog from production_orders po " +
             "where po.process_status = 'ส่งไฟล์แล้ว' " +
             "and po.job_status = 'เสร็จสิ้น' " +
             "and po.job_type = 'OD' " +

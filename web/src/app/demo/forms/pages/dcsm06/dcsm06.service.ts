@@ -79,6 +79,10 @@ export class Dcsm06Service {
     return this.http.get(`${this.apiUrl}/production/countBacklogPostpone`);
   }
 
+  countBacklogWaitingApproval(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countBacklogWaitingApproval`);
+  }
+
   updateKeepPostPoneDeadline(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/production/updateKeepPostPoneDeadline`, data);
   }

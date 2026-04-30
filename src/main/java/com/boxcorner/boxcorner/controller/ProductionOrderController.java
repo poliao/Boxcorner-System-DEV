@@ -220,6 +220,11 @@ public class ProductionOrderController {
         return ResponseEntity.ok(productionOrderService.countBacklogPostpone(tokenService.getCurrentUser(httpRequest)));
     }
 
+    @GetMapping("/countBacklogWaitingApproval")
+    public ResponseEntity<Integer> countBacklogWaitingApproval(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(productionOrderService.countBacklogWaitingApproval(tokenService.getCurrentUser(httpRequest)));
+    }
+
     @GetMapping("/searchSample")
     public ResponseEntity<Page<ProductionOrder>> searchSample(
             @RequestParam(required = false, name = "id") Integer id,

@@ -44,6 +44,7 @@
               <option value="ตรวจใบสั่งผลิตแล้ว">ตรวจใบสั่งผลิตแล้ว</option>
               <option value="ส่งใบสั่งผลิตแล้ว">ส่งใบสั่งผลิตแล้ว</option>
               <option value="ส่งไฟล์แล้ว">ส่งไฟล์แล้ว</option>
+              <option value="รอการอนุมัติผลิต">รอการอนุมัติผลิต</option>
               <option value="ยกเลิก">ยกเลิก</option>
             </select>
           </div>
@@ -98,6 +99,22 @@
                     </span>
                     <mat-icon>search</mat-icon> <span class="d-none d-lg-inline">งานที่มีการเลื่อนเวลา</span><span
                       class="d-lg-none">งานที่มีการเลื่อนเวลา</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6 col-md-4 col-lg-auto">
+                <div class="position-relative">
+                  <button mat-flat-button class="btn text-white px-4 w-100" (click)="onFilterWaitingApproval()"
+                    style="background-color: #003747;">
+                    <span *ngIf="isWaitingApproval > 0"
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style="font-size: 0.75rem; border: 2px solid #fff;">
+                      {{ isWaitingApproval }}
+                      <span class="visually-hidden">unread messages</span>
+                    </span>
+                    <mat-icon>notifications</mat-icon> <span class="d-none d-lg-inline">รอการอนุมัติผลิต</span><span
+                      class="d-lg-none">รอการอนุมัติผลิต</span>
                   </button>
                 </div>
               </div>
