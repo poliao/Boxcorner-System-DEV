@@ -30,7 +30,7 @@ export class Dcsm36Component implements OnInit {
     { key: 'qcDetail', label: 'ความละเอียด QC' },
     { key: 'qcType', label: 'ประเภท QC' },
     { key: 'startQcDatetime', label: 'วันที่งานเข้า' },
-    { key: 'deliveryDatetime', label: 'กำหนดส่ง' },
+    { key: 'deliveryDatetime', label: 'กำหนดส่ง', styleFunction: (key: string, row: any) => row._isOverdue ? { color: 'red', 'font-weight': 'bold' } : {} },
     { key: 'status', label: 'สถานะ QC', colorFunction: this.statusColorService.getStatusColor.bind(this.statusColorService) },
 
   ];
@@ -54,6 +54,7 @@ export class Dcsm36Component implements OnInit {
   totalElements = 0;
   pageSize = 10;
   pageIndex = 0;
+  qcCounts = { jobsToDo: 0, jobsToSend: 0 };
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -69,6 +70,7 @@ export class Dcsm36Component implements OnInit {
   ngOnInit() {
     this.applyRoleFilters();
     this.loadData();
+    this.loadCounts();
   }
 
   applyRoleFilters() {
@@ -84,10 +86,28 @@ export class Dcsm36Component implements OnInit {
     this.loadingService.show();
     this.dcsm36Service.getQcJobs(this.pageIndex, this.pageSize, this.searchParams).subscribe({
       next: (res: any) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const applicableStatuses = ['รอส่งตรวจ', 'เข้าตรวจแล้ว', 'แบ่งส่ง', 'อยู่ระหว่างตรวจ'];
+
         this.tableData = res.content.map((item: any) => {
           if (item.deliveryDatetime) {
+            const deadline = new Date(item.deliveryDatetime);
+            deadline.setHours(0, 0, 0, 0);
+            const diffTime = deadline.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            item._urgency = diffDays;
+            item._isApplicable = applicableStatuses.includes(item.status);
+            item._isOverdue = diffDays <= 0 && item._isApplicable;
+
             item.startQcDatetime = this.formatDate(item.startQcDatetime);
             item.deliveryDatetime = this.formatDate(item.deliveryDatetime);
+
+            if (item._isOverdue) {
+              item.deliveryDatetime = '! ' + item.deliveryDatetime;
+            }
           }
           return item;
         });
@@ -157,5 +177,51 @@ export class Dcsm36Component implements OnInit {
     if (row && row.id) {
       this.router.navigate(['/Dcsm36Detail', row.id]);
     }
+  }
+
+  getRowStyles = (row: any) => {
+    if (!row._isApplicable) return {};
+
+    if (row._isOverdue) {
+      return { 'background-color': '#ffcdd2' }; // Light Red (Red 100)
+    }
+    if (row._urgency !== undefined && row._urgency > 0 && row._urgency <= 3) {
+      return { 'background-color': '#ffe0b2' }; // Light Orange (Orange 100)
+    }
+    if (row._urgency !== undefined && row._urgency > 3 && row._urgency <= 7) {
+      return { 'background-color': '#fff9c4' }; // Light Yellow (Yellow 100)
+    }
+    if (row._urgency !== undefined && row._urgency > 7 && row._urgency <= 14) {
+      return { 'background-color': '#c8e6c9' }; // Light Green (Green 100)
+    }
+    return {};
+  }
+
+  loadCounts() {
+    this.dcsm36Service.getQcCounts(this.searchParams.role).subscribe({
+      next: (res: any) => {
+        this.qcCounts = res;
+      },
+      error: (err) => {
+        console.error('Error fetching QC counts', err);
+      }
+    });
+  }
+
+  filterJobsToDo() {
+    this.clearAllFilters();
+    this.searchParams.status = 'รอส่งตรวจ'; // This is one of the to-do statuses
+    // Or we could make it a special filter. For now, let's just set one.
+    // Better yet, let's filter by the group in loadData if we want exact match.
+    // But for simplicity, let's just set status and search.
+    this.onSearchChange();
+  }
+
+  filterJobsToSend() {
+    const today = new Date().toISOString().split('T')[0];
+    this.clearAllFilters();
+    this.searchParams.deliveryTo = today;
+    this.searchParams.status = ''; // Any status not finished
+    this.onSearchChange();
   }
 }

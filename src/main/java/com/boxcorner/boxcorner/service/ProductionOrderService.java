@@ -123,19 +123,19 @@ public class ProductionOrderService {
     public Page<ProductionOrder> findByProductionFilters(Integer id, String jobId, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType, Pageable pageable) {
+            String moldStatus, String jobType, Boolean isProductionApproved, Pageable pageable) {
         return productionOrderRepository.findByProductionFilters(
                 id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType, isProductionApproved, pageable);
     }
 
     public Page<ProductionOrder> findByProductionFiltersSort(Integer id, String jobId, String folderName, String jobOwner,
             LocalDate startDate, LocalDate endDate, LocalTime deadlineTime,
             String jobStatus, String processStatus, String operatorName,
-            String moldStatus, String jobType, Pageable pageable) {
+            String moldStatus, String jobType, Boolean isProductionApproved, Pageable pageable) {
         return productionOrderRepository.findByProductionFiltersSort(
                 id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
-                jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                jobStatus, processStatus, operatorName, moldStatus, jobType, isProductionApproved, pageable);
     }
 
     public Page<ProductionOrder> findByProductionCheck(Integer id, String jobId, String folderName, String jobOwner,
@@ -202,6 +202,10 @@ public class ProductionOrderService {
 
     public Integer countBacklogWaitingApproval(String username) {
         return productionOrderRepository.countBacklogWaitingApproval(username);
+    }
+
+    public Integer countProductionApproved(String operatorName) {
+        return productionOrderRepository.countProductionApproved(operatorName);
     }
 
     public Integer countBacklogMachine() {

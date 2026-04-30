@@ -105,6 +105,7 @@ public class ProductionOrderController {
             @RequestParam(required = false, name = "operatorName") String operatorName,
             @RequestParam(required = false, name = "moldStatus") String moldStatus,
             @RequestParam(required = false, name = "jobType") String jobType,
+            @RequestParam(required = false, name = "isProductionApproved") Boolean isProductionApproved,
             @RequestParam(defaultValue = "0", name = "page") int page,
             @RequestParam(defaultValue = "10", name = "size") int size,
             @RequestParam(value = "sortByDeadline", required = false) Boolean sortByDeadline) {
@@ -113,11 +114,11 @@ public class ProductionOrderController {
         if (Boolean.TRUE.equals(sortByDeadline)) {
             result = productionOrderService.findByProductionFiltersSort(
                     id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
-                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, isProductionApproved, pageable);
         } else {
             result = productionOrderService.findByProductionFilters(
                     id, jobId, folderName, jobOwner, startDate, endDate, deadlineTime,
-                    jobStatus, processStatus, operatorName, moldStatus, jobType, pageable);
+                    jobStatus, processStatus, operatorName, moldStatus, jobType, isProductionApproved, pageable);
         }
         return ResponseEntity.ok(result);
     }
@@ -223,6 +224,11 @@ public class ProductionOrderController {
     @GetMapping("/countBacklogWaitingApproval")
     public ResponseEntity<Integer> countBacklogWaitingApproval(HttpServletRequest httpRequest) {
         return ResponseEntity.ok(productionOrderService.countBacklogWaitingApproval(tokenService.getCurrentUser(httpRequest)));
+    }
+
+    @GetMapping("/countProductionApproved")
+    public ResponseEntity<Integer> countProductionApproved(HttpServletRequest httpRequest) {
+        return ResponseEntity.ok(productionOrderService.countProductionApproved(tokenService.getCurrentUser(httpRequest)));
     }
 
     @GetMapping("/searchSample")

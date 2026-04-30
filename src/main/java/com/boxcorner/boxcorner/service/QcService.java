@@ -173,7 +173,6 @@ public class QcService {
         return savedJob;
     }
 
-    @Transactional
     public Integer partialQc(Integer id, Integer passedQty, Integer bundlesPerPack, Integer boxesPerBundle,
             Integer passedQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction,
             java.util.List<QcStaff> staffList,
@@ -246,5 +245,28 @@ public class QcService {
         }
 
         return savedLog.getId();
+    }
+
+    public java.util.Map<String, Long> getQcCounts(String role) {
+        String effectiveQcLocation = null;
+        if ("stam".equals(role)) {
+            effectiveQcLocation = "ส่งOD";
+        } else if ("qc".equals(role)) {
+            effectiveQcLocation = "ส่งQC";
+        }
+
+        long jobsToDo = qcJobRepository.countByStatusInAndQcLocation(
+                java.util.Arrays.asList("รอส่งตรวจ", "เข้าตรวจแล้ว", "อยู่ระหว่างตรวจ"),
+                effectiveQcLocation);
+
+        long jobsToSend = qcJobRepository.countByStatusNotAndDeliveryDatetimeLessThanEqualAndQcLocation(
+                "เสร็จสิ้น",
+                LocalDate.now(),
+                effectiveQcLocation);
+
+        java.util.Map<String, Long> counts = new java.util.HashMap<>();
+        counts.put("jobsToDo", jobsToDo);
+        counts.put("jobsToSend", jobsToSend);
+        return counts;
     }
 }

@@ -131,4 +131,13 @@ public class QcController {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }
     }
+
+    @GetMapping("/counts")
+    public ResponseEntity<?> getQcCounts(@RequestParam(value = "role", required = false) String role) {
+        try {
+            return ResponseEntity.ok(qcService.getQcCounts(role));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
+    }
 }

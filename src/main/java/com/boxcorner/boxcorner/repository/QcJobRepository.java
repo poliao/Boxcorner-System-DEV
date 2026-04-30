@@ -29,10 +29,11 @@ public interface QcJobRepository extends JpaRepository<QcJob, Integer> {
             "ORDER BY " +
             "  CASE q.status " +
             "    WHEN 'เข้าตรวจแล้ว' THEN 1 " +
-            "    WHEN 'อยู่ระหว่างตรวจ' THEN 2 " +
-            "    WHEN 'รอส่งตรวจ' THEN 3 " +
-            "    WHEN 'เสร็จสิ้น' THEN 4 " +
-            "    ELSE 5 " +
+            "    WHEN 'แบ่งส่ง' THEN 2 " +
+            "    WHEN 'อยู่ระหว่างตรวจ' THEN 3 " +
+            "    WHEN 'รอส่งตรวจ' THEN 4 " +
+            "    WHEN 'เสร็จสิ้น' THEN 5 " +
+            "    ELSE 6 " +
             "  END ASC, " +
             "  q.deliveryDatetime ASC")
     Page<QcJob> findByFilters(
@@ -46,4 +47,8 @@ public interface QcJobRepository extends JpaRepository<QcJob, Integer> {
             @Param("deliveryFrom") LocalDate deliveryFrom,
             @Param("deliveryTo") LocalDate deliveryTo,
             Pageable pageable);
+
+    long countByStatusInAndQcLocation(java.util.List<String> statuses, String qcLocation);
+
+    long countByStatusNotAndDeliveryDatetimeLessThanEqualAndQcLocation(String status, LocalDate date, String qcLocation);
 }

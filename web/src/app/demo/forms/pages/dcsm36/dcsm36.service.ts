@@ -78,4 +78,8 @@ export class Dcsm36Service {
   DropdownList(department: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/userQc/getUserQc?department=${department}`);
   }
+
+  getQcCounts(role: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/qc/counts`, { params: { role } });
+  }
 }

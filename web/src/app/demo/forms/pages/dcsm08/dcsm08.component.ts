@@ -47,6 +47,7 @@ export class Dcsm08Component implements OnInit {
   finished = 0;
   isSupplier = 0;
   isKeepSupplier = 0;
+  countProductionApprovedCount = 0;
   isSortMode: boolean = false;
 
   tableColumns = [
@@ -78,6 +79,7 @@ export class Dcsm08Component implements OnInit {
     this.BacklogFinished();
     this.BacklogSupplier();
     this.BacklogKeepSupplier();
+    this.BacklogProductionApproved();
   }
 
   initSearchForm(): void {
@@ -91,6 +93,7 @@ export class Dcsm08Component implements OnInit {
       processStatus: [''],
       moldStatus: [''],
       jobType: [''],
+      isProductionApproved: [null],
       startDate: [null],
       endDate: [{ value: null, disabled: true }]
     });
@@ -110,6 +113,7 @@ export class Dcsm08Component implements OnInit {
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: formValues.jobType,
+      isProductionApproved: formValues.isProductionApproved,
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       page: this.pageIndex,
@@ -144,6 +148,7 @@ export class Dcsm08Component implements OnInit {
       processStatus: formValues.processStatus,
       moldStatus: formValues.moldStatus,
       jobType: formValues.jobType,
+      isProductionApproved: formValues.isProductionApproved,
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       page: this.pageIndex,
@@ -303,6 +308,7 @@ export class Dcsm08Component implements OnInit {
       processStatus: '',
       moldStatus: '',
       jobType: '',
+      isProductionApproved: null,
       startDate: null,
       endDate: null
     });
@@ -340,5 +346,22 @@ export class Dcsm08Component implements OnInit {
         this.isKeepSupplier = data;
       },
     });
+  }
+
+  BacklogProductionApproved() {
+    this.dcsm08Service.countProductionApproved().subscribe({
+      next: (data: number) => {
+        this.countProductionApprovedCount = data;
+      },
+    });
+  }
+
+  onFilterProductionApproved() {
+    this.onClearAll()
+    this.searchForm.patchValue({
+      isProductionApproved: true,
+      processStatus: 'อนุมัติผลิตแล้ว'
+    });
+    this.onSearch();
   }
 }

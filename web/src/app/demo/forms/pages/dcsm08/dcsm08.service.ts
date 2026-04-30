@@ -35,7 +35,8 @@ export class Dcsm08Service {
       moldStatus: apiFilters.moldStatus,
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
-      endDate: apiFilters.endDate
+      endDate: apiFilters.endDate,
+      isProductionApproved: apiFilters.isProductionApproved
     };
 
     Object.keys(params).forEach(key => {
@@ -62,6 +63,7 @@ export class Dcsm08Service {
       jobType: apiFilters.jobType,
       startDate: apiFilters.startDate,
       endDate: apiFilters.endDate,
+      isProductionApproved: apiFilters.isProductionApproved,
       sortByDeadline: 'true'
     };
 
@@ -99,6 +101,10 @@ export class Dcsm08Service {
 
   countBacklogKeepSupplier(): Observable<any> {
     return this.http.get(`${this.apiUrl}/production/countBacklogKeepSupplier`);
+  }
+
+  countProductionApproved(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/production/countProductionApproved`);
   }
 
   getByProductionOrderId(id: number): Observable<any> {
