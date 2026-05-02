@@ -38,6 +38,11 @@ export class Dcsm29DetailComponent implements OnInit {
   printSidedness = '-';
   totalPaperUsed = 0;
 
+  totalGoodMeter = 0;
+  totalGoodNonMeter = 0;
+  totalWasteMeter = 0;
+  totalWasteNonMeter = 0;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -124,13 +129,17 @@ export class Dcsm29DetailComponent implements OnInit {
     this.totalMeterSpecial = 0;
     this.totalMeterImpressions = 0;
     this.totalPaperUsed = 0;
-
+    this.totalGoodMeter = 0;
+    this.totalGoodNonMeter = 0;
+    this.totalWasteMeter = 0;
+    this.totalWasteNonMeter = 0;
+  
     if (this.printLogs && this.printLogs.length > 0) {
       this.printLogs.forEach(log => {
         let colorDiff = 0;
         let bwDiff = 0;
         let specialDiff = 0;
-
+  
         // Color
         if (log.meterColorEnd && log.meterColorStart) {
           colorDiff = log.meterColorEnd - log.meterColorStart;
@@ -146,15 +155,19 @@ export class Dcsm29DetailComponent implements OnInit {
           specialDiff = log.meterSpecialEnd - log.meterSpecialStart;
           this.totalMeterSpecial += specialDiff;
         }
+  
+        // Track detailed quantities
+        this.totalGoodMeter += log.goodMeterQty || 0;
+        this.totalGoodNonMeter += log.goodNonMeterQty || 0;
+        this.totalWasteMeter += log.wasteMeterQty || 0;
+        this.totalWasteNonMeter += log.wasteNonMeterQty || 0;
 
         // Track total paper used
         if (log.totalSheetsUsed) {
           this.totalPaperUsed += log.totalSheetsUsed;
         }
-
+  
         // Impressions per sheet:
-        // Typically, color and special toners hit the same physical sheet simultaneously.
-        // Therefore, the total impressions per pass is the max of the individual meters.
         this.totalMeterImpressions += Math.max(colorDiff, bwDiff, specialDiff);
       });
     }

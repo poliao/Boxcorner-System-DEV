@@ -132,6 +132,10 @@
             <th class="py-3 text-end">ยอดขาวดำ (B/W)</th>
             <th class="py-3 text-end">ยอดพิเศษ (Sp)</th>
             <th class="py-3 text-end">ยอดรวม</th>
+            <th class="py-3 text-end text-success">ดี (นับ)</th>
+            <th class="py-3 text-end text-success">ดี (ไม่นับ)</th>
+            <th class="py-3 text-end text-danger">เสีย (นับ)</th>
+            <th class="py-3 text-end text-danger">เสีย (ไม่นับ)</th>
             <th class="py-3 text-end">กระดาษที่ใช้</th>
             <th class="py-3 text-center">เริ่มพิมพ์</th>
             <th class="py-3 text-center">จบงานพิมพ์</th>
@@ -202,6 +206,19 @@
               }}
             </td>
 
+            <td class="text-end font-monospace text-success">
+              {{ log.goodMeterQty | number }}
+            </td>
+            <td class="text-end font-monospace text-success">
+              {{ log.goodNonMeterQty | number }}
+            </td>
+            <td class="text-end font-monospace text-danger">
+              {{ log.wasteMeterQty | number }}
+            </td>
+            <td class="text-end font-monospace text-danger">
+              {{ log.wasteNonMeterQty | number }}
+            </td>
+
             <td class="text-end font-monospace text-secondary">
               <div class="fw-bold">{{ log.totalSheetsUsed ? (log.totalSheetsUsed | number) : '0' }}</div>
             </td>
@@ -230,7 +247,7 @@
             </td>
           </tr>
           <tr *ngIf="printLogs.length === 0">
-            <td colspan="13" class="text-center py-5 text-muted">
+            <td colspan="17" class="text-center py-5 text-muted">
               <mat-icon style="font-size: 48px; width: 48px; height: 48px; opacity: 0.5;">print_disabled</mat-icon>
               <h5 class="mt-2 text-muted">ไม่พบข้อมูลประวัติการพิมพ์</h5>
             </td>

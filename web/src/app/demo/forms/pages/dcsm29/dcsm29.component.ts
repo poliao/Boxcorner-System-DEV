@@ -42,7 +42,7 @@ export class Dcsm29Component implements OnInit {
   pageIndex = 0;
 
   searchParams: any = {
-    jobStatus: 'COMPLETED',
+    jobStatus: 'พิมพ์เสร็จแล้ว',
     issample: null,
     customerJobName: null,
     jobId: null,
@@ -289,7 +289,7 @@ export class Dcsm29Component implements OnInit {
 
   clearSearch() {
     this.searchParams = {
-      jobStatus: 'COMPLETED',
+      jobStatus: 'พิมพ์เสร็จแล้ว',
       issample: null,
       customerJobName: null,
       jobId: null,

@@ -313,20 +313,20 @@
         <form [formGroup]="printingFormRecord">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterColorStart" class="form-control">
             </div>
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterBwStart" class="form-control">
             </div>
             <div class="col-md-6" *ngIf="printingFormRecord.get('printerName')?.value === 'Ricoh'">
-              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterSpecialStart" class="form-control">
             </div>
             <div class="col-md-6">
               <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
-              <select formControlName="printerName" class="form-select" style="color: black;">
+              <select formControlName="printerName" class="form-select" style="color: black;" (change)="chengePringterAuto(printingFormRecord.get('printerName')?.value)">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
               </select>
@@ -372,13 +372,29 @@
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
             </div>
-            <div class="col-md-6">
-              <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>
-              <input type="number" formControlName="goodQty" class="form-control" placeholder="0">
+            <div class="col-12">
+              <hr>
+              <h6 class="fw-bold"><mat-icon style="font-size: 18px; vertical-align: middle;">analytics</mat-icon> สรุปจำนวนที่ผลิตได้ (Sheets)</h6>
             </div>
             <div class="col-md-6">
-              <label class="form-label">จำนวนงานเสีย <span class="text-danger">*</span></label>
-              <input type="number" formControlName="wasteQty" class="form-control" placeholder="0">
+              <label class="form-label text-success fw-bold">งานดี (นับมิเตอร์)</label>
+              <input type="number" formControlName="goodMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-success fw-bold">งานดี (ไม่นับมิเตอร์)</label>
+              <input type="number" formControlName="goodNonMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-danger fw-bold">งานเสีย (นับมิเตอร์)</label>
+              <input type="number" formControlName="wasteMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-danger fw-bold">งานเสีย (ไม่นับมิเตอร์)</label>
+              <input type="number" formControlName="wasteNonMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-12 mt-2">
+              <label class="form-label fw-bold" style="color: #1e1b4b;">กระดาษที่ใช้ทั้งหมด (รวมแผ่นดีและเสีย)</label>
+              <input type="number" formControlName="paperUsed" class="form-control bg-light fw-bold" readonly style="font-size: 1.2rem; color: #1e1b4b;">
             </div>
           </div>
         </form>
@@ -479,20 +495,20 @@
         <form [formGroup]="printingFormRecord2">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterColorStart" class="form-control">
             </div>
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterBwStart" class="form-control">
             </div>
             <div class="col-md-6" *ngIf="printingFormRecord2.get('printerName')?.value === 'Ricoh'">
-              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterSpecialStart" class="form-control">
             </div>
             <div class="col-md-6">
               <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
-              <select formControlName="printerName" class="form-select" style="color: black;">
+              <select formControlName="printerName" class="form-select" style="color: black;" (change)="chengePringterAuto2(printingFormRecord2.get('printerName')?.value)">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
               </select>
@@ -536,13 +552,29 @@
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
             </div>
-            <div class="col-md-6">
-              <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>
-              <input type="number" formControlName="goodQty" class="form-control" placeholder="0">
+            <div class="col-12">
+              <hr>
+              <h6 class="fw-bold"><mat-icon style="font-size: 18px; vertical-align: middle;">analytics</mat-icon> สรุปจำนวนที่ผลิตได้ (Sheets)</h6>
             </div>
             <div class="col-md-6">
-              <label class="form-label">จำนวนงานเสีย <span class="text-danger">*</span></label>
-              <input type="number" formControlName="wasteQty" class="form-control" placeholder="0">
+              <label class="form-label text-success fw-bold">งานดี (นับมิเตอร์)</label>
+              <input type="number" formControlName="goodMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-success fw-bold">งานดี (ไม่นับมิเตอร์)</label>
+              <input type="number" formControlName="goodNonMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-danger fw-bold">งานเสีย (นับมิเตอร์)</label>
+              <input type="number" formControlName="wasteMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-danger fw-bold">งานเสีย (ไม่นับมิเตอร์)</label>
+              <input type="number" formControlName="wasteNonMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-12 mt-2">
+              <label class="form-label fw-bold" style="color: #1e1b4b;">กระดาษที่ใช้ทั้งหมด (รวมแผ่นดีและเสีย)</label>
+              <input type="number" formControlName="paperUsed" class="form-control bg-light fw-bold" readonly style="font-size: 1.2rem; color: #1e1b4b;">
             </div>
           </div>
         </form>
@@ -568,20 +600,20 @@
         <form [formGroup]="printingFormRecord">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterColorStart" class="form-control">
             </div>
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterBwStart" class="form-control">
             </div>
             <div class="col-md-6" *ngIf="printingFormRecord.get('printerName')?.value === 'Ricoh'">
-              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterSpecialStart" class="form-control">
             </div>
             <div class="col-md-6">
               <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
-              <select formControlName="printerName" class="form-select">
+              <select formControlName="printerName" class="form-select" (change)="chengePringterAuto(printingFormRecord.get('printerName')?.value)">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
               </select>
@@ -665,13 +697,29 @@
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
             </div>
-            <div class="col-md-6">
-              <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>
-              <input type="number" formControlName="goodQty" class="form-control" placeholder="0">
+            <div class="col-12">
+              <hr>
+              <h6 class="fw-bold"><mat-icon style="font-size: 18px; vertical-align: middle;">analytics</mat-icon> สรุปจำนวนที่ผลิตได้ (Sheets)</h6>
             </div>
             <div class="col-md-6">
-              <label class="form-label">จำนวนงานเสีย <span class="text-danger">*</span></label>
-              <input type="number" formControlName="wasteQty" class="form-control" placeholder="0">
+              <label class="form-label text-success fw-bold">งานดี (นับมิเตอร์)</label>
+              <input type="number" formControlName="goodMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-success fw-bold">งานดี (ไม่นับมิเตอร์)</label>
+              <input type="number" formControlName="goodNonMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-danger fw-bold">งานเสีย (นับมิเตอร์)</label>
+              <input type="number" formControlName="wasteMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-danger fw-bold">งานเสีย (ไม่นับมิเตอร์)</label>
+              <input type="number" formControlName="wasteNonMeterQty" class="form-control" placeholder="0">
+            </div>
+            <div class="col-12 mt-2">
+              <label class="form-label fw-bold" style="color: #1e1b4b;">กระดาษที่ใช้ทั้งหมด (รวมแผ่นดีและเสีย)</label>
+              <input type="number" formControlName="paperUsed" class="form-control bg-light fw-bold" readonly style="font-size: 1.2rem; color: #1e1b4b;">
             </div>
           </div>
         </form>
@@ -697,20 +745,20 @@
         <form [formGroup]="printingFormRecord2">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ 4 สี เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterColorStart" class="form-control">
             </div>
             <div class="col-md-6">
-              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาวดำ เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterBwStart" class="form-control">
             </div>
             <div class="col-md-6" *ngIf="printingFormRecord2.get('printerName')?.value === 'Ricoh'">
-              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น</label>
+              <label class="form-label">ค่ามิเตอร์ขาว เริ่มต้น <small class="text-primary">(ออโต้)</small></label>
               <input type="number" formControlName="meterSpecialStart" class="form-control">
             </div>
             <div class="col-md-6">
               <label class="form-label">เครื่องพิมพ์<span style="color: red;">*</span></label>
-              <select formControlName="printerName" class="form-select">
+              <select formControlName="printerName" class="form-select" (change)="chengePringterAuto2(printingFormRecord2.get('printerName')?.value)">
                 <option value="Canon">Canon</option>
                 <option value="Ricoh">Ricoh</option>
               </select>
@@ -793,6 +841,10 @@
             <div class="col-md-6">
               <label class="form-label">หมายเหตุ</label>
               <input type="text" formControlName="note" class="form-control">
+            </div>
+            <div class="col-12">
+              <hr>
+              <h6 class="fw-bold"><mat-icon style="font-size: 18px; vertical-align: middle;">analytics</mat-icon> สรุปจำนวนที่ผลิตได้ (Sheets)</h6>
             </div>
             <div class="col-md-6">
               <label class="form-label">จำนวนงานดี <span class="text-danger">*</span></label>

@@ -19,4 +19,9 @@ public class StopPrintRequest {
 
     private Integer goodQty;
     private Integer wasteQty;
+
+    private Integer goodMeterQty;
+    private Integer goodNonMeterQty;
+    private Integer wasteMeterQty;
+    private Integer wasteNonMeterQty;
 }

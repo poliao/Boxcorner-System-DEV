@@ -30,6 +30,7 @@ export class Dcsm25DetailComponent implements OnInit {
   isRicoh = false;
   extraPrints: any[] = [];
   selectedExtraPrint: any = null;
+  latestLogs: any[] = [];
 
 
   constructor(
@@ -63,6 +64,7 @@ export class Dcsm25DetailComponent implements OnInit {
 
     if (this.id) {
       this.loadExtraPrints();
+      this.loadLatestMeters();
     }
   }
 
@@ -213,6 +215,25 @@ export class Dcsm25DetailComponent implements OnInit {
       note: [null],
       goodQty: [null, [Validators.min(0)]],
       wasteQty: [null, [Validators.min(0)]],
+      goodMeterQty: [0, [Validators.min(0)]],
+      goodNonMeterQty: [0, [Validators.min(0)]],
+      wasteMeterQty: [0, [Validators.min(0)]],
+      wasteNonMeterQty: [0, [Validators.min(0)]],
+      paperUsed: [0]
+    });
+
+    // Auto-calculate paperUsed
+    this.printingEndLog.valueChanges.subscribe(val => {
+      if (val) {
+        const total = (Number(val.goodMeterQty) || 0) + 
+                      (Number(val.goodNonMeterQty) || 0) + 
+                      (Number(val.wasteMeterQty) || 0) + 
+                      (Number(val.wasteNonMeterQty) || 0);
+        
+        if (this.printingEndLog.get('paperUsed')?.value !== total) {
+          this.printingEndLog.get('paperUsed')?.setValue(total, { emitEvent: false });
+        }
+      }
     });
   }
 
@@ -280,19 +301,87 @@ export class Dcsm25DetailComponent implements OnInit {
   }
 
   chengePringterAuto(printer: any) {
+    // Clear old meters first
+    this.printingFormRecord.patchValue({
+      meterColorStart: null,
+      meterBwStart: null,
+      meterSpecialStart: null
+    });
+
     if (printer == 'Canon') {
       this.printingFormRecord.get('printerId')?.setValue(2);
+      this.printingFormRecord.get('printerName')?.setValue('Canon');
     } else {
       this.printingFormRecord.get('printerId')?.setValue(1);
+      this.printingFormRecord.get('printerName')?.setValue('Ricoh');
     }
+    this.patchLatestMeters(this.printingFormRecord);
   }
 
   chengePringterAuto2(printer: any) {
+    // Clear old meters first
+    this.printingFormRecord2.patchValue({
+      meterColorStart: null,
+      meterBwStart: null,
+      meterSpecialStart: null
+    });
+
     if (printer == 'Canon') {
       this.printingFormRecord2.get('printerId')?.setValue(2);
+      this.printingFormRecord2.get('printerName')?.setValue('Canon');
     } else {
       this.printingFormRecord2.get('printerId')?.setValue(1);
+      this.printingFormRecord2.get('printerName')?.setValue('Ricoh');
     }
+    this.patchLatestMeters(this.printingFormRecord2);
+  }
+
+  loadLatestMeters() {
+    if (this.id) {
+      this.dcsm25Service.getLogsByJobId(+this.id).subscribe({
+        next: (logs) => {
+          this.latestLogs = logs;
+          this.patchLatestMeters(this.printingFormRecord);
+          this.patchLatestMeters(this.printingFormRecord2);
+        }
+      });
+    }
+  }
+
+  patchLatestMeters(form: FormGroup) {
+    const printerId = form.get('printerId')?.value;
+    const printerName = form.get('printerName')?.value;
+    if (!printerId || !printerName) return;
+
+    // 1. Try finding in current job logs first
+    if (this.latestLogs && this.latestLogs.length > 0) {
+      const logsForPrinter = this.latestLogs
+        .filter((l: any) => l.printer?.name === printerName && l.meterColorEnd != null)
+        .sort((a: any, b: any) => b.id - a.id);
+
+      if (logsForPrinter.length > 0) {
+        const latest = logsForPrinter[0];
+        form.patchValue({
+          meterColorStart: latest.meterColorEnd,
+          meterBwStart: latest.meterBwEnd,
+          meterSpecialStart: latest.meterSpecialEnd
+        });
+        return;
+      }
+    }
+
+    // 2. If not found in current job, fetch the latest meter globally for this machine
+    this.dcsm25Service.getLatestMeter(printerId).subscribe({
+      next: (latestLog) => {
+        if (latestLog && !latestLog.notFound) {
+          form.patchValue({
+            meterColorStart: latestLog.meterColorEnd,
+            meterBwStart: latestLog.meterBwEnd,
+            meterSpecialStart: latestLog.meterSpecialEnd
+          });
+        }
+      }
+    });
   }
 
   startPrintLog() {
@@ -361,16 +450,6 @@ export class Dcsm25DetailComponent implements OnInit {
     const isFinish = Status === 'FINISH' || (Status === 'FINISH' && this.printingForm.getRawValue().print2Page == true);
     const formData = this.printingEndLog.value;
 
-    if (isFinish) {
-      if (formData.goodQty === null || formData.goodQty === undefined || formData.goodQty === '') {
-        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานดี');
-        return;
-      }
-      if (formData.wasteQty === null || formData.wasteQty === undefined || formData.wasteQty === '') {
-        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานเสีย');
-        return;
-      }
-    }
 
     this.printingEndLog.get('logId')?.setValue(this.printingForm.getRawValue().printingRecordId);
     if (Status == 'FINISH' && this.printingForm.getRawValue().print2Page == true) {
@@ -398,6 +477,7 @@ export class Dcsm25DetailComponent implements OnInit {
         this.sweetAlert.success('Success', isFinish ? 'พิมพ์เสร็จสิ้น' : 'หยุดพิมพ์ชั่วคราว');
         if (isFinish) this.closeModal('printingLogEnd');
         this.printingEndLog.reset();
+        this.loadLatestMeters();
       }, error: (error) => {
         this.sweetAlert.error('Error', error?.error?.error || 'เกิดข้อผิดพลาดในการหยุดพิมพ์');
       }
@@ -408,16 +488,6 @@ export class Dcsm25DetailComponent implements OnInit {
     const isFinish = Status === 'FINISH_PAGE2';
     const formData = this.printingEndLog.value;
 
-    if (isFinish) {
-      if (formData.goodQty === null || formData.goodQty === undefined || formData.goodQty === '') {
-        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานดี');
-        return;
-      }
-      if (formData.wasteQty === null || formData.wasteQty === undefined || formData.wasteQty === '') {
-        this.sweetAlert.warning('เตือน', 'กรุณากรอกจำนวนงานเสีย');
-        return;
-      }
-    }
 
     this.printingEndLog.get('logId')?.setValue(this.printingForm.getRawValue().printingRecordId);
     if (Status == 'PAUSED_PAGE2' && this.printingForm.getRawValue().print2Page == true) {
@@ -443,6 +513,7 @@ export class Dcsm25DetailComponent implements OnInit {
           });
         })
         this.sweetAlert.success('Success', isFinish ? 'พิมพ์หน้า 2 เสร็จสิ้น' : 'หยุดพิมพ์หน้า 2 ชั่วคราว');
+        this.loadLatestMeters();
       }, error: (error) => {
         this.sweetAlert.error('Error', error?.error?.error || 'เกิดข้อผิดพลาด');
       }
@@ -566,6 +637,7 @@ export class Dcsm25DetailComponent implements OnInit {
                   next: (response) => {
                     this.printingForm.patchValue(response);
                     this.loadExtraPrints();
+                    this.loadLatestMeters();
                     this.sweetAlert.success('Success', action === 'FINISH' ? 'พิมพ์เสร็จสิ้น' : 'หยุดชั่วคราว');
                   }
                 });
@@ -666,6 +738,7 @@ export class Dcsm25DetailComponent implements OnInit {
                   next: (response) => {
                     this.printingForm.patchValue(response);
                     this.loadExtraPrints();
+                    this.loadLatestMeters();
                     this.sweetAlert.success('Success', action === 'FINISH' ? 'พิมพ์หน้า 2 เสร็จสิ้น' : 'หยุดพิมพ์หน้า 2 ชั่วคราว');
                   }
                 });

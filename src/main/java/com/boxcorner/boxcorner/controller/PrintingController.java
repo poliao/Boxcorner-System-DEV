@@ -107,6 +107,20 @@ public class PrintingController {
         }
     }
 
+    @GetMapping("/latest-meter")
+    public ResponseEntity<?> getLatestMeterByPrinter(@RequestParam(value = "printerId") Integer printerId) {
+        try {
+            PrintLog log = printingService.getLatestMeterByPrinter(printerId);
+            if (log != null) {
+                return ResponseEntity.ok(log);
+            } else {
+                return ResponseEntity.ok(Map.of("notFound", true));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @PostMapping("/batchLogs")
     public ResponseEntity<?> getBatchLogs(@RequestBody java.util.List<Long> jobIds) {
         try {

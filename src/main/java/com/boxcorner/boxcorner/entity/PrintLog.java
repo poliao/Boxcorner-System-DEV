@@ -93,6 +93,18 @@ public class PrintLog extends BaseEntity {
     @Column(name = "waste_qty")
     private Integer wasteQty;
 
+    @Column(name = "good_meter_qty")
+    private Integer goodMeterQty;
+
+    @Column(name = "good_non_meter_qty")
+    private Integer goodNonMeterQty;
+
+    @Column(name = "waste_meter_qty")
+    private Integer wasteMeterQty;
+
+    @Column(name = "waste_non_meter_qty")
+    private Integer wasteNonMeterQty;
+
     public long getColorUsage() {
         if (meterColorEnd == null || meterColorStart == null)
             return 0;

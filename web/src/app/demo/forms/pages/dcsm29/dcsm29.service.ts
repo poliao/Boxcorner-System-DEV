@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class Dcsm29Service {
 
   private apiUrl = environment.apiUrl;
+  private odUrl = `${environment.apiUrl}/printing-od`;
 
   constructor(private http: HttpClient) { }
 
@@ -31,7 +32,7 @@ export class Dcsm29Service {
       }
     });
 
-    return this.http.get(`${this.apiUrl}/print-job/search`, { params: params });
+    return this.http.get(`${this.odUrl}/print-job/search`, { params: params });
   }
 
   getLogSummary(filters: any): Observable<any> {
@@ -51,27 +52,27 @@ export class Dcsm29Service {
       }
     });
 
-    return this.http.get(`${this.apiUrl}/printing/summary`, { params: params });
+    return this.http.get(`${this.odUrl}/summary`, { params: params });
   }
 
   getById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/print-job/getById?id=${id}`);
+    return this.http.get(`${this.odUrl}/print-job/getById?id=${id}`);
   }
 
   getLogsByJobId(jobId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/printing/logsByJobId?jobId=${jobId}`);
+    return this.http.get<any[]>(`${this.odUrl}/logsByJobId?jobId=${jobId}`);
   }
 
   getExtraPrintsByJobId(printJobId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
+    return this.http.get<any[]>(`${this.odUrl}/extra-prints/getByPrintJobId?printJobId=${printJobId}`);
   }
 
   getBatchLogs(jobIds: number[]): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/printing/batchLogs`, jobIds);
+    return this.http.post<any>(`${this.odUrl}/batchLogs`, jobIds);
   }
 
   getBatchExtraPrints(printJobIds: number[]): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/extra-prints/batchByPrintJobIds`, printJobIds);
+    return this.http.post<any>(`${this.odUrl}/extra-prints/batchByPrintJobIds`, printJobIds);
   }
 
   getStandaloneLogs(filters: any): Observable<any[]> {
@@ -86,6 +87,6 @@ export class Dcsm29Service {
       }
     });
 
-    return this.http.get<any[]>(`${this.apiUrl}/printing/standalone`, { params });
+    return this.http.get<any[]>(`${this.odUrl}/standalone`, { params });
   }
 }

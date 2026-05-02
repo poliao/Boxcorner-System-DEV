@@ -105,4 +105,12 @@ export class Dcsm25Service {
   saveCoatingJob(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/coating-jobs/create`, data);
   }
+
+  getLogsByJobId(jobId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/printing/logsByJobId?jobId=${jobId}`);
+  }
+
+  getLatestMeter(printerId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/printing/latest-meter?printerId=${printerId}`);
+  }
 }

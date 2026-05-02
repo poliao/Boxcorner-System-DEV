@@ -111,8 +111,27 @@ public class PrintingService {
         log.setMeterSpecialEnd(req.getMeterSpecialEnd());
         log.setPaperReqEnd(req.getPaperReqEnd());
         log.setNote(req.getNote());
-        log.setGoodQty(req.getGoodQty());
-        log.setWasteQty(req.getWasteQty());
+        log.setGoodMeterQty(req.getGoodMeterQty());
+        log.setGoodNonMeterQty(req.getGoodNonMeterQty());
+        log.setWasteMeterQty(req.getWasteMeterQty());
+        log.setWasteNonMeterQty(req.getWasteNonMeterQty());
+
+        // Calculate total good/waste if detailed quantities are provided
+        if (req.getGoodMeterQty() != null || req.getGoodNonMeterQty() != null) {
+            int gMeter = req.getGoodMeterQty() != null ? req.getGoodMeterQty() : 0;
+            int gNonMeter = req.getGoodNonMeterQty() != null ? req.getGoodNonMeterQty() : 0;
+            log.setGoodQty(gMeter + gNonMeter);
+        } else {
+            log.setGoodQty(req.getGoodQty());
+        }
+
+        if (req.getWasteMeterQty() != null || req.getWasteNonMeterQty() != null) {
+            int wMeter = req.getWasteMeterQty() != null ? req.getWasteMeterQty() : 0;
+            int wNonMeter = req.getWasteNonMeterQty() != null ? req.getWasteNonMeterQty() : 0;
+            log.setWasteQty(wMeter + wNonMeter);
+        } else {
+            log.setWasteQty(req.getWasteQty());
+        }
 
         // 3. Obtain Total Impressions (ยอดที่พิมพ์จริงและเผื่อเสีย) from form
         long totalUsed = (req.getPaperUsed() != null) ? req.getPaperUsed() : 0;
@@ -311,6 +330,10 @@ public class PrintingService {
 
     public List<PrintLog> getLogsByJobId(Long jobId) {
         return printLogRepository.findByJobIdOrderByStartedAtDesc(jobId);
+    }
+
+    public PrintLog getLatestMeterByPrinter(Integer printerId) {
+        return printLogRepository.findFirstByPrinterIdAndEndedAtIsNotNullOrderByEndedAtDesc(printerId).orElse(null);
     }
 
     public Map<Long, List<PrintLog>> getBatchLogs(List<Long> jobIds) {
