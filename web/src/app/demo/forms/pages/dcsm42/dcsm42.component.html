@@ -18,7 +18,9 @@
     <div class="card-body p-3">
       <div class="row g-3">
         <div [ngClass]="userRole === 'SupperAdmin' ? 'col-md-4' : 'col-md-6'">
-          <button class="btn w-100 py-3 text-start border rounded-3" [class.btn-primary]="activeMenu() === 'lalamove'"
+          <button class="btn w-100 py-3 text-start border rounded-3"
+            [style.backgroundColor]="activeMenu() === 'lalamove' ? '#fd7e14' : ''"
+            [style.borderColor]="activeMenu() === 'lalamove' ? '#fd7e14' : ''"
             [class.text-white]="activeMenu() === 'lalamove'" [class.bg-light]="activeMenu() !== 'lalamove'"
             (click)="activeMenu.set('lalamove')">
             <h5 class="mb-1 fw-bold">เมนู Lalamove</h5>
@@ -28,15 +30,19 @@
         </div>
         <div [ngClass]="userRole === 'SupperAdmin' ? 'col-md-4' : 'col-md-6'">
           <button class="btn w-100 py-3 text-start border rounded-3"
-            [class.btn-primary]="activeMenu() === 'transportCash'" [class.text-white]="activeMenu() === 'transportCash'"
-            [class.bg-light]="activeMenu() !== 'transportCash'" (click)="activeMenu.set('transportCash')">
+            [style.backgroundColor]="activeMenu() === 'transportCash' ? '#0dcaf0' : ''"
+            [style.borderColor]="activeMenu() === 'transportCash' ? '#0dcaf0' : ''"
+            [class.text-white]="activeMenu() === 'transportCash'" [class.bg-light]="activeMenu() !== 'transportCash'"
+            (click)="activeMenu.set('transportCash')">
             <h5 class="mb-1 fw-bold">เงินสดย่อยขนส่ง</h5>
             <div class="small" [class.text-white-50]="activeMenu() === 'transportCash'"
               [class.text-muted]="activeMenu() !== 'transportCash'">เติมเงิน / เบิกเงินของฝ่ายขนส่ง</div>
           </button>
         </div>
         <div class="col-md-4" *ngIf="userRole === 'SupperAdmin'">
-          <button class="btn w-100 py-3 text-start border rounded-3" [class.btn-primary]="activeMenu() === 'officeCash'"
+          <button class="btn w-100 py-3 text-start border rounded-3"
+            [style.backgroundColor]="activeMenu() === 'officeCash' ? '#0d6efd' : ''"
+            [style.borderColor]="activeMenu() === 'officeCash' ? '#0d6efd' : ''"
             [class.text-white]="activeMenu() === 'officeCash'" [class.bg-light]="activeMenu() !== 'officeCash'"
             (click)="activeMenu.set('officeCash')">
             <h5 class="mb-1 fw-bold">เงินสดย่อยออฟฟิศ</h5>
@@ -138,11 +144,20 @@
                   <option value="other">อื่นๆ / ค่าใช้จ่ายอื่น</option>
                 </select>
               </div>
-              <div class="col-12">
+              <div class="col-6">
                 <label class="form-label small fw-bold text-muted">เลขที่จ๊อบ <span class="fw-normal">(ค่า Lalamove
                     ต้องระบุ)</span></label>
                 <input type="text" class="form-control bg-light" [(ngModel)]="walletForm.jobNo"
                   placeholder="เช่น JO-680506-001">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">การจ่ายเงิน</label>
+                <select class="form-select bg-light" [(ngModel)]="walletForm.paymentType"
+                  [disabled]="walletForm.type !== 'expense'">
+                  <option value="จ่ายเอง">จ่ายเอง</option>
+                  <option value="จ่ายก่อน">จ่ายก่อน</option>
+                  <option value="ลูกค้าจ่าย">ลูกค้าจ่าย</option>
+                </select>
               </div>
               <div class="col-12">
                 <label class="form-label small fw-bold text-muted">ลูกค้า / ผู้เกี่ยวข้อง</label>
@@ -197,6 +212,7 @@
                     <th class="py-3 text-muted small text-uppercase">วันที่/เวลา</th>
                     <th class="py-3 text-muted small text-uppercase">รายการ</th>
                     <th class="py-3 text-muted small text-uppercase">จ๊อบ</th>
+                    <th class="py-3 text-muted small text-uppercase">การจ่ายเงิน</th>
                     <th class="py-3 text-muted small text-uppercase">ลูกค้า</th>
                     <th class="py-3 text-muted small text-uppercase">รายละเอียด</th>
                     <th class="py-3 text-muted small text-uppercase text-end">เข้า</th>
@@ -214,6 +230,11 @@
                     <td><span class="badge" [ngClass]="walletBadge(row.type)">{{ walletTypeLabel(row.type) }}</span>
                     </td>
                     <td class="fw-bold">{{ row.jobNo }}</td>
+                    <td>
+                      <span *ngIf="row.paymentType" class="badge bg-success text-dark border">{{ row.paymentType
+                        }}</span>
+                      <span *ngIf="!row.paymentType">-</span>
+                    </td>
                     <td>{{ row.customer }}</td>
                     <td class="text-muted">{{ row.description }}</td>
                     <td class="text-end text-primary fw-bold">{{ row.income ? thb(row.income) : '-' }}</td>
@@ -490,6 +511,7 @@
               <th class="py-2 text-center">วันที่</th>
               <th class="py-2 text-center">เวลา</th>
               <th class="py-2">ประเภท</th>
+              <th class="py-2">การจ่ายเงิน</th>
               <th class="py-2">จ๊อบ</th>
               <th class="py-2">ลูกค้า</th>
               <th class="py-2">รายละเอียด</th>
@@ -503,6 +525,7 @@
               <td class="text-center">{{ row.date }}</td>
               <td class="text-center">{{ row.time }}</td>
               <td>{{ walletTypeLabel(row.type) }}</td>
+              <td>{{ row.paymentType || '-' }}</td>
               <td>{{ row.jobNo }}</td>
               <td>{{ row.customer }}</td>
               <td>{{ row.description }}</td>
@@ -582,6 +605,7 @@
         <th class="py-2 text-center">วันที่</th>
         <th class="py-2 text-center">เวลา</th>
         <th class="py-2">ประเภท</th>
+        <th class="py-2">การจ่ายเงิน</th>
         <th class="py-2">จ๊อบ</th>
         <th class="py-2">ลูกค้า</th>
         <th class="py-2">รายละเอียด</th>
@@ -595,6 +619,7 @@
         <td class="text-center">{{ row.date }}</td>
         <td class="text-center">{{ row.time }}</td>
         <td>{{ walletTypeLabel(row.type) }}</td>
+        <td>{{ row.paymentType || '-' }}</td>
         <td>{{ row.jobNo }}</td>
         <td>{{ row.customer }}</td>
         <td>{{ row.description }}</td>

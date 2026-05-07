@@ -28,6 +28,9 @@ public class LalamoveWallet {
     @Column(nullable = false)
     private String type; // 'carry', 'topup', 'expense', 'other'
 
+    @Column(name = "payment_type")
+    private String paymentType;
+
     @Column(name = "job_no")
     private String jobNo;
 

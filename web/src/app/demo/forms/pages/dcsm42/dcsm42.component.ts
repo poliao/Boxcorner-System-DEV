@@ -21,6 +21,7 @@ export type WalletEntry = {
   date: string;
   time: string;
   type: WalletType;
+  paymentType?: string;
   jobNo: string;
   customer: string;
   description: string;
@@ -246,7 +247,7 @@ export class Dcsm42Component implements OnInit {
   transportCashFilters: CashFilters = { keyword: '', withdrawer: '', cashType: 'all', category: 'all', dateFrom: '', dateTo: '' };
   officeCashFilters: CashFilters = { keyword: '', withdrawer: '', cashType: 'all', category: 'all', dateFrom: '', dateTo: '' };
 
-  walletForm = { date: today, type: 'expense' as WalletType, jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
+  walletForm = { date: today, type: 'expense' as WalletType, paymentType: 'จ่ายเอง', jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
   transportCashForm = { cashType: 'expense' as CashType, withdrawer: '', approver: '', department: 'ขนส่ง', category: 'เบิกซื้อของ', jobNo: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
   officeCashForm = { cashType: 'expense' as CashType, withdrawer: '', approver: '', department: 'ออฟฟิศ', category: 'เบิกค่าเอกสาร', jobNo: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
 
@@ -397,6 +398,7 @@ export class Dcsm42Component implements OnInit {
       date: entryDate,
       time: entryTime,
       type: this.walletForm.type,
+      paymentType: this.walletForm.paymentType,
       jobNo: this.walletForm.jobNo.trim() || '-',
       customer: this.walletForm.customer.trim() || '-',
       description,
@@ -412,7 +414,7 @@ export class Dcsm42Component implements OnInit {
   };
 
   readonly resetWalletForm = () => {
-    this.walletForm = { date: today, type: 'expense', jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
+    this.walletForm = { date: today, type: 'expense', paymentType: 'จ่ายเอง', jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
   };
 
   getWalletDefaultDescription(type: WalletType) {
@@ -495,6 +497,7 @@ export class Dcsm42Component implements OnInit {
         { label: 'วันที่', value: row.date },
         { label: 'เวลา', value: row.time },
         { label: 'ประเภท', value: this.walletTypeLabel(row.type) },
+        { label: 'การจ่ายเงิน', value: row.paymentType || '-' },
         { label: 'เลขที่จ๊อบ', value: row.jobNo },
         { label: 'ลูกค้า', value: row.customer },
         { label: 'รายละเอียด', value: row.description },
@@ -550,7 +553,7 @@ export class Dcsm42Component implements OnInit {
 
   exportExcel() {
     const csvContent = this.activeMenu() === 'lalamove'
-      ? makeCsv(['วันที่', 'เวลา', 'ประเภท', 'เลขที่จ๊อบ', 'ลูกค้า', 'รายละเอียด', 'เงินเข้า', 'เงินออก', 'คงเหลือ', 'ผู้บันทึก', 'หมายเหตุ'], this.filteredWalletRows().map((row) => [row.date, row.time, this.walletTypeLabel(row.type), row.jobNo, row.customer, row.description, row.income || '', row.expense || '', row.balance, row.recorder, row.note]))
+      ? makeCsv(['วันที่', 'เวลา', 'ประเภท', 'การจ่ายเงิน', 'เลขที่จ๊อบ', 'ลูกค้า', 'รายละเอียด', 'เงินเข้า', 'เงินออก', 'คงเหลือ', 'ผู้บันทึก', 'หมายเหตุ'], this.filteredWalletRows().map((row) => [row.date, row.time, this.walletTypeLabel(row.type), row.paymentType || '-', row.jobNo, row.customer, row.description, row.income || '', row.expense || '', row.balance, row.recorder, row.note]))
       : makeCsv(['วันที่', 'เวลา', 'รายการ', 'คนที่เบิกไป', 'ผู้อนุมัติให้เบิก', 'ฝ่าย', 'ประเภท', 'เลขที่จ๊อบ', 'รายละเอียด', 'เงินเข้า', 'เงินออก', 'คงเหลือ', 'ผู้บันทึก', 'หมายเหตุ'], this.filteredCashRows().map((row) => [row.date, row.time, row.cashType === 'topup' ? 'เติมเงิน' : 'เบิกเงิน', row.withdrawer, row.approver, row.department, row.category, row.jobNo, row.description, row.income || '', row.expense || '', row.balance, row.recorder, row.note]));
     const fileName = this.activeMenu() === 'lalamove' ? `lalamove-report-${this.month()}.csv` : this.isOfficeCash() ? `office-cash-report-${this.month()}.csv` : `transport-cash-report-${this.month()}.csv`;
     const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
