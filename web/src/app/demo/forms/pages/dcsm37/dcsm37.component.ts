@@ -40,7 +40,7 @@ export class Dcsm37Component implements OnInit {
   searchParams = {
     jobId: '', folderName: '', customerName: '',
     jobOwner: '', jobStatus: '', processStatus: 'จัดส่งเรียบร้อย',
-    startDate: '', endDate: ''
+    jobType: '', startDate: '', endDate: ''
   };
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -84,7 +84,7 @@ export class Dcsm37Component implements OnInit {
   }
 
   clearFilters() {
-    this.searchParams = { jobId: '', folderName: '', customerName: '', jobOwner: '', jobStatus: '', processStatus: 'จัดส่งเรียบร้อย', startDate: '', endDate: '' };
+    this.searchParams = { jobId: '', folderName: '', customerName: '', jobOwner: '', jobStatus: '', processStatus: 'จัดส่งเรียบร้อย', jobType: '', startDate: '', endDate: '' };
     this.onSearchChange();
   }
 

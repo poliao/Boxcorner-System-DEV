@@ -29,13 +29,14 @@ public class ReorderController {
             @RequestParam(value = "jobOwner", required = false) String jobOwner,
             @RequestParam(value = "jobStatus", required = false) String jobStatus,
             @RequestParam(value = "processStatus", required = false) String processStatus,
+            @RequestParam(value = "jobType", required = false) String jobType,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "20") int size) {
         try {
             Page<ReorderDTO> result = reorderService.search(
-                    jobId, folderName, customerName, jobOwner, jobStatus, processStatus, startDate, endDate, page,
+                    jobId, folderName, customerName, jobOwner, jobStatus, processStatus, jobType, startDate, endDate, page,
                     size);
             return ResponseEntity.ok(result);
         } catch (Exception e) {

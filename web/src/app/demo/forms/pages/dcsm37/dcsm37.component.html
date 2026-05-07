@@ -33,11 +33,19 @@
           placeholder="สถานะ" (keyup.enter)="onSearchChange()">
       </div>
       <div class="col-md-1">
+        <label class="form-label small fw-bold">ประเภท</label>
+        <select class="form-select form-select-sm" [(ngModel)]="searchParams.jobType" (change)="onSearchChange()">
+          <option value="">ทั้งหมด</option>
+          <option value="OD">OD</option>
+          <option value="OS">OS</option>
+        </select>
+      </div>
+      <div class="col-md-2">
         <label class="form-label small fw-bold">วันที่ (จาก)</label>
         <input type="date" class="form-control form-control-sm" [(ngModel)]="searchParams.startDate"
           (change)="onSearchChange()">
       </div>
-      <div class="col-md-1">
+      <div class="col-md-2">
         <label class="form-label small fw-bold">วันที่ (ถึง)</label>
         <input type="date" class="form-control form-control-sm" [(ngModel)]="searchParams.endDate"
           (change)="onSearchChange()">

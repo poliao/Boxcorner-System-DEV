@@ -42,13 +42,13 @@ public class ReorderService {
     private final ProductionJobRepository productionJobRepo;
 
     public Page<ReorderDTO> search(String jobId, String folderName, String customerName,
-            String jobOwner, String jobStatus, String processStatus,
+            String jobOwner, String jobStatus, String processStatus, String jobType,
             LocalDate startDate, LocalDate endDate, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "job_id"));
         Page<ProductionOrder> orders = productionOrderRepo.findLatestByFilters(
                 null, jobId, folderName, jobOwner, startDate, endDate,
-                null, jobStatus, processStatus, null, null, null, null, pageable);
+                null, jobStatus, processStatus, null, null, jobType, null, pageable);
 
         List<ReorderDTO> dtos = orders.getContent().stream().map(o -> {
             ReorderDTO dto = buildDTO(o, false);

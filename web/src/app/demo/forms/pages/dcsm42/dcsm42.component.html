@@ -1,0 +1,678 @@
+<div class="container-fluid py-4 d-print-none">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-dark text-white rounded-pill small fw-bold mb-3">
+        BCA ERP / Cash Control
+      </div>
+      <h2 class="mb-1 fw-bold">ทะเบียนงานขนส่งและเงินสดย่อย</h2>
+      <p class="text-muted mb-0">หน้าเมนูกลางสำหรับ Lalamove, เงินสดย่อยขนส่ง และเงินสดย่อยออฟฟิศ</p>
+    </div>
+    <div class="text-end">
+      <div class="text-muted small fw-bold">เมนูที่ใช้งานอยู่</div>
+      <h3 class="mb-0 text-primary fw-bold">{{ themeName }}</h3>
+      <div class="text-muted small">ประจำเดือน {{ month() }}</div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4 border-0">
+    <div class="card-body p-3">
+      <div class="row g-3">
+        <div [ngClass]="userRole === 'SupperAdmin' ? 'col-md-4' : 'col-md-6'">
+          <button class="btn w-100 py-3 text-start border rounded-3" [class.btn-primary]="activeMenu() === 'lalamove'"
+            [class.text-white]="activeMenu() === 'lalamove'" [class.bg-light]="activeMenu() !== 'lalamove'"
+            (click)="activeMenu.set('lalamove')">
+            <h5 class="mb-1 fw-bold">เมนู Lalamove</h5>
+            <div class="small" [class.text-white-50]="activeMenu() === 'lalamove'"
+              [class.text-muted]="activeMenu() !== 'lalamove'">เติมเงิน / เรียกรถ / เช็คจ๊อบ</div>
+          </button>
+        </div>
+        <div [ngClass]="userRole === 'SupperAdmin' ? 'col-md-4' : 'col-md-6'">
+          <button class="btn w-100 py-3 text-start border rounded-3"
+            [class.btn-primary]="activeMenu() === 'transportCash'" [class.text-white]="activeMenu() === 'transportCash'"
+            [class.bg-light]="activeMenu() !== 'transportCash'" (click)="activeMenu.set('transportCash')">
+            <h5 class="mb-1 fw-bold">เงินสดย่อยขนส่ง</h5>
+            <div class="small" [class.text-white-50]="activeMenu() === 'transportCash'"
+              [class.text-muted]="activeMenu() !== 'transportCash'">เติมเงิน / เบิกเงินของฝ่ายขนส่ง</div>
+          </button>
+        </div>
+        <div class="col-md-4" *ngIf="userRole === 'SupperAdmin'">
+          <button class="btn w-100 py-3 text-start border rounded-3" [class.btn-primary]="activeMenu() === 'officeCash'"
+            [class.text-white]="activeMenu() === 'officeCash'" [class.bg-light]="activeMenu() !== 'officeCash'"
+            (click)="activeMenu.set('officeCash')">
+            <h5 class="mb-1 fw-bold">เงินสดย่อยออฟฟิศ</h5>
+            <div class="small" [class.text-white-50]="activeMenu() === 'officeCash'"
+              [class.text-muted]="activeMenu() !== 'officeCash'">เติมเงิน / เบิกเงินของฝ่ายออฟฟิศ</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Tools -->
+  <div class="card shadow-sm mb-4 border-0 bg-light">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+      <div>
+        <h5 class="mb-1 fw-bold">เครื่องมือรายงาน</h5>
+        <div class="text-muted small">เลือกเดือน ตรวจรายงาน แล้วส่งออกเป็น PDF หรือ Excel</div>
+      </div>
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <input type="month" class="form-control w-auto border-secondary" [ngModel]="month()"
+          (ngModelChange)="month.set($event)">
+        <button mat-flat-button color="primary" (click)="showReport.set(true)">ดูรายงานส่งบัญชี</button>
+        <button mat-flat-button color="accent" (click)="exportPDF()">Export PDF</button>
+        <button mat-flat-button class="bg-success text-white" (click)="exportExcel()">Export Excel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lalamove Content -->
+  <ng-container *ngIf="activeMenu() === 'lalamove'">
+    <div class="row g-3 mb-4">
+      <div class="col-md-3" *ngFor="let item of walletReportSummaryItems()">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <div class="text-muted small fw-bold">{{ item.title }}</div>
+            <h3 class="mt-2 mb-0 fw-bold" [ngClass]="item.color">{{ item.value }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0 fw-bold">เช็ครหัสงาน / ค้นหารายการใช้เงิน</h5>
+            <p class="text-muted small mb-0 mt-1">ค้นหาว่าจ๊อบนี้ใช้เงินไปเท่าไหร่ แยกตามประเภทงานและช่วงวันที่ได้</p>
+          </div>
+          <button mat-stroked-button (click)="clearWalletFilters()">ล้างการค้นหา</button>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">ค้นหารหัสงาน / JO / QT</label>
+            <input type="text" class="form-control bg-light" [(ngModel)]="walletFilters.jobNo"
+              (ngModelChange)="onFilterChange()" placeholder="เช่น JO-680506-001">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">ประเภทงาน</label>
+            <select class="form-select bg-light" [(ngModel)]="walletFilters.type" (ngModelChange)="onFilterChange()">
+              <option value="all">ทั้งหมด</option>
+              <option value="carry">ยอดยกมา</option>
+              <option value="topup">เติมเงิน</option>
+              <option value="expense">ค่า Lalamove</option>
+              <option value="other">อื่นๆ</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">วันที่เริ่มต้น</label>
+            <input type="date" class="form-control bg-light" [(ngModel)]="walletFilters.dateFrom"
+              (ngModelChange)="onFilterChange()">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold text-muted">วันที่สิ้นสุด</label>
+            <input type="date" class="form-control bg-light" [(ngModel)]="walletFilters.dateTo"
+              (ngModelChange)="onFilterChange()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body">
+            <h5 class="fw-bold border-bottom pb-3 mb-3">บันทึกรายการ Lalamove</h5>
+            <div class="alert alert-secondary small py-2 mb-3 border-0">เวลาบันทึกอัตโนมัติ: <strong
+                class="text-dark">{{ currentTime() }}</strong></div>
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">วันที่</label>
+                <input type="date" class="form-control bg-light" [(ngModel)]="walletForm.date">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">ประเภท</label>
+                <select class="form-select bg-light" [(ngModel)]="walletForm.type">
+                  <option value="carry">ยอดยกมา / เงินเก่า</option>
+                  <option value="topup">เติมเงินเข้า Lalamove</option>
+                  <option value="expense">ใช้เงินเรียก Lalamove</option>
+                  <option value="other">อื่นๆ / ค่าใช้จ่ายอื่น</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">เลขที่จ๊อบ <span class="fw-normal">(ค่า Lalamove
+                    ต้องระบุ)</span></label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="walletForm.jobNo"
+                  placeholder="เช่น JO-680506-001">
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">ลูกค้า / ผู้เกี่ยวข้อง</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="walletForm.customer"
+                  placeholder="ชื่อลูกค้า หรือฝ่ายที่ขอเรียกรถ">
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">รายละเอียดรายการ</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="walletForm.description"
+                  placeholder="เช่น ค่าเรียก Lalamove / เติมเงิน / ค่าทางด่วน">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">จำนวนเงิน</label>
+                <input type="number" class="form-control bg-light" [(ngModel)]="walletForm.amount" placeholder="0.00">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">ผู้บันทึก</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="walletForm.recorder"
+                  placeholder="ชื่อ/ฝ่าย" readonly>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">หมายเหตุ</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="walletForm.note"
+                  placeholder="เช่น ส่งด่วน / ส่งตัวอย่าง / แนบสลิปแล้ว">
+              </div>
+              <div class="col-6 mt-4">
+                <button mat-flat-button color="primary" class="w-100 py-2" (click)="addWalletEntry()">บันทึก</button>
+              </div>
+              <div class="col-6 mt-4">
+                <button mat-stroked-button class="w-100 py-2" (click)="resetWalletForm()">ล้างฟอร์ม</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-8">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">รายการ Lalamove ประจำเดือน {{ month() }}</h5>
+                <div class="text-muted small">แสดง {{ filteredWalletRows().length }} จาก {{ walletMonthRows().length }}
+                  รายการ</div>
+              </div>
+            </div>
+
+            <div class="table-responsive flex-grow-1 border">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="py-3 text-muted small text-uppercase">วันที่/เวลา</th>
+                    <th class="py-3 text-muted small text-uppercase">รายการ</th>
+                    <th class="py-3 text-muted small text-uppercase">จ๊อบ</th>
+                    <th class="py-3 text-muted small text-uppercase">ลูกค้า</th>
+                    <th class="py-3 text-muted small text-uppercase">รายละเอียด</th>
+                    <th class="py-3 text-muted small text-uppercase text-end">เข้า</th>
+                    <th class="py-3 text-muted small text-uppercase text-end">ออก</th>
+                    <th class="py-3 text-muted small text-uppercase text-end">คงเหลือ</th>
+                    <th class="py-3 text-muted small text-uppercase text-center">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of walletPaging().rows">
+                    <td>
+                      <div class="fw-bold">{{ row.date }}</div>
+                      <div class="small text-muted"><small>{{ row.time }}</small></div>
+                    </td>
+                    <td><span class="badge" [ngClass]="walletBadge(row.type)">{{ walletTypeLabel(row.type) }}</span>
+                    </td>
+                    <td class="fw-bold">{{ row.jobNo }}</td>
+                    <td>{{ row.customer }}</td>
+                    <td class="text-muted">{{ row.description }}</td>
+                    <td class="text-end text-primary fw-bold">{{ row.income ? thb(row.income) : '-' }}</td>
+                    <td class="text-end text-danger fw-bold">{{ row.expense ? thb(row.expense) : '-' }}</td>
+                    <td class="text-end text-success fw-bold">{{ thb(row.balance) }}</td>
+                    <td class="text-center text-nowrap">
+                      <button mat-icon-button color="primary"
+                        (click)="openWalletDetail(row)"><mat-icon>visibility</mat-icon></button>
+                      <button mat-icon-button color="warn"
+                        (click)="deleteWalletEntry(row.id)"><mat-icon>delete</mat-icon></button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="walletPaging().rows.length === 0">
+                    <td colspan="9" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <mat-paginator [length]="walletPaging().total" [pageSize]="walletPageSize()"
+              [pageIndex]="walletPaging().page - 1" [pageSizeOptions]="pageSizeOptions"
+              (page)="onPageChange('wallet', $event)" class="mt-3 bg-light border rounded">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Cash Content -->
+  <ng-container *ngIf="activeMenu() !== 'lalamove'">
+    <div class="row g-3 mb-4">
+      <div class="col-md-3" *ngFor="let item of cashReportSummaryItems()">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <div class="text-muted small fw-bold">{{ item.title }}</div>
+            <h3 class="mt-2 mb-0 fw-bold" [ngClass]="item.color">{{ item.value }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="mb-0 fw-bold">ค้นหา{{ themeName }}</h5>
+            <p class="text-muted small mb-0 mt-1">ค้นหาจากคนที่เบิกไป ประเภท รายละเอียด รหัสงาน และวันที่</p>
+          </div>
+          <button mat-stroked-button (click)="clearCashFilters()">ล้างการค้นหา</button>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-muted">ค้นหา JO / รายละเอียด</label>
+            <input type="text" class="form-control bg-light" [(ngModel)]="activeCashFilters().keyword"
+              (ngModelChange)="onFilterChange()" placeholder="เช่น JO / ค่าของ">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-muted">คนที่เบิกไป</label>
+            <input type="text" class="form-control bg-light" [(ngModel)]="activeCashFilters().withdrawer"
+              (ngModelChange)="onFilterChange()" placeholder="ชื่อคนที่เบิก">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-muted">รายการ</label>
+            <select class="form-select bg-light" [(ngModel)]="activeCashFilters().cashType"
+              (ngModelChange)="onFilterChange()">
+              <option value="all">ทั้งหมด</option>
+              <option value="topup">เติมเงิน</option>
+              <option value="expense">เบิกเงิน</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-muted">ประเภทเบิก</label>
+            <select class="form-select bg-light" [(ngModel)]="activeCashFilters().category"
+              (ngModelChange)="onFilterChange()">
+              <option value="all">ทั้งหมด</option>
+              <option *ngFor="let cat of pettyCashCategories" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-muted">วันที่เริ่มต้น</label>
+            <input type="date" class="form-control bg-light" [(ngModel)]="activeCashFilters().dateFrom"
+              (ngModelChange)="onFilterChange()">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-bold text-muted">วันที่สิ้นสุด</label>
+            <input type="date" class="form-control bg-light" [(ngModel)]="activeCashFilters().dateTo"
+              (ngModelChange)="onFilterChange()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body">
+            <h5 class="fw-bold border-bottom pb-3 mb-3">บันทึก{{ themeName }}</h5>
+            <div class="alert alert-secondary small py-2 mb-3 border-0">วันที่/เวลาอัตโนมัติ: <strong
+                class="text-dark">{{ today }} {{ currentTime() }}</strong></div>
+
+            <div class="d-flex gap-2 mb-3">
+              <button class="btn flex-fill fw-bold border"
+                [ngClass]="activeCashForm().cashType === 'topup' ? 'btn-primary' : 'btn-light'"
+                (click)="setCashType('topup')">เติมเงิน</button>
+              <button class="btn flex-fill fw-bold border"
+                [ngClass]="activeCashForm().cashType === 'expense' ? 'btn-danger' : 'btn-light'"
+                (click)="setCashType('expense')">เบิกเงิน</button>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">คนที่เบิกไป</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().withdrawer"
+                  [placeholder]="activeCashForm().cashType === 'topup' ? 'ไม่ต้องกรอกเมื่อเติมเงิน' : 'พิมพ์ชื่อคนที่เบิกไป'">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">ผู้อนุมัติให้เบิก</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().approver"
+                  placeholder="ชื่อผู้อนุมัติ">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">ฝ่าย/แผนก</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().department"
+                  placeholder="เช่น ขนส่ง / ออฟฟิศ">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">ประเภท</label>
+                <select class="form-select bg-light" [(ngModel)]="activeCashForm().category">
+                  <option *ngFor="let cat of pettyCashCategories" [value]="cat">{{ cat }}</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">เลขที่จ๊อบ / QT / อ้างอิง</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().jobNo"
+                  placeholder="ใส่ได้ถ้าเกี่ยวกับจ๊อบ">
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">รายละเอียด</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().description"
+                  [placeholder]="activeCashForm().cashType === 'topup' ? 'เช่น เติมเงินสดย่อย' : 'เช่น เบิกซื้อของ'">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">จำนวนเงิน</label>
+                <input type="number" class="form-control bg-light" [(ngModel)]="activeCashForm().amount"
+                  placeholder="0.00">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-muted">ผู้บันทึก</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().recorder"
+                  placeholder="ชื่อ/ฝ่าย" readonly>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted">หมายเหตุ</label>
+                <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().note"
+                  placeholder="รอใบเสร็จ ฯลฯ">
+              </div>
+
+              <div class="col-6 mt-4">
+                <button mat-flat-button [color]="activeCashForm().cashType === 'topup' ? 'primary' : 'warn'"
+                  class="w-100 py-2" (click)="addCashEntry()">บันทึก</button>
+              </div>
+              <div class="col-6 mt-4">
+                <button mat-stroked-button class="w-100 py-2" (click)="resetCashForm()">ล้างฟอร์ม</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-8">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">รายการ{{ themeName }} ประจำเดือน {{ month() }}</h5>
+                <div class="text-muted small">แสดง {{ filteredCashRows().length }} รายการ</div>
+              </div>
+            </div>
+
+            <div class="table-responsive flex-grow-1 border">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="py-3 text-muted small text-uppercase">วันที่/เวลา</th>
+                    <th class="py-3 text-muted small text-uppercase">รายการ/ประเภท</th>
+                    <th class="py-3 text-muted small text-uppercase">คนที่เบิกไป</th>
+                    <th class="py-3 text-muted small text-uppercase">อ้างอิง</th>
+                    <th class="py-3 text-muted small text-uppercase">รายละเอียด</th>
+                    <th class="py-3 text-muted small text-uppercase text-end">เข้า</th>
+                    <th class="py-3 text-muted small text-uppercase text-end">ออก</th>
+                    <th class="py-3 text-muted small text-uppercase text-end">คงเหลือ</th>
+                    <th class="py-3 text-muted small text-uppercase text-center">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of cashPaging().rows">
+                    <td>
+                      <div class="fw-bold">{{ row.date }}</div>
+                      <div class="small text-muted"><small>{{ row.time }}</small></div>
+                    </td>
+                    <td>
+                      <div class="d-flex flex-column gap-1 align-items-start">
+                        <span class="badge rounded-pill"
+                          [ngClass]="row.cashType === 'topup' ? 'bg-primary' : 'bg-danger'">{{ row.cashType === 'topup'
+                          ? 'เติมเงิน' : 'เบิกเงิน' }}</span>
+                        <span class="small fw-bold text-muted">{{ row.category }}</span>
+                      </div>
+                    </td>
+                    <td class="fw-bold">{{ row.withdrawer }}</td>
+                    <td class="fw-bold">{{ row.jobNo }}</td>
+                    <td class="text-muted">{{ row.description }}</td>
+                    <td class="text-end text-primary fw-bold">{{ row.income ? thb(row.income) : '-' }}</td>
+                    <td class="text-end text-danger fw-bold">{{ row.expense ? thb(row.expense) : '-' }}</td>
+                    <td class="text-end text-success fw-bold">{{ thb(row.balance) }}</td>
+                    <td class="text-center text-nowrap">
+                      <button mat-icon-button color="primary"
+                        (click)="openCashDetail(row)"><mat-icon>visibility</mat-icon></button>
+                      <button mat-icon-button color="warn"
+                        (click)="deleteCashEntry(row.id)"><mat-icon>delete</mat-icon></button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="cashPaging().rows.length === 0">
+                    <td colspan="9" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <mat-paginator [length]="cashPaging().total" [pageSize]="cashPageSize()" [pageIndex]="cashPaging().page - 1"
+              [pageSizeOptions]="pageSizeOptions" (page)="onPageChange('cash', $event)"
+              class="mt-3 bg-light border rounded">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Report Modal Overlay (Screen View) -->
+<div
+  class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex align-items-center justify-content-center p-3 p-md-5 z-3 d-print-none"
+  *ngIf="showReport()">
+  <div class="card w-100 h-100 shadow-lg border-0 overflow-hidden d-flex flex-column">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="mb-0 fw-bold">ตัวอย่างรายงานสำหรับส่งบัญชี</h4>
+        <div class="text-muted small">ตรวจดูก่อน แล้วค่อย Export PDF หรือ Excel</div>
+      </div>
+      <div class="d-flex gap-2">
+        <button mat-flat-button color="primary" (click)="exportPDF()">Export PDF</button>
+        <button mat-flat-button class="bg-success text-white" (click)="exportExcel()">Export Excel</button>
+        <button mat-stroked-button (click)="showReport.set(false)">ปิด</button>
+      </div>
+    </div>
+    <div class="card-body bg-light overflow-auto p-4">
+      <div class="bg-white p-4 p-md-5 shadow-sm border rounded mx-auto w-100">
+        <div class="d-flex justify-content-between border-bottom pb-4 mb-4">
+          <div>
+            <div class="small fw-bold text-primary mb-1 text-uppercase">BOX CORNER ART</div>
+            <h2 class="mb-1 fw-bold">รายงาน{{ activeMenu() === 'lalamove' ? 'ทะเบียนเงิน Lalamove' : themeName }}</h2>
+            <div class="text-muted small">เอกสารสำหรับส่งฝ่ายบัญชี / ตรวจสอบภายใน</div>
+          </div>
+          <div class="text-end small text-muted">
+            <div>วันที่พิมพ์: {{ today }}</div>
+            <div>เวลาพิมพ์: {{ currentTime() }}</div>
+          </div>
+        </div>
+
+        <table class="table table-bordered table-sm mb-5" *ngIf="activeMenu() === 'lalamove'">
+          <thead class="table-light">
+            <tr>
+              <th class="py-2 text-center">วันที่</th>
+              <th class="py-2 text-center">เวลา</th>
+              <th class="py-2">ประเภท</th>
+              <th class="py-2">จ๊อบ</th>
+              <th class="py-2">ลูกค้า</th>
+              <th class="py-2">รายละเอียด</th>
+              <th class="py-2 text-end">เงินเข้า</th>
+              <th class="py-2 text-end">เงินออก</th>
+              <th class="py-2 text-end">คงเหลือ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of filteredWalletRows()">
+              <td class="text-center">{{ row.date }}</td>
+              <td class="text-center">{{ row.time }}</td>
+              <td>{{ walletTypeLabel(row.type) }}</td>
+              <td>{{ row.jobNo }}</td>
+              <td>{{ row.customer }}</td>
+              <td>{{ row.description }}</td>
+              <td class="text-end text-primary">{{ row.income ? thb(row.income) : '-' }}</td>
+              <td class="text-end text-danger">{{ row.expense ? thb(row.expense) : '-' }}</td>
+              <td class="text-end fw-bold text-success">{{ thb(row.balance) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="table table-bordered table-sm mb-5" *ngIf="activeMenu() !== 'lalamove'">
+          <thead class="table-light">
+            <tr>
+              <th class="py-2 text-center">วันที่</th>
+              <th class="py-2 text-center">เวลา</th>
+              <th class="py-2">รายการ</th>
+              <th class="py-2">คนที่เบิกไป</th>
+              <th class="py-2">ผู้อนุมัติ</th>
+              <th class="py-2">ประเภท</th>
+              <th class="py-2">อ้างอิง</th>
+              <th class="py-2">รายละเอียด</th>
+              <th class="py-2 text-end">เงินเข้า</th>
+              <th class="py-2 text-end">เงินออก</th>
+              <th class="py-2 text-end">คงเหลือ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of filteredCashRows()">
+              <td class="text-center">{{ row.date }}</td>
+              <td class="text-center">{{ row.time }}</td>
+              <td>{{ row.cashType === 'topup' ? 'เติมเงิน' : 'เบิกเงิน' }}</td>
+              <td>{{ row.withdrawer }}</td>
+              <td>{{ row.approver }}</td>
+              <td>{{ row.category }}</td>
+              <td>{{ row.jobNo }}</td>
+              <td>{{ row.description }}</td>
+              <td class="text-end text-primary">{{ row.income ? thb(row.income) : '-' }}</td>
+              <td class="text-end text-danger">{{ row.expense ? thb(row.expense) : '-' }}</td>
+              <td class="text-end fw-bold text-success">{{ thb(row.balance) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="row text-center mt-5 pt-5 pb-3">
+          <div class="col-4">
+            <div class="border-top border-dark mx-5 pt-2">ผู้จัดทำ</div>
+          </div>
+          <div class="col-4">
+            <div class="border-top border-dark mx-5 pt-2">ผู้ตรวจสอบ</div>
+          </div>
+          <div class="col-4">
+            <div class="border-top border-dark mx-5 pt-2">ผู้อนุมัติ</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Print View (Only visible during print) -->
+<div class="d-none d-print-block w-100" *ngIf="showReport()">
+  <div class="d-flex justify-content-between border-bottom pb-4 mb-4">
+    <div>
+      <div class="small fw-bold text-dark mb-1 text-uppercase">BOX CORNER ART</div>
+      <h2 class="mb-1 fw-bold">รายงาน{{ activeMenu() === 'lalamove' ? 'ทะเบียนเงิน Lalamove' : themeName }}</h2>
+      <div class="small text-dark">เอกสารสำหรับส่งฝ่ายบัญชี / ตรวจสอบภายใน</div>
+    </div>
+    <div class="text-end small text-dark">
+      <div>วันที่พิมพ์: {{ today }}</div>
+      <div>เวลาพิมพ์: {{ currentTime() }}</div>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-sm mb-5" *ngIf="activeMenu() === 'lalamove'">
+    <thead class="table-light">
+      <tr>
+        <th class="py-2 text-center">วันที่</th>
+        <th class="py-2 text-center">เวลา</th>
+        <th class="py-2">ประเภท</th>
+        <th class="py-2">จ๊อบ</th>
+        <th class="py-2">ลูกค้า</th>
+        <th class="py-2">รายละเอียด</th>
+        <th class="py-2 text-end">เงินเข้า</th>
+        <th class="py-2 text-end">เงินออก</th>
+        <th class="py-2 text-end">คงเหลือ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of filteredWalletRows()">
+        <td class="text-center">{{ row.date }}</td>
+        <td class="text-center">{{ row.time }}</td>
+        <td>{{ walletTypeLabel(row.type) }}</td>
+        <td>{{ row.jobNo }}</td>
+        <td>{{ row.customer }}</td>
+        <td>{{ row.description }}</td>
+        <td class="text-end">{{ row.income ? thb(row.income) : '-' }}</td>
+        <td class="text-end">{{ row.expense ? thb(row.expense) : '-' }}</td>
+        <td class="text-end fw-bold">{{ thb(row.balance) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="table table-bordered table-sm mb-5" *ngIf="activeMenu() !== 'lalamove'">
+    <thead class="table-light">
+      <tr>
+        <th class="py-2 text-center">วันที่</th>
+        <th class="py-2 text-center">เวลา</th>
+        <th class="py-2">รายการ</th>
+        <th class="py-2">คนที่เบิกไป</th>
+        <th class="py-2">ผู้อนุมัติ</th>
+        <th class="py-2">ประเภท</th>
+        <th class="py-2">อ้างอิง</th>
+        <th class="py-2">รายละเอียด</th>
+        <th class="py-2 text-end">เงินเข้า</th>
+        <th class="py-2 text-end">เงินออก</th>
+        <th class="py-2 text-end">คงเหลือ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of filteredCashRows()">
+        <td class="text-center">{{ row.date }}</td>
+        <td class="text-center">{{ row.time }}</td>
+        <td>{{ row.cashType === 'topup' ? 'เติมเงิน' : 'เบิกเงิน' }}</td>
+        <td>{{ row.withdrawer }}</td>
+        <td>{{ row.approver }}</td>
+        <td>{{ row.category }}</td>
+        <td>{{ row.jobNo }}</td>
+        <td>{{ row.description }}</td>
+        <td class="text-end">{{ row.income ? thb(row.income) : '-' }}</td>
+        <td class="text-end">{{ row.expense ? thb(row.expense) : '-' }}</td>
+        <td class="text-end fw-bold">{{ thb(row.balance) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row text-center mt-5 pt-5 pb-3">
+    <div class="col-4">
+      <div class="border-top border-dark mx-5 pt-2">ผู้จัดทำ</div>
+    </div>
+    <div class="col-4">
+      <div class="border-top border-dark mx-5 pt-2">ผู้ตรวจสอบ</div>
+    </div>
+    <div class="col-4">
+      <div class="border-top border-dark mx-5 pt-2">ผู้อนุมัติ</div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal Overlay -->
+<div
+  class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center p-3 z-3 d-print-none"
+  *ngIf="detailModal().open">
+  <div class="card shadow-lg border-0 w-100 mx-auto d-flex flex-column" style="max-width: 600px; max-height: 80vh;">
+    <div
+      class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom flex-shrink-0">
+      <h5 class="mb-0 fw-bold">{{ detailModal().title }}</h5>
+      <button mat-icon-button (click)="closeDetail()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="card-body p-0 overflow-auto">
+      <table class="table mb-0 table-borderless table-striped">
+        <tbody>
+          <tr *ngFor="let item of detailModal().fields">
+            <td class="text-muted fw-bold ps-4 py-3 w-25">{{ item.label }}</td>
+            <td class="fw-semibold py-3">{{ item.value || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer bg-light text-end py-3 flex-shrink-0">
+      <button mat-flat-button color="primary" (click)="closeDetail()">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+</div>

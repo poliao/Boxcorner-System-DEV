@@ -349,6 +349,9 @@ export class Dcsm08DetailComponent implements OnInit {
 
     this.loadingService.show();
     const data = { ...this.proofForm.getRawValue(), productionOrderId: this.productionOrderId };
+    if (data.imageUrl == '' || data.imageUrl == null) {
+      data.imageUrl = null;
+    }
     this.dcsm08Service.saveProofOrder(data).subscribe({
       next: (res) => {
         this.loadingService.hide();
