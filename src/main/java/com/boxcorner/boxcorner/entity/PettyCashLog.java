@@ -50,4 +50,7 @@ public class PettyCashLog {
     private String recorder;
     
     private String note;
+
+    @Column(name = "job_status")
+    private String jobStatus; // 'ส่งตัวอย่าง', 'ส่งงานจริง', 'ส่งงานเพิ่มเติม', 'เสร็จสิ้น', 'N/A'
 }

@@ -147,4 +147,14 @@ export class Dcsm20Service {
   updatePrintingDate(id: number, newDate: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/production-job/update-printing-date?id=${id}&newDate=${newDate}`, {}, { responseType: 'text' });
   }
+
+  closeWalletJobByJobNo(jobNo: string): Observable<any> {
+    const encodedJobNo = encodeURIComponent(jobNo);
+    return this.http.patch(`${this.apiUrl}/dcsm42/lalamove/close-by-job/${encodedJobNo}`, {});
+  }
+
+  closePettyCashJobByJobNo(jobNo: string): Observable<any> {
+    const encodedJobNo = encodeURIComponent(jobNo);
+    return this.http.patch(`${this.apiUrl}/dcsm42/pettyCash/close-by-job/${encodedJobNo}`, {});
+  }
 }

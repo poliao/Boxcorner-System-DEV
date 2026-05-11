@@ -16,12 +16,15 @@ type WalletTypeFilter = WalletType | 'all';
 type CashType = 'topup' | 'expense';
 type CashTypeFilter = CashType | 'all';
 
+export type JobStatus = 'ส่งตัวอย่าง' | 'ส่งงานจริง' | 'ส่งงานเพิ่มเติม' | 'เสร็จสิ้น' | 'N/A';
+
 export type WalletEntry = {
   id: number;
   date: string;
   time: string;
   type: WalletType;
   paymentType?: string;
+  jobStatus?: JobStatus;
   jobNo: string;
   customer: string;
   description: string;
@@ -47,6 +50,7 @@ export type CashEntry = {
   department: string;
   category: string;
   jobNo: string;
+  jobStatus?: JobStatus;
   description: string;
   amount: number;
   recorder: string;
@@ -101,6 +105,14 @@ const walletTypeMap: Record<WalletType, { label: string, badge: string }> = {
   topup: { label: 'เติมเงิน', badge: 'bg-primary text-white' },
   expense: { label: 'เรียก Lalamove', badge: 'bg-danger text-white' },
   other: { label: 'อื่นๆ', badge: 'bg-warning text-dark' }
+};
+
+const jobStatusMap: Record<JobStatus, { badge: string }> = {
+  'ส่งตัวอย่าง': { badge: 'bg-info text-dark' },
+  'ส่งงานจริง': { badge: 'bg-primary text-white' },
+  'ส่งงานเพิ่มเติม': { badge: 'bg-warning text-dark' },
+  'เสร็จสิ้น': { badge: 'bg-success text-white' },
+  'N/A': { badge: 'bg-light text-muted border' },
 };
 
 function pad(value: number) {
@@ -247,9 +259,9 @@ export class Dcsm42Component implements OnInit {
   transportCashFilters: CashFilters = { keyword: '', withdrawer: '', cashType: 'all', category: 'all', dateFrom: '', dateTo: '' };
   officeCashFilters: CashFilters = { keyword: '', withdrawer: '', cashType: 'all', category: 'all', dateFrom: '', dateTo: '' };
 
-  walletForm = { date: today, type: 'expense' as WalletType, paymentType: 'จ่ายเอง', jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
-  transportCashForm = { cashType: 'expense' as CashType, withdrawer: '', approver: '', department: 'ขนส่ง', category: 'เบิกซื้อของ', jobNo: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
-  officeCashForm = { cashType: 'expense' as CashType, withdrawer: '', approver: '', department: 'ออฟฟิศ', category: 'เบิกค่าเอกสาร', jobNo: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
+  walletForm = { date: today, type: 'expense' as WalletType, paymentType: 'จ่ายเอง', jobStatus: 'ส่งงานจริง' as JobStatus, jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
+  transportCashForm = { cashType: 'expense' as CashType, withdrawer: '', approver: '', department: 'ขนส่ง', category: 'เบิกซื้อของ', jobNo: '', jobStatus: 'ส่งงานจริง' as JobStatus, description: '', amount: '', recorder: this.currentRecorder, note: '' };
+  officeCashForm = { cashType: 'expense' as CashType, withdrawer: '', approver: '', department: 'ออฟฟิศ', category: 'เบิกค่าเอกสาร', jobNo: '', jobStatus: 'N/A' as JobStatus, description: '', amount: '', recorder: this.currentRecorder, note: '' };
 
   readonly isOfficeCash = computed(() => this.activeMenu() === 'officeCash');
 
@@ -399,6 +411,7 @@ export class Dcsm42Component implements OnInit {
       time: entryTime,
       type: this.walletForm.type,
       paymentType: this.walletForm.paymentType,
+      jobStatus: this.walletForm.type === 'expense' ? this.walletForm.jobStatus : 'N/A',
       jobNo: this.walletForm.jobNo.trim() || '-',
       customer: this.walletForm.customer.trim() || '-',
       description,
@@ -414,7 +427,7 @@ export class Dcsm42Component implements OnInit {
   };
 
   readonly resetWalletForm = () => {
-    this.walletForm = { date: today, type: 'expense', paymentType: 'จ่ายเอง', jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
+    this.walletForm = { date: today, type: 'expense', paymentType: 'จ่ายเอง', jobStatus: 'ส่งงานจริง', jobNo: '', customer: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
   };
 
   getWalletDefaultDescription(type: WalletType) {
@@ -443,6 +456,7 @@ export class Dcsm42Component implements OnInit {
       department: form.department.trim() || this.themeName,
       category: form.cashType === 'topup' ? 'เติมเงินสดย่อย' : form.category,
       jobNo: form.jobNo.trim() || '-',
+      jobStatus: this.activeMenu() === 'transportCash' && form.cashType === 'expense' ? (form as any).jobStatus || 'N/A' : 'N/A',
       description: form.description.trim() || (form.cashType === 'topup' ? `เติมเงินสดย่อย${this.themeName}` : form.category),
       amount,
       recorder: form.recorder.trim() || '-',
@@ -466,11 +480,11 @@ export class Dcsm42Component implements OnInit {
   };
 
   resetTransportCashForm() {
-    this.transportCashForm = { cashType: 'expense', withdrawer: '', approver: '', department: 'ขนส่ง', category: 'เบิกซื้อของ', jobNo: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
+    this.transportCashForm = { cashType: 'expense', withdrawer: '', approver: '', department: 'ขนส่ง', category: 'เบิกซื้อของ', jobNo: '', jobStatus: 'ส่งงานจริง' as JobStatus, description: '', amount: '', recorder: this.currentRecorder, note: '' };
   }
 
   resetOfficeCashForm() {
-    this.officeCashForm = { cashType: 'expense', withdrawer: '', approver: '', department: 'ออฟฟิศ', category: 'เบิกค่าเอกสาร', jobNo: '', description: '', amount: '', recorder: this.currentRecorder, note: '' };
+    this.officeCashForm = { cashType: 'expense', withdrawer: '', approver: '', department: 'ออฟฟิศ', category: 'เบิกค่าเอกสาร', jobNo: '', jobStatus: 'N/A' as JobStatus, description: '', amount: '', recorder: this.currentRecorder, note: '' };
   }
 
   deleteWalletEntry(id: number) {
@@ -481,12 +495,50 @@ export class Dcsm42Component implements OnInit {
     }
   }
 
+  closeWalletJob(jobNo: string) {
+    if (!jobNo || jobNo === '-') return;
+    if (!window.confirm(`ยืนยันปิดงาน JO: ${jobNo} ?\nทุกรายการของจ๊อบนี้จะถูกปิดพร้อมกัน`)) return;
+    const encodedJobNo = encodeURIComponent(jobNo);
+    this.http.patch<WalletEntry[]>(`${environment.apiUrl}/dcsm42/lalamove/close-by-job/${encodedJobNo}`, {}).subscribe(() => {
+      this.walletEntries.update((prev) =>
+        prev.map(entry =>
+          entry.jobNo === jobNo && entry.type === 'expense'
+            ? { ...entry, jobStatus: 'เสร็จสิ้น' as JobStatus }
+            : entry
+        )
+      );
+    });
+  }
+
+  closeCashJob(jobNo: string) {
+    if (!jobNo || jobNo === '-') return;
+    if (!window.confirm(`ยืนยันปิดงาน JO: ${jobNo} ?\nทุกรายการของจ๊อบนี้จะถูกปิดพร้อมกัน`)) return;
+    const encodedJobNo = encodeURIComponent(jobNo);
+    this.http.patch<CashEntry[]>(`${environment.apiUrl}/dcsm42/pettyCash/close-by-job/${encodedJobNo}`, {}).subscribe(() => {
+      this.transportCashEntries.update((prev) =>
+        prev.map(entry =>
+          entry.jobNo === jobNo && entry.cashType === 'expense'
+            ? { ...entry, jobStatus: 'เสร็จสิ้น' as JobStatus }
+            : entry
+        )
+      );
+    });
+  }
+
   deleteCashEntry(id: number) {
     if (!window.confirm(`ต้องการลบรายการ${this.themeName}นี้ใช่ไหม?`)) return;
     this.http.delete(`${environment.apiUrl}/dcsm42/pettyCash/${id}`).subscribe(() => {
       if (this.isOfficeCash()) this.officeCashEntries.update((prev) => prev.filter((entry) => entry.id !== id));
       else this.transportCashEntries.update((prev) => prev.filter((entry) => entry.id !== id));
     });
+  }
+
+  jobStatusLabel(status: JobStatus | undefined) {
+    return status || 'N/A';
+  }
+
+  jobStatusBadge(status: JobStatus | undefined) {
+    return jobStatusMap[status as JobStatus]?.badge ?? jobStatusMap['N/A'].badge;
   }
 
   openWalletDetail(row: WalletRow) {
@@ -498,6 +550,7 @@ export class Dcsm42Component implements OnInit {
         { label: 'เวลา', value: row.time },
         { label: 'ประเภท', value: this.walletTypeLabel(row.type) },
         { label: 'การจ่ายเงิน', value: row.paymentType || '-' },
+        { label: 'สถานะงาน JO', value: row.jobStatus || 'N/A' },
         { label: 'เลขที่จ๊อบ', value: row.jobNo },
         { label: 'ลูกค้า', value: row.customer },
         { label: 'รายละเอียด', value: row.description },
@@ -523,6 +576,7 @@ export class Dcsm42Component implements OnInit {
         { label: 'ฝ่าย', value: row.department },
         { label: 'ประเภท', value: row.category },
         { label: 'จ๊อบ/อ้างอิง', value: row.jobNo },
+        { label: 'สถานะงาน JO', value: row.jobStatus || 'N/A' },
         { label: 'รายละเอียด', value: row.description },
         { label: 'เงินเข้า', value: row.income ? thb(row.income) : '-' },
         { label: 'เงินออก', value: row.expense ? thb(row.expense) : '-' },
@@ -553,7 +607,7 @@ export class Dcsm42Component implements OnInit {
 
   exportExcel() {
     const csvContent = this.activeMenu() === 'lalamove'
-      ? makeCsv(['วันที่', 'เวลา', 'ประเภท', 'การจ่ายเงิน', 'เลขที่จ๊อบ', 'ลูกค้า', 'รายละเอียด', 'เงินเข้า', 'เงินออก', 'คงเหลือ', 'ผู้บันทึก', 'หมายเหตุ'], this.filteredWalletRows().map((row) => [row.date, row.time, this.walletTypeLabel(row.type), row.paymentType || '-', row.jobNo, row.customer, row.description, row.income || '', row.expense || '', row.balance, row.recorder, row.note]))
+      ? makeCsv(['วันที่', 'เวลา', 'ประเภท', 'การจ่ายเงิน', 'สถานะงาน JO', 'เลขที่จ๊อบ', 'ลูกค้า', 'รายละเอียด', 'เงินเข้า', 'เงินออก', 'คงเหลือ', 'ผู้บันทึก', 'หมายเหตุ'], this.filteredWalletRows().map((row) => [row.date, row.time, this.walletTypeLabel(row.type), row.paymentType || '-', row.jobStatus || 'N/A', row.jobNo, row.customer, row.description, row.income || '', row.expense || '', row.balance, row.recorder, row.note]))
       : makeCsv(['วันที่', 'เวลา', 'รายการ', 'คนที่เบิกไป', 'ผู้อนุมัติให้เบิก', 'ฝ่าย', 'ประเภท', 'เลขที่จ๊อบ', 'รายละเอียด', 'เงินเข้า', 'เงินออก', 'คงเหลือ', 'ผู้บันทึก', 'หมายเหตุ'], this.filteredCashRows().map((row) => [row.date, row.time, row.cashType === 'topup' ? 'เติมเงิน' : 'เบิกเงิน', row.withdrawer, row.approver, row.department, row.category, row.jobNo, row.description, row.income || '', row.expense || '', row.balance, row.recorder, row.note]));
     const fileName = this.activeMenu() === 'lalamove' ? `lalamove-report-${this.month()}.csv` : this.isOfficeCash() ? `office-cash-report-${this.month()}.csv` : `transport-cash-report-${this.month()}.csv`;
     const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });

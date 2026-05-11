@@ -50,7 +50,7 @@ public class UnitStockController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestParam Long id) {
+    public ResponseEntity<?> delete(@RequestParam("id") Long id) {
         try {
             unitStockService.delete(id);
             return ResponseEntity.ok(Map.of("message", "ลบสำเร็จ"));

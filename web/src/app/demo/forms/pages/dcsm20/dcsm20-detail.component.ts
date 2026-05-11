@@ -426,6 +426,13 @@ export class Dcsm20DetailComponent implements OnInit {
             } else if (status === 'DeliveryComplete') {
               this.updateStatusProductionOrder();
               this.productionForm.get('deliveryStatus')?.setValue('จัดส่งเรียบร้อย');
+              // ปิดงาน Lalamove + เงินสดย่อยขนส่ง: ตัด _suffix ออกจาก jobId แล้วเรียก close-by-job
+              const rawJobId: string = this.productionForm.getRawValue().jobId || '';
+              const baseJobId = rawJobId.includes('_') ? rawJobId.substring(0, rawJobId.lastIndexOf('_')) : rawJobId;
+              if (baseJobId) {
+                this.dcsm20Service.closeWalletJobByJobNo(baseJobId).subscribe();
+                this.dcsm20Service.closePettyCashJobByJobNo(baseJobId).subscribe();
+              }
               this.performStatusUpdate();
             }
           }

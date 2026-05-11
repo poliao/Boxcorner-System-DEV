@@ -28,7 +28,7 @@ public class PrintLogQaController {
     }
 
     @GetMapping("/job/{jobId}")
-    public ResponseEntity<?> getByJobId(@PathVariable Long jobId) {
+    public ResponseEntity<?> getByJobId(@PathVariable("jobId") Long jobId) {
         try {
             List<PrintLogQa> logs = printLogQaService.findByJobId(jobId);
             return ResponseEntity.ok(logs);

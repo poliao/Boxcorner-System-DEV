@@ -160,6 +160,16 @@
                 </select>
               </div>
               <div class="col-12">
+                <label class="form-label small fw-bold text-muted">สถานะงาน JO <span class="fw-normal">(ใช้กับรายการค่า Lalamove)</span></label>
+                <select class="form-select bg-light" [(ngModel)]="walletForm.jobStatus"
+                  [disabled]="walletForm.type !== 'expense'">
+                  <option value="ส่งตัวอย่าง">ส่งตัวอย่าง (ให้ลูกค้าคอนเฟิร์ม)</option>
+                  <option value="ส่งงานจริง">ส่งงานจริง (ครั้งแรก)</option>
+                  <option value="ส่งงานเพิ่มเติม">ส่งงานเพิ่มเติม</option>
+                  <option value="เสร็จสิ้น">เสร็จสิ้น (ปิดจ๊อบแล้ว)</option>
+                </select>
+              </div>
+              <div class="col-12">
                 <label class="form-label small fw-bold text-muted">ลูกค้า / ผู้เกี่ยวข้อง</label>
                 <input type="text" class="form-control bg-light" [(ngModel)]="walletForm.customer"
                   placeholder="ชื่อลูกค้า หรือฝ่ายที่ขอเรียกรถ">
@@ -213,6 +223,7 @@
                     <th class="py-3 text-muted small text-uppercase">รายการ</th>
                     <th class="py-3 text-muted small text-uppercase">จ๊อบ</th>
                     <th class="py-3 text-muted small text-uppercase">การจ่ายเงิน</th>
+                    <th class="py-3 text-muted small text-uppercase">สถานะงาน</th>
                     <th class="py-3 text-muted small text-uppercase">ลูกค้า</th>
                     <th class="py-3 text-muted small text-uppercase">รายละเอียด</th>
                     <th class="py-3 text-muted small text-uppercase text-end">เข้า</th>
@@ -231,9 +242,12 @@
                     </td>
                     <td class="fw-bold">{{ row.jobNo }}</td>
                     <td>
-                      <span *ngIf="row.paymentType" class="badge bg-success text-dark border">{{ row.paymentType
-                        }}</span>
+                      <span *ngIf="row.paymentType" class="badge bg-success text-dark border">{{ row.paymentType }}</span>
                       <span *ngIf="!row.paymentType">-</span>
+                    </td>
+                    <td>
+                      <span *ngIf="row.jobStatus && row.jobStatus !== 'N/A'" class="badge" [ngClass]="jobStatusBadge(row.jobStatus)">{{ row.jobStatus }}</span>
+                      <span *ngIf="!row.jobStatus || row.jobStatus === 'N/A'" class="text-muted small">-</span>
                     </td>
                     <td>{{ row.customer }}</td>
                     <td class="text-muted">{{ row.description }}</td>
@@ -241,6 +255,18 @@
                     <td class="text-end text-danger fw-bold">{{ row.expense ? thb(row.expense) : '-' }}</td>
                     <td class="text-end text-success fw-bold">{{ thb(row.balance) }}</td>
                     <td class="text-center text-nowrap">
+                      <!-- ปุ่มปิดงาน: แสดงเฉพาะ expense ที่ยังไม่เสร็จสิ้น -->
+                      <button *ngIf="row.type === 'expense' && row.jobStatus !== 'เสร็จสิ้น' && row.jobNo !== '-'"
+                        mat-icon-button
+                        style="color: #198754;"
+                        title="ปิดงาน JO: {{ row.jobNo }} (ทุกรายการ JO นี้จะถูกปิดพร้อมกัน)"
+                        (click)="closeWalletJob(row.jobNo)">
+                        <mat-icon>check_circle</mat-icon>
+                      </button>
+                      <!-- แสดง icon เมื่อปิดงานแล้ว -->
+                      <mat-icon *ngIf="row.type === 'expense' && row.jobStatus === 'เสร็จสิ้น'"
+                        style="color: #198754; vertical-align: middle; font-size: 20px;"
+                        title="ปิดงานแล้ว">verified</mat-icon>
                       <button mat-icon-button color="primary"
                         (click)="openWalletDetail(row)"><mat-icon>visibility</mat-icon></button>
                       <button mat-icon-button color="warn"
@@ -248,7 +274,7 @@
                     </td>
                   </tr>
                   <tr *ngIf="walletPaging().rows.length === 0">
-                    <td colspan="9" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
+                    <td colspan="11" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
                   </tr>
                 </tbody>
               </table>
@@ -372,6 +398,16 @@
                 <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().jobNo"
                   placeholder="ใส่ได้ถ้าเกี่ยวกับจ๊อบ">
               </div>
+              <!-- สถานะงาน JO: แสดงเฉพาะ transportCash + expense -->
+              <div class="col-12" *ngIf="activeMenu() === 'transportCash' && activeCashForm().cashType === 'expense'">
+                <label class="form-label small fw-bold text-muted">สถานะงาน JO</label>
+                <select class="form-select bg-light" [(ngModel)]="activeCashForm().jobStatus">
+                  <option value="ส่งตัวอย่าง">ส่งตัวอย่าง (ให้ลูกค้าคอนเฟิร์ม)</option>
+                  <option value="ส่งงานจริง">ส่งงานจริง (ครั้งแรก)</option>
+                  <option value="ส่งงานเพิ่มเติม">ส่งงานเพิ่มเติม</option>
+                  <option value="เสร็จสิ้น">เสร็จสิ้น (ปิดจ๊อบแล้ว)</option>
+                </select>
+              </div>
               <div class="col-12">
                 <label class="form-label small fw-bold text-muted">รายละเอียด</label>
                 <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().description"
@@ -423,6 +459,7 @@
                     <th class="py-3 text-muted small text-uppercase">รายการ/ประเภท</th>
                     <th class="py-3 text-muted small text-uppercase">คนที่เบิกไป</th>
                     <th class="py-3 text-muted small text-uppercase">อ้างอิง</th>
+                    <th class="py-3 text-muted small text-uppercase" *ngIf="activeMenu() === 'transportCash'">สถานะงาน</th>
                     <th class="py-3 text-muted small text-uppercase">รายละเอียด</th>
                     <th class="py-3 text-muted small text-uppercase text-end">เข้า</th>
                     <th class="py-3 text-muted small text-uppercase text-end">ออก</th>
@@ -446,11 +483,28 @@
                     </td>
                     <td class="fw-bold">{{ row.withdrawer }}</td>
                     <td class="fw-bold">{{ row.jobNo }}</td>
+                    <!-- สถานะงาน JO: แสดงเฉพาะ transportCash -->
+                    <td *ngIf="activeMenu() === 'transportCash'">
+                      <span *ngIf="row.jobStatus && row.jobStatus !== 'N/A'" class="badge" [ngClass]="jobStatusBadge(row.jobStatus)">{{ row.jobStatus }}</span>
+                      <span *ngIf="!row.jobStatus || row.jobStatus === 'N/A'" class="text-muted small">-</span>
+                    </td>
                     <td class="text-muted">{{ row.description }}</td>
                     <td class="text-end text-primary fw-bold">{{ row.income ? thb(row.income) : '-' }}</td>
                     <td class="text-end text-danger fw-bold">{{ row.expense ? thb(row.expense) : '-' }}</td>
                     <td class="text-end text-success fw-bold">{{ thb(row.balance) }}</td>
                     <td class="text-center text-nowrap">
+                      <!-- ปุ่มปิดงาน: แสดงเฉพาะ transportCash expense ที่ยังไม่เสร็จสิ้น -->
+                      <button *ngIf="activeMenu() === 'transportCash' && row.cashType === 'expense' && row.jobStatus !== 'เสร็จสิ้น' && row.jobNo !== '-'"
+                        mat-icon-button
+                        style="color: #198754;"
+                        title="ปิดงาน JO: {{ row.jobNo }} (ทุกรายการ JO นี้จะถูกปิดพร้อมกัน)"
+                        (click)="closeCashJob(row.jobNo)">
+                        <mat-icon>check_circle</mat-icon>
+                      </button>
+                      <!-- แสดง icon เมื่อปิดงานแล้ว -->
+                      <mat-icon *ngIf="activeMenu() === 'transportCash' && row.cashType === 'expense' && row.jobStatus === 'เสร็จสิ้น'"
+                        style="color: #198754; vertical-align: middle; font-size: 20px;"
+                        title="ปิดงานแล้ว">verified</mat-icon>
                       <button mat-icon-button color="primary"
                         (click)="openCashDetail(row)"><mat-icon>visibility</mat-icon></button>
                       <button mat-icon-button color="warn"
@@ -458,7 +512,7 @@
                     </td>
                   </tr>
                   <tr *ngIf="cashPaging().rows.length === 0">
-                    <td colspan="9" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
+                    <td [attr.colspan]="activeMenu() === 'transportCash' ? 10 : 9" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
                   </tr>
                 </tbody>
               </table>
@@ -512,6 +566,7 @@
               <th class="py-2 text-center">เวลา</th>
               <th class="py-2">ประเภท</th>
               <th class="py-2">การจ่ายเงิน</th>
+              <th class="py-2">สถานะงาน JO</th>
               <th class="py-2">จ๊อบ</th>
               <th class="py-2">ลูกค้า</th>
               <th class="py-2">รายละเอียด</th>
@@ -526,6 +581,7 @@
               <td class="text-center">{{ row.time }}</td>
               <td>{{ walletTypeLabel(row.type) }}</td>
               <td>{{ row.paymentType || '-' }}</td>
+              <td>{{ row.jobStatus || '-' }}</td>
               <td>{{ row.jobNo }}</td>
               <td>{{ row.customer }}</td>
               <td>{{ row.description }}</td>
@@ -606,6 +662,7 @@
         <th class="py-2 text-center">เวลา</th>
         <th class="py-2">ประเภท</th>
         <th class="py-2">การจ่ายเงิน</th>
+        <th class="py-2">สถานะงาน JO</th>
         <th class="py-2">จ๊อบ</th>
         <th class="py-2">ลูกค้า</th>
         <th class="py-2">รายละเอียด</th>
@@ -620,6 +677,7 @@
         <td class="text-center">{{ row.time }}</td>
         <td>{{ walletTypeLabel(row.type) }}</td>
         <td>{{ row.paymentType || '-' }}</td>
+        <td>{{ row.jobStatus || '-' }}</td>
         <td>{{ row.jobNo }}</td>
         <td>{{ row.customer }}</td>
         <td>{{ row.description }}</td>

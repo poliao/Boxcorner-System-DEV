@@ -29,7 +29,7 @@ public class PrintLogOsController {
 
     @PostMapping("/create-from-checklist/{jobId}")
     public ResponseEntity<?> createFromChecklist(
-            @PathVariable Long jobId,
+            @PathVariable("jobId") Long jobId,
             @RequestBody PrintLogOs checklistData) {
         try {
             PrintLogOs saved = printLogOsService.createFromChecklist(jobId, checklistData);
@@ -41,7 +41,7 @@ public class PrintLogOsController {
     }
 
     @GetMapping("/job/{jobId}")
-    public ResponseEntity<?> getByJobId(@PathVariable Long jobId) {
+    public ResponseEntity<?> getByJobId(@PathVariable("jobId") Long jobId) {
         try {
             List<PrintLogOs> logs = printLogOsService.findByJobId(jobId);
             return ResponseEntity.ok(logs);

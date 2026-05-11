@@ -31,6 +31,9 @@ public class LalamoveWallet {
     @Column(name = "payment_type")
     private String paymentType;
 
+    @Column(name = "job_status")
+    private String jobStatus;
+
     @Column(name = "job_no")
     private String jobNo;
 
