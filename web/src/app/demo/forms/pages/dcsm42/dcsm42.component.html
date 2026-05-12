@@ -160,13 +160,10 @@
                 </select>
               </div>
               <div class="col-12">
-                <label class="form-label small fw-bold text-muted">สถานะงาน JO <span class="fw-normal">(ใช้กับรายการค่า Lalamove)</span></label>
-                <select class="form-select bg-light" [(ngModel)]="walletForm.jobStatus"
-                  [disabled]="walletForm.type !== 'expense'">
-                  <option value="ส่งตัวอย่าง">ส่งตัวอย่าง (ให้ลูกค้าคอนเฟิร์ม)</option>
-                  <option value="ส่งงานจริง">ส่งงานจริง (ครั้งแรก)</option>
-                  <option value="ส่งงานเพิ่มเติม">ส่งงานเพิ่มเติม</option>
-                  <option value="เสร็จสิ้น">เสร็จสิ้น (ปิดจ๊อบแล้ว)</option>
+                <label class="form-label small fw-bold text-muted">ชื่อเจ้าของงาน</label>
+                <select class="form-select bg-light" [(ngModel)]="walletForm.jobOwner">
+                  <option value="">-- เลือกเจ้าของงาน --</option>
+                  <option *ngFor="let u of users()" [value]="u.text">{{ u.text }}</option>
                 </select>
               </div>
               <div class="col-12">
@@ -224,6 +221,7 @@
                     <th class="py-3 text-muted small text-uppercase">จ๊อบ</th>
                     <th class="py-3 text-muted small text-uppercase">การจ่ายเงิน</th>
                     <th class="py-3 text-muted small text-uppercase">สถานะงาน</th>
+                    <th class="py-3 text-muted small text-uppercase">เจ้าของงาน</th>
                     <th class="py-3 text-muted small text-uppercase">ลูกค้า</th>
                     <th class="py-3 text-muted small text-uppercase">รายละเอียด</th>
                     <th class="py-3 text-muted small text-uppercase text-end">เข้า</th>
@@ -249,6 +247,7 @@
                       <span *ngIf="row.jobStatus && row.jobStatus !== 'N/A'" class="badge" [ngClass]="jobStatusBadge(row.jobStatus)">{{ row.jobStatus }}</span>
                       <span *ngIf="!row.jobStatus || row.jobStatus === 'N/A'" class="text-muted small">-</span>
                     </td>
+                    <td>{{ row.jobOwner && row.jobOwner !== '-' ? row.jobOwner : '-' }}</td>
                     <td>{{ row.customer }}</td>
                     <td class="text-muted">{{ row.description }}</td>
                     <td class="text-end text-primary fw-bold">{{ row.income ? thb(row.income) : '-' }}</td>
@@ -274,7 +273,7 @@
                     </td>
                   </tr>
                   <tr *ngIf="walletPaging().rows.length === 0">
-                    <td colspan="11" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
+                    <td colspan="12" class="text-center py-5 text-muted">ไม่พบข้อมูลที่ค้นหา</td>
                   </tr>
                 </tbody>
               </table>
@@ -397,16 +396,6 @@
                 <label class="form-label small fw-bold text-muted">เลขที่จ๊อบ / QT / อ้างอิง</label>
                 <input type="text" class="form-control bg-light" [(ngModel)]="activeCashForm().jobNo"
                   placeholder="ใส่ได้ถ้าเกี่ยวกับจ๊อบ">
-              </div>
-              <!-- สถานะงาน JO: แสดงเฉพาะ transportCash + expense -->
-              <div class="col-12" *ngIf="activeMenu() === 'transportCash' && activeCashForm().cashType === 'expense'">
-                <label class="form-label small fw-bold text-muted">สถานะงาน JO</label>
-                <select class="form-select bg-light" [(ngModel)]="activeCashForm().jobStatus">
-                  <option value="ส่งตัวอย่าง">ส่งตัวอย่าง (ให้ลูกค้าคอนเฟิร์ม)</option>
-                  <option value="ส่งงานจริง">ส่งงานจริง (ครั้งแรก)</option>
-                  <option value="ส่งงานเพิ่มเติม">ส่งงานเพิ่มเติม</option>
-                  <option value="เสร็จสิ้น">เสร็จสิ้น (ปิดจ๊อบแล้ว)</option>
-                </select>
               </div>
               <div class="col-12">
                 <label class="form-label small fw-bold text-muted">รายละเอียด</label>
@@ -568,6 +557,7 @@
               <th class="py-2">การจ่ายเงิน</th>
               <th class="py-2">สถานะงาน JO</th>
               <th class="py-2">จ๊อบ</th>
+              <th class="py-2">เจ้าของงาน</th>
               <th class="py-2">ลูกค้า</th>
               <th class="py-2">รายละเอียด</th>
               <th class="py-2 text-end">เงินเข้า</th>
@@ -583,6 +573,7 @@
               <td>{{ row.paymentType || '-' }}</td>
               <td>{{ row.jobStatus || '-' }}</td>
               <td>{{ row.jobNo }}</td>
+              <td>{{ row.jobOwner || '-' }}</td>
               <td>{{ row.customer }}</td>
               <td>{{ row.description }}</td>
               <td class="text-end text-primary">{{ row.income ? thb(row.income) : '-' }}</td>
@@ -664,6 +655,7 @@
         <th class="py-2">การจ่ายเงิน</th>
         <th class="py-2">สถานะงาน JO</th>
         <th class="py-2">จ๊อบ</th>
+        <th class="py-2">เจ้าของงาน</th>
         <th class="py-2">ลูกค้า</th>
         <th class="py-2">รายละเอียด</th>
         <th class="py-2 text-end">เงินเข้า</th>
@@ -679,6 +671,7 @@
         <td>{{ row.paymentType || '-' }}</td>
         <td>{{ row.jobStatus || '-' }}</td>
         <td>{{ row.jobNo }}</td>
+        <td>{{ row.jobOwner || '-' }}</td>
         <td>{{ row.customer }}</td>
         <td>{{ row.description }}</td>
         <td class="text-end">{{ row.income ? thb(row.income) : '-' }}</td>

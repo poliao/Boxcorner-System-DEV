@@ -1,0 +1,175 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-dark text-white rounded-pill small fw-bold mb-3">
+        BCA ERP / Lalamove
+      </div>
+      <h2 class="mb-1 fw-bold">งานขอปิด Lalamove</h2>
+      <p class="text-muted mb-0">
+        <span *ngIf="!isAdmin">รายการงานของคุณที่ยังไม่เสร็จสิ้น และคำขอปิดงานที่ส่งแล้ว</span>
+        <span *ngIf="isAdmin">รายการงานทั้งหมดที่ยังไม่เสร็จสิ้น และคำขอปิดงานที่รออนุมัติ</span>
+      </p>
+    </div>
+    <div class="text-end">
+      <div class="text-muted small fw-bold">บทบาท</div>
+      <h3 class="mb-0 fw-bold" [ngClass]="isAdmin ? 'text-primary' : 'text-dark'">
+        {{ isAdmin ? 'ผู้อนุมัติ (SupperAdmin)' : 'เจ้าของงาน' }}
+      </h3>
+      <div class="text-muted small">ผู้ใช้: {{ currentUser }}</div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="text-muted small fw-bold">งานทั้งหมดที่ยังไม่ปิด</div>
+          <h3 class="mt-2 mb-0 fw-bold text-dark">{{ summary().total }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="text-muted small fw-bold">รออนุมัติปิดงาน</div>
+          <h3 class="mt-2 mb-0 fw-bold text-warning">{{ summary().pending }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="text-muted small fw-bold">ยังไม่ขอปิด</div>
+          <h3 class="mt-2 mb-0 fw-bold text-primary">{{ summary().open }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4 border-0">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">ค้นหา JO / เจ้าของงาน / ลูกค้า</label>
+          <input type="text" class="form-control bg-light" [ngModel]="keyword()"
+            (ngModelChange)="keyword.set($event); page.set(1)" placeholder="พิมพ์คำที่ต้องการค้นหา">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">สถานะคำขอ</label>
+          <select class="form-select bg-light" [ngModel]="statusFilter()"
+            (ngModelChange)="statusFilter.set($event); page.set(1)">
+            <option value="all">ทั้งหมด</option>
+            <option value="open">ยังไม่ขอปิด</option>
+            <option value="pending">รออนุมัติ</option>
+            <option value="approved">อนุมัติแล้ว</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-3">
+        <div>
+          <h5 class="fw-bold mb-1">รายการงาน Lalamove</h5>
+          <div class="text-muted small">แสดง {{ filteredGroups().length }} รายการ</div>
+        </div>
+      </div>
+
+      <div class="table-responsive border">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-3 text-muted small text-uppercase">JO</th>
+              <th class="py-3 text-muted small text-uppercase">เจ้าของงาน</th>
+              <th class="py-3 text-muted small text-uppercase">ลูกค้า</th>
+              <th class="py-3 text-muted small text-uppercase text-center">รอบส่ง</th>
+              <th class="py-3 text-muted small text-uppercase">สถานะล่าสุด</th>
+              <th class="py-3 text-muted small text-uppercase text-end">ยอดรวม</th>
+              <th class="py-3 text-muted small text-uppercase">วันที่ล่าสุด</th>
+              <th class="py-3 text-muted small text-uppercase">สถานะคำขอ</th>
+              <th class="py-3 text-muted small text-uppercase">หมายเหตุขอปิดงาน</th>
+              <th class="py-3 text-muted small text-uppercase text-center">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of paging().rows">
+              <td class="fw-bold">{{ row.jobNo }}</td>
+              <td>{{ row.jobOwner }}</td>
+              <td>{{ row.customer }}</td>
+              <td class="text-center">{{ row.rounds }}</td>
+              <td>
+                <span class="badge bg-primary text-white">{{ row.lastStatus }}</span>
+              </td>
+              <td class="text-end text-danger fw-bold">{{ thb(row.totalExpense) }}</td>
+              <td>{{ row.lastDate }}</td>
+              <td>
+                <span *ngIf="row.requestStatus === 'none'" class="badge bg-light text-muted border">ยังไม่ขอปิด</span>
+                <span *ngIf="row.requestStatus === 'pending'" class="badge bg-warning text-dark">รออนุมัติ</span>
+                <span *ngIf="row.requestStatus === 'approved'" class="badge bg-success text-white">อนุมัติแล้ว</span>
+              </td>
+              <td style="max-width: 260px; white-space: pre-wrap; word-break: break-word;">
+                <div *ngIf="row.requestReason" class="small">
+                  <div class="text-dark">{{ row.requestReason }}</div>
+                  <div class="text-muted" *ngIf="row.requestedBy">
+                    โดย {{ row.requestedBy }}<span *ngIf="row.requestedAt"> • {{ row.requestedAt }}</span>
+                  </div>
+                </div>
+                <span *ngIf="!row.requestReason" class="text-muted small">-</span>
+              </td>
+              <td class="text-center text-nowrap">
+                <!-- ปุ่มขอปิดงาน: เจ้าของงาน หรือ admin ก็ทำได้ ถ้ายังไม่เคยขอหรือถูกปฏิเสธ -->
+                <button *ngIf="row.requestStatus !== 'approved' && (row.jobOwner === currentUser || isAdmin)"
+                  mat-stroked-button color="primary" class="me-1"
+                  (click)="openRequestModal(row)">
+                  <mat-icon>edit_note</mat-icon>
+                  {{ row.requestStatus === 'pending' ? 'แก้ไขคำขอ' : 'ขอปิดงาน' }}
+                </button>
+                <!-- ปุ่มอนุมัติ: เฉพาะ admin และคำขอ pending -->
+                <button *ngIf="isAdmin && row.requestStatus === 'pending'"
+                  mat-flat-button color="accent" class="bg-success text-white"
+                  (click)="approveRequest(row)">
+                  <mat-icon>check_circle</mat-icon>
+                  อนุมัติปิดงาน
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="paging().rows.length === 0">
+              <td colspan="10" class="text-center py-5 text-muted">ไม่พบรายการงาน</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <mat-paginator [length]="paging().total" [pageSize]="pageSize()" [pageIndex]="paging().page - 1"
+        [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" class="mt-3 bg-light border rounded">
+      </mat-paginator>
+    </div>
+  </div>
+</div>
+
+<!-- Request Close Modal -->
+<div class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center p-3 z-3"
+  *ngIf="requestModal().open">
+  <div class="card shadow-lg border-0 w-100 mx-auto d-flex flex-column" style="max-width: 560px;">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+      <h5 class="mb-0 fw-bold">ขอปิดงาน JO: {{ requestModal().jobNo }}</h5>
+      <button mat-icon-button (click)="closeRequestModal()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="card-body p-4">
+      <div *ngIf="requestModal().existing" class="alert alert-warning small mb-3">
+        งานนี้มีคำขอปิดงานอยู่แล้ว (สถานะ: {{ requestModal().existing?.status === 'pending' ? 'รออนุมัติ' : 'อนุมัติแล้ว' }})
+        การบันทึกจะแทนที่คำขอเดิม
+      </div>
+      <label class="form-label small fw-bold text-muted">เหตุผลที่ขอปิดงาน</label>
+      <textarea class="form-control bg-light" rows="4" [ngModel]="requestModal().reason"
+        (ngModelChange)="setRequestReason($event)"
+        placeholder="เช่น งานส่งครบทุกรอบแล้ว / ลูกค้ายืนยันรับครบ"></textarea>
+    </div>
+    <div class="card-footer bg-light d-flex justify-content-end gap-2 py-3">
+      <button mat-stroked-button (click)="closeRequestModal()">ยกเลิก</button>
+      <button mat-flat-button color="primary" (click)="submitCloseRequest()">บันทึกคำขอ</button>
+    </div>
+  </div>
+</div>

@@ -37,6 +37,9 @@ public class LalamoveWallet {
     @Column(name = "job_no")
     private String jobNo;
 
+    @Column(name = "job_owner")
+    private String jobOwner;
+
     private String customer;
 
     private String description;
