@@ -28,7 +28,7 @@ public class PrintJob extends BaseEntity {
     private Long id;
 
 
-    @Column(name = "job_id", length = 50)
+    @Column(name = "job_id", length = 255)
     private String jobId;
 
     @Column(name = "delivery_date")
