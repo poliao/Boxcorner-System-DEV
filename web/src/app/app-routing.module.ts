@@ -698,6 +698,10 @@ const routes: Routes = [
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm43/dcsm43.component').then((c) => c.Dcsm43Component)
       },
+      {
+        path: 'food-order',
+        loadComponent: () => import('./demo/forms/pages/food-order/food-order.component').then((c) => c.FoodOrderComponent)
+      },
     ]
   },
   {

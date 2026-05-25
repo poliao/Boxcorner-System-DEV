@@ -25,6 +25,18 @@ export class Dcsm36DetailComponent implements OnInit {
   isCompleteModalOpen = false;
   isPartialMode = false;
   isStartModalOpen = false;
+  isDestroyModalOpen = false;
+
+  // ─── งานเหลือรอทำลาย ───
+  modalDestroyBoxesPerBundle: number | null = null;
+  modalDestroyBundlesPerPack: number | null = null;
+  modalDestroyTotalPieces: number | null = null;
+  modalDestroyQty: number = 0;
+  modalDestroyQtyFraction: number = 0;
+  modalDestroyBundlesPerPackFraction: number = 0;
+  modalDestroyPiecesFraction: number = 0;
+  modalDestroyRemarks: string = '';
+  destroyStaffList: any[] = [{ userName: '', totalPieces: null, packs: 0, packsFraction: 0, bundlesFraction: 0, piecesFraction: 0 }];
 
   splitPrintData = {
     jobName: '',
@@ -376,6 +388,163 @@ export class Dcsm36DetailComponent implements OnInit {
 
   jobHistory() {
     this.router.navigate(['/Dcsm37Detail', this.qcJobForm.getRawValue().reorderFromJoId]);
+  }
+
+  // ─── งานเหลือรอทำลาย ───
+  get destroyPiecesPerBundle(): number {
+    return (this.modalDestroyBoxesPerBundle || 0) * (this.modalDestroyBundlesPerPack || 0);
+  }
+
+  recalcDestroyTotal() {
+    const total = this.modalDestroyTotalPieces || 0;
+    const ppb = this.destroyPiecesPerBundle;
+    if (ppb <= 0) {
+      this.modalDestroyQty = 0;
+      this.modalDestroyQtyFraction = 0;
+      this.modalDestroyBundlesPerPackFraction = 0;
+      this.modalDestroyPiecesFraction = 0;
+      return;
+    }
+    this.modalDestroyQty = Math.floor(total / ppb);
+    const rem = total % ppb;
+    const ppp = this.modalDestroyBoxesPerBundle || 0;
+    this.modalDestroyQtyFraction = rem > 0 ? 1 : 0;
+    this.modalDestroyBundlesPerPackFraction = ppp > 0 ? Math.floor(rem / ppp) : 0;
+    this.modalDestroyPiecesFraction = ppp > 0 ? rem % ppp : rem;
+  }
+
+  openDestroyModal() {
+    this.modalDestroyBoxesPerBundle = this.qcJobForm.get('boxesPerBundle')?.value;
+    this.modalDestroyBundlesPerPack = this.qcJobForm.get('bundlesPerPack')?.value;
+    this.modalDestroyTotalPieces = null;
+    this.modalDestroyQty = 0;
+    this.modalDestroyQtyFraction = 0;
+    this.modalDestroyBundlesPerPackFraction = 0;
+    this.modalDestroyPiecesFraction = 0;
+    this.modalDestroyRemarks = '';
+    this.destroyStaffList = [{ userName: '', totalPieces: null, packs: 0, packsFraction: 0, bundlesFraction: 0, piecesFraction: 0 }];
+    this.isDestroyModalOpen = true;
+  }
+
+  recalcDestroyStaff(staff: any) {
+    const total = staff.totalPieces || 0;
+    const ppb = this.destroyPiecesPerBundle;
+    if (ppb <= 0) {
+      staff.packs = 0; staff.packsFraction = 0; staff.bundlesFraction = 0; staff.piecesFraction = 0;
+      return;
+    }
+    staff.packs = Math.floor(total / ppb);
+    const rem = total % ppb;
+    const ppp = this.modalDestroyBoxesPerBundle || 0;
+    staff.packsFraction = rem > 0 ? 1 : 0;
+    staff.bundlesFraction = ppp > 0 ? Math.floor(rem / ppp) : 0;
+    staff.piecesFraction = ppp > 0 ? rem % ppp : rem;
+  }
+
+  addDestroyStaffRow() {
+    this.destroyStaffList.push({ userName: '', totalPieces: null, packs: 0, packsFraction: 0, bundlesFraction: 0, piecesFraction: 0 });
+  }
+
+  removeDestroyStaffRow(index: number) {
+    if (this.destroyStaffList.length > 1) this.destroyStaffList.splice(index, 1);
+  }
+
+  closeDestroyModal() {
+    this.isDestroyModalOpen = false;
+  }
+
+  onSubmitDestroy() {
+    if (!this.modalDestroyBoxesPerBundle || !this.modalDestroyBundlesPerPack) {
+      this.sweetAlert.error('Error', 'กรุณากรอกโครงสร้างบรรจุ (ชิ้น/แพค และ แพค/ห่อ) ให้ครบ');
+      return;
+    }
+    if (!this.modalDestroyTotalPieces || this.modalDestroyTotalPieces <= 0) {
+      this.sweetAlert.error('Error', 'กรุณากรอกยอดชิ้นที่ต้องทำลาย');
+      return;
+    }
+
+    // validate staff rows
+    const filledStaff = this.destroyStaffList.filter(s => s.userName);
+    if (filledStaff.length === 0) {
+      this.sweetAlert.error('Error', 'กรุณาเลือกผู้ตรวจอย่างน้อย 1 คน');
+      return;
+    }
+    for (let i = 0; i < this.destroyStaffList.length; i++) {
+      const s = this.destroyStaffList[i];
+      if (s.userName && (!s.totalPieces || s.totalPieces <= 0)) {
+        this.sweetAlert.error('Error', `กรุณากรอกจำนวนชิ้นที่ตรวจของแถวที่ ${i + 1}`);
+        return;
+      }
+    }
+    // ยอดของพนักงานต้องเท่ากับยอดรวม
+    const totalStaff = filledStaff.reduce((sum, s) => sum + (s.totalPieces || 0), 0);
+    if (totalStaff !== this.modalDestroyTotalPieces) {
+      this.sweetAlert.error('ยอดไม่ตรงกัน', `ยอดรวมของพนักงาน (${totalStaff}) ต้องเท่ากับ ยอดรวมที่ต้องทำลาย (${this.modalDestroyTotalPieces})`);
+      return;
+    }
+
+    // คำนวณ pack/fraction ใหม่ก่อน submit
+    filledStaff.forEach(s => this.recalcDestroyStaff(s));
+
+    const payload = {
+      qcJobId: this.jobId,
+      totalPieces: this.modalDestroyTotalPieces,
+      destroyQty: this.modalDestroyQty,
+      bundlesPerPack: this.modalDestroyBundlesPerPack,
+      boxesPerBundle: this.modalDestroyBoxesPerBundle,
+      destroyQtyFraction: this.modalDestroyQtyFraction,
+      bundlesPerPackFraction: this.modalDestroyBundlesPerPackFraction,
+      piecesFraction: this.modalDestroyPiecesFraction,
+      remarks: this.modalDestroyRemarks || null,
+      staffList: filledStaff.map(s => ({
+        userName: s.userName,
+        totalPieces: s.totalPieces,
+        packs: s.packs,
+        packsFraction: s.packsFraction,
+        bundlesFraction: s.bundlesFraction,
+        piecesFraction: s.piecesFraction
+      }))
+    };
+
+    this.sweetAlert.confirm('ยืนยันบันทึกงานเหลือรอทำลาย', 'ระบบจะบันทึกข้อมูลงานเหลือรอทำลาย ยืนยันหรือไม่?').then((result) => {
+      if (result.isConfirmed) {
+        this.loadingService.show();
+        this.dcsm36Service.saveRemainingDestroy(payload).subscribe({
+          next: () => {
+            this.loadingService.hide();
+            this.sweetAlert.success('บันทึกสำเร็จ', 'บันทึกงานเหลือรอทำลายเรียบร้อย');
+            this.closeDestroyModal();
+          },
+          error: (err) => {
+            console.error('Error saving remaining destroy:', err);
+            this.sweetAlert.error('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้');
+            this.loadingService.hide();
+          }
+        });
+      }
+    });
+  }
+
+  printRemaining() {
+    this.loadingService.show();
+    const isStk = this.qcJobForm.get('qcType')?.value === 'Qc STK';
+    const data = { reportName: isStk ? 'QcRemainingSTK' : 'QcRemaining', jobId: this.jobId };
+    this.dcsm36Service.printReport(data).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        const blob = new Blob([response], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none'; iframe.src = url;
+        iframe.onload = () => setTimeout(() => iframe.contentWindow?.print(), 100);
+        document.body.appendChild(iframe);
+      },
+      error: (err) => {
+        console.error('Error printing remaining destroy label:', err);
+        this.sweetAlert.error('Error', 'ไม่สามารถพิมพ์ใบงานเหลือรอทำลายได้');
+        this.loadingService.hide();
+      }
+    });
   }
 
   // ─── แบ่ง QC (Partial QC) ───

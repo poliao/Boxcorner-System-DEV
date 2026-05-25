@@ -1,0 +1,149 @@
+<div class="food-order container-fluid py-3">
+  <div class="d-flex align-items-center mb-3">
+    <h3 class="mb-0">สั่งอาหาร</h3>
+    <span class="ms-3 badge bg-secondary">ผู้ใช้: {{ currentUser }}</span>
+    <span *ngIf="isOpen" class="ms-2 badge bg-success">กำลังรับออเดอร์</span>
+    <span *ngIf="isSent" class="ms-2 badge bg-danger">ส่งให้ร้านแล้ว</span>
+  </div>
+
+  <ng-container *ngIf="!session || (isSent && canControl); else hasSession">
+
+    <div *ngIf="!session && !canControl" class="alert alert-info">
+      <mat-icon>info</mat-icon>
+      ยังไม่มีบิลที่เปิดอยู่ กรุณารอ <b>somporn</b> เปิดบิล
+    </div>
+
+    <div *ngIf="canControl" class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title mb-3">
+          {{ isSent ? 'เริ่มบิลใหม่' : 'เปิดบิลใหม่' }}
+        </h5>
+        <form [formGroup]="openForm" (ngSubmit)="openBill()" class="row g-2 align-items-end">
+          <div class="col-md-8">
+            <label class="form-label">ร้านอาหาร / ร้านค้า</label>
+            <input type="text" class="form-control" formControlName="restaurantName"
+                   placeholder="เช่น ก๋วยเตี๋ยวเรือ" />
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">
+              <mat-icon>add_shopping_cart</mat-icon>
+              เปิดบิล
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <ng-template #hasSession>
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <h5 class="mb-1">ร้าน: {{ session?.restaurantName }}</h5>
+            <small class="text-muted">เปิดโดย {{ session?.openedBy }}</small>
+          </div>
+          <div class="d-flex gap-2">
+            <button *ngIf="isOpen && canControl"
+                    type="button" class="btn btn-success"
+                    (click)="sendToShop()">
+              <mat-icon>send</mat-icon>
+              ส่งให้ร้านค้า
+            </button>
+            <button *ngIf="isSent && canControl"
+                    type="button" class="btn btn-outline-primary"
+                    (click)="copySummary()">
+              <mat-icon>content_copy</mat-icon>
+              คัดลอกรายการ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isOpen" class="card mb-3">
+      <div class="card-body">
+        <h6 class="mb-3">{{ editingItemId != null ? 'แก้ไขรายการ' : 'เพิ่มรายการของคุณ' }}</h6>
+        <form [formGroup]="itemForm" (ngSubmit)="addItem()" class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label">ชื่อ (สำหรับเขียนบนกล่อง)</label>
+            <input type="text" class="form-control" formControlName="displayName" />
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">เมนู</label>
+            <input type="text" class="form-control" formControlName="menuName"
+                   placeholder="เช่น ผัดกะเพราหมูสับไข่ดาว" />
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">จำนวนกล่อง</label>
+            <input type="number" min="1" class="form-control" formControlName="quantity" />
+          </div>
+          <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">
+              <mat-icon>{{ editingItemId != null ? 'save' : 'add' }}</mat-icon>
+              {{ editingItemId != null ? 'บันทึก' : 'เพิ่ม' }}
+            </button>
+            <button *ngIf="editingItemId != null"
+                    type="button" class="btn btn-outline-secondary" (click)="cancelEdit()">
+              ยกเลิก
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">รายการอาหารทั้งหมด</h6>
+          <span class="text-muted">รวม {{ totalBoxes }} กล่อง</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead>
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th>ชื่อ</th>
+                <th>เมนู</th>
+                <th class="text-center" style="width: 110px;">จำนวน</th>
+                <th class="text-muted small">ผู้สั่ง</th>
+                <th *ngIf="isOpen" class="text-end" style="width: 140px;">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items; let i = index"
+                  [class.table-warning]="editingItemId === item.id">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.displayName }}</td>
+                <td>{{ item.menuName }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-muted small">{{ item.username }}</td>
+                <td *ngIf="isOpen" class="text-end">
+                  <ng-container *ngIf="isOwnItem(item); else notOwn">
+                    <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                            (click)="startEdit(item)">
+                      <mat-icon style="font-size: 16px; height: 16px; width: 16px;">edit</mat-icon>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            (click)="deleteItem(item)">
+                      <mat-icon style="font-size: 16px; height: 16px; width: 16px;">delete</mat-icon>
+                    </button>
+                  </ng-container>
+                  <ng-template #notOwn>
+                    <span class="text-muted small">—</span>
+                  </ng-template>
+                </td>
+              </tr>
+              <tr *ngIf="items.length === 0">
+                <td [attr.colspan]="isOpen ? 6 : 5" class="text-center text-muted">
+                  ยังไม่มีรายการ
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>

@@ -19,6 +19,8 @@ public class QcService {
     private final LogQcRepository logQcRepository;
     private final com.boxcorner.boxcorner.repository.QcStaffRepository qcStaffRepository;
     private final com.boxcorner.boxcorner.repository.QcWasteReportRepository qcWasteReportRepository;
+    private final com.boxcorner.boxcorner.repository.QcRemainingDestroyRepository qcRemainingDestroyRepository;
+    private final com.boxcorner.boxcorner.repository.QcRemainingDestroyStaffRepository qcRemainingDestroyStaffRepository;
 
     @Transactional
     public QcJob saveQcJob(QcJob qcJob) {
@@ -33,6 +35,9 @@ public class QcService {
                 existingJob.setStatus(qcJob.getStatus());
                 existingJob.setJoId(qcJob.getJoId());
                 existingJob.setJobName(qcJob.getJobName());
+                if (qcJob.getJobOwner() != null) {
+                    existingJob.setJobOwner(qcJob.getJobOwner());
+                }
                 existingJob.setResponsibleName(qcJob.getResponsibleName());
                 existingJob.setDeliveryDatetime(qcJob.getDeliveryDatetime());
                 existingJob.setProductJobId(qcJob.getProductJobId());
@@ -143,22 +148,27 @@ public class QcService {
 
         QcJob savedJob = qcJobRepository.save(qcJob);
 
-        LogQc logQc = logQcRepository.findTopByQcJobIdOrderByIdDesc(id)
-                .orElseThrow(() -> new IllegalArgumentException("LogQc not found for qcJobId: " + id));
-
-        logQc.setEndTime(LocalTime.now());
-        logQc.setPassedQty(passedQty);
-        logQc.setBundlesPerPack(bundlesPerPack);
-        logQc.setBoxesPerBundle(boxesPerBundle);
-        logQc.setPassedQtyFraction(passedQtyFraction);
-        logQc.setBundlesPerPackFraction(bundlesPerPackFraction);
-        logQc.setPiecesFraction(piecesFraction);
-        logQc.setQcCaution(qcCaution);
-        logQcRepository.save(logQc);
+        LogQc logQc = LogQc.builder()
+                .qcJobId(id)
+                .operatorName("System")
+                .reportDate(LocalDate.now())
+                .startTime(LocalTime.now())
+                .endTime(LocalTime.now())
+                .passedQty(passedQty)
+                .bundlesPerPack(bundlesPerPack)
+                .boxesPerBundle(boxesPerBundle)
+                .passedQtyFraction(passedQtyFraction)
+                .bundlesPerPackFraction(bundlesPerPackFraction)
+                .piecesFraction(piecesFraction)
+                .qcCaution(qcCaution)
+                .qcType(qcJob.getQcType())
+                .build();
+        LogQc savedLog = logQcRepository.save(logQc);
 
         if (staffList != null && !staffList.isEmpty()) {
             for (com.boxcorner.boxcorner.entity.QcStaff staff : staffList) {
                 staff.setQcJobId(id);
+                staff.setLogQcId(savedLog.getId());
                 qcStaffRepository.save(staff);
             }
         }
@@ -245,6 +255,49 @@ public class QcService {
         }
 
         return savedLog.getId();
+    }
+
+    @Transactional
+    public com.boxcorner.boxcorner.entity.QcRemainingDestroy saveRemainingDestroy(
+            Integer qcJobId, Integer totalPieces, Integer destroyQty,
+            Integer bundlesPerPack, Integer boxesPerBundle,
+            Integer destroyQtyFraction, Integer bundlesPerPackFraction, Integer piecesFraction,
+            String remarks,
+            java.util.List<com.boxcorner.boxcorner.entity.QcRemainingDestroyStaff> staffList) {
+        QcJob qcJob = qcJobRepository.findById(qcJobId)
+                .orElseThrow(() -> new IllegalArgumentException("QcJob not found with id: " + qcJobId));
+
+        com.boxcorner.boxcorner.entity.QcRemainingDestroy record = com.boxcorner.boxcorner.entity.QcRemainingDestroy
+                .builder()
+                .qcJobId(qcJobId)
+                .totalPieces(totalPieces)
+                .destroyQty(destroyQty)
+                .bundlesPerPack(bundlesPerPack)
+                .boxesPerBundle(boxesPerBundle)
+                .destroyQtyFraction(destroyQtyFraction)
+                .bundlesPerPackFraction(bundlesPerPackFraction)
+                .piecesFraction(piecesFraction)
+                .qcType(qcJob.getQcType())
+                .remarks(remarks)
+                .build();
+        com.boxcorner.boxcorner.entity.QcRemainingDestroy savedRecord = qcRemainingDestroyRepository.save(record);
+
+        if (staffList != null && !staffList.isEmpty()) {
+            for (com.boxcorner.boxcorner.entity.QcRemainingDestroyStaff staff : staffList) {
+                if (staff.getUserName() == null || staff.getUserName().trim().isEmpty()) {
+                    continue;
+                }
+                staff.setQcRemainingDestroyId(savedRecord.getId());
+                staff.setQcJobId(qcJobId);
+                qcRemainingDestroyStaffRepository.save(staff);
+            }
+        }
+
+        return savedRecord;
+    }
+
+    public java.util.List<com.boxcorner.boxcorner.entity.QcRemainingDestroy> getRemainingDestroyByJob(Integer qcJobId) {
+        return qcRemainingDestroyRepository.findByQcJobIdOrderByIdAsc(qcJobId);
     }
 
     public java.util.Map<String, Long> getQcCounts(String role) {

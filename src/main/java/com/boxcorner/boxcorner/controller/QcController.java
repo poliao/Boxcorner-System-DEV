@@ -2,6 +2,7 @@ package com.boxcorner.boxcorner.controller;
 
 import com.boxcorner.boxcorner.entity.QcJob;
 import com.boxcorner.boxcorner.entity.dto.CompleteQcRequest;
+import com.boxcorner.boxcorner.entity.dto.RemainingDestroyRequest;
 import com.boxcorner.boxcorner.service.QcService;
 import lombok.RequiredArgsConstructor;
 
@@ -127,6 +128,36 @@ public class QcController {
                     request.getQcScratches(),
                     request.getQcMixedJobs(),
                     request.getQcCaution()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/remaining-destroy")
+    public ResponseEntity<?> saveRemainingDestroy(@RequestBody RemainingDestroyRequest request) {
+        try {
+            return ResponseEntity.ok(qcService.saveRemainingDestroy(
+                    request.getQcJobId(),
+                    request.getTotalPieces(),
+                    request.getDestroyQty(),
+                    request.getBundlesPerPack(),
+                    request.getBoxesPerBundle(),
+                    request.getDestroyQtyFraction(),
+                    request.getBundlesPerPackFraction(),
+                    request.getPiecesFraction(),
+                    request.getRemarks(),
+                    request.getStaffList()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/remaining-destroy")
+    public ResponseEntity<?> getRemainingDestroyByJob(@RequestParam(value = "qcJobId") Integer qcJobId) {
+        try {
+            return ResponseEntity.ok(qcService.getRemainingDestroyByJob(qcJobId));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred: " + e.getMessage());
         }

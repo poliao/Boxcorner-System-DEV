@@ -38,6 +38,9 @@ public class QcJob extends BaseEntity {
     @Column(name = "job_name", length = 255)
     private String jobName;
 
+    @Column(name = "job_owner", length = 100)
+    private String jobOwner;
+
     @Column(name = "responsible_name", length = 100)
     private String responsibleName;
 

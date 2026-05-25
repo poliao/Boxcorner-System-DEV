@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Set-Location web; & \"./node_modules/.bin/tsc.cmd\" --noEmit -p tsconfig.app.json; Write-Output \"ExitCode=$LASTEXITCODE\")"
+      "PowerShell(Set-Location web; & \"./node_modules/.bin/tsc.cmd\" --noEmit -p tsconfig.app.json; Write-Output \"ExitCode=$LASTEXITCODE\")",
+      "PowerShell(Get-ChildItem -Path \"G:\\\\Boxcorner-System-DEV\" | Where-Object { $_.PSIsContainer } | Select-Object Name)"
     ]
   }
 }

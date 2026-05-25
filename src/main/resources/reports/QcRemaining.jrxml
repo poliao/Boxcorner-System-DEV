@@ -7,17 +7,56 @@
 	<property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
 	<property name="com.jaspersoft.studio.unit.topMargin" value="mm"/>
 	<parameter name="jobId" class="java.lang.Integer"/>
-	<query language="SQL"><![CDATA[SELECT jo_id as joId,
-qc_name as qcName, 
-bundles_per_pack as bundlesPerPack,
-boxes_per_bundle as boxesPerPundle,
-total_boxes_per_pack as totalBoxesPerPack,
-qc_finish_date as dateEnd,
-bundles_fraction as bundlesFraction,
-pieces_fraction as piecesFraction,
-job_name as jobName,
-part_name as partName
-FROM get_qc_labels($P{jobId});]]></query>
+	<query language="SQL"><![CDATA[-- expand qc_remaining_destroy_staff: 1 row ต่อ 1 ห่อ (เต็ม + เศษ) ของแต่ละคน
+WITH staff_packs AS (
+    -- ห่อเต็มของแต่ละ staff
+    SELECT
+        s.qc_remaining_destroy_id                                AS remaining_id,
+        s.id                                                     AS staff_id,
+        s.user_name                                              AS user_name,
+        gs                                                       AS pack_seq,
+        FALSE                                                    AS is_fraction
+    FROM qc_remaining_destroy_staff s
+    JOIN LATERAL generate_series(1, COALESCE(s.packs, 0)) AS gs ON TRUE
+    WHERE COALESCE(s.packs, 0) > 0
+
+    UNION ALL
+
+    -- ห่อเศษของแต่ละ staff
+    SELECT
+        s.qc_remaining_destroy_id                                AS remaining_id,
+        s.id                                                     AS staff_id,
+        s.user_name                                              AS user_name,
+        COALESCE(s.packs, 0) + 1                                 AS pack_seq,
+        TRUE                                                     AS is_fraction
+    FROM qc_remaining_destroy_staff s
+    WHERE COALESCE(s.packs_fraction, 0) > 0
+)
+SELECT
+    j.jo_id                                                      AS joid,
+    j.job_name                                                   AS jobname,
+    j.part_name                                                  AS partname,
+    sp.user_name                                                 AS qcname,
+    CASE WHEN sp.is_fraction THEN 0 ELSE r.bundles_per_pack END  AS bundlesperpack,
+    r.boxes_per_bundle                                           AS boxesperpundle,
+    CASE
+        WHEN sp.is_fraction THEN
+            (COALESCE(stf.bundles_fraction, 0) * COALESCE(r.boxes_per_bundle, 0))
+            + COALESCE(stf.pieces_fraction, 0)
+        ELSE
+            COALESCE(r.bundles_per_pack, 0) * COALESCE(r.boxes_per_bundle, 0)
+    END                                                          AS totalboxesperpack,
+    CASE WHEN sp.is_fraction THEN COALESCE(stf.bundles_fraction, 0) ELSE 0 END
+                                                                 AS bundlesfraction,
+    CASE WHEN sp.is_fraction THEN COALESCE(stf.pieces_fraction, 0) ELSE 0 END
+                                                                 AS piecesfraction,
+    r.created_at                                                 AS dateend
+FROM staff_packs sp
+INNER JOIN qc_remaining_destroy r ON r.id = sp.remaining_id
+INNER JOIN qc_jobs j ON j.id = r.qc_job_id
+INNER JOIN qc_remaining_destroy_staff stf ON stf.id = sp.staff_id
+WHERE r.qc_job_id = $P{jobId}
+ORDER BY sp.remaining_id, sp.staff_id, sp.pack_seq;]]></query>
 	<field name="joid" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="joid"/>
 		<property name="com.jaspersoft.studio.field.label" value="joid"/>
@@ -82,7 +121,7 @@ FROM get_qc_labels($P{jobId});]]></query>
 					<expression><![CDATA["ผู้ตรวจสอบ :"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="a35b78e1-5090-4b4f-ab58-863e605435eb" x="0" y="10" width="30" height="188" forecolor="#030303" backcolor="#030100" rotation="Right" fontName="THSarabun" fontSize="26.0" bold="true" vTextAlign="Middle">
+				<element kind="textField" uuid="a35b78e1-5090-4b4f-ab58-863e605435eb" x="0" y="10" width="30" height="80" forecolor="#030303" backcolor="#030100" rotation="Right" fontName="THSarabun" fontSize="16.0" bold="true" vTextAlign="Middle">
 					<expression><![CDATA[$F{joid}]]></expression>
 				</element>
 				<element kind="textField" uuid="b53cb48c-6b78-4413-8757-869963b8c588" x="30" y="118" width="41" height="20" fontName="THSarabun" fontSize="16.0">
@@ -153,6 +192,9 @@ FROM get_qc_labels($P{jobId});]]></query>
 				</element>
 				<element kind="textField" uuid="b4d3f39d-bb66-4b15-91f0-573165c8f5c6" x="130" y="78" width="20" height="20" fontName="THSarabun" fontSize="16.0" bold="true">
 					<expression><![CDATA[$F{piecesfraction} == null ? "0" : $F{piecesfraction}]]></expression>
+				</element>
+				<element kind="textField" uuid="90f215e1-879e-492c-a889-e9e7f2c01bed" x="0" y="90" width="30" height="108" forecolor="#030303" backcolor="#030100" rotation="Right" fontName="THSarabun" fontSize="19.0" bold="true" vTextAlign="Middle">
+					<expression><![CDATA["งานเหลือรอทำลาย"]]></expression>
 				</element>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>

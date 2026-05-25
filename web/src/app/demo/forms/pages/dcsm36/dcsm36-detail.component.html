@@ -36,6 +36,14 @@
       <mat-icon class="me-1">splitscreen</mat-icon> แบ่ง QC
     </button>
 
+    <button mat-stroked-button color="warn" class="rounded-pill px-3" (click)="openDestroyModal()">
+      <mat-icon class="me-1">delete_forever</mat-icon> งานเหลือรอทำลาย
+    </button>
+
+    <button mat-stroked-button color="warn" class="rounded-pill px-3" (click)="printRemaining()">
+      <mat-icon class="me-1">print</mat-icon> พิมพ์ใบงานเหลือรอทำลาย
+    </button>
+
     <button mat-flat-button color="accent" class="rounded-pill px-4" (click)="completeQc()"
       *ngIf="qcJobForm.get('status')?.value === 'อยู่ระหว่างตรวจ'">
       <mat-icon class="me-2">check_circle</mat-icon> ปิดจ๊อบ
@@ -380,6 +388,167 @@
       </button>
       <button mat-flat-button color="primary" (click)="isPartialMode ? onSubmitPartial() : onSubmitComplete()">
         <mat-icon class="me-1">save</mat-icon> {{ isPartialMode ? 'บันทึกและพิมพ์ใบปะหน้า' : 'บันทึกข้อมูล' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal: งานเหลือรอทำลาย ═══ -->
+<div class="modal-overlay" *ngIf="isDestroyModalOpen">
+  <div class="modal-container qc-modal">
+    <div class="modal-header qc-modal-header" style="background-color: #b94a48;">
+      <div class="d-flex align-items-center gap-2">
+        <mat-icon class="text-white">delete_forever</mat-icon>
+        <h5 class="mb-0 text-white">บันทึกงานเหลือรอทำลาย</h5>
+      </div>
+      <button type="button" class="btn-close btn-close-white" (click)="closeDestroyModal()"></button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- ขั้นที่ 1: โครงสร้างบรรจุ -->
+      <div class="qc-section mb-3">
+        <div class="qc-section-label">
+          <mat-icon class="section-icon" style="color:#003747">settings</mat-icon>
+          <span>ขั้นที่ 1 — โครงสร้างการบรรจุ</span>
+          <span class="badge bg-secondary ms-auto">กรอกครั้งเดียว</span>
+        </div>
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label small fw-semibold">
+              {{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'ดวง / แผ่น' : 'ชิ้น / แพค' }}
+            </label>
+            <input type="number" class="form-control form-control-lg text-center fw-bold"
+              [(ngModel)]="modalDestroyBoxesPerBundle" (ngModelChange)="recalcDestroyTotal()" placeholder="0" min="1">
+            <div class="form-text text-center">
+              {{ qcJobForm.get('qcType')?.value === 'Qc STK' ? '1 แผ่น มีกี่ดวง' : '1 แพค มีกี่ชิ้น' }}
+            </div>
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">
+              {{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'แผ่น / ห่อ' : 'แพค / ห่อ' }}
+            </label>
+            <input type="number" class="form-control form-control-lg text-center fw-bold"
+              [(ngModel)]="modalDestroyBundlesPerPack" (ngModelChange)="recalcDestroyTotal()" placeholder="0" min="1">
+            <div class="form-text text-center">
+              {{ qcJobForm.get('qcType')?.value === 'Qc STK' ? '1 ห่อ มีกี่แผ่น' : '1 ห่อ มีกี่แพค' }}
+            </div>
+          </div>
+        </div>
+        <div class="pieces-per-bundle-badge mt-2" *ngIf="destroyPiecesPerBundle > 0">
+          <mat-icon style="font-size:16px;width:16px;height:16px">calculate</mat-icon>
+          1 ห่อ = <strong>{{ destroyPiecesPerBundle | number }}</strong>
+          {{ qcJobForm.get('qcType')?.value === 'Qc STK' ? ' ดวง' : ' ชิ้น' }}
+        </div>
+      </div>
+
+      <!-- ขั้นที่ 2: ยอดชิ้นรวม -->
+      <div class="qc-section mb-3">
+        <div class="qc-section-label">
+          <mat-icon class="section-icon text-danger">delete_forever</mat-icon>
+          <span>ขั้นที่ 2 — ยอดงานเหลือรอทำลาย (รวมทั้งหมด)</span>
+        </div>
+        <div class="row g-3 align-items-start">
+          <div class="col-12 col-md-5">
+            <label class="form-label small fw-semibold">
+              ยอด{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'ดวง' : 'ชิ้น' }}รวมที่ต้องทำลาย
+            </label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-danger-subtle border-danger-subtle">
+                <mat-icon class="icon-sm text-danger">delete</mat-icon>
+              </span>
+              <input type="number" class="form-control form-control-lg border-danger-subtle fw-bold"
+                [(ngModel)]="modalDestroyTotalPieces" (ngModelChange)="recalcDestroyTotal()" placeholder="0" min="0">
+            </div>
+          </div>
+          <!-- Preview ผลการคำนวณ -->
+          <div class="col-12 col-md-7" *ngIf="modalDestroyTotalPieces && destroyPiecesPerBundle > 0">
+            <div class="calc-preview">
+              <div class="calc-preview-row">
+                <mat-icon class="text-danger">inventory_2</mat-icon>
+                <span>ห่อเต็ม</span>
+                <span class="calc-value text-danger">{{ modalDestroyQty }} ห่อ</span>
+              </div>
+              <div class="calc-preview-row" *ngIf="modalDestroyQtyFraction > 0">
+                <mat-icon class="text-warning">subdirectory_arrow_right</mat-icon>
+                <span>ของเศษ</span>
+                <span class="calc-value text-warning">
+                  {{ modalDestroyBundlesPerPackFraction }}
+                  {{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'แผ่น' : 'แพค' }}
+                  <span *ngIf="qcJobForm.get('qcType')?.value !== 'Qc STK'"> + {{ modalDestroyPiecesFraction }} ชิ้น</span>
+                </span>
+              </div>
+              <div class="calc-preview-row" *ngIf="!modalDestroyQtyFraction">
+                <mat-icon class="text-success">done_all</mat-icon>
+                <span class="text-muted">ไม่มีของเศษ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ขั้นที่ 3: ผู้ตรวจ -->
+      <div class="qc-section mb-3">
+        <div class="qc-section-label">
+          <mat-icon class="section-icon" style="color:#003747">people</mat-icon>
+          <span>ขั้นที่ 3 — ผู้ตรวจ <span class="text-danger">*</span></span>
+        </div>
+        <p class="text-muted small mb-3">
+          <mat-icon style="font-size:15px;width:15px;vertical-align:middle">info</mat-icon>
+          กรอกยอดที่แต่ละคนตรวจ — ระบบคำนวณห่อ/เศษให้เอง (1 ห่อ = 1 คน)
+        </p>
+        <div class="staff-row mb-3 pb-3 border-bottom" *ngFor="let staff of destroyStaffList; let i = index">
+          <div class="row g-2 align-items-end">
+            <div class="col-12 col-sm-6">
+              <label class="form-label small fw-semibold">ผู้ตรวจ <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="staff.userName">
+                <option value="">— เลือกพนักงาน —</option>
+                <option *ngFor="let user of usersList" [value]="user.text">{{ user.text }}</option>
+              </select>
+            </div>
+            <div class="col-10 col-sm-5">
+              <label class="form-label small fw-semibold">
+                ยอด{{ qcJobForm.get('qcType')?.value === 'Qc STK' ? 'ดวง' : 'ชิ้น' }}ที่ตรวจ
+              </label>
+              <div class="input-group">
+                <input type="number" class="form-control" [(ngModel)]="staff.totalPieces"
+                  (ngModelChange)="recalcDestroyStaff(staff)" placeholder="0" min="0">
+                <span class="input-group-text text-muted small" *ngIf="staff.packs > 0 || staff.packsFraction > 0">
+                  = {{ staff.packs }}ห่อ<span *ngIf="staff.packsFraction">+เศษ</span>
+                </span>
+              </div>
+            </div>
+            <div class="col-2 col-sm-1">
+              <button class="btn btn-outline-danger btn-sm w-100" (click)="removeDestroyStaffRow(i)"
+                [disabled]="destroyStaffList.length === 1" title="ลบ">
+                <mat-icon style="font-size:16px;width:16px;height:16px">delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button mat-stroked-button color="primary" class="w-100" (click)="addDestroyStaffRow()">
+          <mat-icon>person_add</mat-icon> เพิ่มพนักงาน
+        </button>
+      </div>
+
+      <!-- ขั้นที่ 4: หมายเหตุ -->
+      <div class="qc-section mb-3">
+        <div class="qc-section-label">
+          <mat-icon class="section-icon text-secondary">notes</mat-icon>
+          <span>ขั้นที่ 4 — หมายเหตุ <span class="text-muted fw-normal">(ถ้ามี)</span></span>
+        </div>
+        <textarea class="form-control" rows="2" [(ngModel)]="modalDestroyRemarks"
+          placeholder="ระบุหมายเหตุ..."></textarea>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button mat-button class="me-2" (click)="closeDestroyModal()">
+        <mat-icon class="me-1">close</mat-icon> ยกเลิก
+      </button>
+      <button mat-flat-button color="warn" (click)="onSubmitDestroy()">
+        <mat-icon class="me-1">save</mat-icon> บันทึก
       </button>
     </div>
   </div>
