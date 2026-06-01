@@ -1,0 +1,137 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-dark text-white rounded-pill small fw-bold mb-3">
+        BCA ERP / HR
+      </div>
+      <h2 class="mb-1 fw-bold">ทะเบียนพนักงาน</h2>
+      <p class="text-muted mb-0">กำหนดข้อมูลพนักงาน เงินเดือน และสิทธิการลา</p>
+    </div>
+  </div>
+
+  <!-- ฟอร์ม -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="fw-bold border-bottom pb-3 mb-3">
+        {{ isEditing ? 'แก้ไขข้อมูลพนักงาน' : 'เพิ่มพนักงานใหม่' }}
+      </h5>
+
+      <!-- ข้อมูลพื้นฐาน -->
+      <div class="row g-3">
+        <div class="col-6 col-md-2">
+          <label class="form-label small fw-bold text-muted">ID</label>
+          <input type="text" class="form-control bg-light" [value]="employeeForm.id ?? 'อัตโนมัติ'" readonly>
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label small fw-bold text-muted">รหัสพนักงาน</label>
+          <input type="text" class="form-control bg-light" [value]="employeeForm.code || 'อัตโนมัติ'" readonly>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-bold text-muted">ชื่อ <span class="text-danger">*</span></label>
+          <input type="text" class="form-control bg-light" [(ngModel)]="employeeForm.firstName" placeholder="ชื่อจริง">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-bold text-muted">นามสกุล</label>
+          <input type="text" class="form-control bg-light" [(ngModel)]="employeeForm.lastName" placeholder="นามสกุล">
+        </div>
+      </div>
+
+      <!-- เงินเดือน + คำนวณ -->
+      <h6 class="fw-bold text-secondary mt-4 mb-2"><mat-icon class="align-middle">payments</mat-icon> เงินเดือน</h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label small fw-bold text-muted">เงินเดือน / เดือน (บาท)</label>
+          <input type="number" min="0" class="form-control bg-light" [(ngModel)]="employeeForm.monthlySalary"
+            placeholder="0.00">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-bold text-muted">เงินเดือนรายวัน <span class="fw-normal">(÷ 30)</span></label>
+          <input type="text" class="form-control bg-light text-success fw-bold"
+            [value]="thb(daily(employeeForm.monthlySalary))" readonly>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-bold text-muted">ค่าแรงรายชั่วโมง <span class="fw-normal">(รายวัน ÷ 8)</span></label>
+          <input type="text" class="form-control bg-light text-success fw-bold"
+            [value]="thb(hourly(employeeForm.monthlySalary))" readonly>
+        </div>
+      </div>
+
+      <!-- สิทธิการลา -->
+      <h6 class="fw-bold text-secondary mt-4 mb-2"><mat-icon class="align-middle">event_busy</mat-icon> สิทธิการลา (วัน / ชั่วโมง)</h6>
+      <div class="row g-2">
+        <div class="col-6 col-md-4 col-xl" *ngFor="let lt of leaveTypes">
+          <div class="border rounded-3 p-2 h-100 bg-light">
+            <div class="small fw-bold text-dark mb-2 text-center">{{ lt.label }}</div>
+            <div class="d-flex gap-1">
+              <div class="flex-fill">
+                <label class="text-muted mb-1 d-block" style="font-size:.7rem;">วัน</label>
+                <input type="number" min="0" class="form-control form-control-sm text-center"
+                  [ngModel]="leaveVal(lt.daysKey)" (ngModelChange)="setLeaveVal(lt.daysKey, $event)">
+              </div>
+              <div class="flex-fill">
+                <label class="text-muted mb-1 d-block" style="font-size:.7rem;">ชม.</label>
+                <input type="number" min="0" max="7" class="form-control form-control-sm text-center"
+                  [ngModel]="leaveVal(lt.hoursKey)" (ngModelChange)="setLeaveVal(lt.hoursKey, $event)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ปุ่ม -->
+      <div class="d-flex gap-2 mt-4">
+        <button mat-flat-button color="primary" class="px-4 py-2" (click)="saveEmployee()">
+          {{ isEditing ? 'บันทึกการแก้ไข' : 'เพิ่มพนักงาน' }}
+        </button>
+        <button mat-stroked-button class="px-4 py-2" (click)="resetForm()">
+          {{ isEditing ? 'ยกเลิก' : 'ล้างฟอร์ม' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ตาราง -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body d-flex flex-column">
+      <h5 class="fw-bold border-bottom pb-3 mb-3">รายชื่อพนักงานทั้งหมด ({{ employees().length }})</h5>
+      <div class="table-responsive border">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-3 text-muted small text-uppercase">รหัส</th>
+              <th class="py-3 text-muted small text-uppercase">ชื่อ - นามสกุล</th>
+              <th class="py-3 text-muted small text-uppercase text-end">เงินเดือน/เดือน</th>
+              <th class="py-3 text-muted small text-uppercase text-end">รายวัน</th>
+              <th class="py-3 text-muted small text-uppercase text-end">รายชั่วโมง</th>
+              <th class="py-3 text-muted small text-uppercase text-center">สิทธิลา (วัน)<br>กิจ/ป่วย/พักร้อน/คลอด/บวช</th>
+              <th class="py-3 text-muted small text-uppercase text-center">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of employees()">
+              <td class="fw-bold text-primary">{{ e.code }}</td>
+              <td class="fw-bold">{{ e.firstName }} {{ e.lastName }}</td>
+              <td class="text-end">{{ thb(e.monthlySalary) }}</td>
+              <td class="text-end text-success fw-bold">{{ thb(daily(e.monthlySalary)) }}</td>
+              <td class="text-end text-success fw-bold">{{ thb(hourly(e.monthlySalary)) }}</td>
+              <td class="text-center text-nowrap small">
+                {{ e.personalLeaveDays }}/{{ e.sickLeaveDays }}/{{ e.vacationLeaveDays }}/{{ e.maternityLeaveDays }}/{{ e.ordinationLeaveDays }}
+              </td>
+              <td class="text-center text-nowrap">
+                <button mat-icon-button color="primary" (click)="editEmployee(e)" title="แก้ไข">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteEmployee(e)" title="ลบ">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="employees().length === 0">
+              <td colspan="7" class="text-center py-5 text-muted">ยังไม่มีพนักงาน</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

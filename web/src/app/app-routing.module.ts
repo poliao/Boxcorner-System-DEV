@@ -699,6 +699,20 @@ const routes: Routes = [
         loadComponent: () => import('./demo/forms/pages/dcsm43/dcsm43.component').then((c) => c.Dcsm43Component)
       },
       {
+        path: 'Dcsm44',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm44/dcsm44.component').then((c) => c.Dcsm44Component)
+      },
+      {
+        path: 'leave-request',
+        loadComponent: () => import('./demo/forms/pages/leave-request/leave-request.component').then((c) => c.LeaveRequestComponent)
+      },
+      {
+        path: 'Dcsm45',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/dcsm45/dcsm45.component').then((c) => c.Dcsm45Component)
+      },
+      {
         path: 'food-order',
         loadComponent: () => import('./demo/forms/pages/food-order/food-order.component').then((c) => c.FoodOrderComponent)
       },

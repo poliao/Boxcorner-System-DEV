@@ -341,7 +341,7 @@ export class Dcsm08Component implements OnInit {
   }
 
   BacklogKeepSupplier() {
-    this.dcsm08Service.countBacklogSupplier().subscribe({
+    this.dcsm08Service.countBacklogKeepSupplier().subscribe({
       next: (data: number) => {
         this.isKeepSupplier = data;
       },

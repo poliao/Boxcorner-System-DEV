@@ -1,0 +1,125 @@
+<div class="container-fluid py-4">
+  <div class="mb-4">
+    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-dark text-white rounded-pill small fw-bold mb-3">
+      BCA ERP / HR
+    </div>
+    <h2 class="mb-1 fw-bold">บันทึกการลา</h2>
+    <p class="text-muted mb-0">ฟอร์มขอลาสำหรับพนักงาน</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- ฟอร์ม -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">พนักงาน <span class="text-danger">*</span></label>
+              <select class="form-select bg-light" [(ngModel)]="form.employeeId">
+                <option [ngValue]="null">-- เลือกชื่อ-นามสกุล --</option>
+                <option *ngFor="let e of employees()" [ngValue]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.code }})</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">ประเภทการลา <span class="text-danger">*</span></label>
+              <select class="form-select bg-light" [(ngModel)]="form.leaveType">
+                <option value="">-- เลือกประเภทการลา --</option>
+                <option *ngFor="let t of leaveTypes" [value]="t">{{ t }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted">วันที่ลา (จาก) <span class="text-danger">*</span></label>
+              <input type="date" class="form-control bg-light" [(ngModel)]="form.dateFrom">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted">ถึง <span class="text-danger">*</span></label>
+              <input type="date" class="form-control bg-light" [(ngModel)]="form.dateTo">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted">เวลาเริ่ม (จาก)</label>
+              <input type="time" class="form-control bg-light" [(ngModel)]="form.timeFrom">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted">ถึง</label>
+              <input type="time" class="form-control bg-light" [(ngModel)]="form.timeTo">
+            </div>
+
+            <div class="col-12" *ngIf="requestedHours !== null">
+              <div class="d-flex flex-wrap align-items-center gap-2 small">
+                <span class="border rounded px-2 py-1 bg-light text-dark">รวมที่ขอลา: <strong>{{ hoursToText(requestedHours!) }}</strong></span>
+                <span *ngIf="form.leaveType && availableHours !== null" class="border rounded px-2 py-1 bg-light text-dark">
+                  {{ form.leaveType }} คงเหลือ: <strong>{{ hoursToText(availableHours!) }}</strong>
+                </span>
+              </div>
+              <div *ngIf="isInsufficient" class="alert alert-danger mt-2 mb-0 d-flex align-items-center gap-2 py-2">
+                <mat-icon>error</mat-icon>
+                <span><strong>วันลาไม่พอ</strong> — ขอลา {{ hoursToText(requestedHours!) }} แต่ {{ form.leaveType }} เหลือ {{ hoursToText(availableHours || 0) }}</span>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label small fw-bold text-muted">เหตุผลการลา</label>
+              <textarea class="form-control bg-light" rows="3" [(ngModel)]="form.reason"
+                placeholder="ระบุเหตุผลการลา"></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label small fw-bold text-muted">ไฟล์แนบ (ไม่เกิน 100 MB)</label>
+              <input type="file" class="form-control bg-light" (change)="onFileChange($event)">
+              <div *ngIf="fileName()" class="small text-success mt-1 d-flex align-items-center gap-1">
+                <mat-icon style="font-size:18px;width:18px;height:18px;">attach_file</mat-icon>{{ fileName() }}
+              </div>
+              <div class="form-text">* ไฟล์แนบยังไม่ถูกบันทึกลงระบบ (แสดงเฉพาะหน้าจอ)</div>
+            </div>
+
+            <div class="col-12 d-flex gap-2 mt-2">
+              <button mat-flat-button color="primary" class="px-4 py-2" (click)="submit()">ส่งคำขอลา</button>
+              <button mat-stroked-button class="px-4 py-2" (click)="reset()">ล้างฟอร์ม</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- สรุปข้อมูล/สิทธิวันลา เมื่อเลือกพนักงาน -->
+    <div class="col-lg-5">
+      <ng-container *ngIf="selectedEmployee as emp; else pickEmp">
+        <!-- การ์ดข้อมูลพนักงาน -->
+        <div class="card border-0 shadow-sm mb-3 overflow-hidden">
+          <div class="card-body p-4" style="background:#1b2438;">
+            <div class="fw-bold small mb-1" style="color:#34d399;">{{ emp.code }}</div>
+            <h3 class="fw-bold text-white mb-0">{{ emp.firstName }} {{ emp.lastName }}</h3>
+            <div class="small mt-1" style="color:#9aa6c2;">ข้อมูลพนักงาน</div>
+          </div>
+        </div>
+
+        <!-- สิทธิวันลาคงเหลือ -->
+        <h6 class="fw-bold mb-3">สิทธิวันลาคงเหลือ</h6>
+        <div *ngFor="let b of leaveBalance" class="card border-0 shadow-sm mb-2 bg-light">
+          <div class="card-body py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-dark">{{ b.label }}</span>
+              <span *ngIf="b.days || b.hours; else noLeave" class="fw-bold text-primary">
+                เหลือ {{ b.days }} วัน<span *ngIf="b.hours"> {{ b.hours }} ชม.</span>
+              </span>
+              <ng-template #noLeave><span class="fw-bold text-muted">ไม่มีวันลา</span></ng-template>
+            </div>
+            <div class="small text-muted mt-1">
+              ใช้ไป 0 / สิทธิ์ {{ b.days }} วัน<span *ngIf="b.hours"> {{ b.hours }} ชม.</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #pickEmp>
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body d-flex flex-column align-items-center justify-content-center text-muted py-5">
+            <mat-icon style="font-size:48px;width:48px;height:48px;opacity:.3;">badge</mat-icon>
+            <div class="mt-2">เลือกพนักงานเพื่อดูสิทธิวันลา</div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

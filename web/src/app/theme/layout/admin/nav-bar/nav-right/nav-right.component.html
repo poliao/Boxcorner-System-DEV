@@ -21,6 +21,10 @@
             <!-- <p class="text-muted">{{ userRole }}</p> -->
             <hr />
             <ng-scrollbar style="height: calc(100vh - 280px)" visibility="hover">
+              <a routerLink="/leave-request" class="dropdown-item" style="cursor: pointer;">
+                <i class="ti ti-calendar-off"></i>
+                <span>บันทึกการลา</span>
+              </a>
               <a (click)="logout()" class="dropdown-item" style="cursor: pointer;">
                 <i class="ti ti-logout"></i>
                 <span>Logout</span>
