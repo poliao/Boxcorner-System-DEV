@@ -270,7 +270,7 @@ export class Dcsm09DetailComponent implements OnInit {
       this.isOrder = false;
       this.isCheckMold = false;
       this.isDelivery = false;
-    } else if ((this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' || this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น') && (this.mainForm.getRawValue().dataDalivery == false || this.mainForm.getRawValue().dataDalivery == null) && this.authService.getUserFromToken().sub == this.mainForm.getRawValue().inspector) {
+    } else if ((this.mainForm.getRawValue().processStatus == 'ส่งไฟล์แล้ว' || this.mainForm.getRawValue().processStatus == 'เสร็จสิ้น') && (this.mainForm.getRawValue().dataDalivery == false || this.mainForm.getRawValue().dataDalivery == null)) {
       this.isDelivery = true;
     } else {
       this.isCheckMold = false;
