@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/production-job/**").permitAll() // Temporary permitAll for debugging
+                        .requestMatchers("/ws/**").permitAll() // SockJS/WebSocket handshake (real-time push)
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

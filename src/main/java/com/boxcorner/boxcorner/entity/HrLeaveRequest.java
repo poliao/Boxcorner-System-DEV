@@ -42,5 +42,11 @@ public class HrLeaveRequest {
     @Column(length = 1000)
     private String reason;
 
+    // pending / approved / rejected
+    private String status;
+
+    @Column(name = "approved_by")
+    private String approvedBy;
+
     // หมายเหตุ: ไฟล์แนบยังไม่ถูกบันทึกลง DB (ตามสเปก) จึงไม่มีคอลัมน์ไฟล์
 }

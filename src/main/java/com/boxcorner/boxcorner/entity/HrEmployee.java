@@ -26,6 +26,14 @@ public class HrEmployee {
     @Column(name = "last_name")
     private String lastName;
 
+    // ตำแหน่ง อ้างอิง hr_position.id (จาก Dcsm45)
+    @Column(name = "position_id")
+    private Long positionId;
+
+    // บัญชีผู้ใช้ (username) ที่ผูกกับพนักงานคนนี้ — ใช้ขอลาได้เฉพาะของตัวเอง
+    @Column(name = "username")
+    private String username;
+
     // เงินเดือนต่อเดือน (รายวัน = /30, รายชั่วโมง = รายวัน/8 คำนวณฝั่ง UI)
     @Column(name = "monthly_salary", precision = 12, scale = 2)
     private BigDecimal monthlySalary;

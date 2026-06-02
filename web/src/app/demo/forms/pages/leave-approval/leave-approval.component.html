@@ -1,0 +1,77 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-dark text-white rounded-pill small fw-bold mb-3">
+        BCA ERP / HR
+      </div>
+      <h2 class="mb-1 fw-bold">อนุมัติการลา</h2>
+      <p class="text-muted mb-0">คำขอลาของพนักงานในสายการอนุมัติของคุณ ({{ currentUser }})</p>
+    </div>
+    <div class="text-end" *ngIf="isApprover()">
+      <div class="text-muted small fw-bold">รออนุมัติ</div>
+      <h3 class="mb-0 fw-bold text-warning">{{ pendingCount() }}</h3>
+    </div>
+  </div>
+
+  <!-- ไม่ได้อยู่ในสายอนุมัติ -->
+  <div *ngIf="!isApprover()" class="alert alert-info">
+    บัญชีนี้ไม่ได้ถูกกำหนดให้เป็นผู้อนุมัติ (กำหนดได้ที่หน้า "กำหนดตำแหน่ง" → แท็บสายการอนุมัติ)
+  </div>
+
+  <div class="card shadow-sm border-0" *ngIf="isApprover()">
+    <div class="card-body">
+      <div class="table-responsive border">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-3 text-muted small text-uppercase">พนักงาน</th>
+              <th class="py-3 text-muted small text-uppercase">ตำแหน่ง</th>
+              <th class="py-3 text-muted small text-uppercase">ประเภท</th>
+              <th class="py-3 text-muted small text-uppercase">ช่วงวันที่ลา</th>
+              <th class="py-3 text-muted small text-uppercase">เวลา</th>
+              <th class="py-3 text-muted small text-uppercase">เหตุผล</th>
+              <th class="py-3 text-muted small text-uppercase text-end">คงเหลือ (ปีนั้น)</th>
+              <th class="py-3 text-muted small text-uppercase text-center">สถานะ</th>
+              <th class="py-3 text-muted small text-uppercase text-center">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let x of paging().rows">
+              <td class="fw-bold">{{ x.emp.firstName }} {{ x.emp.lastName }}<div class="small text-muted fw-normal">{{ x.emp.code }}</div></td>
+              <td class="small">{{ positionName(x.emp.positionId) }}</td>
+              <td>{{ x.req.leaveType }}</td>
+              <td class="small">{{ x.req.dateFrom }}<span *ngIf="x.req.dateTo && x.req.dateTo !== x.req.dateFrom"> → {{ x.req.dateTo }}</span></td>
+              <td class="small">
+                <span *ngIf="x.req.timeFrom || x.req.timeTo">{{ x.req.timeFrom || '-' }} - {{ x.req.timeTo || '-' }}</span>
+                <span *ngIf="!x.req.timeFrom && !x.req.timeTo" class="text-muted">ทั้งวัน</span>
+              </td>
+              <td class="small text-muted" style="max-width:220px;">{{ x.req.reason || '-' }}</td>
+              <td class="text-end small fw-bold text-success">
+                {{ remainingText(x) }}<div class="text-muted fw-normal">ปี {{ reqYear(x) }}</div>
+              </td>
+              <td class="text-center">
+                <span class="rounded-pill px-2 py-1 small fw-bold" [ngClass]="statusInfo(x.req.status).cls">
+                  {{ statusInfo(x.req.status).label }}
+                </span>
+                <div *ngIf="x.req.approvedBy" class="small text-muted mt-1">โดย {{ x.req.approvedBy }}</div>
+              </td>
+              <td class="text-center text-nowrap">
+                <ng-container *ngIf="!x.req.status || x.req.status === 'pending'; else doneTpl">
+                  <button mat-flat-button color="primary" class="me-1" (click)="approve(x.req)">อนุมัติ</button>
+                  <button mat-stroked-button color="warn" (click)="reject(x.req)">ไม่อนุมัติ</button>
+                </ng-container>
+                <ng-template #doneTpl><span class="text-muted small">-</span></ng-template>
+              </td>
+            </tr>
+            <tr *ngIf="paging().total === 0">
+              <td colspan="9" class="text-center py-5 text-muted">ยังไม่มีคำขอลาในสายอนุมัติของคุณ</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <mat-paginator [length]="paging().total" [pageSize]="pageSize()" [pageIndex]="paging().page - 1"
+        [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" class="mt-3 bg-light border rounded">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

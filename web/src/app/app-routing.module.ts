@@ -708,6 +708,10 @@ const routes: Routes = [
         loadComponent: () => import('./demo/forms/pages/leave-request/leave-request.component').then((c) => c.LeaveRequestComponent)
       },
       {
+        path: 'leave-approval',
+        loadComponent: () => import('./demo/forms/pages/leave-approval/leave-approval.component').then((c) => c.LeaveApprovalComponent)
+      },
+      {
         path: 'Dcsm45',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm45/dcsm45.component').then((c) => c.Dcsm45Component)

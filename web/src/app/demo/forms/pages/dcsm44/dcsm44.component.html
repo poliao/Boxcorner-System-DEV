@@ -34,6 +34,20 @@
           <label class="form-label small fw-bold text-muted">นามสกุล</label>
           <input type="text" class="form-control bg-light" [(ngModel)]="employeeForm.lastName" placeholder="นามสกุล">
         </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">ตำแหน่ง</label>
+          <select class="form-select bg-light" [(ngModel)]="employeeForm.positionId">
+            <option [ngValue]="null">-- เลือกตำแหน่ง --</option>
+            <option *ngFor="let p of positions()" [ngValue]="p.id">{{ p.nameTh }} ({{ p.code }})</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small fw-bold text-muted">บัญชีผู้ใช้ (สำหรับ login &amp; ขอลา)</label>
+          <select class="form-select bg-light" [(ngModel)]="employeeForm.username">
+            <option [ngValue]="null">-- ไม่ผูกบัญชี --</option>
+            <option *ngFor="let u of users()" [ngValue]="u.text">{{ u.text }}</option>
+          </select>
+        </div>
       </div>
 
       <!-- เงินเดือน + คำนวณ -->
@@ -90,6 +104,76 @@
     </div>
   </div>
 
+  <!-- ออกรายงานสรุปการลา (Excel) -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <mat-icon class="text-success">grid_on</mat-icon>
+        <h5 class="mb-0 fw-bold">ออกรายงานสรุปการลา (Excel)</h5>
+      </div>
+      <p class="text-muted small mb-3">เลือกพนักงานและช่วงวันที่ แล้วดาวน์โหลดเป็นไฟล์ Excel — แยก 1 ชีตต่อ 1 เดือน (เฉพาะใบลาที่อนุมัติแล้ว)</p>
+
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label small fw-bold">จากวันที่</label>
+          <input type="date" class="form-control" [(ngModel)]="exportFrom" name="exportFrom" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small fw-bold">ถึงวันที่</label>
+          <input type="date" class="form-control" [(ngModel)]="exportTo" name="exportTo" />
+        </div>
+        <div class="col-md-6">
+          <button mat-flat-button color="primary" [disabled]="!canExport" (click)="exportXlsx()">
+            <mat-icon>download</mat-icon> ดาวน์โหลด Excel
+          </button>
+          <span *ngIf="exporting()" class="ms-2 text-muted small">กำลังสร้างไฟล์...</span>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+          <label class="form-label small fw-bold mb-0">เลือกพนักงาน <span class="text-success">({{ selectedEmpIds().size }}/{{ employees().length }})</span></label>
+          <div class="input-group input-group-sm" style="max-width: 260px;">
+            <span class="input-group-text bg-light"><mat-icon style="font-size:18px;width:18px;height:18px;line-height:18px;">search</mat-icon></span>
+            <input type="text" class="form-control" placeholder="ค้นหาชื่อ / รหัส" [(ngModel)]="empSearch" name="empSearch" />
+          </div>
+        </div>
+        <div class="table-responsive border rounded" style="max-height: 280px; overflow-y: auto;">
+          <table class="table table-sm table-hover align-middle mb-0">
+            <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+              <tr>
+                <th style="width: 44px;" class="text-center">
+                  <input class="form-check-input m-0" type="checkbox" title="เลือกทั้งหมด"
+                    [checked]="allFilteredSelected" (change)="toggleAllFiltered()" />
+                </th>
+                <th class="small text-muted text-uppercase">รหัส</th>
+                <th class="small text-muted text-uppercase">ชื่อ - นามสกุล</th>
+                <th class="small text-muted text-uppercase">ตำแหน่ง</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let e of filteredEmployees" (click)="toggleEmp(e.id)" style="cursor: pointer;"
+                [class.table-active]="isEmpSelected(e.id)">
+                <td class="text-center">
+                  <input class="form-check-input m-0" type="checkbox"
+                    [checked]="isEmpSelected(e.id)" (change)="toggleEmp(e.id)" (click)="$event.stopPropagation()" />
+                </td>
+                <td class="fw-bold text-primary small">{{ e.code }}</td>
+                <td class="small">{{ e.firstName }} {{ e.lastName }}</td>
+                <td class="small text-muted">{{ positionName(e.positionId) }}</td>
+              </tr>
+              <tr *ngIf="filteredEmployees.length === 0">
+                <td colspan="4" class="text-center text-muted py-3 small">
+                  {{ employees().length === 0 ? 'ยังไม่มีข้อมูลพนักงาน' : 'ไม่พบพนักงานที่ค้นหา' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ตาราง -->
   <div class="card shadow-sm border-0">
     <div class="card-body d-flex flex-column">
@@ -100,6 +184,8 @@
             <tr>
               <th class="py-3 text-muted small text-uppercase">รหัส</th>
               <th class="py-3 text-muted small text-uppercase">ชื่อ - นามสกุล</th>
+              <th class="py-3 text-muted small text-uppercase">ตำแหน่ง</th>
+              <th class="py-3 text-muted small text-uppercase">บัญชี</th>
               <th class="py-3 text-muted small text-uppercase text-end">เงินเดือน/เดือน</th>
               <th class="py-3 text-muted small text-uppercase text-end">รายวัน</th>
               <th class="py-3 text-muted small text-uppercase text-end">รายชั่วโมง</th>
@@ -111,6 +197,8 @@
             <tr *ngFor="let e of employees()">
               <td class="fw-bold text-primary">{{ e.code }}</td>
               <td class="fw-bold">{{ e.firstName }} {{ e.lastName }}</td>
+              <td>{{ positionName(e.positionId) }}</td>
+              <td>{{ e.username || '-' }}</td>
               <td class="text-end">{{ thb(e.monthlySalary) }}</td>
               <td class="text-end text-success fw-bold">{{ thb(daily(e.monthlySalary)) }}</td>
               <td class="text-end text-success fw-bold">{{ thb(hourly(e.monthlySalary)) }}</td>
@@ -118,6 +206,9 @@
                 {{ e.personalLeaveDays }}/{{ e.sickLeaveDays }}/{{ e.vacationLeaveDays }}/{{ e.maternityLeaveDays }}/{{ e.ordinationLeaveDays }}
               </td>
               <td class="text-center text-nowrap">
+                <button mat-icon-button color="accent" (click)="printLeaveReport(e)" title="พิมพ์แบบบันทึกการลา (ปี {{ currentYear }})">
+                  <mat-icon>print</mat-icon>
+                </button>
                 <button mat-icon-button color="primary" (click)="editEmployee(e)" title="แก้ไข">
                   <mat-icon>edit</mat-icon>
                 </button>
@@ -127,7 +218,7 @@
               </td>
             </tr>
             <tr *ngIf="employees().length === 0">
-              <td colspan="7" class="text-center py-5 text-muted">ยังไม่มีพนักงาน</td>
+              <td colspan="9" class="text-center py-5 text-muted">ยังไม่มีพนักงาน</td>
             </tr>
           </tbody>
         </table>

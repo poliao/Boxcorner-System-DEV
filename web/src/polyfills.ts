@@ -43,6 +43,12 @@
  */
 
 /***************************************************************************************************
+ * sockjs-client (ใช้โดย WebSocket/STOMP) อ้างถึงตัวแปร `global` ของ Node
+ * เบราว์เซอร์ไม่มี จึงต้อง polyfill ให้ชี้ไปที่ window ก่อนโหลดไลบรารี
+ */
+(window as any).global = window;
+
+/***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
 import 'zone.js'; // Included with Angular CLI.

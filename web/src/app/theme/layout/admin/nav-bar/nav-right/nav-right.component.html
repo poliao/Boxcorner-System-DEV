@@ -1,5 +1,18 @@
 <div class="ms-auto">
-  <ul class="list-unstyled">
+  <ul class="list-unstyled d-flex align-items-center mb-0 gap-2">
+    <li *ngIf="isApprover">
+      <a routerLink="/leave-approval"
+        class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 position-relative"
+        title="อนุมัติการลา">
+        <i class="ti ti-checklist"></i>
+        <span>อนุมัติการลา</span>
+        <span *ngIf="pendingCount > 0"
+          class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-danger">
+          {{ pendingCount }}
+          <span class="visually-hidden">คำขอรออนุมัติ</span>
+        </span>
+      </a>
+    </li>
     <li>
       <div class="dropdown pc-h-item header-user-profile" ngbDropdown>
         <a

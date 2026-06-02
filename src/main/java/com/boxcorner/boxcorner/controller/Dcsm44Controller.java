@@ -39,6 +39,8 @@ public class Dcsm44Controller {
         return employeeRepository.findById(id).map(ex -> {
             ex.setFirstName(emp.getFirstName());
             ex.setLastName(emp.getLastName());
+            ex.setPositionId(emp.getPositionId());
+            ex.setUsername(emp.getUsername());
             ex.setMonthlySalary(emp.getMonthlySalary());
             ex.setPersonalLeaveDays(emp.getPersonalLeaveDays());
             ex.setPersonalLeaveHours(emp.getPersonalLeaveHours());

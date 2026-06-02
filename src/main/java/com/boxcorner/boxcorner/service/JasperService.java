@@ -78,4 +78,36 @@ public class JasperService {
             throw new JRException("Error fetching database connection for Jasper report", e);
         }
     }
+
+    /**
+     * Fill รายงานด้วย bean collection (ไม่ใช้ DB connection) — เหมาะกับรายงานที่
+     * header/สรุปส่งเป็น parameter และรายการเป็น field จาก bean
+     */
+    public byte[] generatePdfReportWithBeans(String reportPath, Map<String, Object> parameters,
+            java.util.Collection<?> beans) throws JRException {
+        try {
+            JasperReport jasperReport;
+            if (reportPath.endsWith(".jrxml")) {
+                jasperReport = compileReport(reportPath);
+            } else {
+                InputStream jasperStream = new ClassPathResource(reportPath).getInputStream();
+                jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
+            }
+
+            net.sf.jasperreports.engine.data.JRBeanCollectionDataSource ds =
+                    new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(beans);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, ds);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            JRPdfExporter exporter = new JRPdfExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+            exporter.exportReport();
+
+            return baos.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new JRException("Error generating PDF report with beans: " + e.getMessage(), e);
+        }
+    }
 }
