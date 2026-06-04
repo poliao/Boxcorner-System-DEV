@@ -73,10 +73,6 @@ function emptyForm(): EmployeeForm {
   };
 }
 
-function thb(value: number | string | null | undefined): string {
-  return Number(value || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
 @Component({
   selector: 'app-dcsm44',
   standalone: true,
@@ -91,8 +87,8 @@ export class Dcsm44Component implements OnInit {
   readonly positions = signal<Position[]>([]);
   readonly users = signal<UserOption[]>([]);
   readonly requests = signal<LeaveRequest[]>([]);
-  readonly thb = thb;
   readonly currentYear = new Date().getFullYear();
+  readonly leavesEmp = signal<Employee | null>(null); // พนักงานที่กำลังเปิดดูใบลา
 
   // ---- ออกรายงานสรุปการลาเป็น Excel ----
   readonly THAI_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
@@ -147,12 +143,32 @@ export class Dcsm44Component implements OnInit {
     return this.employeeForm.id !== null;
   }
 
-  // เงินเดือนรายวัน = เงินเดือน/เดือน ÷ 30 , รายชั่วโมง = รายวัน ÷ 8
-  daily(monthly: number | null): number {
-    return (Number(monthly) || 0) / 30;
+  // ---- ดูใบลาของพนักงาน (popup) ----
+  viewLeaves(e: Employee) { this.leavesEmp.set(e); }
+  closeLeaves() { this.leavesEmp.set(null); }
+
+  get empLeaves(): LeaveRequest[] {
+    const emp = this.leavesEmp();
+    if (!emp) return [];
+    return this.requests().filter(r => r.employeeId === emp.id)
+      .sort((a, b) => (b.dateFrom || '').localeCompare(a.dateFrom || '') || b.id - a.id);
   }
-  hourly(monthly: number | null): number {
-    return this.daily(monthly) / 8;
+
+  leaveDurationText(r: LeaveRequest): string {
+    const h = this.durationHours(r.dateFrom, r.dateTo, r.timeFrom, r.timeTo);
+    const d = Math.floor(h / 8);
+    const hr = Math.round((h - d * 8) * 10) / 10;
+    const parts: string[] = [];
+    if (d) parts.push(`${d} วัน`);
+    if (hr) parts.push(`${hr} ชม.`);
+    return parts.length ? parts.join(' ') : '0';
+  }
+
+  leaveStatus(status: string): { label: string; cls: string } {
+    const s = status || 'pending';
+    if (s === 'approved') return { label: 'อนุมัติแล้ว', cls: 'bg-success text-white' };
+    if (s === 'rejected') return { label: 'ไม่อนุมัติ', cls: 'bg-danger text-white' };
+    return { label: 'รออนุมัติ', cls: 'bg-warning text-dark' };
   }
 
   // เข้าถึงฟิลด์วันลาแบบ dynamic (form เป็น flat)
