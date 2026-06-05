@@ -175,8 +175,10 @@ function calculateWalletRows(entries: WalletEntry[]): WalletRow[] {
   let balance = 0;
   return entries.map(entry => {
     const isIncome = entry.type === 'carry' || entry.type === 'topup';
+    // 'ลูกค้าจ่าย' = ลูกค้าออกเงินเอง บริษัทไม่ได้จ่าย จึงไม่หักจาก Wallet (income/expense = 0)
+    const customerPaid = entry.type === 'expense' && entry.paymentType === 'ลูกค้าจ่าย';
     const income = isIncome ? entry.amount : 0;
-    const expense = !isIncome ? entry.amount : 0;
+    const expense = (!isIncome && !customerPaid) ? entry.amount : 0;
     balance += income - expense;
     return { ...entry, income, expense, balance };
   });
@@ -587,7 +589,7 @@ export class Dcsm42Component implements OnInit {
         { label: 'ลูกค้า', value: row.customer },
         { label: 'รายละเอียด', value: row.description },
         { label: 'เงินเข้า', value: row.income ? thb(row.income) : '-' },
-        { label: 'เงินออก', value: row.expense ? thb(row.expense) : '-' },
+        { label: 'เงินออก', value: row.expense ? thb(row.expense) : (row.type === 'expense' && row.paymentType === 'ลูกค้าจ่าย' ? thb(row.amount) + ' (ลูกค้าจ่าย ไม่หักยอด)' : '-') },
         { label: 'คงเหลือ', value: thb(row.balance) },
         { label: 'ผู้บันทึก', value: row.recorder },
         { label: 'หมายเหตุ', value: row.note },

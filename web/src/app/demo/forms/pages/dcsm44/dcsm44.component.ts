@@ -185,9 +185,21 @@ export class Dcsm44Component implements OnInit {
       alert('กรุณากรอกชื่อพนักงาน');
       return;
     }
-    const { id, code, ...rest } = this.employeeForm;
+    const code = (this.employeeForm.code || '').trim();
+    if (!code) {
+      alert('กรุณากรอกรหัสพนักงาน');
+      return;
+    }
+    // กันรหัสซ้ำกับพนักงานคนอื่น (ยกเว้นตัวเองตอนแก้ไข)
+    const dup = this.employees().some(e => (e.code || '').trim().toLowerCase() === code.toLowerCase() && e.id !== this.employeeForm.id);
+    if (dup) {
+      alert(`รหัสพนักงาน "${code}" ถูกใช้แล้ว กรุณาใช้รหัสอื่น`);
+      return;
+    }
+    const { id, ...rest } = this.employeeForm;
     const payload = {
       ...rest,
+      code,
       firstName,
       lastName: this.employeeForm.lastName.trim(),
       monthlySalary: Number(this.employeeForm.monthlySalary) || 0,

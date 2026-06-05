@@ -23,8 +23,8 @@
           <input type="text" class="form-control bg-light" [value]="employeeForm.id ?? 'อัตโนมัติ'" readonly>
         </div>
         <div class="col-6 col-md-2">
-          <label class="form-label small fw-bold text-muted">รหัสพนักงาน</label>
-          <input type="text" class="form-control bg-light" [value]="employeeForm.code || 'อัตโนมัติ'" readonly>
+          <label class="form-label small fw-bold text-muted">รหัสพนักงาน <span class="text-danger">*</span></label>
+          <input type="text" class="form-control bg-light" [(ngModel)]="employeeForm.code" name="empCode" placeholder="เช่น EMP-0001">
         </div>
         <div class="col-md-4">
           <label class="form-label small fw-bold text-muted">ชื่อ <span class="text-danger">*</span></label>

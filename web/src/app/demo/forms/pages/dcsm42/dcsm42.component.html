@@ -251,7 +251,12 @@
                     <td>{{ row.customer }}</td>
                     <td class="text-muted">{{ row.description }}</td>
                     <td class="text-end text-primary fw-bold">{{ row.income ? thb(row.income) : '-' }}</td>
-                    <td class="text-end text-danger fw-bold">{{ row.expense ? thb(row.expense) : '-' }}</td>
+                    <td class="text-end fw-bold">
+                      <span *ngIf="row.expense" class="text-danger">{{ thb(row.expense) }}</span>
+                      <span *ngIf="!row.expense && row.type === 'expense' && row.paymentType === 'ลูกค้าจ่าย'"
+                        class="text-muted" title="ลูกค้าจ่าย — ไม่หักจาก Wallet">{{ thb(row.amount) }} <small>(ลูกค้าจ่าย)</small></span>
+                      <span *ngIf="!row.expense && !(row.type === 'expense' && row.paymentType === 'ลูกค้าจ่าย')" class="text-danger">-</span>
+                    </td>
                     <td class="text-end text-success fw-bold">{{ thb(row.balance) }}</td>
                     <td class="text-center text-nowrap">
                       <!-- ปุ่มปิดงาน: แสดงเฉพาะ expense ที่ยังไม่เสร็จสิ้น -->

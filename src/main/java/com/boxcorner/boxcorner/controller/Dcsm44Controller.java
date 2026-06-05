@@ -37,6 +37,10 @@ public class Dcsm44Controller {
     @PutMapping("/employees/{id}")
     public ResponseEntity<HrEmployee> updateEmployee(@PathVariable("id") Long id, @RequestBody HrEmployee emp) {
         return employeeRepository.findById(id).map(ex -> {
+            // รหัสพนักงานกรอกเอง (อัปเดตได้ ถ้าไม่ว่าง)
+            if (emp.getCode() != null && !emp.getCode().isBlank()) {
+                ex.setCode(emp.getCode());
+            }
             ex.setFirstName(emp.getFirstName());
             ex.setLastName(emp.getLastName());
             ex.setPositionId(emp.getPositionId());
