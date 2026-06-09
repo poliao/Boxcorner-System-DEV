@@ -14,6 +14,7 @@ type Employee = {
   vacationLeaveDays: number; vacationLeaveHours: number;
   sickLeaveDays: number; sickLeaveHours: number;
   personalLeaveDays: number; personalLeaveHours: number;
+  annualPersonalLeaveDays: number; annualPersonalLeaveHours: number;
   maternityLeaveDays: number; maternityLeaveHours: number;
   ordinationLeaveDays: number; ordinationLeaveHours: number;
 };
@@ -149,6 +150,7 @@ export class LeaveApprovalComponent implements OnInit {
       'ลาพักร้อน': [emp.vacationLeaveDays || 0, emp.vacationLeaveHours || 0],
       'ลาป่วย': [emp.sickLeaveDays || 0, emp.sickLeaveHours || 0],
       'ลากิจ': [emp.personalLeaveDays || 0, emp.personalLeaveHours || 0],
+      'ลากิจประจำปี': [emp.annualPersonalLeaveDays || 0, emp.annualPersonalLeaveHours || 0],
       'ลาคลอด': [emp.maternityLeaveDays || 0, emp.maternityLeaveHours || 0],
       'ลาบวช': [emp.ordinationLeaveDays || 0, emp.ordinationLeaveHours || 0],
     };

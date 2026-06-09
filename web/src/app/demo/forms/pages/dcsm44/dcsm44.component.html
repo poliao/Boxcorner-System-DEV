@@ -48,6 +48,14 @@
             <option *ngFor="let u of users()" [ngValue]="u.text">{{ u.text }}</option>
           </select>
         </div>
+        <div class="col-12">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="empOnline" name="empOnline" [(ngModel)]="employeeForm.online">
+            <label class="form-check-label small fw-bold text-muted" for="empOnline">
+              ทำงานออนไลน์ (ไม่เข้าออฟฟิศ / ไม่สแกนนิ้ว)
+            </label>
+          </div>
+        </div>
       </div>
 
       <!-- สิทธิการลา -->
@@ -166,7 +174,8 @@
               <th class="py-3 text-muted small text-uppercase">ชื่อ - นามสกุล</th>
               <th class="py-3 text-muted small text-uppercase">ตำแหน่ง</th>
               <th class="py-3 text-muted small text-uppercase">บัญชี</th>
-              <th class="py-3 text-muted small text-uppercase text-center">สิทธิลา (วัน)<br>กิจ/ป่วย/พักร้อน/คลอด/บวช</th>
+              <th class="py-3 text-muted small text-uppercase text-center">ออนไลน์</th>
+              <th class="py-3 text-muted small text-uppercase text-center">สิทธิลา (วัน)<br>กิจ/กิจประจำปี/ป่วย/พักร้อน/คลอด/บวช</th>
               <th class="py-3 text-muted small text-uppercase text-center">จัดการ</th>
             </tr>
           </thead>
@@ -181,8 +190,12 @@
               </td>
               <td>{{ positionName(e.positionId) }}</td>
               <td>{{ e.username || '-' }}</td>
+              <td class="text-center">
+                <span *ngIf="e.online" class="badge bg-info-subtle text-info border" title="ทำงานออนไลน์ ไม่เข้าออฟฟิศ">ออนไลน์</span>
+                <span *ngIf="!e.online" class="text-muted">-</span>
+              </td>
               <td class="text-center text-nowrap small">
-                {{ e.personalLeaveDays }}/{{ e.sickLeaveDays }}/{{ e.vacationLeaveDays }}/{{ e.maternityLeaveDays }}/{{ e.ordinationLeaveDays }}
+                {{ e.personalLeaveDays }}/{{ e.annualPersonalLeaveDays }}/{{ e.sickLeaveDays }}/{{ e.vacationLeaveDays }}/{{ e.maternityLeaveDays }}/{{ e.ordinationLeaveDays }}
               </td>
               <td class="text-center text-nowrap">
                 <button mat-icon-button color="accent" (click)="printLeaveReport(e)" title="พิมพ์แบบบันทึกการลา (ปี {{ currentYear }})">
@@ -197,7 +210,7 @@
               </td>
             </tr>
             <tr *ngIf="employees().length === 0">
-              <td colspan="6" class="text-center py-5 text-muted">ยังไม่มีพนักงาน</td>
+              <td colspan="7" class="text-center py-5 text-muted">ยังไม่มีพนักงาน</td>
             </tr>
           </tbody>
         </table>

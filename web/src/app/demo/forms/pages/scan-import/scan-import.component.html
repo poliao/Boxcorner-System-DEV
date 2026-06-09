@@ -1,0 +1,107 @@
+<div class="container-fluid py-4">
+  <div class="mb-4">
+    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-dark text-white rounded-pill small fw-bold mb-3">
+      BCA ERP / HR
+    </div>
+    <h2 class="mb-1 fw-bold">แปลงไฟล์สแกนเวลา → Excel</h2>
+    <p class="text-muted mb-0">
+      อัปโหลดไฟล์ .txt จากเครื่องสแกนนิ้ว → แสดง<b>พนักงานทั้งหมดจากทะเบียน</b> แล้วแมพเวลาสแกนเข้าด้วยรหัสพนักงาน —
+      <span class="text-success fw-bold">ไฟล์สแกนประมวลผลในเบราว์เซอร์ ไม่ถูกส่งขึ้นเซิร์ฟเวอร์และไม่ถูกจัดเก็บไว้</span>
+    </p>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-8">
+          <label class="form-label small fw-bold text-muted">ไฟล์สแกน (.txt)</label>
+          <input type="file" accept=".txt,text/plain" class="form-control bg-light"
+            (change)="onFileChange($event)" [disabled]="parsing()">
+          <div *ngIf="fileName()" class="small text-success mt-1 d-flex align-items-center gap-1">
+            <mat-icon style="font-size:18px;width:18px;height:18px;">description</mat-icon>{{ fileName() }}
+          </div>
+        </div>
+        <div class="col-md-4 text-md-end">
+          <button class="btn btn-success" [disabled]="!rows().length || exporting()" (click)="exportXlsx()">
+            <mat-icon class="align-middle me-1" style="font-size:18px;width:18px;height:18px;">download</mat-icon>
+            {{ exporting() ? 'กำลังสร้าง...' : 'ดาวน์โหลด Excel' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- สถานะทะเบียนพนักงาน -->
+      <div class="small mt-2">
+        <span *ngIf="!employeesError()" class="text-muted">
+          <mat-icon class="align-middle" style="font-size:16px;width:16px;height:16px;">people</mat-icon>
+          ทะเบียนพนักงาน: <b>{{ rosterCount() }}</b> คน
+        </span>
+        <span *ngIf="employeesError()" class="text-danger fw-bold">
+          ⚠ ดึงทะเบียนพนักงานไม่สำเร็จ — จะแสดงเฉพาะคนที่มีในไฟล์สแกน (ตรวจว่า backend ทำงานอยู่)
+        </span>
+      </div>
+
+      <div *ngIf="parsing()" class="text-muted small mt-3">กำลังอ่านไฟล์...</div>
+      <div *ngIf="error()" class="alert alert-warning mt-3 mb-0 py-2 small">{{ error() }}</div>
+
+      <div *ngIf="rows().length" class="d-flex flex-wrap gap-2 mt-3 small">
+        <span class="badge bg-light text-dark border fw-normal">ทะเบียน: <b>{{ rosterCount() }}</b> คน</span>
+        <span class="badge bg-success-subtle text-success border fw-normal">มาสแกน: <b>{{ scannedCount() }}</b></span>
+        <span class="badge bg-info-subtle text-info border fw-normal" *ngIf="onlineCount()">ออนไลน์: <b>{{ onlineCount() }}</b></span>
+        <span class="badge bg-secondary-subtle text-dark border fw-normal">ไม่มาสแกน: <b>{{ absentCount() }}</b></span>
+        <span class="badge bg-light text-dark border fw-normal">รายการสแกน: <b>{{ totalScans() }}</b></span>
+        <span class="badge bg-light text-dark border fw-normal" *ngIf="dateRange()">ช่วงวันที่: <b>{{ dateRange() }}</b></span>
+        <span class="badge bg-warning-subtle text-dark border fw-normal" *ngIf="unmatchedIds().length">
+          ⚠ รหัสในไฟล์ที่ไม่มีในทะเบียน: <b>{{ unmatchedIds().length }}</b>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0" *ngIf="rows().length">
+    <div class="card-header bg-white border-0 pb-0">
+      <h6 class="fw-bold mb-1">
+        ตัวอย่างข้อมูล
+        <span class="text-muted fw-normal" *ngIf="rows().length > previewRows().length">
+          (แสดง {{ previewRows().length }} จาก {{ rows().length }} แถว — ดาวน์โหลดเพื่อดูทั้งหมด)
+        </span>
+      </h6>
+      <p class="text-muted small mb-0">
+        เข้าเช้า = สแกนแรกของวัน · ออกเย็น = สแกนสุดท้าย · ออกเที่ยง/เข้าบ่าย = สแกนช่วงพักเที่ยง (11:00–14:00) ·
+        ช่องว่าง = ไม่มีสแกน · <span class="text-info fw-bold">ออนไลน์</span> = พนักงานที่ติ๊กออนไลน์ในทะเบียน<span *ngIf="unmatchedIds().length"> · <span class="badge bg-warning-subtle text-dark">แถวสีเหลือง</span> = รหัสไม่มีในทะเบียน</span>
+      </p>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered align-middle mb-0">
+          <thead class="table-dark">
+            <tr class="text-center small">
+              <th>รหัสพนักงาน</th>
+              <th>วันที่</th>
+              <th class="text-start">ชื่อ-สกุล</th>
+              <th>เข้าเช้า</th>
+              <th>ออกเที่ยง</th>
+              <th>เข้าบ่าย</th>
+              <th>ออกเย็น</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of previewRows()" class="text-center small" [class.table-warning]="!r.inRegistry">
+              <td>{{ r.id }}</td>
+              <td>{{ r.dateDisplay }}</td>
+              <td class="text-start">{{ r.name }}</td>
+              <ng-container *ngIf="!r.online; else onlineCell">
+                <td>{{ r.morningIn }}</td>
+                <td>{{ r.noonOut }}</td>
+                <td>{{ r.noonIn }}</td>
+                <td>{{ r.eveningOut }}</td>
+              </ng-container>
+              <ng-template #onlineCell>
+                <td colspan="4" class="text-info fw-bold">ออนไลน์</td>
+              </ng-template>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

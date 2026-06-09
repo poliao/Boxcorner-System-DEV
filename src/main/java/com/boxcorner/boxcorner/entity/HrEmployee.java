@@ -34,6 +34,10 @@ public class HrEmployee {
     @Column(name = "username")
     private String username;
 
+    // ทำงานออนไลน์ (ไม่เข้าออฟฟิศ / ไม่สแกนนิ้ว)
+    @Column(name = "online")
+    private Boolean online;
+
     // เงินเดือนต่อเดือน (รายวัน = /30, รายชั่วโมง = รายวัน/8 คำนวณฝั่ง UI)
     @Column(name = "monthly_salary", precision = 12, scale = 2)
     private BigDecimal monthlySalary;
@@ -43,6 +47,12 @@ public class HrEmployee {
     private Integer personalLeaveDays;
     @Column(name = "personal_leave_hours")
     private Integer personalLeaveHours;
+
+    // ลากิจประจำปี (โควตาลากิจต่อปี)
+    @Column(name = "annual_personal_leave_days")
+    private Integer annualPersonalLeaveDays;
+    @Column(name = "annual_personal_leave_hours")
+    private Integer annualPersonalLeaveHours;
 
     @Column(name = "sick_leave_days")
     private Integer sickLeaveDays;

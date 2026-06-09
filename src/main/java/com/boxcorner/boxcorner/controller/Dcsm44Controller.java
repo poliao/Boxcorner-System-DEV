@@ -45,9 +45,12 @@ public class Dcsm44Controller {
             ex.setLastName(emp.getLastName());
             ex.setPositionId(emp.getPositionId());
             ex.setUsername(emp.getUsername());
+            ex.setOnline(emp.getOnline());
             ex.setMonthlySalary(emp.getMonthlySalary());
             ex.setPersonalLeaveDays(emp.getPersonalLeaveDays());
             ex.setPersonalLeaveHours(emp.getPersonalLeaveHours());
+            ex.setAnnualPersonalLeaveDays(emp.getAnnualPersonalLeaveDays());
+            ex.setAnnualPersonalLeaveHours(emp.getAnnualPersonalLeaveHours());
             ex.setSickLeaveDays(emp.getSickLeaveDays());
             ex.setSickLeaveHours(emp.getSickLeaveHours());
             ex.setVacationLeaveDays(emp.getVacationLeaveDays());

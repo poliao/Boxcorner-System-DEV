@@ -25,8 +25,10 @@ export type Employee = {
   lastName: string;
   positionId: number | null;
   username: string | null;
+  online: boolean;
   monthlySalary: number;
   personalLeaveDays: number; personalLeaveHours: number;
+  annualPersonalLeaveDays: number; annualPersonalLeaveHours: number;
   sickLeaveDays: number; sickLeaveHours: number;
   vacationLeaveDays: number; vacationLeaveHours: number;
   maternityLeaveDays: number; maternityLeaveHours: number;
@@ -54,8 +56,10 @@ type EmployeeForm = {
   lastName: string;
   positionId: number | null;
   username: string | null;
+  online: boolean;
   monthlySalary: number | null;
   personalLeaveDays: number; personalLeaveHours: number;
+  annualPersonalLeaveDays: number; annualPersonalLeaveHours: number;
   sickLeaveDays: number; sickLeaveHours: number;
   vacationLeaveDays: number; vacationLeaveHours: number;
   maternityLeaveDays: number; maternityLeaveHours: number;
@@ -64,8 +68,9 @@ type EmployeeForm = {
 
 function emptyForm(): EmployeeForm {
   return {
-    id: null, code: '', firstName: '', lastName: '', positionId: null, username: null, monthlySalary: null,
+    id: null, code: '', firstName: '', lastName: '', positionId: null, username: null, online: false, monthlySalary: null,
     personalLeaveDays: 0, personalLeaveHours: 0,
+    annualPersonalLeaveDays: 0, annualPersonalLeaveHours: 0,
     sickLeaveDays: 0, sickLeaveHours: 0,
     vacationLeaveDays: 0, vacationLeaveHours: 0,
     maternityLeaveDays: 0, maternityLeaveHours: 0,
@@ -103,6 +108,7 @@ export class Dcsm44Component implements OnInit {
 
   readonly leaveTypes = [
     { label: 'ลากิจ', daysKey: 'personalLeaveDays', hoursKey: 'personalLeaveHours' },
+    { label: 'ลากิจประจำปี', daysKey: 'annualPersonalLeaveDays', hoursKey: 'annualPersonalLeaveHours' },
     { label: 'ลาป่วย', daysKey: 'sickLeaveDays', hoursKey: 'sickLeaveHours' },
     { label: 'ลาพักร้อน', daysKey: 'vacationLeaveDays', hoursKey: 'vacationLeaveHours' },
     { label: 'ลาคลอด', daysKey: 'maternityLeaveDays', hoursKey: 'maternityLeaveHours' },
@@ -329,11 +335,12 @@ export class Dcsm44Component implements OnInit {
 
       // ประเภทการลา + คีย์สิทธิ์ใน Employee
       const TYPES = [
-        { label: 'ลาป่วย', match: 'ป่วย', dKey: 'sickLeaveDays', hKey: 'sickLeaveHours' },
-        { label: 'ลากิจ', match: 'กิจ', dKey: 'personalLeaveDays', hKey: 'personalLeaveHours' },
-        { label: 'ลาพักร้อน', match: 'พักร้อน', dKey: 'vacationLeaveDays', hKey: 'vacationLeaveHours' },
-        { label: 'ลาคลอด', match: 'คลอด', dKey: 'maternityLeaveDays', hKey: 'maternityLeaveHours' },
-        { label: 'ลาบวช', match: 'บวช', dKey: 'ordinationLeaveDays', hKey: 'ordinationLeaveHours' },
+        { label: 'ลาป่วย', dKey: 'sickLeaveDays', hKey: 'sickLeaveHours' },
+        { label: 'ลากิจ', dKey: 'personalLeaveDays', hKey: 'personalLeaveHours' },
+        { label: 'ลากิจประจำปี', dKey: 'annualPersonalLeaveDays', hKey: 'annualPersonalLeaveHours' },
+        { label: 'ลาพักร้อน', dKey: 'vacationLeaveDays', hKey: 'vacationLeaveHours' },
+        { label: 'ลาคลอด', dKey: 'maternityLeaveDays', hKey: 'maternityLeaveHours' },
+        { label: 'ลาบวช', dKey: 'ordinationLeaveDays', hKey: 'ordinationLeaveHours' },
       ];
 
       const empList = this.employees().filter(e => selected.has(e.id))
@@ -355,7 +362,7 @@ export class Dcsm44Component implements OnInit {
       const NCOLS = FIXED.length + TYPES.length * 3; // ต่อประเภท 3 คอลัมน์ (สิทธิ์/ใช้ไป/คงเหลือ)
       const thinB = this.thinBorder();
       const HEAD = 'FF2F4050';
-      const typeFill = ['FF2E5A88', 'FF3C7A5A', 'FFB8860B', 'FF8A5A2B', 'FF6A4C93']; // สีหัวกลุ่มแต่ละประเภท
+      const typeFill = ['FF2E5A88', 'FF3C7A5A', 'FF2F7E7E', 'FFB8860B', 'FF8A5A2B', 'FF6A4C93']; // สีหัวกลุ่มแต่ละประเภท
 
       // วนทีละเดือนในช่วงที่เลือก: 1 ชีต = 1 เดือน
       let cur = new Date(from.getFullYear(), from.getMonth(), 1);
@@ -424,7 +431,7 @@ export class Dcsm44Component implements OnInit {
 
           TYPES.forEach((t, ti) => {
             const ent = entHours(emp, t);
-            const usedYear = approved.filter(r => r.employeeId === emp.id && (r.leaveType || '').includes(t.match)
+            const usedYear = approved.filter(r => r.employeeId === emp.id && r.leaveType === t.label
               && new Date(r.dateFrom).getFullYear() === y)
               .reduce((s, r) => s + this.durationHours(r.dateFrom, r.dateTo, r.timeFrom, r.timeTo), 0);
             const remain = Math.max(0, ent - usedYear);

@@ -712,6 +712,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/forms/pages/leave-approval/leave-approval.component').then((c) => c.LeaveApprovalComponent)
       },
       {
+        path: 'scan-import',
+        canActivate: [MenuGuard],
+        loadComponent: () => import('./demo/forms/pages/scan-import/scan-import.component').then((c) => c.ScanImportComponent)
+      },
+      {
         path: 'Dcsm45',
         canActivate: [MenuGuard],
         loadComponent: () => import('./demo/forms/pages/dcsm45/dcsm45.component').then((c) => c.Dcsm45Component)

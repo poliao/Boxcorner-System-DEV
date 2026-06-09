@@ -15,6 +15,7 @@ type Employee = {
   username: string | null;
   monthlySalary: number;
   personalLeaveDays: number; personalLeaveHours: number;
+  annualPersonalLeaveDays: number; annualPersonalLeaveHours: number;
   sickLeaveDays: number; sickLeaveHours: number;
   vacationLeaveDays: number; vacationLeaveHours: number;
   maternityLeaveDays: number; maternityLeaveHours: number;
@@ -39,8 +40,8 @@ type LeaveBalance = {
   remainingHours: number;
 };
 
-const LEAVE_ORDER = ['ลาพักร้อน', 'ลาป่วย', 'ลากิจ', 'ลาคลอด', 'ลาบวช'];
-const LEAVE_TYPES = ['ลาป่วย', 'ลากิจ', 'ลาพักร้อน', 'ลาคลอด', 'ลาบวช'];
+const LEAVE_ORDER = ['ลาพักร้อน', 'ลาป่วย', 'ลากิจ', 'ลากิจประจำปี', 'ลาคลอด', 'ลาบวช'];
+const LEAVE_TYPES = ['ลาป่วย', 'ลากิจ', 'ลากิจประจำปี', 'ลาพักร้อน', 'ลาคลอด', 'ลาบวช'];
 const MAX_FILE_BYTES = 100 * 1024 * 1024; // 100 MB
 
 @Component({
@@ -120,6 +121,7 @@ export class LeaveRequestComponent implements OnInit {
       'ลาพักร้อน': [e.vacationLeaveDays || 0, e.vacationLeaveHours || 0],
       'ลาป่วย': [e.sickLeaveDays || 0, e.sickLeaveHours || 0],
       'ลากิจ': [e.personalLeaveDays || 0, e.personalLeaveHours || 0],
+      'ลากิจประจำปี': [e.annualPersonalLeaveDays || 0, e.annualPersonalLeaveHours || 0],
       'ลาคลอด': [e.maternityLeaveDays || 0, e.maternityLeaveHours || 0],
       'ลาบวช': [e.ordinationLeaveDays || 0, e.ordinationLeaveHours || 0],
     };
