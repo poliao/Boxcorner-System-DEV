@@ -49,7 +49,15 @@ public class ProductionOrderService {
             existingOrder.setInspector(productionOrder.getInspector());
             existingOrder.setPostpone(productionOrder.getPostpone());
             existingOrder.setCustomerName(productionOrder.getCustomerName());
-            existingOrder.setDataDalivery(productionOrder.getDataDalivery());
+            // data_dalivery ถูกจัดการหลักผ่าน endpoint updateDataDalivery
+            // อย่าให้ payload ที่ส่ง null มา (ฟอร์มไม่ได้คุมค่านี้) เขียนทับค่าเดิมจนกลายเป็น null
+            if (productionOrder.getDataDalivery() != null) {
+                existingOrder.setDataDalivery(productionOrder.getDataDalivery());
+            }
+            // คงค่าให้เป็น true/false เสมอ ไม่ปล่อยให้เป็น null
+            if (existingOrder.getDataDalivery() == null) {
+                existingOrder.setDataDalivery(false);
+            }
             existingOrder.setCancelRemarks(productionOrder.getCancelRemarks());
             existingOrder.setJobId(productionOrder.getJobId());
             existingOrder.setQtId(productionOrder.getQtId());
@@ -86,6 +94,10 @@ public class ProductionOrderService {
             productionOrder.setMoldStatus("รอผู้รับผิดชอบยืนยัน");
             if (productionOrder.getIsNewProof() == null) {
                 productionOrder.setIsNewProof(false);
+            }
+            // record ใหม่ให้เริ่มต้นเป็น false เสมอ ไม่ปล่อยให้เป็น null
+            if (productionOrder.getDataDalivery() == null) {
+                productionOrder.setDataDalivery(false);
             }
             return productionOrderRepository.save(productionOrder);
         }

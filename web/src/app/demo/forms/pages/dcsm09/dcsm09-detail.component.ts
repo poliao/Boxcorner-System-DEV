@@ -646,6 +646,8 @@ export class Dcsm09DetailComponent implements OnInit {
                 Promise.all(savePromises).then(() => {
                   // 5. Update dataDalivery status in Dcsm09
                   this.dcsm20Service.updateDataDalivery({ id: this.mainForm.getRawValue().id }).subscribe(() => {
+                    // ซิงก์ค่าในฟอร์มให้เป็น true ด้วย กันการ re-save ทับค่ากลับเป็น false/null
+                    this.mainForm.get('dataDalivery')?.setValue(true);
                     this.loadingService.hide();
                     this.sweetAlert.success('ดำเนินการสำเร็จ', 'ดึงข้อมูล PAP และสร้างตารางจัดส่งเรียบร้อยแล้ว');
                     this.router.navigate(['/Dcsm20']);
