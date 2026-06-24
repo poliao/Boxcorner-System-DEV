@@ -164,23 +164,27 @@ export class ScanImportComponent implements OnInit {
     return new TextDecoder(enc).decode(buf);
   }
 
-  // รูปแบบไฟล์: รหัส \t ชื่อ \t YYYY-MM-DD HH:MM:SS  (ชื่ออาจมี newline ปนได้ → ยึด timestamp เป็นหลัก)
+  // รูปแบบไฟล์เครื่องสแกน: รหัส \t YYYY-MM-DD HH:MM:SS (บางรุ่นมีคอลัมน์ชื่อคั่นกลาง: รหัส \t ชื่อ \t วันเวลา)
+  // แยกทีละบรรทัดแล้วยึด timestamp เป็นหลัก — รหัสคือเลขหน้าสุดของบรรทัด, ชื่อ (ถ้ามี) คือข้อความระหว่างรหัสกับวันเวลา
   private parse(text: string) {
-    const re = /([0-9]+)\t([\s\S]*?)\t(\d{4})-(\d{2})-(\d{2})[ \t]+(\d{2}):(\d{2}):(\d{2})/g;
+    const dtRe = /(\d{4})-(\d{2})-(\d{2})[ \t]+(\d{1,2}):(\d{2}):(\d{2})/;
     const groups = new Map<string, Scan[]>();
     const names = new Map<string, string>();
     const dateSet = new Set<string>();
-    let m: RegExpExecArray | null;
     let total = 0;
-    while ((m = re.exec(text)) !== null) {
+    for (const raw of text.split(/\r?\n/)) {
+      const line = raw.replace(/^\uFEFF/, '');
+      const m = dtRe.exec(line);
+      if (!m) continue; // บรรทัดที่ไม่มีวันเวลา (หัวตาราง/บรรทัดว่าง) → ข้าม
+      const head = line.slice(0, m.index).split('\t');
+      const id = (head[0] || '').trim();
+      if (!/^[0-9]+$/.test(id)) continue; // สแกนไม่ติด (ไม่มีรหัส) → ข้าม
       total++;
-      const id = m[1].trim();
-      if (!id) continue;
-      const name = m[2].replace(/\s+/g, ' ').trim();
-      const date = `${m[3]}-${m[4]}-${m[5]}`;
-      const hh = +m[6];
-      const sec = hh * 3600 + +m[7] * 60 + +m[8];
-      const timeStr = `${hh}:${m[7]}:${m[8]}`;
+      const name = head.slice(1).join(' ').replace(/\s+/g, ' ').trim();
+      const date = `${m[1]}-${m[2]}-${m[3]}`;
+      const hh = +m[4];
+      const sec = hh * 3600 + +m[5] * 60 + +m[6];
+      const timeStr = `${String(hh).padStart(2, '0')}:${m[5]}:${m[6]}`;
       const k = `${id}__${date}`;
       const g = groups.get(k);
       if (g) g.push({ id, name, date, sec, timeStr });
@@ -193,7 +197,7 @@ export class ScanImportComponent implements OnInit {
     this.fileNames.set(names);
     this.scanDates.set([...dateSet].sort());
     this.totalScans.set(total);
-    if (!groups.size) this.error.set('ไม่พบรายการสแกนในไฟล์ — รูปแบบไฟล์อาจไม่ถูกต้อง (ต้องเป็น รหัส / ชื่อ / วันเวลา คั่นด้วย Tab)');
+    if (!groups.size) this.error.set('ไม่พบรายการสแกนในไฟล์ — รูปแบบไฟล์อาจไม่ถูกต้อง (ต้องเป็น รหัส / วันเวลา คั่นด้วย Tab)');
   }
 
   // จับคู่เวลาสแกนเป็น 4 ช่อง: เข้าเช้า / ออกเที่ยง / เข้าบ่าย / ออกเย็น
