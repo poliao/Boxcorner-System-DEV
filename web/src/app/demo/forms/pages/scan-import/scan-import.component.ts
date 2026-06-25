@@ -201,22 +201,38 @@ export class ScanImportComponent implements OnInit {
   }
 
   // จับคู่เวลาสแกนเป็น 4 ช่อง: เข้าเช้า / ออกเที่ยง / เข้าบ่าย / ออกเย็น
+  // จัดตามช่วงเวลา ไม่ใช่ตามตำแหน่ง:
+  //   - ช่วงพักเที่ยง = 11:00–14:00 (สแกนช่วงนี้จะไม่หล่นไปช่องออกเย็น)
+  //   - ถ้าสแกนแรกอยู่ตั้งแต่ 11:00 เป็นต้นไป (เช่น ลาเช้า เข้างานบ่าย) จะไม่ใส่ช่องเข้าเช้า แต่ถือเป็นเข้าบ่าย
   private assignColumns(list: Scan[]): [string, string, string, string] {
     const n = list.length;
     if (n === 0) return ['', '', '', ''];
     const LUNCH_START = 11 * 3600; // 11:00
     const LUNCH_END = 14 * 3600; // 14:00
-    const first = 0;
-    const last = n - 1;
-    const morningIn = list[first].timeStr;
-    const eveningOut = n >= 2 ? list[last].timeStr : '';
-    const lunch: number[] = [];
-    for (let i = 0; i < n; i++) {
-      if (i === first || i === last) continue;
-      if (list[i].sec >= LUNCH_START && list[i].sec < LUNCH_END) lunch.push(i);
+    const NOON = 12 * 3600; // 12:00 — เส้นแบ่งว่าสแกนแรกของวันนับเป็น "เข้าเช้า" หรือ "เข้าบ่าย"
+    const inLunch = (s: Scan) => s.sec >= LUNCH_START && s.sec < LUNCH_END;
+
+    // ไม่ได้เข้างานเช้า (สแกนแรกตั้งแต่เที่ยงเป็นต้นไป เช่น ลาเช้า เข้างานบ่าย)
+    // → ไม่มีเข้าเช้า/ออกเที่ยง, สแกนแรก = เข้าบ่าย, สแกนสุดท้าย = ออกเย็น
+    // (สแกนแรกก่อนเที่ยง เช่น 11:30 ยังถือเป็นเข้าเช้า แล้วสแกนช่วง 11:00–14:00 ที่เหลือเป็นออกเที่ยง)
+    if (list[0].sec >= NOON) {
+      const noonIn = list[0].timeStr;
+      const eveningOut = n >= 2 ? list[n - 1].timeStr : '';
+      return ['', '', noonIn, eveningOut];
     }
-    const noonOut = lunch.length >= 1 ? list[lunch[0]].timeStr : '';
-    const noonIn = lunch.length >= 2 ? list[lunch[lunch.length - 1]].timeStr : '';
+
+    // เข้างานเช้าปกติ: เข้าเช้า = สแกนแรกของวัน
+    const morningIn = list[0].timeStr;
+    const rest = list.slice(1);
+    const lunch = rest.filter(inLunch);
+    const nonLunch = rest.filter((s) => !inLunch(s)); // ก่อน 11:00 หรือ ตั้งแต่ 14:00
+
+    // ออกเที่ยง = สแกนช่วงพักเที่ยงตัวแรก, เข้าบ่าย = ตัวสุดท้าย (ถ้ามี ≥ 2)
+    const noonOut = lunch.length >= 1 ? lunch[0].timeStr : '';
+    const noonIn = lunch.length >= 2 ? lunch[lunch.length - 1].timeStr : '';
+    // ออกเย็น = สแกนนอกช่วงพักเที่ยงตัวสุดท้าย (สแกนออกจริงของวัน) — สแกนช่วงเที่ยงจะไม่หล่นมาช่องนี้
+    const eveningOut = nonLunch.length >= 1 ? nonLunch[nonLunch.length - 1].timeStr : '';
+
     return [morningIn, noonOut, noonIn, eveningOut];
   }
 
