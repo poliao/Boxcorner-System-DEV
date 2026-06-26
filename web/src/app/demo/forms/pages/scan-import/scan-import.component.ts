@@ -225,13 +225,14 @@ export class ScanImportComponent implements OnInit {
     const morningIn = list[0].timeStr;
     const rest = list.slice(1);
     const lunch = rest.filter(inLunch);
-    const nonLunch = rest.filter((s) => !inLunch(s)); // ก่อน 11:00 หรือ ตั้งแต่ 14:00
 
     // ออกเที่ยง = สแกนช่วงพักเที่ยงตัวแรก, เข้าบ่าย = ตัวสุดท้าย (ถ้ามี ≥ 2)
     const noonOut = lunch.length >= 1 ? lunch[0].timeStr : '';
     const noonIn = lunch.length >= 2 ? lunch[lunch.length - 1].timeStr : '';
-    // ออกเย็น = สแกนนอกช่วงพักเที่ยงตัวสุดท้าย (สแกนออกจริงของวัน) — สแกนช่วงเที่ยงจะไม่หล่นมาช่องนี้
-    const eveningOut = nonLunch.length >= 1 ? nonLunch[nonLunch.length - 1].timeStr : '';
+    // ออกเย็น = สแกน "ตัวสุดท้ายของวัน" เฉพาะเมื่อไม่ได้อยู่ในช่วงพักเที่ยง (= การออกจริงของวัน)
+    // ใช้ตัวสุดท้ายเสมอ (เรียงเวลาแล้ว) จึงกันเคสสแกนซ้ำตอนเช้าหล่นมาเป็นออกเย็น จนเวลาออกมาก่อนเวลาเข้า
+    const last = list[n - 1];
+    const eveningOut = n >= 2 && !inLunch(last) ? last.timeStr : '';
 
     return [morningIn, noonOut, noonIn, eveningOut];
   }
